@@ -95,6 +95,12 @@ export function SiteHeader() {
             halls
           </Link>
           <Link
+            to="/profile"
+            style={{ ...serif, fontSize: 14, color: "#6b4a5c", textDecoration: "none", padding: "6px 12px" }}
+          >
+            you
+          </Link>
+          <Link
             to="/auth"
             style={{
               ...sans,
