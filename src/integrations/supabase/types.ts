@@ -56,6 +56,33 @@ export type Database = {
         }
         Relationships: []
       }
+      mirror_onboarding: {
+        Row: {
+          created_at: string
+          onboarded_at: string
+          source: string
+          updated_at: string
+          user_id: string
+          welcome_email_sent_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          onboarded_at?: string
+          source?: string
+          updated_at?: string
+          user_id: string
+          welcome_email_sent_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          onboarded_at?: string
+          source?: string
+          updated_at?: string
+          user_id?: string
+          welcome_email_sent_at?: string | null
+        }
+        Relationships: []
+      }
       room_reactions: {
         Row: {
           created_at: string
