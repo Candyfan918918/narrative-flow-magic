@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#fcf1f5"/>
+  <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <g transform="translate(30,0)">
+    <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+    <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  </g>
+  <ellipse cx="23" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="35" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="65" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="77" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+</svg>
+</template>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,18,400;1,18,400&display=swap" rel="stylesheet">
+<title>Admin — Shutap</title>
+<script src="./seed-data.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0f0a12;color:#f2e9ef;font-family:'Inter',system-ui,sans-serif;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes breathe{0%,100%{opacity:.5}50%{opacity:1}}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:11px;font-family:'Sora',sans-serif;font-weight:600;font-size:13.5px;color:#a99fb0;cursor:pointer;transition:.15s;text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#f2e9ef}
+.nav-item.active{background:linear-gradient(135deg,rgba(231,84,138,.22),rgba(193,33,107,.16));color:#fff}
+.card{background:#181020;border:.5px solid rgba(255,255,255,.08);border-radius:16px;padding:18px 20px}
+.kpi b{font-family:'Sora',sans-serif;font-weight:800;font-size:28px;letter-spacing:-.02em;display:block;line-height:1.1}
+.kpi span{font-size:12px;color:#9a8fa2}
+.bar{height:7px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#ff7eb3,#c1216b)}
+.qrow{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:.5px solid rgba(255,255,255,.06)}
+.qrow:last-child{border-bottom:none}
+.chip{font-family:'Sora',sans-serif;font-weight:700;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+.btn{font-family:'Sora',sans-serif;font-weight:700;font-size:11.5px;border-radius:999px;padding:6px 13px;cursor:pointer;border:none;transition:.15s}
+.btn-approve{background:#1d7a52;color:#dffbe9}
+.btn-approve:hover{background:#229160}
+.btn-reject{background:rgba(255,255,255,.06);color:#d99}
+.btn-reject:hover{background:rgba(226,75,74,.16)}
+</style>
+</helmet>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <radialGradient id="eyeG" cx="40%" cy="18%" r="75%"><stop offset="0%" stop-color="#fff"></stop><stop offset="18%" stop-color="#ffd0e8"></stop><stop offset="48%" stop-color="#f060a0"></stop><stop offset="78%" stop-color="#c0206a"></stop><stop offset="100%" stop-color="#880040"></stop></radialGradient>
+  <radialGradient id="pupG" cx="50%" cy="55%" r="58%"><stop offset="0%" stop-color="#3a1020"></stop><stop offset="100%" stop-color="#060106"></stop></radialGradient>
+</defs></svg>
+
+<div style="display:flex;min-height:100vh">
+
+  <!-- SIDEBAR -->
+  <aside style="width:228px;flex:none;border-right:.5px solid rgba(255,255,255,.08);padding:18px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;background:#0c080f">
+    <a href="Landing.dc.html" style="display:flex;align-items:center;gap:9px;text-decoration:none;color:#f2e9ef;padding:6px 10px 16px">
+      <span style="width:30px;height:21px;display:block"><svg viewBox="0 0 140 96" fill="none" style="display:block;width:100%;height:100%"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse></svg></span>
+      <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.04em">shut<span style="color:#e7548a">ap</span></span>
+      <span style="font-family:'Sora',sans-serif;font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9a8fa2;border:.5px solid rgba(255,255,255,.16);border-radius:5px;padding:2px 5px">admin</span>
+    </a>
+    <div ref="{{ navOverview }}" onClick="{{ goOverview }}" class="nav-item active">▦ Overview</div>
+    <div ref="{{ navQueue }}" onClick="{{ goQueue }}" class="nav-item">🛡 Moderation <span ref="{{ queueBadge }}" style="margin-left:auto;background:#e7548a;color:#fff;font-size:10px;font-weight:700;border-radius:999px;padding:1px 7px">5</span></div>
+    <div ref="{{ navRooms }}" onClick="{{ goRooms }}" class="nav-item">💬 Rooms</div>
+    <div ref="{{ navUsers }}" onClick="{{ goUsers }}" class="nav-item">👤 Members</div>
+    <div ref="{{ navAnalytics }}" onClick="{{ goAnalytics }}" class="nav-item">📈 Analytics</div>
+    <div ref="{{ navSafety }}" onClick="{{ goSafety }}" class="nav-item">🆘 Safety</div>
+    <div ref="{{ navConfig }}" onClick="{{ goConfig }}" class="nav-item">⚙ Config</div>
+    <div style="margin-top:auto;padding:12px 10px;font-size:11.5px;color:#6e6675;font-family:'Newsreader',serif;font-style:italic">signed in as<br><b style="font-style:normal;font-family:Inter;color:#a99fb0">admin@shutap.com</b></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main style="flex:1;min-width:0;padding:26px 30px 60px;max-width:1000px">
+    <div ref="{{ view }}"></div>
+  </main>
+</div>
+
+<div ref="{{ toastEl }}" style="position:fixed;left:50%;bottom:26px;transform:translate(-50%,300px);z-index:92;background:#fff;border-radius:999px;padding:11px 18px;color:#0b080f;font-family:'Newsreader',serif;font-style:italic;font-size:14px;box-shadow:0 20px 44px -20px rgba(0,0,0,.5);transition:transform .4s cubic-bezier(.2,.7,.2,1)"></div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+
+  get ROOMS(){ if(window.SHUTAP_SEED&&window.SHUTAP_SEED.rooms) return window.SHUTAP_SEED.rooms; return []; }
+
+  renderVals(){
+    const nav=(k)=>()=>this.go(k);
+    return {
+      view: el=>{ this.$view=el; },
+      toastEl: el=>{ this.$toast=el; },
+      queueBadge: el=>{ this.$qbadge=el; },
+      navOverview: el=>{ this.$nav=Object.assign({},this.$nav,{overview:el}); },
+      navQueue: el=>{ this.$nav=Object.assign({},this.$nav,{queue:el}); },
+      navRooms: el=>{ this.$nav=Object.assign({},this.$nav,{rooms:el}); },
+      navUsers: el=>{ this.$nav=Object.assign({},this.$nav,{users:el}); },
+      navAnalytics: el=>{ this.$nav=Object.assign({},this.$nav,{analytics:el}); },
+      navSafety: el=>{ this.$nav=Object.assign({},this.$nav,{safety:el}); },
+      navConfig: el=>{ this.$nav=Object.assign({},this.$nav,{config:el}); },
+      goOverview: nav('overview'), goQueue: nav('queue'), goRooms: nav('rooms'),
+      goUsers: nav('users'), goAnalytics: nav('analytics'), goSafety: nav('safety'), goConfig: nav('config')
+    };
+  }
+
+  componentDidMount(){ this.$nav=this.$nav||{}; this.pendingCount=5; this.go('overview'); }
+
+  toast(m){ if(!this.$toast) return; this.$toast.textContent=m; this.$toast.style.transform='translate(-50%,0)'; clearTimeout(this._t); this._t=setTimeout(()=>{ this.$toast.style.transform='translate(-50%,300px)'; },3000); }
+
+  go(k){
+    Object.entries(this.$nav).forEach(([key,el])=>{ if(el) el.classList.toggle('active', key===k); });
+    if(this.$view) this.$view.style.animation='fadeUp .3s ease';
+    ({overview:()=>this.overview(),queue:()=>this.queue(),rooms:()=>this.roomsView(),users:()=>this.users(),analytics:()=>this.analytics(),safety:()=>this.safety(),config:()=>this.config()}[k]||(()=>{}))();
+  }
+
+  head(title,sub){ return '<h1 style="font-family:Sora,sans-serif;font-weight:800;font-size:24px;letter-spacing:-.02em;margin:0 0 4px">'+title+'</h1><div style="font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#9a8fa2;margin-bottom:24px">'+sub+'</div>'; }
+
+  /* OVERVIEW */
+  overview(){
+    const total=this.ROOMS.length;
+    const kpis=[['Rooms open','1,284','+8.2% wk'],['People sitting in now','327','live'],['Hearts given today','9,640','+12%'],['New members','214','this week']];
+    const spark=(vals,col)=>{ const max=Math.max(...vals); const w=100/vals.length; return '<svg viewBox="0 0 100 30" preserveAspectRatio="none" style="width:100%;height:38px">'+vals.map((v,i)=>'<rect x="'+(i*w+1)+'" y="'+(30-(v/max*28))+'" width="'+(w-2)+'" height="'+(v/max*28)+'" rx="1" fill="'+col+'"/>').join('')+'</svg>'; };
+    this.$view.innerHTML=
+      this.head('Overview','how the rooms are doing — today across Shutap.')+
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px">'+
+        kpis.map(k=>'<div class="card kpi"><b>'+k[1]+'</b><span>'+k[0]+'</span><div style="margin-top:8px;font-size:11px;color:#6fcf97">'+k[2]+'</div></div>').join('')+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:20px">'+
+        '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px">Rooms opened · last 14 days</b><span style="font-size:11.5px;color:#9a8fa2">avg 92/day</span></div>'+spark([62,71,58,80,74,95,88,103,79,96,110,90,118,124],'#e7548a')+'</div>'+
+        '<div class="card"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;display:block;margin-bottom:14px">Support reactions</b>'+
+          [['🤍 i hear you',42,'#e7548a'],['🫂 omg same',31,'#c87c4a'],['💪 you\'ve got this',14,'#5B8A5E'],['🌿 it gets easier',8,'#7F77DD'],['✨ so brave',5,'#c1a02b']].map(r=>'<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:#c9bcd0;margin-bottom:4px"><span>'+r[0]+'</span><b>'+r[1]+'%</b></div><div class="bar"><i style="width:'+r[1]+'%;background:'+r[2]+'"></i></div></div>').join('')+
+        '</div>'+
+      '</div>'+
+      '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px">Needs your attention</b><span onclick="document.querySelector(\'[ref]\')" style="font-size:11.5px;color:#f7b8d4;cursor:pointer" data-toqueue>moderation queue →</span></div>'+
+        '<div class="qrow"><span style="width:8px;height:8px;border-radius:50%;background:#EF9F27;flex:none;animation:breathe 2.5s infinite"></span><span style="flex:1;font-size:13.5px">5 rooms held by the privacy shield (possible identifiers)</span><span class="chip" style="background:rgba(239,159,39,.16);color:#EF9F27">review</span></div>'+
+        '<div class="qrow"><span style="width:8px;height:8px;border-radius:50%;background:#E24B4A;flex:none"></span><span style="flex:1;font-size:13.5px">2 rooms flagged by the safety net (crisis language)</span><span class="chip" style="background:rgba(226,75,74,.16);color:#E24B4A">urgent</span></div>'+
+        '<div class="qrow"><span style="width:8px;height:8px;border-radius:50%;background:#7F77DD;flex:none"></span><span style="flex:1;font-size:13.5px">3 comments reported by members</span><span class="chip" style="background:rgba(127,119,221,.16);color:#a9a4e8">review</span></div>'+
+      '</div>';
+    const tq=this.$view.querySelector('[data-toqueue]'); if(tq) tq.addEventListener('click',()=>this.go('queue'));
+  }
+
+  /* MODERATION QUEUE */
+  queue(){
+    const items=[
+      {kind:'shield',color:'#EF9F27',label:'privacy shield',title:this.ROOMS[2]?this.ROOMS[2].title:'A room with a possible name',reason:'detected a possible first name + workplace',alias:'Mortified Polish Hedgehog',emoji:'🦔'},
+      {kind:'safety',color:'#E24B4A',label:'safety net',title:'I don\'t see the point in any of this anymore',reason:'crisis language — routed to resources, awaiting human review',alias:'Forlorn Welsh Heron',emoji:'🪿'},
+      {kind:'report',color:'#7F77DD',label:'member report',title:'comment: "honestly you brought this on yourself"',reason:'reported 3× — unkind / against room norms',alias:'Bitter Czech Hawk',emoji:'🦅'},
+      {kind:'shield',color:'#EF9F27',label:'privacy shield',title:this.ROOMS[5]?this.ROOMS[5].title:'A room mentioning a school',reason:'detected a school name',alias:'Tender Brazilian Hare',emoji:'🐇'},
+      {kind:'report',color:'#7F77DD',label:'member report',title:'comment: contains an external link',reason:'reported 1× — possible spam',alias:'Restless Filipino Fox',emoji:'🦊'}
+    ];
+    this.$view.innerHTML=this.head('Moderation queue','privacy shield, safety net, and member reports. the room stays kind because this stays current.')+
+      '<div style="background:#181020;border:.5px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 18px;margin-bottom:18px;display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:#9a8fa2;line-height:1.5">'+
+        '<span>🤖 <b style="color:#c9bcd0">AI triage</b> — Guardian classifies crisis · abuse · defamation · identifying detail at publish.</span>'+
+        '<span>🛡 <b style="color:#c9bcd0">Rules</b> — privacy shield regex flags emails, phones, names, employers, addresses.</span>'+
+        '<span>🚩 <b style="color:#c9bcd0">Reports</b> — members flag against room norms.</span>'+
+        '<span style="width:100%;color:#6e6675;border-top:.5px solid rgba(255,255,255,.06);padding-top:10px">aliases + opaque ids only — never a real identity. actions are <b style="color:#9a8fa2">redact-only</b> (never rewrite) and <b style="color:#9a8fa2">append-only logged</b>.</span>'+
+      '</div>'+
+      '<div id="_qlist" style="display:flex;flex-direction:column;gap:12px"></div>';
+    const list=this.$view.querySelector('#_qlist');
+    // merge LIVE signals captured by the Spill Guardian/Shield (localStorage)
+    let live=[];
+    try{ live=JSON.parse(localStorage.getItem('shutap_modqueue')||'[]'); }catch(e){}
+    live.slice().reverse().forEach(l=>{
+      const map={safety:{color:'#E24B4A',label:'safety net',emoji:'🆘'},report:{color:'#7F77DD',label:'flagged',emoji:'🚩'},shield:{color:'#EF9F27',label:'privacy shield',emoji:'🛡'}};
+      const m=map[l.kind]||map.report;
+      items.unshift({kind:l.kind,color:m.color,label:m.label+' · live',title:'a freshly spilled room',reason:l.signal,alias:'just now',emoji:m.emoji,live:true});
+    });
+    items.forEach((it,idx)=>{
+      const c=document.createElement('div'); c.className='card'; c.style.display='flex'; c.style.gap='14px'; c.style.alignItems='flex-start';
+      c.innerHTML=
+        '<span style="width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:19px;flex:none">'+it.emoji+'</span>'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><span class="chip" style="background:'+it.color+'22;color:'+it.color+'">'+it.label+'</span><span style="font-size:11.5px;color:#9a8fa2">'+it.alias+'</span></div>'+
+          '<div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px;line-height:1.35;margin-bottom:5px">'+it.title+'</div>'+
+          '<div style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9a8fa2">'+it.reason+'</div>'+
+        '</div>'+
+        '<div style="display:flex;flex-direction:column;gap:7px;flex:none">'+
+          '<button class="btn btn-approve" data-a="approve">'+(it.kind==='report'?'keep':'publish')+'</button>'+
+          '<button class="btn btn-reject" data-a="reject">'+(it.kind==='report'?'remove':'hold')+'</button>'+
+        '</div>';
+      c.querySelector('[data-a="approve"]').addEventListener('click',()=>{ c.style.opacity='.4'; c.querySelectorAll('button').forEach(b=>b.disabled=true); this.decQueue(); this.toast('approved.'); });
+      c.querySelector('[data-a="reject"]').addEventListener('click',()=>{ c.style.opacity='.4'; c.querySelectorAll('button').forEach(b=>b.disabled=true); this.decQueue(); this.toast('actioned.'); });
+      list.appendChild(c);
+    });
+  }
+  decQueue(){ this.pendingCount=Math.max(0,this.pendingCount-1); if(this.$qbadge){ this.$qbadge.textContent=this.pendingCount; if(this.pendingCount===0) this.$qbadge.style.display='none'; } }
+
+  /* ROOMS */
+  roomsView(){
+    const rows=this.ROOMS.slice(0,14);
+    this.$view.innerHTML=this.head('Rooms','every open room. search, sort, rest, or feature.')+
+      '<div class="card" style="padding:0;overflow:hidden">'+
+        '<div style="display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:.5px solid rgba(255,255,255,.07);font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#9a8fa2"><span style="flex:1">room</span><span style="width:70px;text-align:right">sitting</span><span style="width:70px;text-align:right">omg same</span><span style="width:90px;text-align:right">mode</span></div>'+
+        rows.map(r=>'<a href="Stream.dc.html#room-'+r.id+'" style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:.5px solid rgba(255,255,255,.05);text-decoration:none;color:inherit" onmouseover="this.style.background=\'rgba(255,255,255,.03)\'" onmouseout="this.style.background=\'transparent\'">'+
+          '<span style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:15px;flex:none">'+r.emoji+'</span>'+
+          '<span style="flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+r.title+'</span>'+
+          '<span style="width:70px;text-align:right;font-variant-numeric:tabular-nums;color:#c9bcd0">'+r.sitting+'</span>'+
+          '<span style="width:70px;text-align:right;font-variant-numeric:tabular-nums;color:#f7b8d4">'+r.relates+'</span>'+
+          '<span style="width:90px;text-align:right"><span class="chip" style="background:'+(r.support==='heard'?'rgba(231,84,138,.16);color:#f7b8d4':'rgba(91,138,94,.18);color:#9ed4a0')+'">'+(r.support==='heard'?'heard':'advice')+'</span></span>'+
+        '</a>').join('')+
+      '</div>';
+  }
+
+  /* MEMBERS */
+  users(){
+    const members=[
+      ['🦢','Quiet Nigerian Swan',92,38,3,'2d'],['🦁','Defiant Kenyan Lion',71,54,7,'5h'],['🦔','Mortified Polish Hedgehog',64,12,2,'1d'],
+      ['🕊','Patient Indian Dove',88,61,4,'3h'],['🦋','Wistful Ethiopian Butterfly',79,44,5,'3h'],['🐇','Tender Brazilian Hare',58,22,1,'8h'],
+      ['🐺','Patient Moroccan Wolf',81,73,2,'1h'],['🦊','Restless Filipino Fox',47,29,6,'12h']
+    ];
+    this.$view.innerHTML=this.head('Members','pseudonymous. you see aliases and standing — never real identities.')+
+      '<div class="card" style="padding:0;overflow:hidden">'+
+        '<div style="display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:.5px solid rgba(255,255,255,.07);font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#9a8fa2"><span style="flex:1">alias</span><span style="width:80px;text-align:right">kindness</span><span style="width:70px;text-align:right">hearts</span><span style="width:60px;text-align:right">rooms</span><span style="width:60px;text-align:right">active</span></div>'+
+        members.map(m=>'<div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:.5px solid rgba(255,255,255,.05)">'+
+          '<span style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:15px;flex:none">'+m[0]+'</span>'+
+          '<span style="flex:1;min-width:0;font-size:13px;font-family:Newsreader,serif;font-style:italic">'+m[1]+'</span>'+
+          '<span style="width:80px;text-align:right"><span style="display:inline-block;width:42px;height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;vertical-align:middle"><span style="display:block;height:100%;width:'+m[2]+'%;background:linear-gradient(90deg,#ff7eb3,#c1216b)"></span></span></span>'+
+          '<span style="width:70px;text-align:right;font-variant-numeric:tabular-nums;color:#c9bcd0">'+m[3]+'</span>'+
+          '<span style="width:60px;text-align:right;font-variant-numeric:tabular-nums;color:#c9bcd0">'+m[4]+'</span>'+
+          '<span style="width:60px;text-align:right;font-size:12px;color:#9a8fa2">'+m[5]+'</span>'+
+        '</div>').join('')+
+      '</div>';
+  }
+
+  /* ANALYTICS */
+  analytics(){
+    const line=(vals,col,h)=>{ const max=Math.max(...vals),min=Math.min(...vals); const w=100/(vals.length-1); const pts=vals.map((v,i)=>(i*w)+','+(h-((v-min)/(max-min||1)*(h-4))-2)).join(' '); return '<svg viewBox="0 0 100 '+h+'" preserveAspectRatio="none" style="width:100%;height:'+(h*1.5)+'px"><polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>'; };
+    this.$view.innerHTML=this.head('Analytics','growth, retention, and what the rooms are about.')+
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px">'+
+        [['DAU','12,408','+6.1%'],['WAU','41,920','+9.4%'],['Avg session','7m 12s','+0:48'],['D7 retention','38%','+2pt'],['Spill → posted','61%','steady'],['Scan → spill','24%','+3pt']].map(k=>'<div class="card kpi"><b style="font-size:23px">'+k[1]+'</b><span>'+k[0]+'</span><div style="margin-top:6px;font-size:11px;color:#6fcf97">'+k[2]+'</div></div>').join('')+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">'+
+        '<div class="card"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;display:block;margin-bottom:10px">Daily active · 30 days</b>'+line([40,44,42,50,55,53,60,58,66,70,68,75,80,78,85,88,84,92,95,90,98,104,100,110,108,116,120,118,124,130],'#e7548a',40)+'</div>'+
+        '<div class="card"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;display:block;margin-bottom:10px">7-day retention cohort</b>'+line([100,72,58,49,44,41,38],'#7F77DD',40)+'</div>'+
+      '</div>'+
+      '<div class="card"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;display:block;margin-bottom:14px">What the rooms are about</b>'+
+        [['relationships & romance',34,'#e7548a'],['family',26,'#c87c4a'],['work',18,'#EF9F27'],['friendship',12,'#5B8A5E'],['money',6,'#7F77DD'],['other',4,'#9a8fa2']].map(c=>'<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;font-size:12.5px;color:#c9bcd0;margin-bottom:4px"><span>'+c[0]+'</span><b>'+c[1]+'%</b></div><div class="bar"><i style="width:'+c[1]+'%;background:'+c[2]+'"></i></div></div>').join('')+
+      '</div>';
+  }
+
+  /* SAFETY */
+  safety(){
+    this.$view.innerHTML=this.head('Safety','the safety net and crisis routing. these never get monetized and never auto-publish.')+
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px">'+
+        [['Safety-net catches · 7d','41','routed to resources'],['Awaiting human review','2','urgent'],['Resource click-throughs','29','988 / Samaritans'],['False positives','7','released to publish']].map(k=>'<div class="card kpi"><b style="font-size:24px">'+k[1]+'</b><span>'+k[0]+'</span><div style="margin-top:6px;font-size:11px;color:#9a8fa2">'+k[2]+'</div></div>').join('')+
+      '</div>'+
+      '<div class="card" style="border-color:rgba(226,75,74,.3)"><div style="display:flex;align-items:center;gap:9px;margin-bottom:14px"><span style="width:9px;height:9px;border-radius:50%;background:#E24B4A;animation:breathe 2s infinite"></span><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#f5b0b0">Awaiting human review</b></div>'+
+        '<div class="qrow"><span style="flex:1;font-size:13.5px;font-family:Newsreader,serif;font-style:italic">"I don\'t see the point in any of this anymore" — held, resources shown, not published.</span><button class="btn btn-approve" data-s>open case</button></div>'+
+        '<div class="qrow"><span style="flex:1;font-size:13.5px;font-family:Newsreader,serif;font-style:italic">a comment expressing self-harm intent — author shown findahelpline.</span><button class="btn btn-approve" data-s>open case</button></div>'+
+      '</div>'+
+      '<div class="card" style="margin-top:14px"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;display:block;margin-bottom:8px">Crisis resources shown to users</b><div style="font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#9a8fa2;line-height:1.6">988 Suicide &amp; Crisis Lifeline (US) · Samaritans 116 123 (UK) · findahelpline.com (global). these are surfaced automatically and logged here. configure regional resources in settings.</div></div>';
+    this.$view.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>this.toast('case opened — handle with care.')));
+  }
+
+  /* CONFIG (§17E platform settings — all changes logged) */
+  config(){
+    const grp=(title,rows)=>'<div class="card" style="margin-bottom:14px"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:13px;display:block;margin-bottom:12px">'+title+'</b>'+rows+'</div>';
+    const field=(label,val,note)=>'<div class="qrow"><div style="flex:1"><div style="font-size:13.5px;color:#e9dfee">'+label+'</div>'+(note?'<div style="font-size:11.5px;color:#6e6675;margin-top:2px">'+note+'</div>':'')+'</div><input value="'+val+'" style="width:90px;background:#0f0a12;border:.5px solid rgba(255,255,255,.14);border-radius:8px;padding:7px 10px;color:#f2e9ef;font-family:Inter;font-size:13px;text-align:right" data-cfg/></div>';
+    this.$view.innerHTML=this.head('Platform config','the tunable constants. every change is logged. SPEC §8 launch values live here.')+
+      grp('Rest & lifecycle', field('rest window (hours)','72','silence before a room rests'))+
+      grp('Resonance &amp; Hall of Fame', 
+        field('relate weight','3','')+field('reaction weight','1','')+field('side-added weight','25','')+field('teller-heard bonus','40','')+
+        field('Held band','120','min score to induct')+field('Honored band','300','')+field('Legend band','700','')
+      )+
+      grp('Geography', field('city activation','500','rested rooms to open a city hall'))+
+      grp('Safety &amp; moderation',
+        field('crisis auto-publish','off','never — locked')+field('mod SLA target (hrs)','4','')+
+        '<div class="qrow"><div style="flex:1"><div style="font-size:13.5px;color:#e9dfee">crisis resources</div><div style="font-size:11.5px;color:#6e6675;margin-top:2px">988 · Samaritans · findahelpline — per country</div></div><span data-act style="font-size:12.5px;color:#f7b8d4;cursor:pointer">edit directory →</span></div>'+
+        '<div class="qrow"><div style="flex:1"><div style="font-size:13.5px;color:#e9dfee">break-glass identity reveal</div><div style="font-size:11.5px;color:#6e6675;margin-top:2px">not built — legal handled out-of-band, manually</div></div><span style="font-size:12px;color:#6e6675">🔒 disabled</span></div>'
+      )+
+      grp('Audit', '<div class="qrow"><div style="flex:1"><div style="font-size:13.5px;color:#e9dfee">action log</div><div style="font-size:11.5px;color:#6e6675;margin-top:2px">append-only · every action attributed · exportable</div></div><span data-act style="font-size:12.5px;color:#f7b8d4;cursor:pointer">open log →</span></div>')+
+      '<div style="display:flex;justify-content:flex-end;margin-top:6px"><button class="btn btn-approve" data-save style="padding:9px 18px">save changes (logged)</button></div>';
+    this.$view.querySelector('[data-save]').addEventListener('click',()=>this.toast('config saved — written to the audit log.'));
+    this.$view.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('click',()=>this.toast('opening…')));
+  }
+}
+
+</script>
+</body>
+</html>
