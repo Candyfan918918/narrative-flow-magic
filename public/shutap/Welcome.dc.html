@@ -64,11 +64,13 @@ body{margin:0;background:#1a0a12;color:#f7e8f0;font-family:'Inter',system-ui,san
           <div style="flex:1;height:.5px;background:rgba(255,255,255,.12)"></div>
         </div>
         <div style="display:flex;gap:9px">
-          <input type="email" placeholder="your email" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:13px 15px;color:#f7e8f0;font-family:'Inter',sans-serif;font-size:15px;outline:none">
+          <input ref="{{ emailIn }}" type="email" placeholder="your email" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:13px 15px;color:#f7e8f0;font-family:'Inter',sans-serif;font-size:15px;outline:none">
           <button onClick="{{ authEmail }}" style="padding:13px 18px;background:#e7548a;border:none;border-radius:12px;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap">go →</button>
         </div>
+        <div ref="{{ authMsg }}" style="text-align:center;font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#f7b8d4;min-height:18px"></div>
       </div>
       <div style="text-align:center;font-family:'Newsreader',serif;font-style:italic;font-size:12.5px;color:#9e7a8c">18+ only · your real name is never attached to anything here</div>
+
     </div>
 
     <!-- STEP 2: AGE GATE -->
@@ -171,16 +173,49 @@ class Component extends DCLogic {
       bdayMonth: el=>{ this.$bmon=el; this.buildWheel(el,'month'); },
       bdayYear:  el=>{ this.$byr=el;  this.buildWheel(el,'year'); },
       bdayError: el=>{ this.$berr=el; },
-      authGoogle:  ()=>this.next('step-age'),
-      authApple:   ()=>this.next('step-age'),
-      authEmail:   ()=>this.next('step-age'),
+      emailIn:   el=>{ this.$email=el; },
+      authMsg:   el=>{ this.$amsg=el; },
+      authGoogle:  ()=>this.doAuth('google'),
+      authApple:   ()=>this.doAuth('apple'),
+      authEmail:   ()=>this.doEmail(),
       confirmAge:  ()=>this.checkAge(),
       spinAlias:   ()=>this.spinAlias(),
       keepAlias:   ()=>this.keepAlias()
     };
   }
 
-  componentDidMount(){ this.alias={emotion:'Quiet',nation:'Indonesian',creature:{n:'Owl',e:'🦉'}}; }
+  componentDidMount(){
+    this.alias={emotion:'Quiet',nation:'Indonesian',creature:{n:'Owl',e:'🦉'}};
+    // Listen for auth responses from parent React shell
+    window.addEventListener('message', (e)=>{
+      const d=e.data||{};
+      if(d.type==='shutap-auth-ok'){
+        if(this.$amsg) this.$amsg.textContent='';
+        this.next('step-age');
+      } else if(d.type==='shutap-auth-magic'){
+        if(this.$amsg) this.$amsg.textContent=d.msg||'check your email for the magic link';
+      } else if(d.type==='shutap-auth-error'){
+        if(this.$amsg){ this.$amsg.style.color='#e7548a'; this.$amsg.textContent=d.msg||'something went wrong'; }
+      }
+    });
+    // If we returned from OAuth with a session, skip straight to age gate
+    try{ if(sessionStorage.getItem('shutap_authed')==='1'){ sessionStorage.removeItem('shutap_authed'); setTimeout(()=>this.next('step-age'),50); } }catch(e){}
+  }
+
+  doAuth(method){
+    if(this.$amsg){ this.$amsg.style.color='#f7b8d4'; this.$amsg.textContent='opening '+method+'…'; }
+    try{ parent.postMessage({type:'shutap-auth', method}, '*'); }catch(e){}
+  }
+  doEmail(){
+    const email=(this.$email&&this.$email.value||'').trim();
+    if(!/^\S+@\S+\.\S+$/.test(email)){
+      if(this.$amsg){ this.$amsg.style.color='#e7548a'; this.$amsg.textContent='enter a valid email'; }
+      return;
+    }
+    if(this.$amsg){ this.$amsg.style.color='#f7b8d4'; this.$amsg.textContent='sending magic link…'; }
+    try{ parent.postMessage({type:'shutap-auth', method:'email', email}, '*'); }catch(e){}
+  }
+
 
   buildWheel(el, kind){
     if(!el) return;
