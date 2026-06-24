@@ -37,7 +37,7 @@ const HALL_ORDER: Hall[] = ["healing", "brave", "relatable", "loving"];
 function HallsPage() {
   useShutapBody();
   return (
-    <div style={{ background: "#fdf0f5", minHeight: "100vh" }}>
+    <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
       <EyeDefs />
       <SiteHeader />
       <main style={{ maxWidth: 740, margin: "0 auto", padding: "32px 22px 120px" }}>
@@ -48,7 +48,7 @@ function HallsPage() {
             alignItems: "center",
             gap: 8,
             fontSize: 14,
-            color: "#6b4a5c",
+            color: "var(--text-2)",
             marginBottom: 10,
           }}
         >
@@ -57,7 +57,7 @@ function HallsPage() {
               width: 7,
               height: 7,
               borderRadius: "50%",
-              background: "#c1a02b",
+              background: "var(--mood-ask)",
               animation: "shutap-breathe 3s ease-in-out infinite",
               display: "block",
             }}
@@ -68,17 +68,19 @@ function HallsPage() {
           style={{
             ...serif,
             fontWeight: 400,
-            fontSize: "clamp(26px,5vw,36px)",
-            lineHeight: 1.2,
+            fontSize: "var(--text-3xl)",
+            lineHeight: 1.15,
+            letterSpacing: "var(--tracking-tight)",
             margin: "0 0 8px",
-            color: "#0b080f",
+            color: "var(--ink)",
           }}
         >
           the rooms the stream kept coming back to.
         </h1>
-        <p style={{ ...serif, fontSize: 15.5, color: "#6b4a5c", margin: "0 0 32px", maxWidth: "52ch" }}>
+        <p style={{ ...serif, fontSize: 15.5, color: "var(--text-2)", margin: "0 0 32px", maxWidth: "52ch" }}>
           nothing is upvoted here. these are the ones the room sat with longest.
         </p>
+
 
         {HALL_ORDER.map((hall) => {
           const rooms = ROOMS.filter((r) => r.hall === hall);
@@ -91,24 +93,23 @@ function HallsPage() {
                   alignItems: "baseline",
                   justifyContent: "space-between",
                   marginBottom: 14,
-                  borderBottom: ".5px solid rgba(11,8,15,.08)",
+                  borderBottom: ".5px solid var(--border)",
                   paddingBottom: 10,
                 }}
               >
                 <h2
                   style={{
                     ...sans,
-                    fontStyle: "normal",
                     fontWeight: 700,
                     fontSize: 18,
-                    letterSpacing: "-.01em",
-                    color: "#0b080f",
+                    letterSpacing: "var(--tracking-tight)",
+                    color: "var(--ink)",
                     margin: 0,
                   }}
                 >
                   {HALL_LABEL[hall]}
                 </h2>
-                <span style={{ ...serif, fontSize: 13, color: "#9e7a8c" }}>{HALL_BLURB[hall]}</span>
+                <span style={{ ...serif, fontSize: 13, color: "var(--text-3)" }}>{HALL_BLURB[hall]}</span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {rooms.map((r) => (
@@ -120,14 +121,14 @@ function HallsPage() {
                   >
                     <div
                       style={{
-                        background: "#fff",
-                        border: ".5px solid rgba(11,8,15,.08)",
-                        borderRadius: 16,
+                        background: "var(--surface)",
+                        border: ".5px solid var(--border)",
+                        borderRadius: "var(--radius-lg)",
                         padding: "16px 18px",
                         display: "flex",
                         gap: 14,
                         alignItems: "center",
-                        boxShadow: "0 8px 22px -20px rgba(60,10,30,.35)",
+                        boxShadow: "var(--shadow-card)",
                       }}
                     >
                       <span
@@ -135,7 +136,7 @@ function HallsPage() {
                           width: 38,
                           height: 38,
                           borderRadius: "50%",
-                          background: "#f7e8f0",
+                          background: "var(--surface-2)",
                           display: "grid",
                           placeItems: "center",
                           fontSize: 20,
@@ -147,24 +148,23 @@ function HallsPage() {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
                           <SupportPill heard={r.support === "heard"} />
-                          <span style={{ ...serif, fontSize: 12, color: "#9e7a8c" }}>{r.alias}</span>
+                          <span style={{ ...serif, fontSize: 12, color: "var(--text-3)" }}>{r.alias}</span>
                         </div>
                         <div
                           style={{
                             ...sans,
-                            fontStyle: "normal",
                             fontWeight: 600,
                             fontSize: 14.5,
                             lineHeight: 1.35,
-                            color: "#0b080f",
+                            color: "var(--ink)",
                           }}
                         >
                           {r.title}
                         </div>
                       </div>
-                      <div style={{ ...serif, textAlign: "right", color: "#9e7a8c", fontSize: 12.5, flex: "none" }}>
+                      <div style={{ ...serif, textAlign: "right", color: "var(--text-3)", fontSize: 12.5, flex: "none" }}>
                         <div>
-                          <b style={{ color: "#c1216b", fontStyle: "normal" }}>{r.relates}</b> said 'omg same'
+                          <b style={{ color: "var(--pink)", fontStyle: "normal" }}>{r.relates}</b> said 'omg same'
                         </div>
                         <div style={{ marginTop: 3 }}>{r.sitting} sitting in</div>
                       </div>
@@ -173,6 +173,7 @@ function HallsPage() {
                 ))}
               </div>
             </section>
+
           );
         })}
       </main>
