@@ -181,15 +181,32 @@ function AuthPage() {
     setStep("contract");
   }
 
-  function finish() {
+  async function finish() {
     try {
       localStorage.setItem("shutap_seen_contract", "1");
     } catch {
       /* ignore */
     }
+    // If the visitor wrote a spill before signing up, post it now.
     let target = "/";
     try {
-      target = sessionStorage.getItem("shutap_returnTo") || "/";
+      const draft = sessionStorage.getItem("shutap_draft");
+      if (draft && draft.trim().length >= 20) {
+        const { createRoomFromDraft } = await import("@/lib/rooms");
+        try {
+          const room = await createRoomFromDraft({
+            body: draft,
+            alias: alias.display_name,
+            emoji: alias.emoji,
+          });
+          target = `/room/${room.id}`;
+          sessionStorage.removeItem("shutap_draft");
+        } catch (e) {
+          console.error("could not open room", e);
+        }
+      } else {
+        target = sessionStorage.getItem("shutap_returnTo") || "/";
+      }
       sessionStorage.removeItem("shutap_returnTo");
     } catch {
       /* ignore */
