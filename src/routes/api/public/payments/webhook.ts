@@ -37,7 +37,20 @@ async function handleCreated(sub: any, env: StripeEnv) {
     environment: env,
     updated_at: new Date().toISOString(),
   }, { onConflict: 'stripe_subscription_id' });
+
+  // Seed Mirror onboarding flag on first trial/active subscription.
+  // ON CONFLICT DO NOTHING preserves the original onboarded_at across cancel/resubscribe.
+  if (sub.status === 'trialing' || sub.status === 'active') {
+    const { error } = await getSupabase()
+      .from('mirror_onboarding')
+      .upsert(
+        { user_id: userId, source: 'subscription' },
+        { onConflict: 'user_id', ignoreDuplicates: true },
+      );
+    if (error) console.error('mirror_onboarding upsert failed:', error);
+  }
 }
+
 
 async function handleUpdated(sub: any, env: StripeEnv) {
   const item = sub.items?.data?.[0];
