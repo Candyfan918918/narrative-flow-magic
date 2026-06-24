@@ -14,20 +14,20 @@
 <title>Shutap — vent about relationships, marriage, family &amp; work, pseudonymously, and see what happened next.</title>
 <meta name="description" content="Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next. spill it; someone in here has lived your exact thing.">
 <meta name="keywords" content="vent online, is it normal, am i overreacting, relationships, marriage, family, work, pseudonymous, what happened next">
-<link rel="canonical" href="https://shutap.com/">
+<link rel="canonical" href="'+location.origin+'/">
 <meta property="og:site_name" content="Shutap">
 <meta property="og:title" content="Shutap. Speak up.">
 <meta property="og:description" content="venting is free therapy — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://shutap.com/">
+<meta property="og:url" content="'+location.origin+'/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Shutap. Speak up.">
 <meta name="twitter:description" content="vent about relationships, marriage, family &amp; work — pseudonymously — and see what actually happened next.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
-{"@type":"Organization","@id":"https://shutap.com/#org","name":"Shutap","url":"https://shutap.com/","description":"Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.","slogan":"Shutap. Speak up."},
-{"@type":"WebSite","@id":"https://shutap.com/#site","url":"https://shutap.com/","name":"Shutap","description":"Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.","publisher":{"@id":"https://shutap.com/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://shutap.com/stream?ask={query}"},"query-input":"required name=query"}},
+{"@type":"Organization","@id":"'+location.origin+'/#org","name":"Shutap","url":"'+location.origin+'/","description":"Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.","slogan":"Shutap. Speak up."},
+{"@type":"WebSite","@id":"'+location.origin+'/#site","url":"'+location.origin+'/","name":"Shutap","description":"Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.","publisher":{"@id":"'+location.origin+'/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"'+location.origin+'/stream?ask={query}"},"query-input":"required name=query"}},
 {"@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Is Shutap anonymous?","acceptedAnswer":{"@type":"Answer","text":"Pseudonymous, not anonymous. You get one persistent alias — your real name never shows. Your story, your rules."}},
 {"@type":"Question","name":"What happens when I vent on Shutap?","acceptedAnswer":{"@type":"Answer","text":"You open a room. People who've lived your exact situation respond, relate, and share what actually happened next for them. You stay in control of what's shown."}},
@@ -994,7 +994,7 @@ class Component extends DCLogic {
         companion:'this one\u2019s a keeper \u2014 want it as a card?',
         caption:'turns out i\u2019m a '+score+' \u00b7 '+sig.label+' \ud83d\udc80 take yours \u2192',
         loopLabel:'what\u2019s your number? \u2192',
-        url:'https://shutap.com',
+        url:location.origin,
         privacy:'just your score + signature \u2014 nothing private.'
       });
     }, 1700);
@@ -1028,7 +1028,7 @@ class Component extends DCLogic {
     const close=()=>ov.remove();
     ov.querySelector('[data-x]').addEventListener('click',close);
     ov.querySelector('[data-x2]').addEventListener('click',close);
-    const url='https://shutap.com';
+    const url=location.origin;
     ov.querySelectorAll('[data-t]').forEach(b=>b.addEventListener('click',()=>this.fireShare(b.dataset.t, cap, url)));
   }
 
@@ -1416,7 +1416,7 @@ class Component extends DCLogic {
       '</div>';
     document.body.appendChild(ov);
     ov.querySelector('[data-x]').addEventListener('click',()=>ov.remove());
-    ov.querySelector('[data-do]').addEventListener('click',()=>{ const cap='i\u2019m learning to defend myself, too. \u2014 found in my Shutap mirror'; if(navigator.share){ navigator.share({title:'my shutap mirror',text:cap,url:'https://shutap.com'}).then(()=>ov.remove()).catch(()=>{}); } else if(navigator.clipboard){ navigator.clipboard.writeText(cap+' https://shutap.com').then(()=>{ this.toast('copied \u2014 only your growth, nothing private.'); ov.remove(); }); } else ov.remove(); });
+    ov.querySelector('[data-do]').addEventListener('click',()=>{ const cap='i\u2019m learning to defend myself, too. \u2014 found in my Shutap mirror'; if(navigator.share){ navigator.share({title:'my shutap mirror',text:cap,url:location.origin}).then(()=>ov.remove()).catch(()=>{}); } else if(navigator.clipboard){ navigator.clipboard.writeText(cap+' '+location.origin+'').then(()=>{ this.toast('copied \u2014 only your growth, nothing private.'); ov.remove(); }); } else ov.remove(); });
   }
   openPaywall(){
     const ov=document.createElement('div');
