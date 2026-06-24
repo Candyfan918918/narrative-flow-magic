@@ -3,7 +3,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
 export const Route = createFileRoute('/$')({
-  ssr: false,
   component: ClientApp,
 })
 
