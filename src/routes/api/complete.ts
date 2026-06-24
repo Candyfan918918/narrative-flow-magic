@@ -13,9 +13,12 @@ export const Route = createFileRoute('/api/complete')({
       POST: async ({ request }) => {
         const apiKey = process.env.ANTHROPIC_API_KEY
         if (!apiKey) {
+          // Return 200 with a fallback signal — the UI has deterministic
+          // fallbacks for every AI surface, and a 5xx here would otherwise
+          // trip the runtime-error overlay.
           return new Response(
-            JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured' }),
-            { status: 503, headers: { 'content-type': 'application/json' } },
+            JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured', fallback: true }),
+            { status: 200, headers: { 'content-type': 'application/json' } },
           )
         }
         const client = new Anthropic({ apiKey })
