@@ -10,13 +10,20 @@ import {
   serif,
   useShutapBody,
 } from "@/components/shutap";
-import { REACTIONS, ROOMS, type Reactions } from "@/lib/shutap-data";
+import { REACTIONS, ROOMS, type Reactions, type Room } from "@/lib/shutap-data";
+import { dbRoomToRoom, fetchRoomById, fetchRoomCounts, isUuid, toggleRelate } from "@/lib/rooms";
 
 export const Route = createFileRoute("/room/$id")({
-  loader: ({ params }) => {
-    const room = ROOMS.find((r) => r.id === params.id);
-    if (!room) throw notFound();
-    return { room };
+  loader: async ({ params }) => {
+    if (!isUuid(params.id)) {
+      const room = ROOMS.find((r) => r.id === params.id);
+      if (!room) throw notFound();
+      return { room };
+    }
+    const db = await fetchRoomById(params.id);
+    if (!db) throw notFound();
+    const counts = await fetchRoomCounts(params.id);
+    return { room: dbRoomToRoom(db, counts) };
   },
   head: ({ loaderData }) => {
     const r = loaderData?.room;
