@@ -95,7 +95,7 @@ export function SiteHeader() {
             halls
           </Link>
           <Link
-            to="/welcome"
+            to="/auth"
             style={{
               ...sans,
               display: "inline-flex",
@@ -120,7 +120,7 @@ export function SiteHeader() {
 export function CompanionBubble() {
   return (
     <Link
-      to="/spill"
+      to="/auth"
       aria-label="Open a room"
       style={{
         position: "fixed",
