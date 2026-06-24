@@ -7,6 +7,7 @@ import { HallOfFamePage } from './pages/HallOfFame'
 import { RoomPage } from './pages/Room'
 import { ProfilePage } from './pages/Profile'
 import { AdminPage } from './pages/Admin'
+import { SubscribePage, SubscribeReturnPage } from './pages/Subscribe'
 
 export function App() {
   return (
@@ -21,6 +22,8 @@ export function App() {
         <Route path="/room" element={<RoomPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/subscribe" element={<SubscribePage />} />
+        <Route path="/subscribe/return" element={<SubscribeReturnPage />} />
         <Route path="*" element={<Navigate to="/stream" replace />} />
       </Routes>
     </>
