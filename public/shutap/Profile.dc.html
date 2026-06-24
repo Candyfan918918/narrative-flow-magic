@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#fcf1f5"/>
+  <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <g transform="translate(30,0)">
+    <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+    <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  </g>
+  <ellipse cx="23" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="35" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="65" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="77" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+</svg>
+</template>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,18,400;0,18,500;1,18,400;1,18,500&display=swap" rel="stylesheet">
+<title>Your profile — Shutap</title>
+<script src="./seed-data.js"></script>
+<script src="./share-engine.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+@keyframes eblink{0%,92%,98%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,84,138,.38)}70%{box-shadow:0 0 0 10px rgba(231,84,138,0)}100%{box-shadow:0 0 0 0 rgba(231,84,138,0)}}
+.menu-item:hover{background:#f7e8f0}
+.prose-link{color:#c1216b;border-bottom:1px solid rgba(193,33,107,.3);text-decoration:none;cursor:pointer}
+.tab{padding:10px 4px;font-family:'Sora',sans-serif;font-weight:600;font-size:13.5px;color:#9e7a8c;cursor:pointer;border-bottom:2px solid transparent;transition:.16s;white-space:nowrap}
+.tab.active{color:#c1216b;border-bottom-color:#c1216b}
+.tab:not(.active):hover{color:#6b4a5c}
+.seg{flex:1;text-align:center;padding:8px;font-family:'Sora',sans-serif;font-weight:600;font-size:12.5px;border-radius:9px;cursor:pointer;color:#6b4a5c;transition:.15s}
+.seg.on{background:#fff;color:#c1216b;box-shadow:0 2px 8px -4px rgba(60,10,30,.25)}
+.switch{width:42px;height:25px;border-radius:999px;background:#e3cdd6;position:relative;cursor:pointer;transition:.2s;flex:none}
+.switch.on{background:#e7548a}
+.switch i{position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch.on i{left:20px}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-bottom:.5px solid rgba(11,8,15,.07)}
+.srow:last-child{border-bottom:none}
+</style>
+</helmet>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <radialGradient id="eyeG" cx="40%" cy="18%" r="75%"><stop offset="0%" stop-color="#fff"></stop><stop offset="18%" stop-color="#ffd0e8"></stop><stop offset="48%" stop-color="#f060a0"></stop><stop offset="78%" stop-color="#c0206a"></stop><stop offset="100%" stop-color="#880040"></stop></radialGradient>
+  <radialGradient id="pupG" cx="50%" cy="55%" r="58%"><stop offset="0%" stop-color="#3a1020"></stop><stop offset="100%" stop-color="#060106"></stop></radialGradient>
+</defs></svg>
+
+<header style="position:sticky;top:0;z-index:40;background:rgba(253,240,245,.88);backdrop-filter:blur(18px);border-bottom:.5px solid rgba(11,8,15,.07)">
+  <div style="max-width:680px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <a href="Landing.dc.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit">
+      <span style="width:32px;height:23px;display:block;animation:eblink 6.4s infinite;transform-origin:center"><svg viewBox="0 0 140 96" fill="none" style="display:block;width:100%;height:100%"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><path d="M44 22 C41 18 35 18 35 24 C35 30 44 36 44 36 C44 36 53 30 53 24 C53 18 47 18 44 22Z" fill="#fff" opacity=".95"></path><path d="M112 22 C109 18 103 18 103 24 C103 30 112 36 112 36 C112 36 121 30 121 24 C121 18 115 18 112 22Z" fill="#fff" opacity=".95"></path></svg></span>
+      <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.04em">shut<span style="color:#e7548a">ap</span></span>
+    </a>
+    <a href="Stream.dc.html" style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#6b4a5c;text-decoration:none">← rooms</a>
+  </div>
+</header>
+
+<main style="max-width:680px;margin:0 auto;padding:26px 22px 90px">
+
+  <!-- IDENTITY CARD -->
+  <div style="background:linear-gradient(160deg,#2e0d1a,#1a0a12);border-radius:22px;padding:26px 24px;color:#f7e8f0;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:-40% 20% auto auto;width:280px;height:280px;background:radial-gradient(circle,rgba(231,84,138,.22),transparent 65%);pointer-events:none"></div>
+    <div style="display:flex;align-items:center;gap:16px;position:relative">
+      <div ref="{{ avatar }}" style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#ff7eb3,#890041);display:grid;place-items:center;font-size:34px;flex:none">🦉</div>
+      <div style="min-width:0;flex:1">
+        <div ref="{{ aliasName }}" style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em">Quiet Indonesian Owl</div>
+        <div ref="{{ handle }}" style="font-family:'Newsreader',serif;font-style:italic;font-size:13.5px;color:#c4a0b2;margin-top:3px">@quiet-indonesian-owl · joined this spring</div>
+        <div style="display:inline-flex;align-items:center;gap:7px;margin-top:10px;font-family:'Sora',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#f7b8d4;background:rgba(231,84,138,.16);border:.5px solid rgba(231,84,138,.3);border-radius:999px;padding:5px 11px">🤍 Tender Witness · standing tier 2</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px;position:relative">
+      <div><b style="font-family:'Sora',sans-serif;font-weight:800;font-size:21px;display:block;font-variant-numeric:tabular-nums">214</b><span style="font-size:11px;color:#a99fa8">hearts given</span></div>
+      <div><b style="font-family:'Sora',sans-serif;font-weight:800;font-size:21px;display:block;font-variant-numeric:tabular-nums">38</b><span style="font-size:11px;color:#a99fa8">rooms sat in</span></div>
+      <div><b style="font-family:'Sora',sans-serif;font-weight:800;font-size:21px;display:block;font-variant-numeric:tabular-nums">3</b><span style="font-size:11px;color:#a99fa8">rooms opened</span></div>
+      <div><b style="font-family:'Sora',sans-serif;font-weight:800;font-size:21px;display:block;font-variant-numeric:tabular-nums">61</b><span style="font-size:11px;color:#a99fa8">comments</span></div>
+    </div>
+  </div>
+
+  <!-- STANDING BARS -->
+  <div style="background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:18px;padding:20px 22px;margin-top:16px">
+    <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c1216b;margin-bottom:16px">your standing</div>
+    <div style="display:flex;flex-direction:column;gap:15px">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#4a3040;margin-bottom:6px"><span style="font-family:'Newsreader',serif;font-style:italic">🤍 kindness</span><b style="font-family:'Sora',sans-serif;font-weight:700;color:#c1216b">88</b></div>
+        <div style="height:7px;border-radius:4px;background:#f3dde7;overflow:hidden"><span style="display:block;height:100%;width:88%;background:linear-gradient(90deg,#ff7eb3,#c1216b);border-radius:4px"></span></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#4a3040;margin-bottom:6px"><span style="font-family:'Newsreader',serif;font-style:italic">🫂 empathy</span><b style="font-family:'Sora',sans-serif;font-weight:700;color:#c1216b">73</b></div>
+        <div style="height:7px;border-radius:4px;background:#f3dde7;overflow:hidden"><span style="display:block;height:100%;width:73%;background:linear-gradient(90deg,#ff7eb3,#c1216b);border-radius:4px"></span></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#4a3040;margin-bottom:6px"><span style="font-family:'Newsreader',serif;font-style:italic">🌿 wisdom</span><b style="font-family:'Sora',sans-serif;font-weight:700;color:#c1216b">64</b></div>
+        <div style="height:7px;border-radius:4px;background:#f3dde7;overflow:hidden"><span style="display:block;height:100%;width:64%;background:linear-gradient(90deg,#ff7eb3,#c1216b);border-radius:4px"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE MIRROR (private · wisdom graph) -->
+  <a href="Landing.dc.html#mirror" style="display:block;text-decoration:none;margin-top:16px;background:linear-gradient(160deg,#2e0d1a,#1a0a12);border:.5px solid rgba(255,255,255,.12);border-radius:18px;padding:20px 22px;color:#f7e8f0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <svg viewBox="0 0 56 56" fill="none" style="width:30px;height:30px;flex:none"><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:15px">the mirror</div>
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#caaebb;margin-top:2px">your private self-portrait — patterns, your arc, and what others who've been here came through. drawn from your own scans &amp; rooms.</div>
+      </div>
+      <span style="font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#f7b8d4;flex:none">open →</span>
+    </div>
+  </a>
+
+  <!-- TABS -->
+  <div style="display:flex;gap:20px;border-bottom:.5px solid rgba(11,8,15,.10);margin:26px 0 20px;overflow-x:auto;scrollbar-width:none">
+    <div ref="{{ tabRooms }}" onClick="{{ showRooms }}" class="tab active">your rooms</div>
+    <div ref="{{ tabActivity }}" onClick="{{ showActivity }}" class="tab">activity</div>
+    <div ref="{{ tabJournal }}" onClick="{{ showJournal }}" class="tab">private journal</div>
+    <div ref="{{ tabSettings }}" onClick="{{ showSettings }}" class="tab">settings</div>
+  </div>
+
+  <div ref="{{ panel }}"></div>
+
+</main>
+
+<div ref="{{ companionBubble }}" role="button" tabindex="0" aria-label="Ask the companion" style="position:fixed;left:calc(50% - 29px);bottom:24px;z-index:35;width:58px;height:58px;border-radius:50%;background:rgba(231,84,138,0.18);backdrop-filter:blur(4px);box-shadow:0 12px 30px -8px rgba(60,10,30,.35);cursor:grab;display:flex;align-items:center;justify-content:center;animation:pulse 4s infinite;touch-action:none;user-select:none">
+  <svg viewBox="0 0 56 56" fill="none" style="width:32px;height:32px;display:block;pointer-events:none"><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg>
+</div>
+
+<div ref="{{ toastEl }}" style="position:fixed;left:50%;bottom:26px;transform:translate(-50%,300px);z-index:92;background:#0b080f;border-radius:999px;padding:11px 18px;color:#fff;font-family:'Newsreader',serif;font-style:italic;font-size:14px;box-shadow:0 20px 44px -20px rgba(60,10,30,.5);transition:transform .4s cubic-bezier(.2,.7,.2,1);max-width:92vw"></div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+
+  getAlias(){ try{ return JSON.parse(localStorage.getItem('shutap_alias')||'null'); }catch(e){ return null; } }
+  getSettings(){ try{ return Object.assign({notifyRelate:true,notifyHearts:true,notifyComments:true,notifySide:true,notifyHall:true,notifyOutcome:true,notifyCompanion:false,seatVisible:true,allowAdvice:true,hofOptOut:false,quietHours:false,emailDigest:true,rerollsLeft:3,aliasLocked:false}, JSON.parse(localStorage.getItem('shutap_settings')||'{}')); }catch(e){ return {}; } }
+  setSetting(k,v){ const s=this.getSettings(); s[k]=v; try{ localStorage.setItem('shutap_settings', JSON.stringify(s)); }catch(e){} }
+
+  get ROOMS(){ if(window.SHUTAP_SEED&&window.SHUTAP_SEED.rooms) return window.SHUTAP_SEED.rooms; return []; }
+
+  renderVals(){
+    return {
+      companionBubble: el=>{ if(el) this.wireCompanion(el); },
+      avatar: el=>{ this.$avatar=el; },
+      aliasName: el=>{ this.$alias=el; },
+      handle: el=>{ this.$handle=el; },
+      panel: el=>{ this.$panel=el; },
+      toastEl: el=>{ this.$toast=el; },
+      tabRooms: el=>{ this.$tabs=Object.assign({},this.$tabs,{rooms:el}); },
+      tabActivity: el=>{ this.$tabs=Object.assign({},this.$tabs,{activity:el}); },
+      tabJournal: el=>{ this.$tabs=Object.assign({},this.$tabs,{journal:el}); },
+      tabSettings: el=>{ this.$tabs=Object.assign({},this.$tabs,{settings:el}); },
+      showRooms: ()=>this.show('rooms'),
+      showActivity: ()=>this.show('activity'),
+      showJournal: ()=>this.show('journal'),
+      showSettings: ()=>this.show('settings')
+    };
+  }
+
+  wireCompanion(el){
+    try{ const p=JSON.parse(localStorage.getItem('shutap_bubble')||'null'); if(p){ el.style.left=p.x+'px'; el.style.top=p.y+'px'; el.style.bottom='auto'; } }catch(e){}
+    let dragging=false,moved=false,sx=0,sy=0,ox=0,oy=0;
+    const down=(e)=>{ dragging=true;moved=false; const pt=e.touches?e.touches[0]:e; const r=el.getBoundingClientRect(); ox=r.left;oy=r.top;sx=pt.clientX;sy=pt.clientY; el.style.cursor='grabbing'; el.style.animation='none'; el.setPointerCapture&&e.pointerId!=null&&el.setPointerCapture(e.pointerId); };
+    const move=(e)=>{ if(!dragging)return; const pt=e.touches?e.touches[0]:e; const dx=pt.clientX-sx,dy=pt.clientY-sy; if(Math.abs(dx)>4||Math.abs(dy)>4)moved=true; const sz=el.offsetWidth; el.style.left=Math.max(8,Math.min(window.innerWidth-sz-8,ox+dx))+'px'; el.style.top=Math.max(8,Math.min(window.innerHeight-sz-8,oy+dy))+'px'; el.style.bottom='auto'; e.preventDefault&&e.preventDefault(); };
+    const up=()=>{ if(!dragging)return; dragging=false; el.style.cursor='grab'; if(moved){ const r=el.getBoundingClientRect(); try{ localStorage.setItem('shutap_bubble',JSON.stringify({x:r.left,y:r.top})); }catch(e){} } else { location.href='Landing.dc.html#ask'; } };
+    el.addEventListener('pointerdown',down); window.addEventListener('pointermove',move,{passive:false}); window.addEventListener('pointerup',up);
+  }
+
+  componentDidMount(){
+    const a=this.getAlias();
+    if(a){
+      if(this.$avatar) this.$avatar.textContent=a.emoji||'🦉';
+      if(this.$alias) this.$alias.textContent=a.name||'Anonymous';
+      if(this.$handle) this.$handle.textContent='@'+(a.name||'anonymous').toLowerCase().replace(/\s+/g,'-')+' · joined this spring';
+    }
+    this.$tabs=this.$tabs||{};
+    this.show('rooms');
+    if(location.hash==='#settings') this.show('settings');
+  }
+
+  toast(m){ if(!this.$toast) return; this.$toast.textContent=m; this.$toast.style.transform='translate(-50%,0)'; clearTimeout(this._t); this._t=setTimeout(()=>{ this.$toast.style.transform='translate(-50%,300px)'; },3200); }
+
+  show(which){
+    Object.entries(this.$tabs).forEach(([k,el])=>{ if(el) el.classList.toggle('active', k===which); });
+    if(which==='rooms') this.renderRooms();
+    else if(which==='activity') this.renderActivity();
+    else if(which==='journal') this.renderJournal();
+    else if(which==='settings') this.renderSettings();
+  }
+
+  roomLink(r,sub){
+    return '<a href="Stream.dc.html#room-'+r.id+'" style="display:flex;align-items:center;gap:13px;background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:15px;padding:13px 15px;text-decoration:none;color:inherit;transition:.16s" onmouseover="this.style.borderColor=\'#e7548a\'" onmouseout="this.style.borderColor=\'rgba(11,8,15,.08)\'">'+
+      '<span style="width:42px;height:42px;border-radius:12px;background:#f7e8f0;display:grid;place-items:center;font-size:21px;flex:none">'+r.emoji+'</span>'+
+      '<div style="flex:1;min-width:0"><h4 style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;line-height:1.3;margin:0 0 5px">'+r.title+'</h4><div style="font-size:11.5px;color:#9e7a8c;font-family:Newsreader,serif;font-style:italic">'+sub+'</div></div>'+
+      '<span style="color:#cdbac4;font-size:18px;flex:none">›</span></a>';
+  }
+
+  renderRooms(){
+    if(!this.$panel) return;
+    const mine=this.ROOMS.slice(0,3);
+    this.$panel.style.animation='fadeUp .3s ease'; this.$panel.style.animation='';
+    this.$panel.innerHTML=
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#6b4a5c;margin-bottom:14px">rooms you opened — your stories, your rules. you can rest or reopen them anytime.</div>'+
+      '<div style="display:flex;flex-direction:column;gap:11px">'+
+        mine.map((r,i)=>this.roomLink(r, [r.relates+' said \'omg same\' · open','rested · '+r.relates+' carried it',''+r.sitting+' sitting in now'][i%3])).join('')+
+      '</div>';
+  }
+
+  renderActivity(){
+    if(!this.$panel) return;
+    const acts=[
+      {emoji:'🤍',txt:'you said <b>i hear you</b> to a room about a sister who went quiet',when:'2h'},
+      {emoji:'🫂',txt:'you related to <b>"I left a six-figure job…"</b>',when:'5h'},
+      {emoji:'💬',txt:'you offered a comment in a room about a group-chat mistake',when:'1d'},
+      {emoji:'🌿',txt:'you said <b>it gets easier</b> to a first-gen student',when:'2d'},
+      {emoji:'✨',txt:'a room you opened reached the <b>Most Relatable</b> hall',when:'1w'}
+    ];
+    this.$panel.innerHTML='<div style="display:flex;flex-direction:column;gap:2px">'+
+      acts.map(a=>'<div style="display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:.5px solid rgba(11,8,15,.06)"><span style="width:34px;height:34px;border-radius:50%;background:#f7e8f0;display:grid;place-items:center;font-size:16px;flex:none">'+a.emoji+'</span><div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#2e1a26;line-height:1.4">'+a.txt+'</div><span style="font-size:11.5px;color:#9e7a8c;flex:none">'+a.when+'</span></div>').join('')+
+    '</div>';
+  }
+
+  renderJournal(){
+    if(!this.$panel) return;
+    this.$panel.innerHTML=
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#6b4a5c;margin-bottom:14px">private scans — saved only to you. nobody else can see these.</div>'+
+      '<div style="display:flex;flex-direction:column;gap:11px">'+
+        [['😮‍💨','Still Standing',780,'work · 3 days ago'],['🌧','Carrying It Quietly',610,'family · last week'],['🌤','Both Things at Once',460,'romance · 2 weeks ago']].map(j=>
+          '<div style="display:flex;align-items:center;gap:14px;background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:15px;padding:14px 16px">'+
+            '<span style="width:44px;height:44px;border-radius:50%;background:#fdf0f5;display:grid;place-items:center;font-size:20px;flex:none">'+j[0]+'</span>'+
+            '<div style="flex:1"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px">'+j[1]+'</div><div style="font-size:11.5px;color:#9e7a8c;font-family:Newsreader,serif;font-style:italic">'+j[3]+'</div></div>'+
+            '<div style="text-align:right;flex:none"><b style="font-family:Sora,sans-serif;font-weight:800;font-size:18px;color:#c1216b">'+j[2]+'</b><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9e7a8c">intensity</div></div>'+
+          '</div>').join('')+
+      '</div>'+
+      '<div style="margin-top:16px;text-align:center"><span class="prose-link" onclick="window.location.href=\'Landing.dc.html#scan\'">scan something new →</span></div>';
+  }
+
+  renderSettings(){
+    if(!this.$panel) return;
+    const s=this.getSettings();
+    const a=this.getAlias()||{name:'Quiet Indonesian Owl',emoji:'🦉'};
+    const rerollsLeft=(typeof s.rerollsLeft==='number')?s.rerollsLeft:3;
+    const locked=!!s.aliasLocked; // locks once HOF induction / confirmed outcome
+    const sw=(k)=>'<div class="switch'+(s[k]?' on':'')+'" data-sw="'+k+'" role="switch" aria-checked="'+(!!s[k])+'"><i></i></div>';
+    const row=(label,sub,ctrl)=>'<div class="srow"><div style="min-width:0"><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px;color:#0b080f">'+label+'</div>'+(sub?'<div style="font-size:12.5px;color:#9e7a8c;margin-top:2px;line-height:1.4">'+sub+'</div>':'')+'</div>'+ctrl+'</div>';
+    const card=(title,inner,tag)=>'<div style="background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:18px;padding:6px 20px 8px;margin-bottom:16px"><div style="display:flex;align-items:center;gap:8px;padding:16px 0 4px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c1216b">'+title+'</div>'+(tag?'<span style="font-family:Sora,sans-serif;font-weight:700;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:'+(tag==='public'?'#c1216b':'#6b4a5c')+';background:'+(tag==='public'?'rgba(231,84,138,.12)':'rgba(11,8,15,.06)')+';border-radius:999px;padding:2px 8px">'+(tag==='public'?'public · alias':'private · only you')+'</span>':'')+'</div>'+inner+'</div>';
+
+    const safeAvatars=['🦉','🦊','🐻','🦁','🦋','🦔','🦢','🐺','🦅','🕊','🦌','🐇'];
+
+    this.$panel.innerHTML=
+      // two-identity explainer
+      '<div style="background:linear-gradient(160deg,#2e0d1a,#1a0a12);border-radius:16px;padding:16px 18px;margin-bottom:18px;color:#f7e8f0;font-family:Newsreader,serif;font-style:italic;font-size:14px;line-height:1.55">you have two identities here. your <b style="font-style:normal;font-family:Inter;font-weight:600;color:#f7b8d4">public alias</b> — what every room sees — and your <b style="font-style:normal;font-family:Inter;font-weight:600">private account</b>, which nobody sees. not other members. not us. not admins.</div>'+
+
+      // 1. IDENTITY (public)
+      card('identity',
+        row('your alias','generated, not typed. it carries your standing across every room.', '<span style="font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#4a3040;flex:none">'+a.name+'</span>')+
+        '<div class="srow"><div style="min-width:0"><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">your avatar</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px;line-height:1.4">pick from a safe set. <b style="color:#6b4a5c">no photo upload</b> — a real face is exactly how someone in your story finds you.</div></div></div>'+
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;padding:0 0 14px">'+safeAvatars.map(e=>'<button data-av="'+e+'" style="width:38px;height:38px;border-radius:50%;border:1.5px solid '+(e===(a.emoji||'🦉')?'#e7548a':'rgba(11,8,15,.10)')+';background:'+(e===(a.emoji||'🦉')?'#fdf0f5':'#fff')+';font-size:18px;cursor:pointer;display:grid;place-items:center">'+e+'</button>').join('')+'</div>'+
+        '<div class="srow"><div style="min-width:0"><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">reroll your alias</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px;line-height:1.4">'+(locked?'locked — a room of yours reached a hall or confirmed an outcome, so your name is part of the record now.':rerollsLeft+' reroll'+(rerollsLeft===1?'':'s')+' left. it locks for good once a room of yours reaches a hall. past rooms keep the old name.')+'</div></div>'+(locked?'<span style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#9e7a8c">🔒 locked</span>':'<button data-act="reroll" style="flex:none;font-family:Sora,sans-serif;font-weight:700;font-size:12.5px;color:#fff;background:#e7548a;border-radius:999px;padding:8px 15px;border:none;cursor:pointer">reroll →</button>')+'</div>'+
+        '<div class="srow"><div style="min-width:0"><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">custom handle</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px;line-height:1.4">there isn\'t one — on purpose. a typed handle is a way to be traced. your generated alias is the whole point.</div></div></div>'
+      ,'public')+
+
+      // 2. ACCOUNT (private)
+      card('account',
+        row('email','where we reach you. never shown in any room.', '<span style="font-family:Inter;font-size:13px;color:#9e7a8c;flex:none">y•••@gmail.com</span>')+
+        row('signed in with','', '<span style="font-family:Inter;font-size:13px;color:#9e7a8c;flex:none">Google</span>')+
+        '<div class="srow"><div><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">change email / password</div></div><span data-act="reauth" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#c1216b;cursor:pointer">re-authenticate →</span></div>'
+      ,'private')+
+
+      // 3. NOTIFICATIONS
+      card('notifications',
+        row('someone related — omg same', '', sw('notifyRelate'))+
+        row('a reaction on my room', '', sw('notifyHearts'))+
+        row('a new comment', '', sw('notifyComments'))+
+        row('someone added their side', '', sw('notifySide'))+
+        row('my room reached a hall', '', sw('notifyHall'))+
+        row('outcome reminders', 'what happened next? at 30 · 90 · 180 · 365 days.', sw('notifyOutcome'))+
+        row('companion nudges', '', sw('notifyCompanion'))+
+        row('weekly email digest', '', sw('emailDigest'))+
+        row('quiet hours', 'mute everything 10pm–8am.', sw('quietHours'))
+      )+
+
+      // 4. PRIVACY & SAFETY
+      card('privacy &amp; safety',
+        row('show my seat in rooms', 'off = you read quietly, no avatar in the seats.', sw('seatVisible'))+
+        row('default support mode', 'advice, or just to be heard, when you open a new room.', '<div class="switch'+(s.allowAdvice?' on':'')+'" data-sw="allowAdvice" role="switch"><i></i></div>')+
+        row('keep my rooms out of the Hall of Fame', 'your rooms stay in the stream but are never inducted.', sw('hofOptOut'))+
+        '<div class="srow"><div><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">blocked aliases</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px">2 aliases you won\'t see.</div></div><span data-act="blocked" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#c1216b;cursor:pointer">manage →</span></div>'
+      )+
+
+      // 5. REPUTATION & PREFERENCES
+      card('reputation &amp; preferences',
+        row('your standing','support · empathy · wisdom. earned by how you hold others\' rooms.', '<span style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;flex:none">read-only</span>')+
+        row('topic affinities','shapes what the companion brings to your stream.', '<span style="font-family:Inter;font-size:12.5px;color:#9e7a8c;flex:none">family · work · +2</span>')+
+        '<div class="srow"><div><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">show me fewer…</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px">turn down topics you\'d rather not sit with.</div></div><span data-act="sensitivities" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#c1216b;cursor:pointer">choose →</span></div>'
+      )+
+
+      // SUBSCRIPTION (§21K)
+      (()=>{ const st=(()=>{try{return localStorage.getItem('shutap_sub_status');}catch(e){return null;}})(); const plan=(()=>{try{return localStorage.getItem('shutap_sub_plan')||'annual';}catch(e){return 'annual';}})(); const on=['trialing','active','grace','canceled'].includes(st);
+        return card('the mirror &middot; subscription',
+          row('status', on?(st==='trialing'?'free trial — first charge in 7 days':st==='canceled'?'cancelled — full mirror until period ends':'active'):'free — partial mirror', '<span style="font-family:Sora,sans-serif;font-weight:700;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:'+(on?'#c1216b':'#9e7a8c')+';background:'+(on?'rgba(231,84,138,.12)':'rgba(11,8,15,.06)')+';border-radius:999px;padding:3px 9px;flex:none">'+(on?'full':'free')+'</span>')+
+          (on?
+            row('plan', plan==='annual'?'annual · renews yearly':'monthly · renews monthly','<span data-act="changeplan" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#c1216b;cursor:pointer">change →</span>')+
+            '<div class="srow"><div><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">restore purchases</div></div><span data-act="restore" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#c1216b;cursor:pointer">restore →</span></div>'+
+            '<div class="srow"><div style="min-width:0"><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px;color:#b3261e">'+(st==='canceled'?'resume subscription':'cancel')+'</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px;line-height:1.45">'+(st==='canceled'?'turn auto-renew back on.':'keeps the mirror until the period ends, then back to your free reflection. scans &amp; history stay yours.')+'</div></div><span data-act="'+(st==='canceled'?'resume':'cancelsub')+'" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:'+(st==='canceled'?'#c1216b':'#b3261e')+';cursor:pointer">'+(st==='canceled'?'resume →':'cancel →')+'</span></div>'
+            :
+            '<div class="srow"><div style="min-width:0"><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">open the full mirror</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px;line-height:1.45">every pattern, your arc, the daily pull, threads, and what others who\'ve been here came through. 7 days free.</div></div><span data-act="subscribe" style="flex:none;font-family:Sora,sans-serif;font-weight:700;font-size:12.5px;color:#fff;background:#e7548a;border-radius:999px;padding:8px 14px;cursor:pointer">try free →</span></div>'
+          )+
+          '<div style="font-family:Newsreader,serif;font-style:italic;font-size:11.5px;color:#9e7a8c;padding:10px 0 2px;line-height:1.5">the mirror reflects patterns in your own words — it\'s not therapy or legal advice. venting, scan &amp; being heard are always free.</div>'
+        ); })()+
+
+      // 6. DATA & ACCOUNT
+      card('data &amp; account',
+        '<div class="srow"><div><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">download my data</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px">everything tied to your alias, as a file.</div></div><span data-act="export" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#c1216b;cursor:pointer">request →</span></div>'+
+        '<div class="srow"><div><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px">how scoring works</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px">methodology &amp; trust.</div></div><span data-act="trust" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#c1216b;cursor:pointer">read →</span></div>'+
+        '<div class="srow"><div><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px;color:#c1216b">sign out</div></div><span data-act="signout" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#c1216b;cursor:pointer">sign out →</span></div>'+
+        '<div class="srow"><div style="min-width:0"><div style="font-family:Sora,sans-serif;font-weight:600;font-size:14px;color:#b3261e">delete account</div><div style="font-size:12.5px;color:#9e7a8c;margin-top:2px;line-height:1.45">we hard-delete your private data — account, scans, drafts, journal. your published rooms stay, <b style="color:#6b4a5c">anonymised</b>, so the people you supported keep what helped them. you can choose to remove those too.</div></div><span data-act="delete" style="flex:none;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#b3261e;cursor:pointer">delete →</span></div>'
+      ,'private');
+
+    this.$panel.querySelectorAll('[data-sw]').forEach(el=>{ el.addEventListener('click',()=>{ const k=el.dataset.sw; const on=!el.classList.contains('on'); el.classList.toggle('on',on); el.setAttribute('aria-checked',on); this.setSetting(k,on); this.toast('saved.'); }); });
+    this.$panel.querySelectorAll('[data-av]').forEach(el=>{ el.addEventListener('click',()=>{ const e=el.dataset.av; const al=this.getAlias()||{}; al.emoji=e; try{localStorage.setItem('shutap_alias',JSON.stringify(al));}catch(x){} if(this.$avatar) this.$avatar.textContent=e; this.renderSettings(); this.toast('avatar updated.'); }); });
+    this.$panel.querySelectorAll('[data-act]').forEach(el=>{ el.addEventListener('click',()=>{ const act=el.dataset.act; if(act==='signout'){ try{localStorage.removeItem('shutap_alias');}catch(e){} window.location.href='Landing.dc.html'; } else if(act==='export'){ this.toast('we\'ll email your data shortly.'); } else if(act==='delete'){ this.toast('deletion needs email confirmation.'); } else if(act==='blocked'){ this.toast('block list coming soon.'); } else if(act==='reroll'){ window.location.href='Welcome.dc.html'; } else if(act==='reauth'){ this.toast('re-authentication coming soon.'); } else if(act==='trust'){ this.toast('methodology page coming soon.'); } else if(act==='sensitivities'){ this.toast('sensitivity controls coming soon.'); } else if(act==='subscribe'){ this.openPaywall(); } else if(act==='cancelsub'){ try{localStorage.setItem('shutap_sub_status','canceled');}catch(e){} this.toast('cancelled — the mirror stays open until your period ends.'); this.renderSettings(); } else if(act==='resume'){ try{localStorage.setItem('shutap_sub_status','active');}catch(e){} this.toast('welcome back — the mirror keeps going.'); this.renderSettings(); } else if(act==='changeplan'){ const p=(()=>{try{return localStorage.getItem('shutap_sub_plan');}catch(e){return 'annual';}})(); try{localStorage.setItem('shutap_sub_plan', p==='annual'?'monthly':'annual');}catch(e){} this.toast('plan changed.'); this.renderSettings(); } else if(act==='restore'){ this.toast('purchases restored.'); } }); });
+  }
+
+  openPaywall(){
+    const ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;z-index:99;display:flex;align-items:flex-end;justify-content:center';
+    ov.innerHTML=
+      '<div data-x style="position:absolute;inset:0;background:rgba(10,5,14,.7);backdrop-filter:blur(7px)"></div>'+
+      '<div role="dialog" style="position:relative;width:100%;max-width:460px;background:linear-gradient(160deg,#2e0d1a,#1a0a12);border:.5px solid rgba(255,255,255,.16);border-radius:22px 22px 0 0;padding:26px 24px;animation:fadeUp .3s ease">'+
+        '<div style="text-align:center;margin-bottom:20px"><div style="font-family:Newsreader,serif;font-style:italic;font-size:22px;line-height:1.35;color:#f7e8f0">your reflection keeps going.</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#caaebb;margin-top:8px;line-height:1.5">the full mirror — every pattern, your arc, the daily pull, threads, and what others who\u2019ve been here came through.</div></div>'+
+        '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">'+
+          '<div data-plan="annual" style="border:1.5px solid #e7548a;background:rgba(231,84,138,.10);border-radius:14px;padding:15px 17px;cursor:pointer"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#f7e8f0">annual <span style="font-family:Sora;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#1a0a12;background:#f7b8d4;border-radius:999px;padding:2px 7px;margin-left:6px">best value</span></div><div style="font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#caaebb;margin-top:2px">7 days free, then yearly</div></div>'+
+          '<div data-plan="monthly" style="border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:15px 17px;cursor:pointer"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#f7e8f0">monthly</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#caaebb;margin-top:2px">7 days free, then monthly</div></div>'+
+        '</div>'+
+        '<div data-start role="button" style="text-align:center;background:#e7548a;color:#fff;border-radius:14px;padding:15px;font-family:Sora,sans-serif;font-weight:700;font-size:15px;cursor:pointer">start 7-day free trial</div>'+
+        '<div style="font-family:Newsreader,serif;font-style:italic;font-size:12px;color:#8a7080;text-align:center;margin-top:12px;line-height:1.5">cancel anytime — as easy as one tap. venting, scan &amp; being heard stay free, always.</div>'+
+        '<div data-x2 style="text-align:center;margin-top:14px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9b8090;cursor:pointer">not now</div>'+
+      '</div>';
+    document.body.appendChild(ov);
+    let plan='annual';
+    const sel=()=>{ ov.querySelector('[data-plan="annual"]').style.borderColor=plan==='annual'?'#e7548a':'rgba(255,255,255,.16)'; ov.querySelector('[data-plan="annual"]').style.background=plan==='annual'?'rgba(231,84,138,.10)':'transparent'; ov.querySelector('[data-plan="monthly"]').style.borderColor=plan==='monthly'?'#e7548a':'rgba(255,255,255,.16)'; ov.querySelector('[data-plan="monthly"]').style.background=plan==='monthly'?'rgba(231,84,138,.10)':'transparent'; };
+    ov.querySelector('[data-plan="annual"]').addEventListener('click',()=>{ plan='annual'; sel(); });
+    ov.querySelector('[data-plan="monthly"]').addEventListener('click',()=>{ plan='monthly'; sel(); });
+    const close=()=>ov.remove();
+    ov.querySelector('[data-x]').addEventListener('click',close);
+    ov.querySelector('[data-x2]').addEventListener('click',close);
+    ov.querySelector('[data-start]').addEventListener('click',()=>{ try{ localStorage.setItem('shutap_sub_status','trialing'); localStorage.setItem('shutap_sub_plan',plan); }catch(e){} close(); this.toast('your free trial is on — the full mirror is open.'); this.renderSettings(); });
+  }
+}
+
+</script>
+</body>
+</html>
