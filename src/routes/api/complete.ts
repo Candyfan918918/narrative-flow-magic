@@ -47,10 +47,9 @@ export const Route = createFileRoute('/api/complete')({
             headers: { 'content-type': 'application/json' },
           })
         } catch (err) {
-          const status =
-            err instanceof Anthropic.APIError && typeof err.status === 'number' ? err.status : 500
-          return new Response(JSON.stringify({ error: 'completion failed' }), {
-            status: status >= 400 && status < 600 ? status : 500,
+          const message = err instanceof Error ? err.message : 'completion failed'
+          return new Response(JSON.stringify({ error: message, fallback: true }), {
+            status: 200,
             headers: { 'content-type': 'application/json' },
           })
         }
