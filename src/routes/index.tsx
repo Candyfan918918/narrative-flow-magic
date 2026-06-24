@@ -1,3 +1,4 @@
+import React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
@@ -7,7 +8,7 @@ export const Route = createFileRoute('/')({
 })
 
 function ClientApp() {
-  const [Mounted, setMounted] = useState<null | (() => JSX.Element)>(null)
+  const [Mounted, setMounted] = useState<null | (React.ComponentType)>(null)
   useEffect(() => {
     let cancelled = false
     Promise.all([import('react-router-dom'), import('@/App'), import('@/lib/share')]).then(
