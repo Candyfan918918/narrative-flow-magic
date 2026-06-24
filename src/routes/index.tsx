@@ -83,7 +83,7 @@ function RoomTile({ r }: { r: Room }) {
 
 function NudgeTile({ msg }: { msg: string }) {
   return (
-    <Link to="/spill" style={{ textDecoration: "none", color: "inherit" }}>
+    <Link to="/auth" style={{ textDecoration: "none", color: "inherit" }}>
       <div className="nudge-tile">
         <div style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
           <Eye w={24} h={17} />
@@ -146,7 +146,7 @@ function StreamPage() {
 
             <div style={{ ...serif, marginTop: 32, paddingTop: 20, borderTop: ".5px solid rgba(11,8,15,.08)", textAlign: "center", fontSize: 15, color: "#6b4a5c" }}>
               something happened to you too.{" "}
-              <Link to="/spill" className="prose-link" style={{ textDecoration: "none" }}>
+              <Link to="/auth" className="prose-link" style={{ textDecoration: "none" }}>
                 the room is open. →
               </Link>
             </div>
