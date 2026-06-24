@@ -56,6 +56,103 @@ export type Database = {
         }
         Relationships: []
       }
+      room_reactions: {
+        Row: {
+          created_at: string
+          kind: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          kind: string
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          kind?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_reactions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_relates: {
+        Row: {
+          created_at: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_relates_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          alias: string
+          author_id: string
+          body: string
+          created_at: string
+          emoji: string
+          hall: string
+          id: string
+          reflection: string | null
+          support: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          alias: string
+          author_id: string
+          body: string
+          created_at?: string
+          emoji: string
+          hall: string
+          id?: string
+          reflection?: string | null
+          support: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          alias?: string
+          author_id?: string
+          body?: string
+          created_at?: string
+          emoji?: string
+          hall?: string
+          id?: string
+          reflection?: string | null
+          support?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
