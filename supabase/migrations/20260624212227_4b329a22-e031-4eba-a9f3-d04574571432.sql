@@ -1,0 +1,1 @@
+revoke execute on function public.has_active_mirror(uuid, text) from public, anon, authenticated;
