@@ -365,7 +365,18 @@ function RoomPage() {
           }}
         >
           <button
-            onClick={() => setRelated(true)}
+            onClick={async () => {
+              if (!isUuid(r.id)) {
+                setRelated((v) => !v);
+                return;
+              }
+              try {
+                const next = await toggleRelate(r.id);
+                setRelated(next);
+              } catch {
+                navigate({ to: "/auth" });
+              }
+            }}
             style={{
               display: "inline-flex",
               alignItems: "center",
