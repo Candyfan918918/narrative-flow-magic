@@ -1,0 +1,38 @@
+/* Shutap v2 design tokens — sourced from the supportive-room redesign
+   (Stream.dc.html). The prototype uses literal hex inline; these custom
+   properties capture the same values for reuse across the React app. */
+:root {
+  /* surfaces */
+  --bg: #fdf0f5;          /* page background — warm blush, never pure white */
+  --ink: #0b080f;         /* primary text */
+  --surface: #ffffff;     /* cards */
+  --surface-2: #f7e8f0;   /* hover fills, avatars, tints */
+
+  /* text hierarchy */
+  --text-2: #6b4a5c;      /* secondary */
+  --text-3: #9e7a8c;      /* tertiary / timestamps */
+  --ink-soft: #4a3040;    /* react labels */
+
+  /* brand pinks */
+  --pink: #e7548a;        /* primary accent */
+  --wine: #c1216b;        /* prose links, emphasis numerals */
+  --wine-dark: #890041;   /* prose-link hover */
+
+  /* warm aubergine (companion / dark surfaces) */
+  --dark-1: #2e0d1a;
+  --dark-2: #1a0a12;
+
+  /* live / supportive signals */
+  --live: #5dcaa5;        /* breathing presence dot */
+
+  /* reaction palette */
+  --r-heard: #e7548a;
+  --r-same: #c87c4a;
+  --r-strong: #5b8a5e;
+  --r-time: #7f77dd;
+  --r-brave: #c1a02b;
+
+  /* borders */
+  --border: rgba(11, 8, 15, 0.08);
+  --border-2: rgba(11, 8, 15, 0.16);
+}
