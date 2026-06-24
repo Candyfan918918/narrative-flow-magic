@@ -139,7 +139,7 @@
   function showSheet(id, opts){
     ensureDefs();
     markSession(); bumpDaily(); track('offer_shown',id);
-    var url = opts.url || 'https://shutap.com';
+    var url = opts.url || location.origin;
     var ov=document.createElement('div');
     ov.setAttribute('data-sharesheet','');
     ov.style.cssText='position:fixed;inset:0;z-index:120;display:flex;align-items:flex-end;justify-content:center';
