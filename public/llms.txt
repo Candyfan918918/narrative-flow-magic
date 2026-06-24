@@ -1,0 +1,24 @@
+# Shutap
+
+> Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.
+
+Shutap is the alternative to anonymous-feed venting (Reddit, AITA, Quora). Members keep a consistent pseudonym across stories so voices have a track record, and outcomes are confirmed by the original author rather than inferred from sentiment.
+
+The brand wordplay is "Shutap → speak up." The app is not a clinical service; the in-app companion never poses as a therapist or lawyer.
+
+## Core
+
+- [About](/about): What Shutap is, who it's for, and how it differs from anonymous feed venting.
+- [Methodology](/methodology): How stories are written (real people, no AI-written stories), how outcomes are confirmed, how sensitive topics are routed.
+- [Trust & privacy](/trust): Pseudonymity model, what is and isn't indexed, takedown path.
+
+## Pillars
+
+- [Relationships](/relationships): Dating, partners, situationships, breakups, the gray area in between.
+- [Marriage](/marriage): The long-haul stuff — roommate energy, resentment, repair, leaving, staying.
+- [Family](/family): Parents, siblings, in-laws, the family group chat, the guilt.
+- [Career](/career): Work, money, bosses, burnout, the job everyone tells you to be grateful for.
+
+## Optional
+
+- [Sitemap](/sitemap.xml): Machine-readable list of indexable pages.

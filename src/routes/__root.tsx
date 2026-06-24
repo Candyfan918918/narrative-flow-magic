@@ -77,13 +77,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Shutap — Story Stream" },
-      { name: "description", content: "No algorithm. No upvotes. Open rooms for stories that need to be said out loud." },
+      { title: "Shutap — vent about relationships, marriage, family & work" },
+      {
+        name: "description",
+        content:
+          "Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.",
+      },
       { name: "author", content: "Shutap" },
-      { property: "og:title", content: "Shutap — Story Stream" },
-      { property: "og:description", content: "No algorithm. No upvotes. Open rooms for stories that need to be said out loud." },
+      { property: "og:site_name", content: "Shutap" },
       { property: "og:type", content: "website" },
+      {
+        property: "og:title",
+        content: "Shutap — vent about relationships, marriage, family & work",
+      },
+      {
+        property: "og:description",
+        content:
+          "Pseudonymous venting community. Spill what's going on; see what actually happened next for people who've lived your exact thing.",
+      },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Shutap — speak up." },
+      {
+        name: "twitter:description",
+        content:
+          "Pseudonymous venting community. Spill what's going on; see what actually happened next for people who've lived your exact thing.",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -94,12 +112,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&family=Newsreader:ital,wght@1,400;1,500&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Shutap",
+          alternateName: "Shutap. Speak up.",
+          description:
+            "Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.",
+          slogan: "Shutap. Speak up.",
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
+
 
 function RootShell({ children }: { children: ReactNode }) {
   return (

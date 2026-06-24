@@ -9,11 +9,59 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrustRouteImport } from './routes/trust'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RelationshipsRouteImport } from './routes/relationships'
+import { Route as MethodologyRouteImport } from './routes/methodology'
+import { Route as MarriageRouteImport } from './routes/marriage'
+import { Route as FamilyRouteImport } from './routes/family'
+import { Route as CareerRouteImport } from './routes/career'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
+const TrustRoute = TrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelationshipsRoute = RelationshipsRouteImport.update({
+  id: '/relationships',
+  path: '/relationships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MethodologyRoute = MethodologyRouteImport.update({
+  id: '/methodology',
+  path: '/methodology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarriageRoute = MarriageRouteImport.update({
+  id: '/marriage',
+  path: '/marriage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FamilyRoute = FamilyRouteImport.update({
+  id: '/family',
+  path: '/family',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareerRoute = CareerRouteImport.update({
+  id: '/career',
+  path: '/career',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
   path: '/$',
@@ -39,12 +87,28 @@ const ApiPublicPaymentsWebhookRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/about': typeof AboutRoute
+  '/career': typeof CareerRoute
+  '/family': typeof FamilyRoute
+  '/marriage': typeof MarriageRoute
+  '/methodology': typeof MethodologyRoute
+  '/relationships': typeof RelationshipsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/about': typeof AboutRoute
+  '/career': typeof CareerRoute
+  '/family': typeof FamilyRoute
+  '/marriage': typeof MarriageRoute
+  '/methodology': typeof MethodologyRoute
+  '/relationships': typeof RelationshipsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -52,26 +116,135 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/about': typeof AboutRoute
+  '/career': typeof CareerRoute
+  '/family': typeof FamilyRoute
+  '/marriage': typeof MarriageRoute
+  '/methodology': typeof MethodologyRoute
+  '/relationships': typeof RelationshipsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$' | '/api/complete' | '/api/public/payments/webhook'
+  fullPaths:
+    | '/'
+    | '/$'
+    | '/about'
+    | '/career'
+    | '/family'
+    | '/marriage'
+    | '/methodology'
+    | '/relationships'
+    | '/sitemap.xml'
+    | '/trust'
+    | '/api/complete'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$' | '/api/complete' | '/api/public/payments/webhook'
-  id: '__root__' | '/' | '/$' | '/api/complete' | '/api/public/payments/webhook'
+  to:
+    | '/'
+    | '/$'
+    | '/about'
+    | '/career'
+    | '/family'
+    | '/marriage'
+    | '/methodology'
+    | '/relationships'
+    | '/sitemap.xml'
+    | '/trust'
+    | '/api/complete'
+    | '/api/public/payments/webhook'
+  id:
+    | '__root__'
+    | '/'
+    | '/$'
+    | '/about'
+    | '/career'
+    | '/family'
+    | '/marriage'
+    | '/methodology'
+    | '/relationships'
+    | '/sitemap.xml'
+    | '/trust'
+    | '/api/complete'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
+  AboutRoute: typeof AboutRoute
+  CareerRoute: typeof CareerRoute
+  FamilyRoute: typeof FamilyRoute
+  MarriageRoute: typeof MarriageRoute
+  MethodologyRoute: typeof MethodologyRoute
+  RelationshipsRoute: typeof RelationshipsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TrustRoute: typeof TrustRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/trust': {
+      id: '/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof TrustRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relationships': {
+      id: '/relationships'
+      path: '/relationships'
+      fullPath: '/relationships'
+      preLoaderRoute: typeof RelationshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/methodology': {
+      id: '/methodology'
+      path: '/methodology'
+      fullPath: '/methodology'
+      preLoaderRoute: typeof MethodologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marriage': {
+      id: '/marriage'
+      path: '/marriage'
+      fullPath: '/marriage'
+      preLoaderRoute: typeof MarriageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/family': {
+      id: '/family'
+      path: '/family'
+      fullPath: '/family'
+      preLoaderRoute: typeof FamilyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/career': {
+      id: '/career'
+      path: '/career'
+      fullPath: '/career'
+      preLoaderRoute: typeof CareerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$': {
       id: '/$'
       path: '/$'
@@ -106,6 +279,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
+  AboutRoute: AboutRoute,
+  CareerRoute: CareerRoute,
+  FamilyRoute: FamilyRoute,
+  MarriageRoute: MarriageRoute,
+  MethodologyRoute: MethodologyRoute,
+  RelationshipsRoute: RelationshipsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TrustRoute: TrustRoute,
   ApiCompleteRoute: ApiCompleteRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
