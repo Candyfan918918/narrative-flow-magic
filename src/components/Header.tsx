@@ -1,0 +1,207 @@
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { getAlias, rememberReturnTo, signOut as doSignOut } from '../lib/auth'
+import type { Alias } from '../data/types'
+
+/* Sticky header from Stream.dc.html: blinking eye logo + "shutap" wordmark,
+   a "halls" link, and an auth area that is either a "join →" pill (logged out)
+   or the alias chip + dropdown menu (logged in). */
+export function Header({ onToast }: { onToast?: (m: string) => void }) {
+  const navigate = useNavigate()
+  const [alias, setAliasState] = useState<Alias | null>(() => getAlias())
+  const [menuOpen, setMenuOpen] = useState(false)
+  const areaRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (areaRef.current && !areaRef.current.contains(e.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('click', onDoc)
+    return () => document.removeEventListener('click', onDoc)
+  }, [])
+
+  const join = () => {
+    rememberReturnTo(window.location.href)
+    navigate('/welcome')
+  }
+  const signOut = () => {
+    setMenuOpen(false)
+    doSignOut()
+    setAliasState(null)
+    onToast?.('signed out.')
+  }
+
+  const menuItem: React.CSSProperties = {
+    display: 'block',
+    padding: '9px 11px',
+    borderRadius: 10,
+    fontFamily: 'Newsreader,serif',
+    fontStyle: 'italic',
+    fontSize: 14,
+    color: '#4a3040',
+    textDecoration: 'none',
+  }
+
+  return (
+    <header
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
+        background: 'rgba(253,240,245,.88)',
+        backdropFilter: 'blur(18px)',
+        borderBottom: '.5px solid rgba(11,8,15,.07)',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 740,
+          margin: '0 auto',
+          padding: '11px 22px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+        }}
+      >
+        <Link
+          to="/"
+          style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}
+        >
+          <span
+            style={{ width: 32, height: 23, display: 'block', animation: 'eblink 3.4s infinite', transformOrigin: 'center' }}
+          >
+            <svg viewBox="0 0 140 96" fill="none" style={{ display: 'block', width: '100%', height: '100%' }}>
+              <rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
+              <rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
+              <ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)" />
+              <ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)" />
+              <path d="M44 22 C41 18 35 18 35 24 C35 30 44 36 44 36 C44 36 53 30 53 24 C53 18 47 18 44 22Z" fill="#fff" opacity=".95" />
+              <path d="M112 22 C109 18 103 18 103 24 C103 30 112 36 112 36 C112 36 121 30 121 24 C121 18 115 18 112 22Z" fill="#fff" opacity=".95" />
+            </svg>
+          </span>
+          <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 19, letterSpacing: '-.04em', color: '#0b080f' }}>
+            shut<span style={{ color: '#e7548a' }}>ap</span>
+          </span>
+        </Link>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Link
+            to="/halls"
+            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}
+          >
+            halls
+          </Link>
+          <div ref={areaRef} style={{ position: 'relative' }}>
+            {alias ? (
+              <>
+                <div
+                  role="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setMenuOpen((v) => !v)
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 7,
+                    background: '#fff',
+                    border: '.5px solid rgba(11,8,15,.12)',
+                    borderRadius: 999,
+                    padding: '5px 12px 5px 5px',
+                    cursor: 'pointer',
+                    transition: '.18s',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 26,
+                      height: 26,
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg,#f060a0,#890041)',
+                      display: 'grid',
+                      placeItems: 'center',
+                      fontSize: 14,
+                      flex: 'none',
+                    }}
+                  >
+                    {alias.emoji || '🦉'}
+                  </span>
+                  <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13, color: '#4a3040' }}>
+                    {alias.name || ''}
+                  </span>
+                </div>
+                {menuOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 9px)',
+                      right: 0,
+                      width: 210,
+                      background: '#fff',
+                      border: '.5px solid rgba(11,8,15,.10)',
+                      borderRadius: 16,
+                      boxShadow: '0 24px 50px -24px rgba(60,10,30,.35)',
+                      padding: 7,
+                      zIndex: 70,
+                      animation: 'pop .16s ease',
+                    }}
+                  >
+                    <Link to="/" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
+                      home
+                    </Link>
+                    <Link to="/halls" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
+                      hall of fame
+                    </Link>
+                    <Link to="/room" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
+                      open a room
+                    </Link>
+                    <div style={{ height: '.5px', background: 'rgba(11,8,15,.08)', margin: '6px 0' }} />
+                    <div
+                      className="menu-item"
+                      role="button"
+                      style={{ ...menuItem, color: '#c1216b', cursor: 'pointer' }}
+                      onClick={() => {
+                        setMenuOpen(false)
+                        navigate('/#spill')
+                      }}
+                    >
+                      say something →
+                    </div>
+                    <div
+                      className="menu-item"
+                      role="button"
+                      style={{ ...menuItem, color: '#9e7a8c', cursor: 'pointer' }}
+                      onClick={signOut}
+                    >
+                      sign out
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div
+                role="button"
+                onClick={join}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  background: '#e7548a',
+                  color: '#fff',
+                  borderRadius: 999,
+                  padding: '9px 18px',
+                  fontFamily: 'Sora,sans-serif',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
+              >
+                join →
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
