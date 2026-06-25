@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { HUBS } from "@/lib/seo/hubs";
+import { OUTCOMES, isOutcomeIndexable } from "@/lib/seo/outcomes";
+import { PROFILES, isProfileIndexable } from "@/lib/seo/profiles";
 
 // TODO: replace with your project URL once a project name or custom domain is set.
 const BASE_URL = "";
@@ -33,6 +35,22 @@ const entries: SitemapEntry[] = [
     changefreq: "monthly" as const,
     priority: "0.7",
   })),
+  // Phase 3: only list outcome aggregates that pass the §8 indexability gate.
+  ...OUTCOMES.filter(isOutcomeIndexable).map((o) => ({
+    path: `/what-happens/${o.slug}`,
+    lastmod: o.updatedAt,
+    changefreq: "weekly" as const,
+    priority: "0.8",
+  })),
+  // Phase 3: only list pseudonym profiles with enough author signal.
+  ...PROFILES.filter(isProfileIndexable).map((p) => ({
+    path: `/u/${p.pseudonym}`,
+    changefreq: "weekly" as const,
+    priority: "0.5",
+  })),
+  // /halls/* and /report are intentionally not listed:
+  //   halls are gated per (hall, region, window) cell and emit noindex
+  //   below threshold; /report is a takedown intake and is always noindex.
 ];
 
 export const Route = createFileRoute("/sitemap.xml")({
