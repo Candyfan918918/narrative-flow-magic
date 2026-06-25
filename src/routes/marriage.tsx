@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
+import { HUBS_BY_PILLAR } from "@/lib/seo/hubs";
 
 const TITLE = "Marriage — vent about the long-haul stuff, pseudonymously";
 const DESCRIPTION =
@@ -38,16 +40,18 @@ function MarriagePillar() {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Common questions people bring here</h2>
           <ul className="space-y-2">
-            <li>Is it normal to feel invisible in my marriage?</li>
-            <li>Should I stay married for the kids?</li>
-            <li>Why don't I feel anything for my husband anymore?</li>
-            <li>Is it normal to not want sex with my husband?</li>
-            <li>How do people know when their marriage is over?</li>
+            {HUBS_BY_PILLAR.marriage.map((h) => (
+              <li key={h.slug}>
+                <Link
+                  to="/is-it-normal/$slug"
+                  params={{ slug: h.slug }}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {h.question}
+                </Link>
+              </li>
+            ))}
           </ul>
-          <p className="text-sm text-muted-foreground">
-            Individual situation hubs publish once we have enough confirmed
-            outcomes from real members.
-          </p>
         </section>
       </article>
     </SeoPage>
