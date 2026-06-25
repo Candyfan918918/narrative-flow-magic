@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
-import { getHub, HUBS_BY_PILLAR } from "@/lib/seo/hubs";
+import { getHub, HUBS_BY_PILLAR, type SituationHub } from "@/lib/seo/hubs";
 
 export const Route = createFileRoute("/is-it-normal/$slug")({
   loader: ({ params }) => {
@@ -87,8 +87,8 @@ function capitalize(s: string) {
 }
 
 function SituationHubPage() {
-  const hub = Route.useLoaderData();
-  const siblings = HUBS_BY_PILLAR[hub.pillar].filter((h) => h.slug !== hub.slug);
+  const hub = Route.useLoaderData() as SituationHub;
+  const siblings = HUBS_BY_PILLAR[hub.pillar].filter((h: SituationHub) => h.slug !== hub.slug);
 
   return (
     <SeoPage>
