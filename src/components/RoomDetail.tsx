@@ -183,6 +183,7 @@ export function RoomDetail({
   const submitComment = () => {
     const t = cmtRef.current
     if (t && t.value.trim()) {
+      track('comment_post', { target: `room:${room.id}`, text: t.value.trim().slice(0, 200) })
       setHelpText('offered. the room felt that.')
       if (helpTimer.current) clearTimeout(helpTimer.current)
       helpTimer.current = setTimeout(() => setHelpText('seen without your real name.'), 3200)
