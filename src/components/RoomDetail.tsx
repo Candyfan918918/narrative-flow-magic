@@ -341,7 +341,10 @@ export function RoomDetail({
                     })
                     const nowActive = !isActive
                     toast(nowActive ? 'reaction added.' : 'reaction withdrawn.')
-                    if (nowActive) offerShare()
+                    if (nowActive) {
+                      track('react', { target: `room:${room.id}`, kind: rx.k })
+                      offerShare()
+                    }
                   }}
                 >
                   <span>{rx.emoji}</span>
