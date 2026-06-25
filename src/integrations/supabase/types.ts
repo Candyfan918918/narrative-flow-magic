@@ -56,6 +56,75 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback_events: {
+        Row: {
+          alias: string | null
+          created_at: string
+          id: string
+          intent: string | null
+          kind: string | null
+          label: string | null
+          mode: string | null
+          note: string | null
+          page: string | null
+          payload: Json | null
+          score: number | null
+          sec: number | null
+          sid: string | null
+          signature: string | null
+          t: string
+          target: string | null
+          text: string | null
+          trigger: string | null
+          type: string
+          v: string
+        }
+        Insert: {
+          alias?: string | null
+          created_at?: string
+          id?: string
+          intent?: string | null
+          kind?: string | null
+          label?: string | null
+          mode?: string | null
+          note?: string | null
+          page?: string | null
+          payload?: Json | null
+          score?: number | null
+          sec?: number | null
+          sid?: string | null
+          signature?: string | null
+          t?: string
+          target?: string | null
+          text?: string | null
+          trigger?: string | null
+          type: string
+          v: string
+        }
+        Update: {
+          alias?: string | null
+          created_at?: string
+          id?: string
+          intent?: string | null
+          kind?: string | null
+          label?: string | null
+          mode?: string | null
+          note?: string | null
+          page?: string | null
+          payload?: Json | null
+          score?: number | null
+          sec?: number | null
+          sid?: string | null
+          signature?: string | null
+          t?: string
+          target?: string | null
+          text?: string | null
+          trigger?: string | null
+          type?: string
+          v?: string
+        }
+        Relationships: []
+      }
       mirror_onboarding: {
         Row: {
           created_at: string
