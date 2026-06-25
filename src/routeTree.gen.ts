@@ -19,6 +19,7 @@ import { Route as CareerRouteImport } from './routes/career'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
@@ -72,6 +73,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IsItNormalSlugRoute = IsItNormalSlugRouteImport.update({
+  id: '/is-it-normal/$slug',
+  path: '/is-it-normal/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCompleteRoute = ApiCompleteRouteImport.update({
   id: '/api/complete',
   path: '/api/complete',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
+  '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
+  '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
+  '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/trust'
     | '/api/complete'
+    | '/is-it-normal/$slug'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/trust'
     | '/api/complete'
+    | '/is-it-normal/$slug'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/trust'
     | '/api/complete'
+    | '/is-it-normal/$slug'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrustRoute: typeof TrustRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
+  IsItNormalSlugRoute: typeof IsItNormalSlugRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -259,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/is-it-normal/$slug': {
+      id: '/is-it-normal/$slug'
+      path: '/is-it-normal/$slug'
+      fullPath: '/is-it-normal/$slug'
+      preLoaderRoute: typeof IsItNormalSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/complete': {
       id: '/api/complete'
       path: '/api/complete'
@@ -288,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrustRoute: TrustRoute,
   ApiCompleteRoute: ApiCompleteRoute,
+  IsItNormalSlugRoute: IsItNormalSlugRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport

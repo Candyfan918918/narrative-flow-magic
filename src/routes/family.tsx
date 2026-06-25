@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
+import { HUBS_BY_PILLAR } from "@/lib/seo/hubs";
 
 const TITLE = "Family — vent about parents, siblings, in-laws";
 const DESCRIPTION =
@@ -38,16 +40,18 @@ function FamilyPillar() {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Common questions people bring here</h2>
           <ul className="space-y-2">
-            <li>Is it normal to not like my own mother?</li>
-            <li>How do I set boundaries with my parents without the guilt?</li>
-            <li>Am I wrong for not inviting a family member to my wedding?</li>
-            <li>Is it okay to go low-contact with toxic parents?</li>
-            <li>Why does my family make me feel small?</li>
+            {HUBS_BY_PILLAR.family.map((h) => (
+              <li key={h.slug}>
+                <Link
+                  to="/is-it-normal/$slug"
+                  params={{ slug: h.slug }}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {h.question}
+                </Link>
+              </li>
+            ))}
           </ul>
-          <p className="text-sm text-muted-foreground">
-            Individual situation hubs publish once we have enough confirmed
-            outcomes from real members.
-          </p>
         </section>
       </article>
     </SeoPage>

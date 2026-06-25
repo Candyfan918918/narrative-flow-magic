@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
+import { HUBS_BY_PILLAR } from "@/lib/seo/hubs";
 
 const TITLE = "Career — vent about work, money, bosses, burnout";
 const DESCRIPTION =
@@ -38,16 +40,18 @@ function CareerPillar() {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Common questions people bring here</h2>
           <ul className="space-y-2">
-            <li>Is it normal to cry at work?</li>
-            <li>Should I quit a job everyone thinks is great?</li>
-            <li>How do I know if I'm underpaid?</li>
-            <li>Why do I feel guilty taking time off?</li>
-            <li>How do you know when to quit without another job lined up?</li>
+            {HUBS_BY_PILLAR.career.map((h) => (
+              <li key={h.slug}>
+                <Link
+                  to="/is-it-normal/$slug"
+                  params={{ slug: h.slug }}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {h.question}
+                </Link>
+              </li>
+            ))}
           </ul>
-          <p className="text-sm text-muted-foreground">
-            Individual situation hubs publish once we have enough confirmed
-            outcomes from real members.
-          </p>
         </section>
       </article>
     </SeoPage>

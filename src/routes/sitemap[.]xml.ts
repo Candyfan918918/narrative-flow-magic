@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { HUBS } from "@/lib/seo/hubs";
 
 // TODO: replace with your project URL once a project name or custom domain is set.
 const BASE_URL = "";
@@ -27,6 +28,11 @@ const entries: SitemapEntry[] = [
   { path: "/marriage", changefreq: "weekly", priority: "0.9" },
   { path: "/family", changefreq: "weekly", priority: "0.9" },
   { path: "/career", changefreq: "weekly", priority: "0.9" },
+  ...HUBS.map((h) => ({
+    path: `/is-it-normal/${h.slug}`,
+    changefreq: "monthly" as const,
+    priority: "0.7",
+  })),
 ];
 
 export const Route = createFileRoute("/sitemap.xml")({
