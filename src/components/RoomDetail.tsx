@@ -372,6 +372,7 @@ export function RoomDetail({
               onClick={() => {
                 setRelated(true)
                 toast("added. the room knows you're there.")
+                track('relate', { target: `room:${room.id}` })
                 offerShare()
               }}
               style={{
