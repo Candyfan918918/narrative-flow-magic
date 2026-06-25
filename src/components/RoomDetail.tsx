@@ -127,6 +127,17 @@ export function RoomDetail({
     }
   }, [room])
 
+  // ── room dwell tracking for the feedback loop ──
+  useEffect(() => {
+    track('room_open', { target: `room:${room.id}` })
+    const start = Date.now()
+    return () => {
+      const sec = Math.round((Date.now() - start) / 1000)
+      const type = sec < 4 ? 'room_bounce' : sec >= 20 ? 'room_dwell_long' : 'room_dwell'
+      track(type, { target: `room:${room.id}`, sec })
+    }
+  }, [room.id])
+
   // ── room structured data (SEO) + page title ──
   useEffect(() => {
     try {
