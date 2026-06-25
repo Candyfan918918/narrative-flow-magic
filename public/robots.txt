@@ -57,7 +57,7 @@ Allow: /
 User-agent: Meta-ExternalAgent
 Allow: /
 
-# Disallow signed-in and admin surfaces.
+# Disallow signed-in, admin, and intake surfaces.
 Disallow: /api/
 Disallow: /auth
 Disallow: /login
@@ -65,5 +65,6 @@ Disallow: /signup
 Disallow: /profile
 Disallow: /subscribe
 Disallow: /lovable/
+Disallow: /report
 
 # Sitemap directive added once a project URL is assigned.
