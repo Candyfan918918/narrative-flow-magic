@@ -62,7 +62,7 @@ function aliasLabel(): string | undefined {
     const a = getAlias()
     if (!a) return undefined
     // existing Alias shape carries emoji + adjective + nationality + animal
-    const parts = [a.emoji, a.adjective, a.nationality, a.animal].filter(Boolean)
+    const parts = [a.emoji, a.name].filter(Boolean)
     return parts.join(' ').trim() || undefined
   } catch {
     return undefined
