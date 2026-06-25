@@ -24,6 +24,7 @@ import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
+import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
@@ -102,6 +103,11 @@ const ApiCompleteRoute = ApiCompleteRouteImport.update({
   path: '/api/complete',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFeedbackEventsRoute = ApiFeedbackEventsRouteImport.update({
+  id: '/api/feedback/events',
+  path: '/api/feedback/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HallsHallRegionWindowRoute = HallsHallRegionWindowRouteImport.update({
   id: '/halls/$hall/$region/$window',
   path: '/halls/$hall/$region/$window',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/api/feedback/events': typeof ApiFeedbackEventsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/api/feedback/events': typeof ApiFeedbackEventsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/api/feedback/events': typeof ApiFeedbackEventsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/api/feedback/events'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesByTo: FileRoutesByTo
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/api/feedback/events'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   id:
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/api/feedback/events'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesById: FileRoutesById
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
   UPseudonymRoute: typeof UPseudonymRoute
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
+  ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
 }
@@ -359,6 +372,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/feedback/events': {
+      id: '/api/feedback/events'
+      path: '/api/feedback/events'
+      fullPath: '/api/feedback/events'
+      preLoaderRoute: typeof ApiFeedbackEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/halls/$hall/$region/$window': {
       id: '/halls/$hall/$region/$window'
       path: '/halls/$hall/$region/$window'
@@ -392,6 +412,7 @@ const rootRouteChildren: RootRouteChildren = {
   IsItNormalSlugRoute: IsItNormalSlugRoute,
   UPseudonymRoute: UPseudonymRoute,
   WhatHappensSlugRoute: WhatHappensSlugRoute,
+  ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   HallsHallRegionWindowRoute: HallsHallRegionWindowRoute,
 }

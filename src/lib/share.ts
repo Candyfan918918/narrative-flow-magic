@@ -108,6 +108,14 @@ function track(ev: string, id: string, extra?: unknown) {
   log.push({ ev, trigger: id, t: Date.now(), extra: extra || null })
   if (log.length > 200) log = log.slice(-200)
   setJSON('shutap_share_metrics', log)
+  // mirror to product feedback loop (pseudonymous)
+  try {
+    import('./feedback').then((m) => {
+      if (ev === 'accepted') m.track('share_accept', { trigger: id })
+      else if (ev === 'dismissed') m.track('share_dismiss', { trigger: id })
+      else if (ev === 'shown') m.track('paywall_view', { trigger: id, v: 'neutral' })
+    })
+  } catch { /* noop */ }
 }
 
 function valenceOk(opts: ShareOpts) {

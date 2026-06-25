@@ -3,6 +3,7 @@ import type { Room } from '../data/types'
 import { REACTIONS } from '../data/constants'
 import { complete, extractJSON } from '../lib/ai'
 import { eyeSVG } from './EyeDefs'
+import { track } from '../lib/feedback'
 
 const badgeStyle = (support: string): React.CSSProperties => ({
   display: 'inline-flex',
@@ -126,6 +127,17 @@ export function RoomDetail({
     }
   }, [room])
 
+  // ── room dwell tracking for the feedback loop ──
+  useEffect(() => {
+    track('room_open', { target: `room:${room.id}` })
+    const start = Date.now()
+    return () => {
+      const sec = Math.round((Date.now() - start) / 1000)
+      const type = sec < 4 ? 'room_bounce' : sec >= 20 ? 'room_dwell_long' : 'room_dwell'
+      track(type, { target: `room:${room.id}`, sec })
+    }
+  }, [room.id])
+
   // ── room structured data (SEO) + page title ──
   useEffect(() => {
     try {
@@ -171,6 +183,7 @@ export function RoomDetail({
   const submitComment = () => {
     const t = cmtRef.current
     if (t && t.value.trim()) {
+      track('comment_post', { target: `room:${room.id}`, text: t.value.trim().slice(0, 200) })
       setHelpText('offered. the room felt that.')
       if (helpTimer.current) clearTimeout(helpTimer.current)
       helpTimer.current = setTimeout(() => setHelpText('seen without your real name.'), 3200)
@@ -329,7 +342,10 @@ export function RoomDetail({
                     })
                     const nowActive = !isActive
                     toast(nowActive ? 'reaction added.' : 'reaction withdrawn.')
-                    if (nowActive) offerShare()
+                    if (nowActive) {
+                      track('react', { target: `room:${room.id}`, kind: rx.k })
+                      offerShare()
+                    }
                   }}
                 >
                   <span>{rx.emoji}</span>
@@ -357,6 +373,7 @@ export function RoomDetail({
               onClick={() => {
                 setRelated(true)
                 toast("added. the room knows you're there.")
+                track('relate', { target: `room:${room.id}` })
                 offerShare()
               }}
               style={{
