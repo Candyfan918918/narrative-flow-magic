@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ReportRouteImport } from './routes/report'
 import { Route as RelationshipsRouteImport } from './routes/relationships'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as MarriageRouteImport } from './routes/marriage'
@@ -19,8 +20,11 @@ import { Route as CareerRouteImport } from './routes/career'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug'
+import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
+import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const TrustRoute = TrustRouteImport.update({
@@ -31,6 +35,11 @@ const TrustRoute = TrustRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RelationshipsRoute = RelationshipsRouteImport.update({
@@ -73,6 +82,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WhatHappensSlugRoute = WhatHappensSlugRouteImport.update({
+  id: '/what-happens/$slug',
+  path: '/what-happens/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UPseudonymRoute = UPseudonymRouteImport.update({
+  id: '/u/$pseudonym',
+  path: '/u/$pseudonym',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IsItNormalSlugRoute = IsItNormalSlugRouteImport.update({
   id: '/is-it-normal/$slug',
   path: '/is-it-normal/$slug',
@@ -81,6 +100,11 @@ const IsItNormalSlugRoute = IsItNormalSlugRouteImport.update({
 const ApiCompleteRoute = ApiCompleteRouteImport.update({
   id: '/api/complete',
   path: '/api/complete',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HallsHallRegionWindowRoute = HallsHallRegionWindowRouteImport.update({
+  id: '/halls/$hall/$region/$window',
+  path: '/halls/$hall/$region/$window',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicPaymentsWebhookRoute =
@@ -99,11 +123,15 @@ export interface FileRoutesByFullPath {
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
   '/relationships': typeof RelationshipsRoute
+  '/report': typeof ReportRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/u/$pseudonym': typeof UPseudonymRoute
+  '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -114,11 +142,15 @@ export interface FileRoutesByTo {
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
   '/relationships': typeof RelationshipsRoute
+  '/report': typeof ReportRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/u/$pseudonym': typeof UPseudonymRoute
+  '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -130,11 +162,15 @@ export interface FileRoutesById {
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
   '/relationships': typeof RelationshipsRoute
+  '/report': typeof ReportRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/u/$pseudonym': typeof UPseudonymRoute
+  '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,11 +183,15 @@ export interface FileRouteTypes {
     | '/marriage'
     | '/methodology'
     | '/relationships'
+    | '/report'
     | '/sitemap.xml'
     | '/trust'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/u/$pseudonym'
+    | '/what-happens/$slug'
     | '/api/public/payments/webhook'
+    | '/halls/$hall/$region/$window'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -162,11 +202,15 @@ export interface FileRouteTypes {
     | '/marriage'
     | '/methodology'
     | '/relationships'
+    | '/report'
     | '/sitemap.xml'
     | '/trust'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/u/$pseudonym'
+    | '/what-happens/$slug'
     | '/api/public/payments/webhook'
+    | '/halls/$hall/$region/$window'
   id:
     | '__root__'
     | '/'
@@ -177,11 +221,15 @@ export interface FileRouteTypes {
     | '/marriage'
     | '/methodology'
     | '/relationships'
+    | '/report'
     | '/sitemap.xml'
     | '/trust'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/u/$pseudonym'
+    | '/what-happens/$slug'
     | '/api/public/payments/webhook'
+    | '/halls/$hall/$region/$window'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -193,11 +241,15 @@ export interface RootRouteChildren {
   MarriageRoute: typeof MarriageRoute
   MethodologyRoute: typeof MethodologyRoute
   RelationshipsRoute: typeof RelationshipsRoute
+  ReportRoute: typeof ReportRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrustRoute: typeof TrustRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
+  UPseudonymRoute: typeof UPseudonymRoute
+  WhatHappensSlugRoute: typeof WhatHappensSlugRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
+  HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -214,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/relationships': {
@@ -272,6 +331,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/what-happens/$slug': {
+      id: '/what-happens/$slug'
+      path: '/what-happens/$slug'
+      fullPath: '/what-happens/$slug'
+      preLoaderRoute: typeof WhatHappensSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/u/$pseudonym': {
+      id: '/u/$pseudonym'
+      path: '/u/$pseudonym'
+      fullPath: '/u/$pseudonym'
+      preLoaderRoute: typeof UPseudonymRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/is-it-normal/$slug': {
       id: '/is-it-normal/$slug'
       path: '/is-it-normal/$slug'
@@ -284,6 +357,13 @@ declare module '@tanstack/react-router' {
       path: '/api/complete'
       fullPath: '/api/complete'
       preLoaderRoute: typeof ApiCompleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/halls/$hall/$region/$window': {
+      id: '/halls/$hall/$region/$window'
+      path: '/halls/$hall/$region/$window'
+      fullPath: '/halls/$hall/$region/$window'
+      preLoaderRoute: typeof HallsHallRegionWindowRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/payments/webhook': {
@@ -305,11 +385,15 @@ const rootRouteChildren: RootRouteChildren = {
   MarriageRoute: MarriageRoute,
   MethodologyRoute: MethodologyRoute,
   RelationshipsRoute: RelationshipsRoute,
+  ReportRoute: ReportRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrustRoute: TrustRoute,
   ApiCompleteRoute: ApiCompleteRoute,
   IsItNormalSlugRoute: IsItNormalSlugRoute,
+  UPseudonymRoute: UPseudonymRoute,
+  WhatHappensSlugRoute: WhatHappensSlugRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
+  HallsHallRegionWindowRoute: HallsHallRegionWindowRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
