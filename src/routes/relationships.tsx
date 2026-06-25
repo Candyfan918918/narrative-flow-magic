@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
+import { HUBS_BY_PILLAR } from "@/lib/seo/hubs";
 
 const TITLE = "Relationships — vent about dating, partners, breakups";
 const DESCRIPTION =
@@ -39,16 +41,18 @@ function RelationshipsPillar() {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Common questions people bring here</h2>
           <ul className="space-y-2">
-            <li>Is it normal to feel lonely in a relationship?</li>
-            <li>Am I overreacting, or is this a red flag?</li>
-            <li>Why do I feel guilty after going no-contact?</li>
-            <li>Is it bad that I went through his phone?</li>
-            <li>How do you know when you've outgrown someone?</li>
+            {HUBS_BY_PILLAR.relationships.map((h) => (
+              <li key={h.slug}>
+                <Link
+                  to="/is-it-normal/$slug"
+                  params={{ slug: h.slug }}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {h.question}
+                </Link>
+              </li>
+            ))}
           </ul>
-          <p className="text-sm text-muted-foreground">
-            Individual situation hubs publish once we have enough confirmed
-            outcomes from real members.
-          </p>
         </section>
       </article>
     </SeoPage>
