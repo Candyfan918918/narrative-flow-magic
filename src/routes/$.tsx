@@ -10,10 +10,11 @@ function ClientApp() {
   const [Mounted, setMounted] = useState<null | (React.ComponentType)>(null)
   useEffect(() => {
     let cancelled = false
-    Promise.all([import('react-router-dom'), import('@/App'), import('@/lib/share')]).then(
-      ([rr, appMod, share]) => {
+    Promise.all([import('react-router-dom'), import('@/App'), import('@/lib/share'), import('@/lib/feedback')]).then(
+      ([rr, appMod, share, fb]) => {
         if (cancelled) return
         share.installShareEngine()
+        fb.installFeedback()
         const { BrowserRouter } = rr
         const { App } = appMod
         setMounted(() => () => (
