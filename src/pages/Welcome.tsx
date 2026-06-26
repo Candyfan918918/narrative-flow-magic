@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { lovable } from '@/integrations/lovable'
 import { supabase } from '@/integrations/supabase/client'
+import { recordLegalAcceptance } from '@/lib/legal.functions'
 
 /* Pixel-perfect iframe of the Welcome prototype, with real auth wired through
    postMessage so Google/Apple/email actually authenticate via Lovable Cloud. */
@@ -9,10 +10,16 @@ export function WelcomePage() {
 
   useEffect(() => {
     // If we just returned from an OAuth redirect, flag the iframe so it skips
-    // straight to the age gate on mount.
+    // straight to the age gate on mount, and stamp legal acceptance.
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
         try { sessionStorage.setItem('shutap_authed', '1') } catch {}
+        recordLegalAcceptance({ data: {} }).catch(() => {})
+      }
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        recordLegalAcceptance({ data: {} }).catch(() => {})
       }
     })
 
@@ -52,7 +59,10 @@ export function WelcomePage() {
     }
 
     window.addEventListener('message', onMessage)
-    return () => window.removeEventListener('message', onMessage)
+    return () => {
+      sub.subscription.unsubscribe()
+      window.removeEventListener('message', onMessage)
+    }
   }, [])
 
   return (

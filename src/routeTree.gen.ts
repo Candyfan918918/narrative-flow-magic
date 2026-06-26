@@ -10,13 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrustRouteImport } from './routes/trust'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SafetyRouteImport } from './routes/safety'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as RelationshipsRouteImport } from './routes/relationships'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as MarriageRouteImport } from './routes/marriage'
+import { Route as GuidelinesRouteImport } from './routes/guidelines'
 import { Route as FamilyRouteImport } from './routes/family'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareerRouteImport } from './routes/career'
+import { Route as AiDisclosureRouteImport } from './routes/ai-disclosure'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -36,9 +42,19 @@ const TrustRoute = TrustRouteImport.update({
   path: '/trust',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SafetyRoute = SafetyRouteImport.update({
+  id: '/safety',
+  path: '/safety',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportRoute = ReportRouteImport.update({
@@ -51,6 +67,11 @@ const RelationshipsRoute = RelationshipsRouteImport.update({
   path: '/relationships',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MethodologyRoute = MethodologyRouteImport.update({
   id: '/methodology',
   path: '/methodology',
@@ -61,14 +82,29 @@ const MarriageRoute = MarriageRouteImport.update({
   path: '/marriage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuidelinesRoute = GuidelinesRouteImport.update({
+  id: '/guidelines',
+  path: '/guidelines',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FamilyRoute = FamilyRouteImport.update({
   id: '/family',
   path: '/family',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CareerRoute = CareerRouteImport.update({
   id: '/career',
   path: '/career',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiDisclosureRoute = AiDisclosureRouteImport.update({
+  id: '/ai-disclosure',
+  path: '/ai-disclosure',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -142,13 +178,19 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
+  '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
+  '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
+  '/guidelines': typeof GuidelinesRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
+  '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
+  '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
@@ -164,13 +206,19 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
+  '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
+  '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
+  '/guidelines': typeof GuidelinesRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
+  '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
+  '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
@@ -188,13 +236,19 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
+  '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
+  '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
+  '/guidelines': typeof GuidelinesRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
+  '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
+  '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
@@ -212,13 +266,19 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/about'
+    | '/ai-disclosure'
     | '/career'
+    | '/contact'
     | '/family'
+    | '/guidelines'
     | '/marriage'
     | '/methodology'
+    | '/privacy'
     | '/relationships'
     | '/report'
+    | '/safety'
     | '/sitemap.xml'
+    | '/terms'
     | '/trust'
     | '/api/complete'
     | '/is-it-normal/$slug'
@@ -234,13 +294,19 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/about'
+    | '/ai-disclosure'
     | '/career'
+    | '/contact'
     | '/family'
+    | '/guidelines'
     | '/marriage'
     | '/methodology'
+    | '/privacy'
     | '/relationships'
     | '/report'
+    | '/safety'
     | '/sitemap.xml'
+    | '/terms'
     | '/trust'
     | '/api/complete'
     | '/is-it-normal/$slug'
@@ -257,13 +323,19 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/$'
     | '/about'
+    | '/ai-disclosure'
     | '/career'
+    | '/contact'
     | '/family'
+    | '/guidelines'
     | '/marriage'
     | '/methodology'
+    | '/privacy'
     | '/relationships'
     | '/report'
+    | '/safety'
     | '/sitemap.xml'
+    | '/terms'
     | '/trust'
     | '/api/complete'
     | '/is-it-normal/$slug'
@@ -281,13 +353,19 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   AboutRoute: typeof AboutRoute
+  AiDisclosureRoute: typeof AiDisclosureRoute
   CareerRoute: typeof CareerRoute
+  ContactRoute: typeof ContactRoute
   FamilyRoute: typeof FamilyRoute
+  GuidelinesRoute: typeof GuidelinesRoute
   MarriageRoute: typeof MarriageRoute
   MethodologyRoute: typeof MethodologyRoute
+  PrivacyRoute: typeof PrivacyRoute
   RelationshipsRoute: typeof RelationshipsRoute
   ReportRoute: typeof ReportRoute
+  SafetyRoute: typeof SafetyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
@@ -308,11 +386,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrustRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/safety': {
+      id: '/safety'
+      path: '/safety'
+      fullPath: '/safety'
+      preLoaderRoute: typeof SafetyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/report': {
@@ -329,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RelationshipsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/methodology': {
       id: '/methodology'
       path: '/methodology'
@@ -343,6 +442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarriageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guidelines': {
+      id: '/guidelines'
+      path: '/guidelines'
+      fullPath: '/guidelines'
+      preLoaderRoute: typeof GuidelinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/family': {
       id: '/family'
       path: '/family'
@@ -350,11 +456,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FamilyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/career': {
       id: '/career'
       path: '/career'
       fullPath: '/career'
       preLoaderRoute: typeof CareerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-disclosure': {
+      id: '/ai-disclosure'
+      path: '/ai-disclosure'
+      fullPath: '/ai-disclosure'
+      preLoaderRoute: typeof AiDisclosureRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -467,13 +587,19 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   AboutRoute: AboutRoute,
+  AiDisclosureRoute: AiDisclosureRoute,
   CareerRoute: CareerRoute,
+  ContactRoute: ContactRoute,
   FamilyRoute: FamilyRoute,
+  GuidelinesRoute: GuidelinesRoute,
   MarriageRoute: MarriageRoute,
   MethodologyRoute: MethodologyRoute,
+  PrivacyRoute: PrivacyRoute,
   RelationshipsRoute: RelationshipsRoute,
   ReportRoute: ReportRoute,
+  SafetyRoute: SafetyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
   ApiCompleteRoute: ApiCompleteRoute,
   IsItNormalSlugRoute: IsItNormalSlugRoute,

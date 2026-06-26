@@ -16,6 +16,10 @@ export type Database = {
     Tables: {
       aliases: {
         Row: {
+          accepted_privacy_at: string | null
+          accepted_privacy_version: string | null
+          accepted_terms_at: string | null
+          accepted_terms_version: string | null
           birth_day: number
           birth_month: number
           birth_year: number
@@ -33,6 +37,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accepted_privacy_at?: string | null
+          accepted_privacy_version?: string | null
+          accepted_terms_at?: string | null
+          accepted_terms_version?: string | null
           birth_day: number
           birth_month: number
           birth_year: number
@@ -50,6 +58,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          accepted_privacy_at?: string | null
+          accepted_privacy_version?: string | null
+          accepted_terms_at?: string | null
+          accepted_terms_version?: string | null
           birth_day?: number
           birth_month?: number
           birth_year?: number
