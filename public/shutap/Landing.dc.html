@@ -1591,6 +1591,7 @@ class Component extends DCLogic {
     this.$scanScreen.appendChild(body);
     // count up
     this.setEyeState&&this.setEyeState('celebrating');
+    this.scanAIUpgrade(answers, score, sig);
     const scoreEl=body.querySelector('[data-score]');
     let cur=0; const step=Math.ceil(score/38);
     const tick=setInterval(()=>{ cur=Math.min(cur+step,score); if(scoreEl) scoreEl.textContent=cur; if(cur>=score) clearInterval(tick); },28);
