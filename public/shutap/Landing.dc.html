@@ -1000,19 +1000,32 @@ class Component extends DCLogic {
     loading.style.cssText='display:flex;gap:5px;align-items:center;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c';
     loading.innerHTML='<i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .4s infinite"></i> reflecting back…';
     body.appendChild(loading);
-    let summary;
+    const ref=document.createElement('div');
+    ref.style.cssText='background:rgba(255,255,255,.04);border-left:2px solid rgba(231,84,138,.4);padding:14px 16px;border-radius:0 12px 12px 0;font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.55;color:#f7e8f0;min-height:1.55em;white-space:pre-wrap';
+    let summary='';
     try{
       const convo=this.spill.msgs.filter(m=>m.role==='user').map(m=>m.text).join(' / ');
       const prompt='In 2 sentences, warmly reflect back what you heard. Start "i heard that…". Preserve their exact words where possible. Then ask "did i get it right?" Lowercase. No preamble.';
-      summary=await window.claude.complete({messages:[{role:'user',content:'Conversation: '+convo+'\n\n'+prompt}]});
+      const streamer=window.claude.stream||window.claude.complete;
+      if(window.claude.stream){
+        await window.claude.stream({
+          messages:[{role:'user',content:'Conversation: '+convo+'\n\n'+prompt}],
+          onChunk:(_chunk,acc)=>{
+            if(loading.parentNode){ loading.remove(); body.appendChild(ref); }
+            ref.textContent=acc;
+          }
+        });
+      } else {
+        summary=await streamer({messages:[{role:'user',content:'Conversation: '+convo+'\n\n'+prompt}]});
+        if(loading.parentNode){ loading.remove(); body.appendChild(ref); }
+        ref.textContent=summary;
+      }
     }catch(e){
-      summary="i heard that this has been sitting with you for a while, and putting it into words wasn't easy. did i get it right?";
+      if(loading.parentNode){ loading.remove(); body.appendChild(ref); }
+      ref.textContent="i heard that this has been sitting with you for a while, and putting it into words wasn't easy. did i get it right?";
     }
-    loading.remove();
-    const ref=document.createElement('div');
-    ref.style.cssText='background:rgba(255,255,255,.04);border-left:2px solid rgba(231,84,138,.4);padding:14px 16px;border-radius:0 12px 12px 0;font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.55;color:#f7e8f0';
-    ref.textContent=summary||'';
-    body.appendChild(ref);
+    if(loading.parentNode) loading.remove();
+    if(!ref.parentNode) body.appendChild(ref);
     // support mode + publish
     const act=document.createElement('div');
     act.style.cssText='display:flex;flex-direction:column;gap:12px;margin-top:8px';
@@ -1463,21 +1476,29 @@ class Component extends DCLogic {
       ta.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter') go.click(); });
     }
 
-    // AI upgrade: replace the local reflection with a tailored one from the companion.
-    if(prevForAI && window.claude && window.claude.complete){
+    // AI upgrade: stream a tailored reflection in the companion's voice.
+    if(prevForAI && window.claude && (window.claude.stream || window.claude.complete)){
       const myCursor=cur, myKey=prevForAI.key, myAns=prevForAI.ans||{};
       const topicLabel=(answers.topic && answers.topic.label) || (answers.topic && answers.topic.v) || 'their situation';
       const detail=(answers.detail && answers.detail.v) || '';
       const ansText=myAns.v && typeof myAns.v==='string' && myAns.v.length<300 ? myAns.v : (myAns.label||myAns.v||'');
       const sys="You are the companion on Shutap — warm, perceptive, lowercase, never clinical. The user is in a quick private scan. They just answered a question. Write ONE short line (max 14 words) that echoes what you heard, in their voice, no advice, no questions back. No quotes, no preamble.";
       const prompt='Topic: '+topicLabel+'\nWhat they shared earlier: '+(detail?('"'+detail.slice(0,240)+'"'):'(nothing yet)')+'\nThey just answered "'+myKey+'": '+ansText+'\n\nReturn one line, lowercase.';
-      window.claude.complete({system:sys, messages:[{role:'user',content:prompt}], maxTokens:60})
-        .then(t=>{
-          const line=(t||'').trim().replace(/^["']|["']$/g,'').split('\n')[0];
-          if(!line || this.scan.cursor!==myCursor || this.scan.idx==='result') return;
-          const el=this.$scanScreen && this.$scanScreen.querySelector('[data-reflect-text]');
-          if(el) el.textContent=line;
+      const stillValid=()=>this.scan.cursor===myCursor && this.scan.idx!=='result';
+      const writeLine=(t)=>{
+        const line=(t||'').replace(/^["']+|["']+$/g,'').split('\n')[0];
+        if(!line || !stillValid()) return;
+        const el=this.$scanScreen && this.$scanScreen.querySelector('[data-reflect-text]');
+        if(el) el.textContent=line;
+      };
+      if(window.claude.stream){
+        window.claude.stream({system:sys, messages:[{role:'user',content:prompt}], maxTokens:60,
+          onChunk:(_c,acc)=>writeLine(acc)
         }).catch(()=>{});
+      } else {
+        window.claude.complete({system:sys, messages:[{role:'user',content:prompt}], maxTokens:60})
+          .then(writeLine).catch(()=>{});
+      }
     }
   }
 
@@ -1514,7 +1535,7 @@ class Component extends DCLogic {
     '</div>';
   }
   scanAIUpgrade(answers, score, sig){
-    if(!window.claude || !window.claude.complete) {
+    if(!window.claude || !(window.claude.stream || window.claude.complete)) {
       const tag=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read-ai]');
       if(tag) tag.remove();
       return;
@@ -1531,6 +1552,35 @@ class Component extends DCLogic {
     };
     const sys="You are the companion on Shutap — warm, perceptive, lowercase, never clinical, never therapy-speak. Reflect what THIS specific person just told you in a private scan. Use their own words where you can (especially the 'detail' and 'relief' lines, quoted). Be specific, not generic. Don't diagnose. Don't prescribe. Don't say 'I hear you' or 'great answer'. No emojis. Return 3 short paragraphs separated by blank lines: (1) one sentence naming the shape of what they're carrying, weaving in topic + who + duration; (2) one or two sentences quoting their own line back and saying what it tells you; (3) one sentence about what they're reaching for, and one tiny suggestion of what the room can offer (no commands). Total under 110 words.";
     const prompt='Their scan:\n'+JSON.stringify(profile,null,2)+'\n\nWrite the read now.';
+    const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const renderInto=(bodyEl, tag, t, isFinal)=>{
+      const paras=t.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+      const cursor=isFinal?'':'<span data-scan-cursor style="display:inline-block;width:6px;height:1em;vertical-align:-2px;background:#e7548a;margin-left:2px;animation:blinkdot 1s infinite"></span>';
+      bodyEl.innerHTML=paras.map((p,i)=>'<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.6;color:#f7e8f0;margin-bottom:10px">'+esc(p)+(i===paras.length-1?cursor:'')+'</div>').join('');
+      if(isFinal && tag) tag.remove();
+    };
+    const apply=(text,isFinal)=>{
+      const t=(text||'').trim(); if(!t) return;
+      const root=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read]');
+      if(!root) return;
+      const bodyEl=root.querySelector('[data-scan-read-body]');
+      const tag=root.querySelector('[data-scan-read-ai]');
+      if(bodyEl) renderInto(bodyEl, tag, t, isFinal);
+    };
+    const finalize=text=>{
+      apply(text,true);
+      const root=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read]');
+      if(root){ const t=root.querySelector('[data-scan-read-ai]'); if(t) t.remove(); }
+    };
+    if(window.claude.stream){
+      window.claude.stream({system:sys, messages:[{role:'user',content:prompt}], maxTokens:380,
+        onChunk:(_c,acc)=>apply(acc,false)
+      }).then(finalize).catch(()=>{
+        const tag=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read-ai]');
+        if(tag) tag.remove();
+      });
+      return;
+    }
     window.claude.complete({system:sys, messages:[{role:'user',content:prompt}], maxTokens:380})
       .then(text=>{
         const t=(text||'').trim(); if(!t) return;
@@ -1539,10 +1589,7 @@ class Component extends DCLogic {
         const bodyEl=root.querySelector('[data-scan-read-body]');
         const tag=root.querySelector('[data-scan-read-ai]');
         if(tag) tag.remove();
-        if(bodyEl){
-          const paras=t.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
-          bodyEl.innerHTML=paras.map(p=>'<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.6;color:#f7e8f0;margin-bottom:10px">'+p.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>').join('');
-        }
+        if(bodyEl) renderInto(bodyEl, tag, t, true);
       })
       .catch(()=>{
         const tag=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read-ai]');
