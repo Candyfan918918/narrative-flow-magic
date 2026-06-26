@@ -434,57 +434,174 @@ class Component extends DCLogic {
      body:"i don't know what shifted. same room, same chair, same questions we've been circling for two years. she asked about my mother and something just — opened. i sat there ugly-crying for twenty minutes. on the train home I felt lighter than I have in years. also embarrassed. also relieved. i wanted to tell someone and this felt like the right room."}
   ];}
 
-  get SCAN_Q(){ return [
-    {kind:'intro'},
-    {kind:'tap', q:"what kind of situation?", key:'topic', opts:[
-      {v:'love',    label:'Romance / relationship', emoji:'💛', w:0},
-      {v:'family',  label:'Family',                 emoji:'🏠', w:0},
-      {v:'work',    label:'Work',                   emoji:'💼', w:0},
-      {v:'friends', label:'Friendship',             emoji:'🫂', w:0},
-      {v:'self',    label:'Something internal',     emoji:'🪞', w:0},
-      {v:'other',   label:'Something else',         emoji:'🌊', w:0}
-    ]},
-    {kind:'tap', q:"how long has this been building?", key:'duration', opts:[
-      {v:'today',   label:'It happened today',          w:200},
-      {v:'week',    label:'A few days or this week',    w:350},
-      {v:'month',   label:'A month or two',             w:520},
-      {v:'longer',  label:'Longer than that',           w:720},
-      {v:'years',   label:'Years',                      w:880}
-    ]},
-    {kind:'tap', q:"where does it live in your body right now?", key:'body', opts:[
-      {v:'chest',  label:'In my chest',          emoji:'🫀', w:750},
-      {v:'throat', label:'In my throat',         emoji:'🗣️', w:680},
-      {v:'stomach',label:'In my stomach',        emoji:'🌀', w:600},
-      {v:'head',   label:'Mostly in my head',   emoji:'🧠', w:480},
-      {v:'calm',   label:'Not really anywhere — I feel calm', emoji:'🌬️', w:150}
-    ]},
-    {kind:'tap', q:"is this something you've been through before?", key:'pattern', opts:[
-      {v:'first',   label:'First time',                     w:250},
-      {v:'variant', label:'Variations of it, yes',          w:480},
-      {v:'always',  label:'This keeps finding me',          w:750},
-      {v:'reverse', label:"I've been on the other side of it", w:620}
-    ]},
-    {kind:'tap', q:"if nothing changes, what does six months look like?", key:'inaction', opts:[
-      {v:'same',     label:'Same as now',          w:550},
-      {v:'worse',    label:'Worse',                w:800},
-      {v:'adjust',   label:"I'd quietly adjust",   w:380},
-      {v:'leave',    label:"I'd leave",             w:680},
-      {v:'detonate', label:"I'd explode",           w:920}
-    ]},
-    {kind:'tap', q:"what are you most hoping for right now?", key:'hope', opts:[
-      {v:'heard',    label:'To feel heard',                  w:200},
-      {v:'clarity',  label:'Clarity on what to do',          w:400},
-      {v:'validate', label:"To know I'm not wrong",          w:550},
-      {v:'comfort',  label:'To feel less alone in it',       w:300},
-      {v:'change',   label:'For something to actually change',w:700}
-    ]},
-    {kind:'tap', q:"is there someone in your life you could tell this to?", key:'support', opts:[
-      {v:'yes',      label:"Yes — I just haven't yet",       w:300},
-      {v:'maybe',    label:'Maybe one person',               w:450},
-      {v:'no',       label:'Not really, no',                 w:750},
-      {v:'here',     label:'I came here instead of them',    w:620}
-    ]}
-  ];}
+  get SCAN_Q(){
+    const TOPIC_PROMPT={
+      love:"a sentence about them — what just happened, or what keeps happening?",
+      family:"a sentence about the family thing — who, and what just happened?",
+      work:"a sentence about work — what happened, or who said what?",
+      friends:"a sentence about the friendship — what shifted, or what didn't?",
+      self:"a sentence — what does the feeling sound like in your head right now?",
+      other:"a sentence — what's the shape of it, in your own words?"
+    };
+    const WHO_OPTS={
+      love:[
+        {v:'partner',  label:'A partner',                  emoji:'💞', w:560},
+        {v:'dating',   label:"Someone I'm dating",         emoji:'🌹', w:480},
+        {v:'situation',label:'A situationship',            emoji:'🌀', w:620},
+        {v:'ex',       label:'An ex',                      emoji:'🕯️', w:740},
+        {v:'crush',    label:'Someone I haven\u2019t said it to', emoji:'🤫', w:500},
+        {v:'married',  label:'A spouse',                   emoji:'💍', w:700}
+      ],
+      family:[
+        {v:'parent',   label:'A parent',                   emoji:'🧓', w:680},
+        {v:'sibling',  label:'A sibling',                  emoji:'👯', w:540},
+        {v:'child',    label:'My kid',                     emoji:'🧒', w:650},
+        {v:'extended', label:'Extended family',            emoji:'🏠', w:500},
+        {v:'chosen',   label:'Chosen family',              emoji:'🌿', w:520},
+        {v:'inlaws',   label:'In-laws',                    emoji:'🫥', w:600}
+      ],
+      work:[
+        {v:'boss',     label:'My boss',                    emoji:'🪪', w:680},
+        {v:'coworker', label:'A coworker',                 emoji:'🪑', w:520},
+        {v:'report',   label:'Someone I manage',           emoji:'📎', w:560},
+        {v:'client',   label:'A client',                   emoji:'📧', w:540},
+        {v:'company',  label:'The company itself',         emoji:'🏢', w:700},
+        {v:'self',     label:'Me, mostly',                 emoji:'🪞', w:600}
+      ],
+      friends:[
+        {v:'best',     label:'A close friend',             emoji:'🫂', w:620},
+        {v:'group',    label:'A friend group',             emoji:'👥', w:540},
+        {v:'drift',    label:'Someone drifting',           emoji:'🍃', w:600},
+        {v:'new',      label:'Someone new',                emoji:'🌱', w:380},
+        {v:'former',   label:'A former friend',            emoji:'🪞', w:720}
+      ],
+      self:[
+        {v:'anxiety',  label:'Anxious thoughts',           emoji:'⚡', w:680},
+        {v:'shame',    label:'Shame I can\u2019t shake',   emoji:'🌫️', w:780},
+        {v:'grief',    label:'Grief',                      emoji:'🕯️', w:820},
+        {v:'numb',     label:'Numbness',                   emoji:'🌑', w:700},
+        {v:'decision', label:'A decision I can\u2019t make', emoji:'🛤️', w:620},
+        {v:'body',     label:'Something my body keeps doing', emoji:'🌀', w:600}
+      ],
+      other:[
+        {v:'money',    label:'Money',                      emoji:'💸', w:620},
+        {v:'health',   label:'Health',                     emoji:'🩺', w:700},
+        {v:'identity', label:'Who I am',                   emoji:'🪞', w:640},
+        {v:'place',    label:'Where I live',               emoji:'🗺️', w:500},
+        {v:'world',    label:'The world right now',        emoji:'🌍', w:560},
+        {v:'unsure',   label:"Honestly not sure yet",      emoji:'🌊', w:420}
+      ]
+    };
+    const FRICTION_OPTS={
+      love:[
+        {v:'silence',  label:'A silence neither of us is breaking', w:680},
+        {v:'fights',   label:'The same fight on repeat',            w:760},
+        {v:'distance', label:'Distance I can feel',                  w:640},
+        {v:'trust',    label:'Something about trust',                w:800},
+        {v:'mismatch', label:'We want different things',             w:720},
+        {v:'unsaid',   label:"A thing I haven't said",               w:600}
+      ],
+      family:[
+        {v:'boundary', label:'A boundary nobody respects',           w:720},
+        {v:'inherited',label:'A pattern I inherited',                w:680},
+        {v:'unspoken', label:'The thing we don\u2019t talk about',   w:760},
+        {v:'caretake', label:'I\u2019m the one holding it together', w:740},
+        {v:'estrange', label:'Distance / estrangement',              w:820}
+      ],
+      work:[
+        {v:'workload', label:'Too much, not enough hours',           w:620},
+        {v:'recog',    label:'Doing the work, not getting seen',     w:660},
+        {v:'values',   label:"I don't believe in what we're doing",  w:740},
+        {v:'politics', label:'Politics, alliances, weirdness',       w:640},
+        {v:'burnout',  label:'I\u2019m running on empty',            w:800}
+      ],
+      friends:[
+        {v:'betray',   label:'They did something that hurt',         w:780},
+        {v:'oneway',   label:'I\u2019m the one always reaching out', w:660},
+        {v:'jealousy', label:'Jealousy — mine or theirs',            w:640},
+        {v:'event',    label:'A specific thing that happened',       w:700},
+        {v:'drift',    label:'No reason — just less',                w:560}
+      ],
+      self:[
+        {v:'ongoing',  label:'It\u2019s been like this for a while', w:720},
+        {v:'recent',   label:'Something specific kicked it off',     w:680},
+        {v:'nothing',  label:'Nothing happened — it\u2019s just here',w:640},
+        {v:'anniv',    label:'An anniversary / season is coming',    w:700},
+        {v:'spiral',   label:'I keep looping the same thought',      w:760}
+      ],
+      other:[
+        {v:'sudden',   label:'Something just happened',              w:680},
+        {v:'creep',    label:'It\u2019s been slowly building',       w:620},
+        {v:'systemic', label:'It\u2019s bigger than me',             w:660},
+        {v:'private',  label:'I haven\u2019t named it to anyone',    w:720}
+      ]
+    };
+    return [
+      {kind:'intro'},
+      {kind:'tap', q:"what kind of situation?", key:'topic', opts:[
+        {v:'love',    label:'Romance / relationship', emoji:'💛', w:0},
+        {v:'family',  label:'Family',                 emoji:'🏠', w:0},
+        {v:'work',    label:'Work',                   emoji:'💼', w:0},
+        {v:'friends', label:'Friendship',             emoji:'🫂', w:0},
+        {v:'self',    label:'Something internal',     emoji:'🪞', w:0},
+        {v:'other',   label:'Something else',         emoji:'🌊', w:0}
+      ]},
+      {kind:'text', key:'detail',
+        q:a=>TOPIC_PROMPT[a.topic?.v]||TOPIC_PROMPT.other,
+        placeholder:'just a line. names get scrubbed before anyone sees this.',
+        hint:'private to your read — nothing is posted.'},
+      {kind:'tap', key:'who',
+        q:a=>({love:"who is it about?",family:"who in the family?",work:"who at work?",friends:"which kind of friendship?",self:"what shape is the feeling?",other:"what is it about?"})[a.topic?.v]||"who is it about?",
+        opts:a=>WHO_OPTS[a.topic?.v]||WHO_OPTS.other},
+      {kind:'tap', key:'friction',
+        q:a=>({love:"what's the friction underneath?",family:"what's the dynamic?",work:"what's grinding on you?",friends:"what's actually off?",self:"what's keeping it lit?",other:"why now?"})[a.topic?.v]||"what's the friction?",
+        opts:a=>FRICTION_OPTS[a.topic?.v]||FRICTION_OPTS.other},
+      {kind:'tap', q:"how long has this been building?", key:'duration', opts:[
+        {v:'today',   label:'It happened today',          w:200},
+        {v:'week',    label:'A few days or this week',    w:350},
+        {v:'month',   label:'A month or two',             w:520},
+        {v:'longer',  label:'Longer than that',           w:720},
+        {v:'years',   label:'Years',                      w:880}
+      ]},
+      {kind:'tap', q:"where does it live in your body right now?", key:'body', opts:[
+        {v:'chest',  label:'In my chest',          emoji:'🫀', w:750},
+        {v:'throat', label:'In my throat',         emoji:'🗣️', w:680},
+        {v:'stomach',label:'In my stomach',        emoji:'🌀', w:600},
+        {v:'head',   label:'Mostly in my head',   emoji:'🧠', w:480},
+        {v:'calm',   label:'Not really anywhere — I feel calm', emoji:'🌬️', w:150}
+      ]},
+      {kind:'tap', q:"is this something you've been through before?", key:'pattern', opts:[
+        {v:'first',   label:'First time',                     w:250},
+        {v:'variant', label:'Variations of it, yes',          w:480},
+        {v:'always',  label:'This keeps finding me',          w:750},
+        {v:'reverse', label:"I've been on the other side of it", w:620}
+      ]},
+      {kind:'tap', q:"if nothing changes, what does six months look like?", key:'inaction', opts:[
+        {v:'same',     label:'Same as now',          w:550},
+        {v:'worse',    label:'Worse',                w:800},
+        {v:'adjust',   label:"I'd quietly adjust",   w:380},
+        {v:'leave',    label:"I'd leave",             w:680},
+        {v:'detonate', label:"I'd explode",           w:920}
+      ]},
+      {kind:'tap', q:"what are you most hoping for right now?", key:'hope', opts:[
+        {v:'heard',    label:'To feel heard',                  w:200},
+        {v:'clarity',  label:'Clarity on what to do',          w:400},
+        {v:'validate', label:"To know I'm not wrong",          w:550},
+        {v:'comfort',  label:'To feel less alone in it',       w:300},
+        {v:'change',   label:'For something to actually change',w:700}
+      ]},
+      {kind:'tap', q:"is there someone in your life you could tell this to?", key:'support', opts:[
+        {v:'yes',      label:"Yes — I just haven't yet",       w:300},
+        {v:'maybe',    label:'Maybe one person',               w:450},
+        {v:'no',       label:'Not really, no',                 w:750},
+        {v:'here',     label:'I came here instead of them',    w:620}
+      ]},
+      {kind:'text', key:'relief', optional:true,
+        q:a=>"last one — what would feel like relief, even a little?",
+        placeholder:'no pressure. skip if nothing comes.',
+        hint:'optional — helps the room know what to send back.'}
+    ];
+  }
 
   get SIGS(){ return [
     {min:0,   max:199, label:'Letting It Settle',        sub:"something is there. it hasn't landed yet."},
