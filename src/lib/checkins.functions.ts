@@ -115,7 +115,9 @@ export const setNotificationPrefs = createServerFn({ method: 'POST' })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = { notif_email_opt_in: data.opt_in }
+    const patch: { notif_email_opt_in: boolean; notif_email?: string; timezone?: string } = {
+      notif_email_opt_in: data.opt_in,
+    }
     if (data.email) patch.notif_email = data.email
     if (data.timezone) patch.timezone = data.timezone
     const { error } = await context.supabase
@@ -132,7 +134,7 @@ export const snoozeCheckin = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await context.supabase
       .from('checkins')
-      .update({ state: 'skipped' })
+      .update({ state: 'snoozed' })
       .eq('id', data.id)
       .eq('alias_id', context.userId)
     return { ok: true }
