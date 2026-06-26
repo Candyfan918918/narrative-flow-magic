@@ -6,6 +6,21 @@
 <script src="./support.js"></script>
 </head>
 <body>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#fcf1f5"/>
+  <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <g transform="translate(30,0)">
+    <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+    <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  </g>
+  <ellipse cx="23" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="35" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="65" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="77" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+</svg>
+</template>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,6 +50,7 @@ body{margin:0;background:#0f0a12;color:#f2e9ef;font-family:'Inter',system-ui,san
 .btn-reject{background:rgba(255,255,255,.06);color:#d99}
 .btn-reject:hover{background:rgba(226,75,74,.16)}
 </style>
+<script src="./feedback-engine.js"></script>
 </helmet>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -56,6 +72,7 @@ body{margin:0;background:#0f0a12;color:#f2e9ef;font-family:'Inter',system-ui,san
     <div ref="{{ navRooms }}" onClick="{{ goRooms }}" class="nav-item">💬 Rooms</div>
     <div ref="{{ navUsers }}" onClick="{{ goUsers }}" class="nav-item">👤 Members</div>
     <div ref="{{ navAnalytics }}" onClick="{{ goAnalytics }}" class="nav-item">📈 Analytics</div>
+    <div ref="{{ navFeedback }}" onClick="{{ goFeedback }}" class="nav-item">🫶 Feedback</div>
     <div ref="{{ navSafety }}" onClick="{{ goSafety }}" class="nav-item">🆘 Safety</div>
     <div ref="{{ navConfig }}" onClick="{{ goConfig }}" class="nav-item">⚙ Config</div>
     <div style="margin-top:auto;padding:12px 10px;font-size:11.5px;color:#6e6675;font-family:'Newsreader',serif;font-style:italic">signed in as<br><b style="font-style:normal;font-family:Inter;color:#a99fb0">admin@shutap.com</b></div>
@@ -86,10 +103,11 @@ class Component extends DCLogic {
       navRooms: el=>{ this.$nav=Object.assign({},this.$nav,{rooms:el}); },
       navUsers: el=>{ this.$nav=Object.assign({},this.$nav,{users:el}); },
       navAnalytics: el=>{ this.$nav=Object.assign({},this.$nav,{analytics:el}); },
+      navFeedback: el=>{ this.$nav=Object.assign({},this.$nav,{feedback:el}); },
       navSafety: el=>{ this.$nav=Object.assign({},this.$nav,{safety:el}); },
       navConfig: el=>{ this.$nav=Object.assign({},this.$nav,{config:el}); },
       goOverview: nav('overview'), goQueue: nav('queue'), goRooms: nav('rooms'),
-      goUsers: nav('users'), goAnalytics: nav('analytics'), goSafety: nav('safety'), goConfig: nav('config')
+      goUsers: nav('users'), goAnalytics: nav('analytics'), goFeedback: nav('feedback'), goSafety: nav('safety'), goConfig: nav('config')
     };
   }
 
@@ -100,7 +118,7 @@ class Component extends DCLogic {
   go(k){
     Object.entries(this.$nav).forEach(([key,el])=>{ if(el) el.classList.toggle('active', key===k); });
     if(this.$view) this.$view.style.animation='fadeUp .3s ease';
-    ({overview:()=>this.overview(),queue:()=>this.queue(),rooms:()=>this.roomsView(),users:()=>this.users(),analytics:()=>this.analytics(),safety:()=>this.safety(),config:()=>this.config()}[k]||(()=>{}))();
+    ({overview:()=>this.overview(),queue:()=>this.queue(),rooms:()=>this.roomsView(),users:()=>this.users(),analytics:()=>this.analytics(),feedback:()=>this.feedback(),safety:()=>this.safety(),config:()=>this.config()}[k]||(()=>{}))();
   }
 
   head(title,sub){ return '<h1 style="font-family:Sora,sans-serif;font-weight:800;font-size:24px;letter-spacing:-.02em;margin:0 0 4px">'+title+'</h1><div style="font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#9a8fa2;margin-bottom:24px">'+sub+'</div>'; }
@@ -209,6 +227,87 @@ class Component extends DCLogic {
           '<span style="width:60px;text-align:right;font-variant-numeric:tabular-nums;color:#c9bcd0">'+m[4]+'</span>'+
           '<span style="width:60px;text-align:right;font-size:12px;color:#9a8fa2">'+m[5]+'</span>'+
         '</div>').join('')+
+      '</div>';
+  }
+
+  /* FEEDBACK — the daily-build signal loop */
+  fbLabel(key){
+    if(!key) return 'unknown';
+    const map={
+      scan:'Scan — the private read', spill:'Spill — the interview', mirror:'The Mirror',
+      mirror_paywall:'Mirror paywall', stream:'Stream / search', 'the room':'Sitting in a room',
+      companion_q:'Asking the companion', scan_done:'Completed a scan', spill_publish:'Published a spill',
+      spill_abandon:'Left the spill midway', scan_abandon:'Left the scan', share_dismiss:'Dismissed a share offer',
+      share_accept:'Accepted a share', room_bounce:'Bounced from a room fast', room_dwell_long:'Stayed in a room',
+      relate:'Related to a room', react:'Reacted in a room', paywall_view:'Saw the Mirror paywall',
+      rage_click:'Tapped dead space (frustration)', return_visit:'Came back', mirror_open:'Opened the Mirror',
+      mirror_reading:'Opened a Mirror reading', comment_post:'Left a comment', search:'Searched the stream'
+    };
+    if(map[key]) return map[key];
+    if(/^room:/.test(key)){ const id=key.split(':')[1]; const r=this.ROOMS.find(x=>x.id===id); return r?('Room — “'+(r.title.length>42?r.title.slice(0,42)+'…':r.title)+'”'):'A room'; }
+    return key.replace(/_/g,' ');
+  }
+  seedFeedbackDemo(){
+    if(!window.ShutapFeedback) return;
+    try{ if(window.ShutapFeedback.summary().counts.total>=12) return; }catch(e){ return; }
+    const now=Date.now(), H=3600000;
+    const evs=[
+      ['scan_done',{score:842,signature:'Fiercely Loving',target:'scan'},2],['scan_done',{score:610,target:'scan'},5],['scan_done',{score:333,target:'scan'},9],
+      ['spill_publish',{mode:'post',target:'spill'},4],['spill_publish',{mode:'post',target:'spill'},20],
+      ['mirror_open',{paid:false,target:'mirror'},3],['mirror_open',{paid:true,target:'mirror'},26],
+      ['relate',{target:'room:3',roomTitle:'therapy'},1],['relate',{target:'room:5',roomTitle:'failing'},6],['react',{kind:'heard',target:'room:0'},2],
+      ['room_dwell_long',{sec:41,target:'room'},2],['return_visit',{gapMin:1300},1],
+      ['companion_q',{text:'is it normal to feel relieved after a breakup?',intent:'scan'},2],
+      ['companion_q',{text:'rooms about going no-contact with a parent',intent:'find'},4],
+      ['companion_q',{text:'how does the mirror actually work?',intent:'answer'},7],
+      ['companion_q',{text:'i need to vent about my marriage',intent:'spill'},10],
+      ['search',{text:'marriage rooms where someone added their side',target:'stream'},5],
+      ['search',{text:'something hopeful',target:'stream'},8],
+      ['spill_abandon',{turns:3,target:'spill'},6],['spill_abandon',{turns:2,target:'spill'},15],['spill_abandon',{turns:4,target:'spill'},30],
+      ['share_dismiss',{trigger:'T1',target:'scan'},5],['share_dismiss',{trigger:'T4',target:'room'},12],
+      ['room_bounce',{sec:2,target:'room'},3],['room_bounce',{sec:3,target:'room'},7],
+      ['paywall_view',{target:'mirror_paywall'},3],['paywall_view',{target:'mirror_paywall'},14],['paywall_view',{target:'mirror_paywall'},22],
+      ['rage_click',{target:'Mirror'},9],['rate_friction',{target:'mirror_paywall',note:'wanted to see one more reading before paying'},11]
+    ];
+    const log=window.ShutapFeedback.signals();
+    const VAL={scan_done:'love',spill_publish:'love',mirror_open:'love',relate:'love',react:'love',room_dwell_long:'love',return_visit:'love',rate_loved:'love',spill_abandon:'friction',share_dismiss:'friction',room_bounce:'friction',rage_click:'friction',paywall_view:'neutral',rate_friction:'friction',companion_q:'question',search:'question'};
+    evs.forEach(([type,payload,hoursAgo])=>{ const e={id:(now-hoursAgo*H)+'-'+Math.random().toString(36).slice(2,6),type:type,t:now-hoursAgo*H,page:'demo',sid:'seed',alias:'🦉 seed',v:VAL[type]||'neutral'}; for(const k in payload) e[k]=payload[k]; log.push(e); });
+    try{ localStorage.setItem('shutap_feedback', JSON.stringify(log.slice(-600))); }catch(e){}
+  }
+  feedback(){
+    this.seedFeedbackDemo();
+    const S = window.ShutapFeedback ? window.ShutapFeedback.summary() : {counts:{love:0,friction:0,question:0,total:0},sentiment:0,loved:[],friction:[],questions:[],byType:[]};
+    const c=S.counts;
+    const ring=(pct)=>{ const r=30,circ=2*Math.PI*r,off=circ*(1-pct/100); return '<svg viewBox="0 0 72 72" style="width:72px;height:72px"><circle cx="36" cy="36" r="'+r+'" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/><circle cx="36" cy="36" r="'+r+'" fill="none" stroke="#e7548a" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'" transform="rotate(-90 36 36)"/><text x="36" y="40" text-anchor="middle" font-family="Sora,sans-serif" font-weight="800" font-size="17" fill="#f7e8f0">'+pct+'%</text></svg>'; };
+    const kpi=(n,l,col)=>'<div class="card" style="text-align:center"><div style="font-family:Sora,sans-serif;font-weight:800;font-size:26px;color:'+col+'">'+n+'</div><div style="font-size:11px;color:#9a8fa2;margin-top:3px">'+l+'</div></div>';
+    const rankList=(arr,col,empty)=>{ if(!arr.length) return '<div style="font-family:Newsreader,serif;font-style:italic;color:#6e6675;font-size:13px;padding:8px 0">'+empty+'</div>'; const max=arr[0].n||1; return arr.slice(0,7).map(x=>'<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;font-size:12.5px;color:#c9bcd0;margin-bottom:5px"><span>'+this.fbLabel(x.key)+'</span><b style="color:'+col+'">'+x.n+'</b></div><div class="bar"><i style="width:'+Math.round(x.n/max*100)+'%;background:'+col+'"></i></div></div>').join(''); };
+    // ship queue — auto-suggested daily builds from the strongest friction
+    const ship=[];
+    const fmap={}; S.friction.forEach(f=>fmap[f.key]=f.n);
+    if(fmap['spill_abandon']) ship.push(['#EF9F27','Spill interview drop-off','‘'+fmap['spill_abandon']+'’ people left the interview midway — try fewer questions or a clearer "almost done" cue.']);
+    if(fmap['room_bounce']) ship.push(['#E24B4A','Rooms bounced in <4s','‘'+fmap['room_bounce']+'’ fast exits — strengthen the first screen of a room (lead with the story, not chrome).']);
+    if(fmap['share_dismiss']) ship.push(['#7F77DD','Share offers dismissed','‘'+fmap['share_dismiss']+'’ dismissals — lower share frequency or improve the card; respect the cool-down.']);
+    const pv=(S.byType.find(b=>b.key==='paywall_view')||{}).n||0; const unlocks=(S.byType.find(b=>b.key==='mirror_unlock')||{}).n||0;
+    if(pv>=2 && unlocks===0) ship.push(['#e7548a','Mirror paywall not converting',pv+' paywall views, 0 unlocks — test showing one more reading free, or clearer trial framing.']);
+    if(fmap['rage_click']) ship.push(['#E24B4A','Frustration taps detected','‘'+fmap['rage_click']+'’ rage-clicks on dead space — something looks tappable but isn’t. audit those spots.']);
+    if(!ship.length) ship.push(['#5DCAA5','No urgent friction','signal is healthy — keep shipping; watch the questions feed for what to build next.']);
+
+    this.$view.innerHTML=this.head('Feedback loop','what people love, where they struggle, and what they ask — so we ship daily against real signal.')+
+      '<div style="background:#181020;border:.5px solid rgba(255,255,255,.08);border-radius:14px;padding:13px 16px;margin-bottom:18px;font-size:12px;color:#9a8fa2;line-height:1.5">🫶 <b style="color:#c9bcd0">Signal, not surveillance.</b> captured on-device from behavior, reactions, and questions to the companion — pseudonymous, alias + opaque id only. text feedback is opt-in via the companion’s “how did that land?” prompt.</div>'+
+      '<div style="display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:14px;align-items:center;margin-bottom:20px">'+
+        '<div class="card" style="display:flex;align-items:center;gap:12px"><div>'+ring(S.sentiment)+'</div><div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:13px;color:#f7e8f0">love share</div><div style="font-size:11px;color:#9a8fa2">of love+friction signals</div></div></div>'+
+        kpi(c.love,'love signals','#5DCAA5')+kpi(c.friction,'friction signals','#EF9F27')+kpi(c.question,'questions asked','#7F77DD')+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">'+
+        '<div class="card"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;display:block;margin-bottom:14px;color:#5DCAA5">💚 What people love</b>'+rankList(S.loved,'#5DCAA5','no love signals captured yet.')+'</div>'+
+        '<div class="card"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;display:block;margin-bottom:14px;color:#EF9F27">⚠ Where they struggle</b>'+rankList(S.friction,'#EF9F27','no friction captured yet.')+'</div>'+
+      '</div>'+
+      '<div class="card" style="margin-bottom:20px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#a9a4e8">🗣 What they’re asking the companion</b><span style="font-size:11px;color:#9a8fa2">'+S.questions.length+' recent</span></div>'+
+        (S.questions.length?S.questions.slice(0,8).map(q=>'<div class="qrow"><span style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#d8ccde">“'+(q.text.length>90?q.text.slice(0,90)+'…':q.text)+'”</span><span style="font-size:10.5px;color:#6e6675;flex:none">'+q.page+'</span></div>').join(''):'<div style="font-family:Newsreader,serif;font-style:italic;color:#6e6675;font-size:13px">no questions captured yet — the companion’s composer + search feed this.</div>')+
+      '</div>'+
+      '<div class="card"><b style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;display:block;margin-bottom:6px;color:#f7b8d4">🚢 Today’s build queue</b>'+
+        '<div style="font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#9a8fa2;margin-bottom:14px">auto-drafted from the strongest friction — turn signal into the next daily ship.</div>'+
+        ship.map(s=>'<div class="qrow"><span style="width:8px;height:8px;border-radius:50%;background:'+s[0]+';flex:none;margin-top:5px;align-self:flex-start"></span><span style="flex:1"><b style="font-family:Sora,sans-serif;font-weight:600;font-size:13px;color:#f0e6f0;display:block;margin-bottom:2px">'+s[1]+'</b><span style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9a8fa2">'+s[2]+'</span></span></div>').join('')+
       '</div>';
   }
 

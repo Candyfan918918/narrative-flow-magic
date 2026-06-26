@@ -6,6 +6,21 @@
 <script src="./support.js"></script>
 </head>
 <body>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#fcf1f5"/>
+  <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <g transform="translate(30,0)">
+    <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+    <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  </g>
+  <ellipse cx="23" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="35" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="65" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="77" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+</svg>
+</template>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,20 +29,20 @@
 <title>Shutap — vent about relationships, marriage, family &amp; work, pseudonymously, and see what happened next.</title>
 <meta name="description" content="Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next. spill it; someone in here has lived your exact thing.">
 <meta name="keywords" content="vent online, is it normal, am i overreacting, relationships, marriage, family, work, pseudonymous, what happened next">
-<link rel="canonical" href="'+location.origin+'/">
+<link rel="canonical" href="https://shutap.com/">
 <meta property="og:site_name" content="Shutap">
 <meta property="og:title" content="Shutap. Speak up.">
 <meta property="og:description" content="venting is free therapy — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="'+location.origin+'/">
+<meta property="og:url" content="https://shutap.com/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Shutap. Speak up.">
 <meta name="twitter:description" content="vent about relationships, marriage, family &amp; work — pseudonymously — and see what actually happened next.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
-{"@type":"Organization","@id":"'+location.origin+'/#org","name":"Shutap","url":"'+location.origin+'/","description":"Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.","slogan":"Shutap. Speak up."},
-{"@type":"WebSite","@id":"'+location.origin+'/#site","url":"'+location.origin+'/","name":"Shutap","description":"Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.","publisher":{"@id":"'+location.origin+'/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"'+location.origin+'/stream?ask={query}"},"query-input":"required name=query"}},
+{"@type":"Organization","@id":"https://shutap.com/#org","name":"Shutap","url":"https://shutap.com/","description":"Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.","slogan":"Shutap. Speak up."},
+{"@type":"WebSite","@id":"https://shutap.com/#site","url":"https://shutap.com/","name":"Shutap","description":"Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.","publisher":{"@id":"https://shutap.com/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://shutap.com/stream?ask={query}"},"query-input":"required name=query"}},
 {"@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Is Shutap anonymous?","acceptedAnswer":{"@type":"Answer","text":"Pseudonymous, not anonymous. You get one persistent alias — your real name never shows. Your story, your rules."}},
 {"@type":"Question","name":"What happens when I vent on Shutap?","acceptedAnswer":{"@type":"Answer","text":"You open a room. People who've lived your exact situation respond, relate, and share what actually happened next for them. You stay in control of what's shown."}},
@@ -55,6 +70,16 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,84,138,.38)}70%{box-shadow:0 0 0 10px rgba(231,84,138,0)}100%{box-shadow:0 0 0 0 rgba(231,84,138,0)}}
 @keyframes shimmer{0%{opacity:.55}50%{opacity:1}100%{opacity:.55}}
 @keyframes auraPulse{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:.8;transform:scale(1.07)}}
+@keyframes eyeListen{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes eyeReflect{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes eyeCelebrate{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.14) rotate(-6deg)}60%{transform:scale(1.14) rotate(6deg)}}
+@keyframes eyeCalm{0%,100%{opacity:.7}50%{opacity:1}}
+@keyframes eyeBlink{0%,90%,100%{transform:scaleY(1)}94%{transform:scaleY(.12)}97%{transform:scaleY(1)}}
+.sc-eye{transform-origin:center center;animation:eyeBlink 4.5s ease-in-out infinite}
+.sc-eye.is-listening{animation:eyeListen 1.5s ease-in-out infinite}
+.sc-eye.is-reflecting{animation:eyeReflect 2.8s ease-in-out infinite}
+.sc-eye.is-celebrating{animation:eyeCelebrate .6s ease-in-out 3}
+.sc-eye.is-calm-care{animation:eyeCalm 2.6s ease-in-out infinite}
 .m-cards{padding:0 18px;display:flex;flex-direction:column;gap:12px}
 .m-rd{border-radius:15px;padding:15px;border:.5px solid rgba(255,236,244,.1);background:rgba(255,255,255,.035);opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
 .m-rd.in{opacity:1;transform:none}
@@ -99,6 +124,8 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 </style>
 <script src="./seed-data.js"></script>
 <script src="./share-engine.js"></script>
+<script src="./feedback-engine.js"></script>
+<script src="./auth-sheet.js"></script>
 </helmet>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -277,34 +304,56 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
   <footer style="padding:28px 22px 90px;color:#9e7a8c;font-size:12px;text-align:center;font-family:'Newsreader',serif;font-style:italic;line-height:1.6">
     <div>shutap — a room for what you're carrying</div>
     <div style="margin-top:3px">18+ · pseudonymous · your real name never shows · your story, your rules 🤍</div>
-    <div style="margin-top:10px;font-family:'Sora',sans-serif;font-style:normal;font-weight:700;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#6b4a5c">you don't have to shut up here</div>
+    <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:7px 16px;justify-content:center;font-style:normal">
+      <a href="Legal.dc.html#terms" style="font-family:'Inter',sans-serif;font-size:12px;color:#6b4a5c;text-decoration:none">Terms</a>
+      <a href="Legal.dc.html#privacy" style="font-family:'Inter',sans-serif;font-size:12px;color:#6b4a5c;text-decoration:none">Privacy</a>
+      <a href="Legal.dc.html#guidelines" style="font-family:'Inter',sans-serif;font-size:12px;color:#6b4a5c;text-decoration:none">Guidelines</a>
+      <a href="Legal.dc.html#safety" style="font-family:'Inter',sans-serif;font-size:12px;color:#6b4a5c;text-decoration:none">Safety</a>
+      <a href="mailto:hello@shutap.com" style="font-family:'Inter',sans-serif;font-size:12px;color:#6b4a5c;text-decoration:none">Contact</a>
+    </div>
+    <div style="margin-top:9px;font-size:11.5px;color:#b09aa6;max-width:42ch;margin-left:auto;margin-right:auto;line-height:1.5">shutap is your group chat, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).</div>
+    <div style="margin-top:12px;font-family:'Sora',sans-serif;font-style:normal;font-weight:700;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#6b4a5c">you don't have to shut up here</div>
   </footer>
 </main>
 
 <!-- ONBOARDING CONTRACT (shown once) -->
 <div ref="{{ contractRoot }}" style="position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:24px">
   <div onClick="{{ dismissContract }}" style="position:absolute;inset:0;background:rgba(10,5,14,.72);backdrop-filter:blur(8px)"></div>
-  <div role="dialog" style="position:relative;width:100%;max-width:420px;background:linear-gradient(160deg,#2e0d1a,#1a0a12);border:.5px solid rgba(255,255,255,.14);border-radius:24px;padding:32px 28px;text-align:center;animation:pop .35s ease">
-    <span style="display:block;width:48px;height:48px;margin:0 auto 18px"><svg viewBox="0 0 56 56" fill="none" style="display:block;width:100%;height:100%"><circle cx="28" cy="28" r="27" fill="rgba(231,84,138,.12)"></circle><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg></span>
-    <div style="font-family:'Newsreader',serif;font-style:italic;font-size:24px;line-height:1.35;color:#f7e8f0;margin-bottom:16px">this is where you're heard.</div>
-    <div style="display:flex;flex-direction:column;gap:13px;text-align:left;margin-bottom:24px">
-      <div style="display:flex;gap:11px;align-items:flex-start"><span style="font-size:15px;flex:none">🤍</span><span style="font-family:'Newsreader',serif;font-style:italic;font-size:15px;line-height:1.5;color:#c4a0b2">real people sit with what you're carrying. no judging.</span></div>
-      <div style="display:flex;gap:11px;align-items:flex-start"><span style="font-size:15px;flex:none">🗣</span><span style="font-family:'Newsreader',serif;font-style:italic;font-size:15px;line-height:1.5;color:#c4a0b2">advice only if you ask for it. otherwise, you're just heard.</span></div>
-      <div style="display:flex;gap:11px;align-items:flex-start"><span style="font-size:15px;flex:none">🪶</span><span style="font-family:'Newsreader',serif;font-style:italic;font-size:15px;line-height:1.5;color:#c4a0b2">you sit under a pseudonym. your real name never shows.</span></div>
-    </div>
-    <div onClick="{{ dismissContract }}" role="button" style="background:#e7548a;color:#fff;border-radius:14px;padding:14px;font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;cursor:pointer">i'm ready →</div>
+  <div role="dialog" style="position:relative;width:100%;max-width:420px;background:linear-gradient(160deg,#2e0d1a,#1a0a12);border:.5px solid rgba(255,255,255,.14);border-radius:24px;padding:26px 28px 28px;text-align:center;animation:pop .35s ease">
+    <div onClick="{{ dismissContract }}" role="button" style="position:absolute;top:16px;right:18px;font-family:'Newsreader',serif;font-style:italic;font-size:13.5px;color:#9e7a8c;cursor:pointer">skip</div>
+    <div ref="{{ onbFrame }}"></div>
+    <div ref="{{ onbDots }}" style="display:flex;gap:7px;justify-content:center;margin:20px 0 18px"></div>
+    <div ref="{{ onbNext }}" onClick="{{ onbAdvance }}" role="button" style="background:#e7548a;color:#fff;border-radius:14px;padding:14px;font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;cursor:pointer">next →</div>
   </div>
 </div>
 
 <!-- COMPANION BUBBLE (draggable) -->
 <div onClick="{{ openComposer }}" ref="{{ composerPill }}" role="button" tabindex="0" aria-label="Ask the companion" style="position:fixed;left:calc(50% - 29px);bottom:24px;z-index:35;width:58px;height:58px;border-radius:50%;background:rgba(231,84,138,0.18);backdrop-filter:blur(4px);box-shadow:0 12px 30px -8px rgba(60,10,30,.35);cursor:grab;display:grid;place-items:center;animation:pulse 4s infinite;touch-action:none;user-select:none">
-  <svg viewBox="0 0 56 56" fill="none" style="width:32px;height:32px;display:block;pointer-events:none"><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg>
+  <svg class="sc-eye" viewBox="0 0 56 56" fill="none" style="width:32px;height:32px;display:block;pointer-events:none"><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg>
+  <span aria-label="AI" title="you're talking to an AI companion" style="position:absolute;bottom:-3px;right:-3px;background:#0b080f;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:7.5px;letter-spacing:.08em;padding:2px 4px;border-radius:999px;border:1.5px solid #fdf0f5;pointer-events:none">AI</span>
   <span ref="{{ composerPillLabel }}" style="display:none"></span>
+</div>
+
+<!-- AI DISCLOSURE (shown once before first companion message) -->
+<div ref="{{ aiDiscloseRoot }}" style="position:fixed;inset:0;z-index:97;display:none;align-items:center;justify-content:center;padding:24px">
+  <div style="position:absolute;inset:0;background:rgba(10,5,14,.74);backdrop-filter:blur(8px)"></div>
+  <div role="dialog" style="position:relative;width:100%;max-width:420px;background:linear-gradient(160deg,#2e0d1a,#1a0a12);border:.5px solid rgba(255,255,255,.14);border-radius:24px;padding:30px 28px;text-align:center;animation:pop .35s ease">
+    <span style="display:block;width:46px;height:46px;margin:0 auto 16px"><svg class="sc-eye" viewBox="0 0 56 56" fill="none" style="display:block;width:100%;height:100%"><circle cx="28" cy="28" r="27" fill="rgba(231,84,138,.12)"></circle><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg></span>
+    <div style="font-family:'Newsreader',serif;font-style:italic;font-size:16.5px;line-height:1.55;color:#f3c6da;margin-bottom:22px">you're talking to shutap's ai companion — not a human, and not a therapist. it's here to listen, reflect, and keep you company. it can get things wrong, and it can't give medical, mental-health, or legal advice. if things feel heavy, we'll point you to real help. 🤍</div>
+    <div ref="{{ aiDiscloseOk }}" role="button" style="background:#e7548a;color:#fff;border-radius:14px;padding:14px;font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;cursor:pointer">got it</div>
+    <div style="margin-top:12px"><a href="Legal.dc.html#ai" style="font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#9e7a8c;text-decoration:none">how the companion works →</a></div>
+  </div>
 </div>
 
 <!-- SPILL OVERLAY -->
 <div ref="{{ spillRoot }}" style="position:fixed;inset:0;z-index:80;display:none;background:#1a0a12">
   <div ref="{{ spillScreen }}" style="height:100%;display:flex;flex-direction:column"></div>
+</div>
+
+<!-- CHECK-IN OVERLAY (§3 capture spine) -->
+<div ref="{{ checkinRoot }}" style="position:fixed;inset:0;z-index:86;display:none;align-items:flex-end;justify-content:center;padding:0">
+  <div onClick="{{ closeCheckin }}" style="position:absolute;inset:0;background:rgba(10,5,14,.6);backdrop-filter:blur(6px)"></div>
+  <div ref="{{ checkinCard }}" role="dialog" style="position:relative;width:100%;max-width:460px;background:linear-gradient(165deg,#26101c,#190a12);border:.5px solid rgba(255,255,255,.12);border-top-left-radius:26px;border-top-right-radius:26px;box-shadow:0 -18px 60px -12px rgba(70,12,40,.6);padding:26px 24px calc(26px + env(safe-area-inset-bottom));transform:translateY(110%);transition:transform .5s cubic-bezier(.2,.9,.25,1)"></div>
 </div>
 
 <!-- SCAN OVERLAY -->
@@ -459,7 +508,52 @@ class Component extends DCLogic {
     ]
   };}
 
-  companionSVG(w,h){ return '<svg viewBox="0 0 56 56" fill="none" style="display:block;width:'+w+'px;height:'+(w)+'px;flex:none"><circle cx="28" cy="28" r="27" fill="#fdf0f5"/><rect x="15" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"/><rect x="29.5" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"/><ellipse cx="20.75" cy="31" rx="4" ry="5" fill="url(#pupG)"/><ellipse cx="35.25" cy="31" rx="4" ry="5" fill="url(#pupG)"/></svg>'; }
+  // §3.12 — skippable how-it-works (3 frames), never blocks browsing
+  get ONB(){ return [
+    {eye:true, big:'this is where you\u2019re heard.', rows:[['🤍','real people sit with what you\u2019re carrying. no judging.'],['🗣','advice only if you ask. otherwise, you\u2019re just heard.'],['🪶','you sit under a pseudonym — your real name never shows.']]},
+    {emoji:'💬', big:'spill it, then watch it move.', rows:[['🫂','someone who\u2019s lived your exact thing relates — \u201comg same.\u201d'],['🌱','the eye checks in over the next days: what happened next?'],['🪞','that\u2019s your mirror forming — the shape of you, over time.']]},
+    {emoji:'🔒', big:'safe enough to be honest.', rows:[['🛡','i scrub out names & details before anything is seen.'],['🆓','venting, being heard, and crisis help are always free.'],['👋','that\u2019s it — the room\u2019s open. say the thing.']]}
+  ]; }
+  renderOnb(){
+    if(!this.$onbFrame) return;
+    const i=this._onb||0; const f=this.ONB[i];
+    const icon = f.eye
+      ? '<span style="display:block;width:46px;height:46px;margin:0 auto 16px"><svg viewBox="0 0 56 56" fill="none" style="display:block;width:100%;height:100%"><circle cx="28" cy="28" r="27" fill="rgba(231,84,138,.12)"></circle><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg></span>'
+      : '<div style="font-size:38px;margin-bottom:12px">'+f.emoji+'</div>';
+    this.$onbFrame.innerHTML='<div style="animation:fadeUp .35s ease">'+icon+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:24px;line-height:1.35;color:#f7e8f0;margin-bottom:18px">'+f.big+'</div>'+
+      '<div style="display:flex;flex-direction:column;gap:13px;text-align:left">'+
+        f.rows.map(r=>'<div style="display:flex;gap:11px;align-items:flex-start"><span style="font-size:15px;flex:none">'+r[0]+'</span><span style="font-family:Newsreader,serif;font-style:italic;font-size:15px;line-height:1.5;color:#c4a0b2">'+r[1]+'</span></div>').join('')+
+      '</div></div>';
+    if(this.$onbDots) this.$onbDots.innerHTML=this.ONB.map((_,k)=>'<span style="width:'+(k===i?'18px':'6px')+';height:6px;border-radius:999px;background:'+(k===i?'#e7548a':'rgba(255,255,255,.22)')+';transition:.3s"></span>').join('');
+    if(this.$onbNext) this.$onbNext.textContent = i>=this.ONB.length-1 ? 'i\u2019m ready →' : 'next →';
+  }
+  onbAdvance(){
+    const i=this._onb||0;
+    if(i>=this.ONB.length-1){ try{localStorage.setItem('shutap_seen_contract','1');}catch(e){} if(this.$contract) this.$contract.style.display='none'; return; }
+    this._onb=i+1; this.renderOnb();
+  }
+
+  // §3 (AI Disclosure) — show once before the first companion message, then run `then`
+  aiGate(then){
+    let seen=false; try{ seen=!!localStorage.getItem('shutap_ai_disclosed'); }catch(e){}
+    if(seen || !this.$aiRoot){ then(); return; }
+    this._afterAi=then; this.$aiRoot.style.display='flex';
+  }
+
+  // §0 — the eye's emotional states (idle / listening / reflecting / celebrating / calm-care)
+  setEyeState(state){
+    this._eyeState=state||'idle';
+    const apply=()=>{ document.querySelectorAll('.sc-eye').forEach(el=>{
+      el.classList.remove('is-listening','is-reflecting','is-celebrating','is-calm-care');
+      if(state && state!=='idle') el.classList.add('is-'+state);
+    }); };
+    apply();
+    // re-apply shortly after, in case the visible eye was just re-rendered into an overlay
+    clearTimeout(this._eyeT); this._eyeT=setTimeout(apply, 120);
+  }
+
+  companionSVG(w,h){ return '<svg class="sc-eye" viewBox="0 0 56 56" fill="none" style="display:block;width:'+w+'px;height:'+(w)+'px;flex:none"><circle cx="28" cy="28" r="27" fill="#fdf0f5"/><rect x="15" y="16" widthh="11.5" height="24" rx="5.75" fill="url(#eyeG)"/><rect x="29.5" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"/><ellipse cx="20.75" cy="31" rx="4" ry="5" fill="url(#pupG)"/><ellipse cx="35.25" cy="31" rx="4" ry="5" fill="url(#pupG)"/></svg>'; }
 
   eyeSVG(w,h){ return '<svg viewBox="0 0 140 96" fill="none" style="display:block;width:'+w+'px;height:'+h+'px;flex:none"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"/><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"/><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)"/><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)"/><path d="M44 22 C41 18 35 18 35 24 C35 30 44 36 44 36 C44 36 53 30 53 24 C53 18 47 18 44 22Z" fill="#fff" opacity=".95"/><path d="M112 22 C109 18 103 18 103 24 C103 30 112 36 112 36 C112 36 121 30 121 24 C121 18 115 18 112 22Z" fill="#fff" opacity=".95"/></svg>'; }
 
@@ -516,6 +610,12 @@ class Component extends DCLogic {
     return {
       authArea: el=>{ this.$authArea=el; this.buildAuthHeader(); },
       contractRoot: el=>{ this.$contract=el; },
+      onbFrame: el=>{ this.$onbFrame=el; },
+      onbDots: el=>{ this.$onbDots=el; },
+      onbNext: el=>{ this.$onbNext=el; },
+      onbAdvance: ()=>this.onbAdvance(),
+      aiDiscloseRoot: el=>{ this.$aiRoot=el; },
+      aiDiscloseOk: el=>{ this.$aiOk=el; if(el) el.addEventListener('click',()=>{ try{localStorage.setItem('shutap_ai_disclosed','1');}catch(e){} if(this.$aiRoot) this.$aiRoot.style.display='none'; const fn=this._afterAi; this._afterAi=null; if(fn) setTimeout(fn,250); }); },
       dismissContract: ()=>{ try{localStorage.setItem('shutap_seen_contract','1');}catch(e){} if(this.$contract) this.$contract.style.display='none'; },
       heroAlias: el=>{ this.$heroAlias=el; this.buildHeroAlias(); },
       feed: el=>{ this.$feed=el; },
@@ -530,6 +630,8 @@ class Component extends DCLogic {
       composerRoot: el=>{ this.$compRoot=el; },
       mirrorRoot: el=>{ this.$mirrorRoot=el; },
       mirrorBody: el=>{ this.$mirrorBody=el; },
+      checkinRoot: el=>{ this.$ciRoot=el; },
+      checkinCard: el=>{ this.$ciCard=el; },
       composerPill: el=>{ this.$pill=el; if(el){ this.wireDrag(el); this.refreshBubbleBadge(); } },
       composerPillLabel: el=>{ this.$pillLabel=el; },
       composerInput: el=>{ this.$compInput=el; if(el) el.addEventListener('keydown',e=>{ if(e.key==='Enter') this.runComposer(); }); },
@@ -540,6 +642,7 @@ class Component extends DCLogic {
       openSpill: ()=>this.openSpill(),
       openScan: ()=>this.openScan(),
       openComposer: ()=>this.openComposer(),
+      closeCheckin: ()=>this.closeCheckin(),
       openMirror: ()=>this.openMirror(),
       closeComposer: ()=>this.closeComposer(),
       runComposer: ()=>this.runComposer()
@@ -549,8 +652,8 @@ class Component extends DCLogic {
   componentDidMount(){
     document.addEventListener('click',e=>{ if(this.$authArea&&!this.$authArea.contains(e.target)){ const m=this.$authArea.querySelector('[data-menu]'); if(m) m.style.display='none'; } });
     this.buildFeed();
-    // 19D — show the emotional contract once
-    try{ if(!localStorage.getItem('shutap_seen_contract')&&this.$contract){ setTimeout(()=>{ this.$contract.style.display='flex'; },600); } }catch(e){}
+    // 19D / §3.12 — show the skippable how-it-works once
+    try{ if(!localStorage.getItem('shutap_seen_contract')&&this.$contract){ setTimeout(()=>{ this._onb=0; this.renderOnb(); this.$contract.style.display='flex'; },600); } }catch(e){}
     const h=location.hash;
     if(h==='#spill') setTimeout(()=>this.openSpill(),350);
     if(h==='#scan') setTimeout(()=>this.openScan(),350);
@@ -662,7 +765,9 @@ class Component extends DCLogic {
   }; return lines[r.id]||"you put it out loud. that's the hardest part."; }
 
   requireAuth(then, intent){
-    if(this.getAlias()){ then(); } else { this.goJoin(intent); }
+    if(this.getAlias()){ then(); return; }
+    if(window.ShutapAuth){ window.ShutapAuth.requireAuth(()=>{ this.buildAuthHeader&&this.buildAuthHeader(); this.buildHeroAlias&&this.buildHeroAlias(); this.refreshBubbleBadge&&this.refreshBubbleBadge(); then(); }, intent); return; }
+    this.goJoin(intent);
   }
 
   goJoin(intent){
@@ -677,6 +782,10 @@ class Component extends DCLogic {
     this.requireAuth(()=>this._doOpenSpill(), 'spill');
   }
   _doOpenSpill(){
+    this.aiGate(()=>this._reallyOpenSpill());
+  }
+  _reallyOpenSpill(){
+    this.setEyeState&&this.setEyeState('listening');
     if(!this.$spillRoot) return;
     this.spill={ msgs:[], q:0 };
     this.$spillRoot.style.display='block';
@@ -684,7 +793,7 @@ class Component extends DCLogic {
     if(this.$pill) this.$pill.style.display='none';
     this.spillRender();
   }
-  closeSpill(){ if(!this.$spillRoot) return; this.$spillRoot.style.display='none'; document.body.style.overflow=''; if(this.$pill) this.$pill.style.display='flex'; }
+  closeSpill(){ if(!this.$spillRoot) return; if(!this._spillPublished && this.spill && (this.spill.msgs||[]).length>0 && window.ShutapFeedback) ShutapFeedback.track('spill_abandon',{turns:(this.spill.msgs||[]).length,target:'spill'}); this._spillPublished=false; this.$spillRoot.style.display='none'; document.body.style.overflow=''; if(this.$pill) this.$pill.style.display='flex'; }
 
   spillChrome(step,total){
     const el=document.createElement('div');
@@ -792,20 +901,207 @@ class Component extends DCLogic {
   }
 
   /* ═══════════ MODERATION: privacy shield (rules) + guardian (AI) ═══════════ */
-  // Rule-based privacy shield — flags identifiers before publish.
-  privacyShield(text){
-    const t=text||'';
-    const flags=[];
-    if(/[\w.+-]+@[\w-]+\.[\w.-]+/.test(t)) flags.push('email address');
-    if(/(\+?\d[\d\s().-]{7,}\d)/.test(t)) flags.push('phone number');
-    if(/@[A-Za-z0-9_]{3,}/.test(t)) flags.push('social handle');
-    if(/\b\d{1,5}\s+[A-Z][a-z]+\s+(Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Drive|Dr|Blvd)\b/.test(t)) flags.push('street address');
-    if(/\b(at|works? at|my (boss|manager|coworker)|company called)\s+[A-Z][a-zA-Z&]+/.test(t)) flags.push('possible workplace');
-    // proper-name heuristic: capitalised first names mid-sentence (not sentence-start)
-    const names=(t.match(/(?:[a-z,;]\s)([A-Z][a-z]{2,})\b/g)||[]).map(s=>s.trim()).filter(w=>!/^(I|The|My|We|He|She|They|It|But|And|So|Then|When|Now|After|Before|Last|Next)$/.test(w.replace(/^[a-z,;]\s/,'')));
-    if(names.length>=2) flags.push('possible first names');
-    return flags;
+  // §1c — PII scrubber: detects + REPLACES real personal info, returns what changed.
+  // err toward over-scrubbing; only clean_text is ever stored/shown.
+  scrubPII(text){
+    let t=text||''; const changes=[];
+    const bump=(type,label,n)=>{ const e=changes.find(c=>c.type===type); if(e){e.count+=n;} else changes.push({type,label,count:n}); };
+    // emails
+    t=t.replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, ()=>{ bump('email','an email',1); return '[email]'; });
+    // phone numbers
+    t=t.replace(/(\+?\d[\d\s().-]{7,}\d)/g, ()=>{ bump('phone','a phone number',1); return '[number]'; });
+    // social handles
+    t=t.replace(/(^|\s)@[A-Za-z0-9_]{3,}/g, (m,p)=>{ bump('handle','a social handle',1); return p+'[handle]'; });
+    // street addresses → removed
+    t=t.replace(/\b\d{1,5}\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\s+(Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Drive|Dr|Blvd|Court|Ct|Way)\b\.?/g, ()=>{ bump('address','your address',1); return '[where I live]'; });
+    // workplace "at Google" / "works at X" → role label
+    t=t.replace(/\b(works?\s+at|work\s+for|my\s+(?:boss|manager|coworker|colleague)\s+at)\s+[A-Z][A-Za-z&]+(?:\s[A-Z][A-Za-z&]+)?/g, (m,p)=>{ bump('workplace','a workplace',1); return p+' [my workplace]'; });
+    // proper first names mid-sentence → role label if a relationship word precedes, else [a name]
+    t=t.replace(/\b(my\s+(husband|wife|boyfriend|girlfriend|partner|mom|mum|mother|dad|father|sister|brother|son|daughter|boss|manager|friend|ex|aunt|uncle|cousin|roommate|neighbou?r))\s+([A-Z][a-z]{2,})\b/g,
+      (m,rel,_role,name)=>{ bump('name','a name',1); return rel; });
+    // remaining capitalised first names mid-sentence (not sentence start, not common words)
+    t=t.replace(/([a-z,;:]\s)([A-Z][a-z]{2,})\b/g, (m,pre,word)=>{
+      if(/^(I|The|My|We|He|She|They|It|But|And|So|Then|Now|After|Before|Last|Next|That|This|There|When|While|Because|Maybe|Even|Still|Just|Also|Today|Yesterday|Tomorrow|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|God)$/.test(word)) return m;
+      bump('name','a name',1); return pre+'[a name]';
+    });
+    return { clean:t.trim(), changes };
   }
+
+  // Rule-based privacy shield — now scrubs and returns flags + scrub result.
+  privacyShield(text){
+    const r=this.scrubPII(text);
+    this._lastScrub=r;
+    return r.changes.map(c=>c.label);
+  }
+
+  // a warm, in-voice line naming exactly what was swapped (§1c notification)
+  scrubNotice(changes){
+    if(!changes||!changes.length) return null;
+    const phrase = changes.length===1 ? changes[0].label
+      : changes.slice(0,-1).map(c=>c.label).join(', ')+' and '+changes[changes.length-1].label;
+    return 'heads up — i swapped out '+phrase+' so this stays anonymous. that\u2019s how shutap keeps you safe \uD83D\uDD12';
+  }
+
+  /* ═══════════ §3 — THE CAPTURE SPINE (check-in state machine) ═══════════ */
+  // beats: each a different emotional moment, friend not CRM.
+  get BEATS(){ return [
+    {type:'day0',  day:0,  line:'before you go — how are you sitting with it right now?', kind:'feeling'},
+    {type:'day1',  day:1,  line:'been thinking about what you spilled. how\u2019d you sleep on it?', kind:'trajectory'},
+    {type:'day2',  day:2,  line:'no pressure, just checking — you good today?', kind:'feeling'},
+    {type:'day3',  day:3,  line:'ok be honest — did you do anything, or still stewing 😤', kind:'action'},
+    {type:'day7',  day:7,  line:'where are things now?', kind:'resolution'},
+    {type:'day14', day:14, line:'looking back — what happened?', kind:'outcome'},
+    {type:'adaptive', day:30, line:'still going? where\u2019s it at now?', kind:'resolution'}
+  ]; }
+  get BEAT_OPTS(){ return {
+    feeling:    [['lighter','a little lighter','better'],['same','about the same','same'],['heavier','heavier, honestly','worse']],
+    trajectory: [['better','better','better'],['same','same','same'],['worse','worse','worse']],
+    action:     [['acted','i did something','acted'],['stewing','still stewing','stewing'],['worse','it got worse','worse']],
+    resolution: [['in_progress','in progress','in_progress'],['resolved','resolved','resolved'],['avoided','i avoided it','avoided'],['worse','it got worse','worse']],
+    outcome:    [['resolved','it worked out','resolved'],['avoided','i let it go','avoided'],['worse','it went badly','worse']]
+  }; }
+
+  situations(){ try{ return JSON.parse(localStorage.getItem('shutap_situations')||'[]'); }catch(e){ return []; } }
+  saveSituations(s){ try{ localStorage.setItem('shutap_situations', JSON.stringify(s.slice(-30))); }catch(e){} }
+
+  // create a situation + schedule the whole spine on spill publish (day 0)
+  scheduleCaptureSpine(title, scan, mode){
+    const all=this.situations();
+    const now=Date.now();
+    const sit={ id:'s'+now, title:title||'your situation', scan:scan||null, mode:mode||'heard', createdAt:now,
+      notifOptIn:false, status:'open',
+      beats:this.BEATS.map((b,i)=>({type:b.type, day:b.day, state:i===0?'due':'scheduled', dueAt:now+(i===0?0:i*1200), response:null})) };
+    all.push(sit); this.saveSituations(all);
+    if(window.ShutapFeedback) ShutapFeedback.track('checkin_scheduled',{count:sit.beats.length,target:'spill'});
+    return sit;
+  }
+
+  // earliest due, unanswered beat across situations (respects backoff/suppression)
+  dueCheckin(){
+    if(!this.getAlias()) return null;
+    const all=this.situations(); const now=Date.now();
+    for(const s of all){
+      if(s.status!=='open' && s.status!=='resolved') continue;
+      if(s.suppressed) continue;
+      const b=s.beats.find(x=>x.state==='due' && x.dueAt<=now);
+      if(b) return {sit:s, beat:b};
+    }
+    return null;
+  }
+  hasDueCheckin(){ return !!this.dueCheckin(); }
+
+  // surface the day-0 in-session read immediately after publish
+  day0CheckIn(sit){
+    const ref=this.dueCheckin();
+    if(ref && ref.sit.id===sit.id) this.openCheckin(ref.sit, ref.beat, true);
+  }
+
+  openCheckin(sit, beat, askPermission){
+    if(!this.$ciRoot||!this.$ciCard) return;
+    const meta=this.BEATS.find(b=>b.type===beat.type)||this.BEATS[0];
+    const opts=this.BEAT_OPTS[meta.kind]||this.BEAT_OPTS.trajectory;
+    const dayLabel = beat.type==='day0' ? 'right now · in session' : (beat.type==='adaptive'?'~day 30':'day '+beat.day);
+    if(window.ShutapFeedback) ShutapFeedback.track('checkin_opened',{type:beat.type,target:'spill'});
+    const titleShort = sit.title.length>54 ? sit.title.slice(0,54)+'…' : sit.title;
+    this.$ciCard.innerHTML=
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'+
+        '<div style="display:flex;align-items:center;gap:9px">'+this.companionSVG(30,30)+
+          '<div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#e7548a">check-in · '+dayLabel+'</div>'+
+          '<div style="font-family:Newsreader,serif;font-style:italic;font-size:12px;color:#9e7a8c;margin-top:1px">on \u201c'+titleShort+'\u201d</div></div>'+
+        '</div>'+
+        '<div data-cix role="button" style="font-size:20px;color:#9e7a8c;cursor:pointer;line-height:1">×</div>'+
+      '</div>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:21px;line-height:1.4;color:#f7e8f0;margin-bottom:18px">'+meta.line+'</div>'+
+      '<div data-ciopts style="display:flex;flex-direction:column;gap:9px">'+
+        opts.map(o=>'<div data-ci="'+o[0]+'" data-enum="'+o[2]+'" role="button" style="padding:13px 16px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);font-family:Newsreader,serif;font-style:italic;font-size:15.5px;color:#f0e6f0;cursor:pointer;transition:.15s">'+o[1]+'</div>').join('')+
+      '</div>'+
+      (beat.type==='day14'||beat.type==='adaptive'||meta.kind==='action' ? '<input data-cinote placeholder="add a line if you want — optional" style="width:100%;box-sizing:border-box;margin-top:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:12px 14px;color:#f0e6f0;font-family:Newsreader,serif;font-style:italic;font-size:14px;outline:none">' : '')+
+      (askPermission ? '<div data-ciperm style="margin-top:16px;padding-top:15px;border-top:.5px solid rgba(255,255,255,.1)"><div style="font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#f3c6da;line-height:1.45;margin-bottom:11px">want me to check in on you over the next couple weeks? i\u2019ll keep it light.</div><div style="display:flex;gap:9px"><div data-perm="yes" role="button" style="flex:1;text-align:center;padding:11px;border-radius:13px;background:#e7548a;color:#fff;font-family:Sora,sans-serif;font-weight:700;font-size:13px;cursor:pointer">yes, check in 🤍</div><div data-perm="no" role="button" style="flex:1;text-align:center;padding:11px;border-radius:13px;background:rgba(255,255,255,.06);color:#c4a0b2;font-family:Sora,sans-serif;font-weight:600;font-size:13px;cursor:pointer">not now</div></div></div>' : '')+
+      '<div data-cifoot style="margin-top:14px;font-family:Sora,sans-serif;font-weight:500;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:#7c6471;text-align:center">one tap. never homework. 🔒 stays anonymous</div>';
+
+    this.$ciRoot.style.display='flex';
+    requestAnimationFrame(()=>{ this.$ciCard.style.transform='translateY(0)'; });
+    const close=()=>this.closeCheckin();
+    this.$ciCard.querySelector('[data-cix]').addEventListener('click',()=>{ this.skipCheckin(sit,beat); close(); });
+    if(askPermission){
+      this.$ciCard.querySelectorAll('[data-perm]').forEach(p=>p.addEventListener('click',()=>{
+        const yes=p.getAttribute('data-perm')==='yes'; sit.notifOptIn=yes; this.persistSit(sit);
+        if(window.ShutapFeedback){ ShutapFeedback.track('notif_permission_asked',{channel:'email'}); if(yes) ShutapFeedback.track('notif_permission_granted',{channel:'email'}); }
+        const box=this.$ciCard.querySelector('[data-ciperm]'); if(box) box.innerHTML='<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;text-align:center">'+(yes?'i\u2019ll be around. 🤍':'all good — i\u2019ll be here when you come back.')+'</div>';
+      }));
+    }
+    this.$ciCard.querySelectorAll('[data-ci]').forEach(o=>o.addEventListener('click',()=>{
+      const noteEl=this.$ciCard.querySelector('[data-cinote]');
+      const note=noteEl ? this.scrubPII(noteEl.value||'').clean : null;
+      this.recordCheckin(sit, beat, { tap:o.getAttribute('data-ci'), enum:o.getAttribute('data-enum'), note:note||null });
+      o.style.background='#e7548a'; o.style.color='#fff'; o.style.borderColor='#e7548a';
+      this.$ciCard.querySelectorAll('[data-ci]').forEach(x=>{ if(x!==o){ x.style.opacity='.4'; } });
+      setTimeout(()=>this.afterCheckin(sit, beat), 720);
+    }));
+  }
+
+  persistSit(sit){ const all=this.situations(); const i=all.findIndex(s=>s.id===sit.id); if(i>=0){ all[i]=sit; this.saveSituations(all); } }
+
+  recordCheckin(sit, beat, resp){
+    beat.state='responded'; beat.response=resp; beat.respondedAt=Date.now();
+    // derive status from resolution/outcome beats
+    if(resp.enum==='resolved') sit.status='resolved';
+    else if(resp.enum==='avoided') sit.status='avoided';
+    else if(resp.enum==='worse') sit.lastValence='worse';
+    this.persistSit(sit);
+    if(window.ShutapFeedback) ShutapFeedback.track('checkin_responded',{type:beat.type,enum:resp.enum,target:'spill'});
+    if(beat.type==='day14'||beat.type==='adaptive'){ if(window.ShutapFeedback) ShutapFeedback.track('outcome_captured',{resolution:sit.status,trajectory:resp.enum}); }
+  }
+
+  skipCheckin(sit, beat){ beat.state='skipped'; this.persistSit(sit); }
+
+  afterCheckin(sit, beat){
+    // crisis/valence override — a 'worse' answer routes to support, never the next prompt or paywall
+    if(beat.response && beat.response.enum==='worse'){
+      this.checkinSupport(sit); return;
+    }
+    // adaptive tail: stop if resolved/avoided
+    if((beat.type==='day14') && (sit.status==='resolved'||sit.status==='avoided')){ this.closeCheckin(); this.toast('thank you for letting me follow it through. 🤍'); return; }
+    // schedule next beat as due (compressed for demo so the arc is walkable)
+    const idx=sit.beats.findIndex(b=>b.type===beat.type);
+    const next=sit.beats[idx+1];
+    if(next){ next.state='due'; next.dueAt=Date.now()+1400; this.persistSit(sit); }
+    this.closeCheckin();
+    // the Mirror paywall offer lands at the day7–14 felt-value moment (§4b)
+    if(beat.type==='day7' || beat.type==='day14'){ setTimeout(()=>this.offerMirrorFromCheckin(sit), 900); return; }
+    if(next){ setTimeout(()=>{ const ref=this.dueCheckin(); if(ref) { this.toast('🤍 the eye has a check-in for you'); this.refreshBubbleBadge(); } }, 1500); }
+  }
+
+  checkinSupport(sit){
+    if(!this.$ciCard) return;
+    this.$ciCard.innerHTML=
+      '<div style="text-align:center;padding:6px 4px 4px">'+this.companionSVG(40,40)+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:20px;line-height:1.4;color:#f7e8f0;margin:14px 0 8px">that it got heavier matters. i\u2019m not going to rate that.</div>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c4a0b2;line-height:1.6;margin-bottom:18px">if it\u2019s a lot right now, real people are one tap away — free, any time.</div>'+
+      '<div style="display:flex;flex-direction:column;gap:9px;text-align:left">'+
+        '<a href="tel:988" style="text-decoration:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:13px 15px;font-family:Sora,sans-serif;font-weight:600;font-size:13.5px;color:#f7e8f0">988 — Suicide & Crisis Lifeline (US)</a>'+
+        '<a href="https://findahelpline.com" target="_blank" rel="noopener" style="text-decoration:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:13px 15px;font-family:Sora,sans-serif;font-weight:600;font-size:13.5px;color:#f7e8f0">findahelpline.com — your country</a>'+
+      '</div>'+
+      '<div data-cix2 role="button" style="margin-top:16px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;cursor:pointer">close</div></div>';
+    if(window.ShutapFeedback) ShutapFeedback.track('crisis_resources_shown',{via:'checkin'});
+    const x=this.$ciCard.querySelector('[data-cix2]'); if(x) x.addEventListener('click',()=>this.closeCheckin());
+  }
+
+  offerMirrorFromCheckin(sit){
+    if(!this.$ciRoot||!this.$ciCard) return;
+    if(window.ShutapFeedback) ShutapFeedback.track('mirror_teaser_shown',{via:'checkin',day:'7-14'});
+    this.$ciCard.innerHTML=
+      '<div style="text-align:center;padding:4px">'+this.companionSVG(40,40)+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:21px;line-height:1.4;color:#f7e8f0;margin:14px 0 8px">i\u2019ve watched this one move.</div>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c4a0b2;line-height:1.6;margin-bottom:8px">you spilled at '+(sit.scan||'\u2014')+', and you\u2019ve checked in '+(sit.beats.filter(b=>b.state==='responded').length)+' times since. there\u2019s a shape forming across everything you\u2019ve told me.</div>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;line-height:1.5;margin-bottom:18px">your per-situation reflection is always free. the full arc — across all your situations, over time — lives in the Mirror.</div>'+
+      '<div data-cimirror role="button" style="background:linear-gradient(135deg,#e7548a,#a01a55);color:#fff;border-radius:14px;padding:14px;font-family:Sora,sans-serif;font-weight:700;font-size:14px;cursor:pointer">see your Mirror →</div>'+
+      '<div data-cilater role="button" style="margin-top:11px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;cursor:pointer">maybe later</div></div>';
+    const go=this.$ciCard.querySelector('[data-cimirror]'); if(go) go.addEventListener('click',()=>{ this.closeCheckin(); this.openMirror(); });
+    const later=this.$ciCard.querySelector('[data-cilater]'); if(later) later.addEventListener('click',()=>this.closeCheckin());
+  }
+
+  closeCheckin(){ if(this.$ciCard) this.$ciCard.style.transform='translateY(110%)'; setTimeout(()=>{ if(this.$ciRoot) this.$ciRoot.style.display='none'; },480); this.refreshBubbleBadge(); }
 
   async runGuardian(mode){
     // show scanning state
@@ -849,6 +1145,7 @@ class Component extends DCLogic {
 
   crisisCard(){
     if(!this.$spillScreen) return;
+    this.setEyeState&&this.setEyeState('calm-care');
     this.$spillScreen.innerHTML='';
     this.$spillScreen.appendChild(this.spillChrome(7,7));
     const body=document.createElement('div');
@@ -873,23 +1170,34 @@ class Component extends DCLogic {
 
   spillPublish(mode, info){
     if(!this.$spillScreen) return;
+    this._spillPublished=true;
+    if(window.ShutapFeedback) ShutapFeedback.track('spill_publish',{mode:mode||'post',target:'spill'});
     info=info||{};
     const shieldFlags=info.shieldFlags||[];
     this.$spillScreen.innerHTML='';
     this.$spillScreen.appendChild(this.spillChrome(7,7));
     const body=document.createElement('div');
     body.style.cssText='flex:1;display:grid;place-items:center;padding:34px 22px;text-align:left;max-width:520px;margin:0 auto';
-    const shieldNote = shieldFlags.length
-      ? '<div style="margin-top:18px;background:rgba(231,159,39,.12);border:1px solid rgba(231,159,39,.3);border-radius:13px;padding:13px 15px;font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#f0c98a;line-height:1.5">🛡 the privacy shield tucked away some details that could identify you ('+shieldFlags.join(', ')+'). your story stays — those bits don\u2019t.</div>'
-      : '<div style="margin-top:18px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c">🛡 privacy shield checked it — nothing identifying slipped through.</div>';
+    const scrub=this._lastScrub||{changes:[]};
+    const notice=this.scrubNotice(scrub.changes);
+    const shieldNote = notice
+      ? '<div style="margin-top:18px;background:rgba(231,84,138,.1);border:1px solid rgba(231,84,138,.28);border-radius:14px;padding:14px 16px"><div style="display:flex;gap:9px;align-items:flex-start">'+this.companionSVG(22,22)+'<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#f3c6da;line-height:1.5">'+notice+'</div></div><div style="margin-top:9px;display:flex;flex-wrap:wrap;gap:6px">'+scrub.changes.map(c=>'<span style="font-family:Sora,sans-serif;font-weight:600;font-size:10.5px;letter-spacing:.02em;color:#e7548a;background:rgba(231,84,138,.14);border-radius:999px;padding:3px 9px">'+c.label+(c.count>1?' ×'+c.count:'')+'</span>').join('')+'</div></div>'
+      : '<div style="margin-top:18px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c">🔒 privacy shield checked it — nothing identifying slipped through.</div>';
+    if(window.ShutapFeedback && scrub.changes.length) ShutapFeedback.track('pii_scrubbed',{types:scrub.changes.map(c=>c.type),count:scrub.changes.reduce((a,c)=>a+c.count,0)});
     body.innerHTML=
       this.companionSVG(50,50)+
-      '<div style="margin-top:20px;font-family:Newsreader,serif;font-style:italic;font-size:28px;line-height:1.35;color:#f7e8f0">the room is open.</div>'+
+      '<div style="margin-top:20px;font-family:Newsreader,serif;font-style:italic;font-size:28px;line-height:1.35;color:#f7e8f0" data-roomopen>the room is open.</div>'+
       '<div style="margin-top:14px;font-family:Newsreader,serif;font-style:italic;font-size:16px;color:#c4a0b2;line-height:1.6;max-width:38ch">sitting under <b style="font-style:normal;font-family:Inter;font-weight:500;color:#f7e8f0">'+((this.getAlias()&&this.getAlias().emoji)||'🦉')+' '+((this.getAlias()&&this.getAlias().name)||'Quiet Indonesian Owl')+'</b>. the room '+(mode==='heard'?'knows you\'re not looking to be fixed.':'knows you\'re open to what it thinks.')+'</div>'+
       shieldNote+
       '<div style="margin-top:24px;display:flex;gap:16px;flex-wrap:wrap"><a href="Stream.dc.html#room-0" style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;color:#e7548a;text-decoration:none;border-bottom:1px solid rgba(231,84,138,.38);padding-bottom:1px">enter the room →</a><span data-close style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;cursor:pointer">close</span></div>';
     this.$spillScreen.appendChild(body);
-    body.querySelector('[data-close]').addEventListener('click',()=>this.closeSpill());
+    this.setEyeState&&this.setEyeState('reflecting');
+    const title=(this.spill&&this.spill.composed&&this.spill.composed.case_title) || (this.spill&&this.spill.msgs&&this.spill.msgs.find(m=>m.role==='user')&&this.spill.msgs.find(m=>m.role==='user').text) || 'your situation';
+    const cleanTitle=this.scrubPII(title).clean;
+    const sit=this.scheduleCaptureSpine(cleanTitle, (this.spill&&this.spill.scan)||null, mode);
+    body.querySelector('[data-close]').addEventListener('click',()=>{ this.closeSpill(); setTimeout(()=>this.day0CheckIn(sit), 400); });
+    // also offer the day-0 read inline as the natural next beat
+    setTimeout(()=>this.day0CheckIn(sit), 1400);
   }
 
   /* ═══════════ SCAN ═══════════ */
@@ -897,6 +1205,9 @@ class Component extends DCLogic {
     this.requireAuth(()=>this._doOpenScan(), 'scan');
   }
   _doOpenScan(){
+    this.aiGate(()=>this._reallyOpenScan());
+  }
+  _reallyOpenScan(){
     if(!this.$scanRoot) return;
     this.scan={ answers:{}, idx:1 };
     this.$scanRoot.style.display='block';
@@ -944,6 +1255,7 @@ class Component extends DCLogic {
     Object.values(answers).forEach(a=>{ if(typeof a.w==='number'){ sum+=a.w; n++; } });
     const score=n?Math.max(0,Math.min(999,Math.round(sum/n))):400;
     const sig=this.SIGS.find(s=>score>=s.min&&score<=s.max)||this.SIGS[3];
+    if(window.ShutapFeedback) ShutapFeedback.track('scan_done',{score:score,signature:sig.label,target:'scan'});
     // score color
     const col=score<200?'#9e8f9c':score<400?'#7F77DD':score<600?'#c87c4a':score<800?'#e7548a':'#c1216b';
     if(!this.$scanScreen) return;
@@ -977,6 +1289,7 @@ class Component extends DCLogic {
       '</div>';
     this.$scanScreen.appendChild(body);
     // count up
+    this.setEyeState&&this.setEyeState('celebrating');
     const scoreEl=body.querySelector('[data-score]');
     let cur=0; const step=Math.ceil(score/38);
     const tick=setInterval(()=>{ cur=Math.min(cur+step,score); if(scoreEl) scoreEl.textContent=cur; if(cur>=score) clearInterval(tick); },28);
@@ -994,7 +1307,7 @@ class Component extends DCLogic {
         companion:'this one\u2019s a keeper \u2014 want it as a card?',
         caption:'turns out i\u2019m a '+score+' \u00b7 '+sig.label+' \ud83d\udc80 take yours \u2192',
         loopLabel:'what\u2019s your number? \u2192',
-        url:location.origin,
+        url:'https://shutap.com',
         privacy:'just your score + signature \u2014 nothing private.'
       });
     }, 1700);
@@ -1028,7 +1341,7 @@ class Component extends DCLogic {
     const close=()=>ov.remove();
     ov.querySelector('[data-x]').addEventListener('click',close);
     ov.querySelector('[data-x2]').addEventListener('click',close);
-    const url=location.origin;
+    const url='https://shutap.com';
     ov.querySelectorAll('[data-t]').forEach(b=>b.addEventListener('click',()=>this.fireShare(b.dataset.t, cap, url)));
   }
 
@@ -1114,7 +1427,7 @@ class Component extends DCLogic {
   refreshBubbleBadge(){
     if(!this.$pill) return;
     let badge=this.$pill.querySelector('[data-nbadge]');
-    const n=this.unreadCount();
+    const n=this.unreadCount() + (this.hasDueCheckin()?1:0);
     if(n>0){
       if(!badge){
         badge=document.createElement('span');
@@ -1168,6 +1481,7 @@ class Component extends DCLogic {
   mirrorActive(){ try{ return ['trialing','active','grace','canceled'].includes(localStorage.getItem('shutap_sub_status')); }catch(e){ return false; } }
 
   openMirror(){
+    if(window.ShutapFeedback) ShutapFeedback.track(this.mirrorActive()?'mirror_open':'mirror_open',{paid:this.mirrorActive(),target:'mirror'});
     if(this.$compRoot) this.$compRoot.style.display='none';
     if(!this.$mirrorRoot) return;
     this.$mirrorRoot.style.display='block'; this.$mirrorRoot.scrollTop=0;
@@ -1370,7 +1684,7 @@ class Component extends DCLogic {
     (async()=>{
       let out;
       try{
-        const sys='You are the Mirror on Shutap — not a chatbot and not "the companion." You are a warm, attentive presence, like a good therapist who is also a trusted friend: you LISTEN first, reflect back what you hear in the person\'s own words, and ask one gentle, opening question. You are grounded in what this person has shared (they vent about relationships, family, work). HARD RULES: never advise, never say "you should/need to/try", never diagnose or use clinical or legal labels, never instruct. You only reflect and ask. Keep it to 1–2 short sentences, lowercase, warm, specific — never generic. A reflective question hands agency back; that is the goal. If they express self-harm or crisis, do not reflect — tell them warmly to reach 988 or a local line right now.';
+        const sys='You are the Mirror on Shutap — not a chatbot and not "the companion." You are the user\'s sharpest, most loving friend in the group chat: warm, funny, a little bitchy — but ALWAYS aimed at the SITUATION, never at the person. lowercase, texty, group-chat energy. You LISTEN first, reflect back what you hear in their own words, and ask ONE real question. You are grounded in what this person shared (they vent about relationships, family, work). DOES (friend / reflection): reflect patterns ("you\'ve spilled about her three times this month — always after a sunday call"); relate ("we\'ve all done that, you\'re not crazy"); validate the feeling ("that\'d piss me off too"); ask, keep their agency ("what do YOU actually want here?"). NEVER (clinical — needs a license): never diagnose (no "you have anxiety / that\'s trauma / he\'s a narcissist"); never prescribe or treat; never direct high-stakes specifics ("leave him / quit / cut her off") — you may EXPLORE, never INSTRUCT; never say "you should/need to". Build test for every line: would a sharp, loving friend say this, or a therapist? friend → ship; therapist → reframe as a reflection or a question. Keep it to 1–2 short sentences, specific, never generic. If they express self-harm or crisis, DROP the voice entirely — no jokes — and warmly tell them to reach 988 or a local line right now.';
         const raw=await window.claude.complete({system:sys, messages:this._mHist});
         out=(raw||'').trim();
       }catch(e){ out=''; }
@@ -1416,9 +1730,10 @@ class Component extends DCLogic {
       '</div>';
     document.body.appendChild(ov);
     ov.querySelector('[data-x]').addEventListener('click',()=>ov.remove());
-    ov.querySelector('[data-do]').addEventListener('click',()=>{ const cap='i\u2019m learning to defend myself, too. \u2014 found in my Shutap mirror'; if(navigator.share){ navigator.share({title:'my shutap mirror',text:cap,url:location.origin}).then(()=>ov.remove()).catch(()=>{}); } else if(navigator.clipboard){ navigator.clipboard.writeText(cap+' '+location.origin+'').then(()=>{ this.toast('copied \u2014 only your growth, nothing private.'); ov.remove(); }); } else ov.remove(); });
+    ov.querySelector('[data-do]').addEventListener('click',()=>{ const cap='i\u2019m learning to defend myself, too. \u2014 found in my Shutap mirror'; if(navigator.share){ navigator.share({title:'my shutap mirror',text:cap,url:'https://shutap.com'}).then(()=>ov.remove()).catch(()=>{}); } else if(navigator.clipboard){ navigator.clipboard.writeText(cap+' https://shutap.com').then(()=>{ this.toast('copied \u2014 only your growth, nothing private.'); ov.remove(); }); } else ov.remove(); });
   }
   openPaywall(){
+    if(window.ShutapFeedback) ShutapFeedback.track('paywall_view',{target:'mirror_paywall'});
     const ov=document.createElement('div');
     ov.style.cssText='position:fixed;inset:0;z-index:99;display:flex;align-items:flex-end;justify-content:center';
     ov.innerHTML=
@@ -1426,8 +1741,8 @@ class Component extends DCLogic {
       '<div role="dialog" style="position:relative;width:100%;max-width:460px;background:linear-gradient(160deg,#2e0d1a,#1a0a12);border:.5px solid rgba(255,255,255,.16);border-radius:22px 22px 0 0;padding:26px 24px;animation:slideUp .3s ease">'+
         '<div style="text-align:center;margin-bottom:20px"><div style="font-family:Newsreader,serif;font-style:italic;font-size:22px;line-height:1.35;color:#f7e8f0">your reflection keeps going.</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#caaebb;margin-top:8px;line-height:1.5">every scan adds a brushstroke. the mirror holds the whole portrait — patterns, your arc, the daily pull, and what others who\u2019ve been here came through.</div></div>'+
         '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">'+
-          '<div data-plan="annual" style="border:1.5px solid #e7548a;background:rgba(231,84,138,.10);border-radius:14px;padding:15px 17px;cursor:pointer;display:flex;justify-content:space-between;align-items:center"><div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#f7e8f0">annual · $49/yr <span style="font-family:Sora;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#1a0a12;background:#f7b8d4;border-radius:999px;padding:2px 7px;margin-left:6px">best value</span></div><div style="font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#caaebb;margin-top:2px">7 days free, then $49/year</div></div><span style="font-family:Sora,sans-serif;font-weight:800;font-size:15px;color:#f7e8f0">·</span></div>'+
-          '<div data-plan="monthly" style="border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:15px 17px;cursor:pointer;display:flex;justify-content:space-between;align-items:center"><div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#f7e8f0">monthly · $6/mo</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#caaebb;margin-top:2px">7 days free, then $6/month</div></div></div>'+
+          '<div data-plan="annual" style="border:1.5px solid #e7548a;background:rgba(231,84,138,.10);border-radius:14px;padding:15px 17px;cursor:pointer;display:flex;justify-content:space-between;align-items:center"><div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#f7e8f0">annual <span style="font-family:Sora;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#1a0a12;background:#f7b8d4;border-radius:999px;padding:2px 7px;margin-left:6px">best value</span></div><div style="font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#caaebb;margin-top:2px">7 days free, then yearly</div></div><span style="font-family:Sora,sans-serif;font-weight:800;font-size:15px;color:#f7e8f0">·</span></div>'+
+          '<div data-plan="monthly" style="border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:15px 17px;cursor:pointer;display:flex;justify-content:space-between;align-items:center"><div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#f7e8f0">monthly</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#caaebb;margin-top:2px">7 days free, then monthly</div></div></div>'+
         '</div>'+
         '<div data-start role="button" style="text-align:center;background:#e7548a;color:#fff;border-radius:14px;padding:15px;font-family:Sora,sans-serif;font-weight:700;font-size:15px;cursor:pointer">start 7-day free trial</div>'+
         '<div style="font-family:Newsreader,serif;font-style:italic;font-size:12px;color:#8a7080;text-align:center;margin-top:12px;line-height:1.5">cancel anytime — keeps the mirror until the period ends, then returns to your free reflection. your scans are always yours. venting, scan &amp; being heard stay free, always.</div>'+
@@ -1441,12 +1756,18 @@ class Component extends DCLogic {
     const close=()=>ov.remove();
     ov.querySelector('[data-x]').addEventListener('click',close);
     ov.querySelector('[data-x2]').addEventListener('click',close);
-    ov.querySelector('[data-start]').addEventListener('click',()=>{ close(); try{ parent.postMessage({type:'shutap-subscribe', plan:plan}, '*'); }catch(e){} });
+    ov.querySelector('[data-start]').addEventListener('click',()=>{ try{ localStorage.setItem('shutap_sub_status','trialing'); localStorage.setItem('shutap_sub_plan',plan); }catch(e){} close(); this.toast('your free trial is on — the full mirror is open.'); this.renderMirror(); });
   }
 
   /* ═══════════ COMPOSER ═══════════ */
   openComposer(){
     if(this._dragged) return;
+    // §3 — if the eye has a due check-in, it reaches out with that first
+    const ref=this.dueCheckin();
+    if(ref){ this.openCheckin(ref.sit, ref.beat, false); return; }
+    this.aiGate(()=>this._reallyOpenComposer());
+  }
+  _reallyOpenComposer(){
     if(this.$compRoot){
       this.$compRoot.style.display='flex';
       this.showNotifPeek();
@@ -1499,6 +1820,7 @@ class Component extends DCLogic {
       res=JSON.parse(s);
     }catch(e){ res=this.composerFallback(q); }
     if(!res||!res.intent) res=this.composerFallback(q);
+    if(window.ShutapFeedback) ShutapFeedback.track('companion_q',{text:q,intent:res.intent});
     this.renderComposerResult(res, q);
   }
 

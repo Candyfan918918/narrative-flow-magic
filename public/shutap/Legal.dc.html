@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,18,400;0,18,500;1,18,400;1,18,500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#fdf0f5;color:#1b0f16;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.lnav::-webkit-scrollbar{display:none}
+.llink{cursor:pointer;transition:.16s}
+.llink:hover{color:#a01a55}
+.ldoc h3{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;letter-spacing:.01em;color:#0b080f;margin:26px 0 8px}
+.ldoc p{font-size:14.5px;line-height:1.7;color:#3a2630;margin:0 0 12px}
+.ldoc li{font-size:14.5px;line-height:1.65;color:#3a2630;margin-bottom:7px}
+.ldoc b{color:#1b0f16}
+.brk{background:rgba(231,159,39,.16);color:#9a6a10;border-radius:5px;padding:0 5px;font-family:'Sora',sans-serif;font-weight:600;font-size:12.5px}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+<header style="position:sticky;top:0;z-index:20;background:rgba(253,240,245,.9);backdrop-filter:blur(16px);border-bottom:.5px solid rgba(11,8,15,.07)">
+  <div style="max-width:980px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between">
+    <a href="Landing.dc.html" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none">
+      <svg viewBox="0 0 140 96" fill="none" style="width:26px;height:18px"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeGL)"/><rect x="68" y="6" width="56" height="84" rx="28" fill="url(#eyeGL)"/><ellipse cx="44" cy="54" rx="15" ry="19" fill="#2a0d18"/><ellipse cx="96" cy="54" rx="15" ry="19" fill="#2a0d18"/><defs><radialGradient id="eyeGL" cx="40%" cy="18%" r="75%"><stop offset="0%" stop-color="#fff"/><stop offset="20%" stop-color="#ffd0e8"/><stop offset="52%" stop-color="#f060a0"/><stop offset="100%" stop-color="#880040"/></radialGradient></defs></svg>
+      <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;color:#0b080f;letter-spacing:-.01em">shutap</span>
+    </a>
+    <a href="Landing.dc.html" class="llink" style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#6b4a5c;text-decoration:none">← back to the room</a>
+  </div>
+</header>
+
+<div style="flex:1;max-width:980px;width:100%;margin:0 auto;padding:0 22px;display:flex;gap:40px">
+
+  <!-- SIDEBAR NAV -->
+  <aside style="flex:none;width:188px;padding:34px 0 60px;position:sticky;top:58px;align-self:flex-start;display:none" ref="{{ sidebar }}">
+    <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#9e7a8c;margin-bottom:14px">trust &amp; legal</div>
+    <div style="display:flex;flex-direction:column;gap:2px"></div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main ref="{{ main }}" style="flex:1;min-width:0;padding:34px 0 80px;max-width:680px"></main>
+</div>
+
+<footer ref="{{ footer }}" style="border-top:.5px solid rgba(11,8,15,.08);background:#fdf3f6"></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+
+  get DOCS(){ return [
+    {id:'terms',     label:'Terms of Service'},
+    {id:'privacy',   label:'Privacy Policy'},
+    {id:'guidelines',label:'Community Guidelines'},
+    {id:'safety',    label:'Crisis & Safety'},
+    {id:'ai',        label:'AI Disclosure'},
+    {id:'disclaimer',label:'Medical / Legal Disclaimer'}
+  ]; }
+
+  componentDidMount(){
+    this.buildNav();
+    this.buildFooter();
+    const h=(location.hash||'').replace('#','');
+    this.show(this.DOCS.find(d=>d.id===h)?h:'terms');
+    window.addEventListener('hashchange',()=>{ const k=(location.hash||'').replace('#',''); if(this.DOCS.find(d=>d.id===k)) this.show(k); });
+  }
+
+  buildNav(){
+    if(!this.$sidebar) return;
+    this.$sidebar.style.display='block';
+    const wrap=this.$sidebar.querySelector('div:last-child');
+    wrap.innerHTML=this.DOCS.map(d=>'<a href="#'+d.id+'" data-doc="'+d.id+'" class="llink" style="text-decoration:none;font-family:Inter,sans-serif;font-size:13.5px;color:#6b4a5c;padding:8px 11px;border-radius:9px;display:block">'+d.label+'</a>').join('');
+    wrap.querySelectorAll('[data-doc]').forEach(a=>a.addEventListener('click',()=>setTimeout(()=>this.show(a.getAttribute('data-doc')),10)));
+  }
+
+  show(id){
+    this.cur=id;
+    if(this.$main){ this.$main.innerHTML=this.render(id); this.$main.scrollTop=0; window.scrollTo(0,0); }
+    if(this.$sidebar){ this.$sidebar.querySelectorAll('[data-doc]').forEach(a=>{ const on=a.getAttribute('data-doc')===id; a.style.background=on?'#fff':'transparent'; a.style.color=on?'#a01a55':'#6b4a5c'; a.style.fontWeight=on?'600':'400'; }); }
+    try{ if(location.hash!=='#'+id) history.replaceState(null,'','#'+id); }catch(e){}
+  }
+
+  brk(t){ return '<span class="brk">'+t+'</span>'; }
+
+  head(title, sub){
+    return '<div style="animation:fadeUp .4s ease"><div style="font-family:Sora,sans-serif;font-weight:800;font-size:clamp(24px,5vw,32px);letter-spacing:-.02em;color:#0b080f;margin-bottom:6px">'+title+'</div>'+
+      (sub?'<div style="font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#6b4a5c;margin-bottom:8px">'+sub+'</div>':'')+'</div>';
+  }
+
+  banner(){
+    return '<div style="display:flex;gap:11px;align-items:flex-start;background:rgba(231,159,39,.12);border:1px solid rgba(231,159,39,.28);border-radius:14px;padding:14px 16px;margin:18px 0 28px">'+
+      '<span style="font-size:16px;flex:none">\u26A0\uFE0F</span>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:13.5px;line-height:1.55;color:#7a5a12">draft, written to match what shutap actually does \u2014 not legal advice, and not launch-ready until a licensed attorney reviews it. '+this.brk('[BRACKET]')+' values are yours to fill in.</div></div>';
+  }
+
+  render(id){
+    const b=this.brk.bind(this);
+    if(id==='terms') return this.head('Terms of Service','Effective: '+b('[DATE]')+' \u00b7 Operator: '+b('[LEGAL ENTITY]'))+this.banner()+
+      '<div class="ldoc">'+
+      '<h3>1. What Shutap is \u2014 and is not.</h3><p>Shutap is a pseudonymous peer-support and journaling community with an AI companion. It is a space to vent, to feel less alone, and to record what happened next. <b>Shutap is not a healthcare, medical, mental-health, crisis, or legal service.</b> Using Shutap does not create a therapist\u2013patient, physician\u2013patient, attorney\u2013client, or any other professional relationship. Nothing on Shutap \u2014 including anything our AI companion or the \u201cMirror\u201d says \u2014 is medical, psychological, or legal advice, diagnosis, or treatment. Do not use Shutap as a substitute for professional care.</p>'+
+      '<h3>2. Emergencies.</h3><p>Shutap is not for emergencies. If you or someone else may be in danger or crisis, contact emergency services (in the US, call or text <b>988</b> or call <b>911</b>) or the resources at findahelpline.com. Our companion will route you to these resources, but it cannot and does not provide crisis intervention.</p>'+
+      '<h3>3. Eligibility.</h3><p>You must be <b>18 or older</b> to use Shutap. By using it you represent that you are 18+.</p>'+
+      '<h3>4. Your account and pseudonym.</h3><p>You use Shutap under a pseudonym; your real name is not displayed. We do not guarantee anonymity against lawful legal process (e.g., a valid subpoena) and may disclose information where legally required (see Privacy Policy). You are responsible for activity under your account.</p>'+
+      '<h3>5. Your content.</h3><p>You own what you write. By posting, you grant us a non-exclusive, worldwide, royalty-free license to host, store, de-identify, display (where you choose to make content public), and use de-identified content to operate and improve the service, including aggregated, de-identified insights. You represent that your content is yours to share and does not violate anyone\u2019s rights. <b>Do not post other people\u2019s private or identifying information; do not post unlawful, infringing, harassing, or harmful content</b> (see Community Guidelines).</p>'+
+      '<h3>6. AI-generated content.</h3><p>Shutap\u2019s companion and Mirror are powered by artificial intelligence. AI responses are generated automatically, <b>may be inaccurate, incomplete, or inappropriate, and must not be relied upon</b> for any decision. They are for reflection and support only, are provided \u201cas is,\u201d and are not the advice of any professional. You use AI features at your own discretion and risk.</p>'+
+      '<h3>7. Acceptable use.</h3><p>You agree not to: post others\u2019 personal/identifying information; harass, threaten, or abuse; post illegal content (including any sexual content involving minors); impersonate; spam; scrape or misuse the service or its AI; attempt to de-anonymize other users; or use Shutap to provide professional services to others. We may remove content and suspend accounts that violate these terms.</p>'+
+      '<h3>8. Reporting and takedown.</h3><p>You can report content via the in-product report tools. We review reports and remove content that violates these terms or the law, and we maintain a path for individuals to request removal of content about them.</p>'+
+      '<h3>9. Assumption of risk.</h3><p>Shutap involves user-generated emotional content and AI-generated responses. You understand and accept that such content may be upsetting, inaccurate, or unhelpful, and you use the service at your own risk.</p>'+
+      '<h3>10. Disclaimers.</h3><p>The service is provided \u201cas is\u201d and \u201cas available,\u201d without warranties of any kind, express or implied, including fitness for a particular purpose and any warranty that the service or AI output is accurate, reliable, or suitable for your needs.</p>'+
+      '<h3>11. Limitation of liability.</h3><p>To the maximum extent permitted by law, '+b('[LEGAL ENTITY]')+' and its operators will not be liable for any indirect, incidental, special, consequential, or punitive damages, or for any reliance on AI output or user content; and our total liability will not exceed the greater of amounts you paid us in the past '+b('[12]')+' months or <b>'+b('[US$100]')+'</b>.</p>'+
+      '<h3>12. Indemnification.</h3><p>You agree to indemnify '+b('[LEGAL ENTITY]')+' against claims arising from your content or your violation of these terms.</p>'+
+      '<h3>13. Termination.</h3><p>You may delete your account anytime. We may suspend or terminate access for violations.</p>'+
+      '<h3>14. Dispute resolution &amp; governing law.</h3><p>'+b('[LAWYER DECISION]')+': arbitration clause + class-action waiver + governing law/venue, e.g., '+b('[STATE]')+'. These materially affect your litigation exposure \u2014 do not finalize without counsel.</p>'+
+      '<h3>15. Changes.</h3><p>We may update these terms; material changes will be notified and re-accepted, with a new version stamp.</p>'+
+      '<h3>16. Contact.</h3><p>'+b('[LEGAL CONTACT EMAIL]')+'.</p>'+
+      '</div>';
+
+    if(id==='privacy') return this.head('Privacy Policy','Effective: '+b('[DATE]')+' \u00b7 Controller: '+b('[LEGAL ENTITY]'))+this.banner()+
+      '<div class="ldoc">'+
+      '<h3>1. Our approach.</h3><p>Shutap is built to be pseudonymous and privacy-protective. You write under a pseudonym, and our Scrubber automatically removes personal identifiers (names, addresses, specific locations, phone numbers, emails) from what you write <b>before it is stored</b> \u2014 we keep only the scrubbed version.</p>'+
+      '<h3>2. What we collect.</h3><ul>'+
+      '<li><b>Account:</b> a pseudonym, your email (for sign-in and check-ins), timezone, notification preferences, consent records.</li>'+
+      '<li><b>Content:</b> your stories and check-in responses \u2014 stored <b>only in scrubbed (de-identified) form</b>.</li>'+
+      '<li><b>Usage:</b> analytics about how you use the app (via PostHog), tied to a pseudonymous ID, not your name.</li>'+
+      '<li><b>Device/technical:</b> standard log/device data.</li></ul>'+
+      '<h3>3. How we use it.</h3><p>To run the community and companion; to deliver check-ins; to provide the Mirror (your patterns over time, for subscribers); to produce <b>aggregated, de-identified</b> insights (\u201cwhat usually happens when\u2026\u201d); to keep the service safe; and to comply with law. <b>We do not sell your personal information.</b></p>'+
+      '<h3>4. AI processing.</h3><p>Your messages are processed by AI models (via '+b('[Anthropic]')+' and/or '+b('[PROVIDER]')+') to generate companion and Mirror responses. Confirm provider data-handling terms; reference their no-training-on-your-data commitments if applicable.</p>'+
+      '<h3>5. Service providers (subprocessors).</h3><p>'+b('[Lovable/Supabase]')+' (hosting/database), '+b('[Resend]')+' (email), '+b('[PostHog]')+' (analytics), '+b('[Anthropic/AI provider]')+' (AI responses). Each processes data only to provide their service.</p>'+
+      '<h3>6. Legal/safety disclosure.</h3><p>We may disclose information where required by law (e.g., valid legal process) or to prevent imminent harm. Crisis-flagged content is kept private, excluded from public display and from our aggregated corpus, and is never sold or monetized.</p>'+
+      '<h3>7. Retention.</h3><p>We keep your data while your account is active and as needed for the purposes above; you can delete your content or account at any time (Section 9).</p>'+
+      '<h3>8. Security.</h3><p>We use reasonable technical and organizational measures to protect your data. No system is perfectly secure. In the event of a breach affecting your personal data, we will notify you and authorities as required by applicable law.</p>'+
+      '<h3>9. Your rights.</h3><p>Depending on where you live (including under <b>GDPR</b> and <b>California\u2019s CCPA/CPRA</b>), you may have the right to access, correct, delete, export (port), object to, or restrict processing of your personal data, and to withdraw consent. <b>You can delete your stories and your account, and request a data export, from Account &amp; Data settings</b>, or by emailing '+b('[PRIVACY EMAIL]')+'. We do not sell personal information, so there is nothing to opt out of in that respect. We will not discriminate against you for exercising these rights.</p>'+
+      '<h3>10. Children.</h3><p>Shutap is for adults <b>18+</b>. We do not knowingly collect data from anyone under 18; if we learn we have, we delete it.</p>'+
+      '<h3>11. International transfers.</h3><p>'+b('[If applicable]')+' \u2014 mechanisms for EU/UK transfers.</p>'+
+      '<h3>12. Cookies.</h3><p>'+b('[Describe]')+' essential vs analytics cookies; consent banner if serving EU/UK \u2014 default to privacy-preserving.</p>'+
+      '<h3>13. Changes &amp; contact.</h3><p>We\u2019ll post updates with a new effective date. Questions or requests: '+b('[PRIVACY EMAIL]')+'. '+b('[EU/UK representative + DPO if required]')+'.</p>'+
+      '</div>';
+
+    if(id==='guidelines') return this.head('Community Guidelines','the short version, in our own voice')+
+      '<div class="ldoc"><div style="background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:18px;padding:22px 24px;margin-top:18px">'+
+      '<ul style="margin:0;padding-left:18px">'+
+      '<li>this is a place to be heard. be real, be kind to each other.</li>'+
+      '<li><b>don\u2019t post other people\u2019s private info</b> \u2014 names, addresses, anything that could identify someone. (we scrub a lot of this automatically, but don\u2019t try.)</li>'+
+      '<li>no harassment, threats, hate, or cruelty aimed at people.</li>'+
+      '<li>nothing illegal \u2014 and absolutely nothing sexual involving minors.</li>'+
+      '<li>don\u2019t impersonate, spam, or scrape.</li>'+
+      '<li>don\u2019t use shutap to sell services or give professional advice to others.</li>'+
+      '<li>see something that breaks this? <b>report it</b> \u2014 there\u2019s a button on every post.</li>'+
+      '</ul></div>'+
+      '<p style="margin-top:16px">We remove content and accounts that break these rules.</p></div>';
+
+    if(id==='safety') return this.head('Crisis &amp; Safety','you deserve real, human help \u2014 right now')+
+      '<div class="ldoc"><p>Shutap isn\u2019t a crisis service, and our companion isn\u2019t a counselor. If you\u2019re in crisis, you deserve real, human help right now:</p>'+
+      '<div style="display:flex;flex-direction:column;gap:10px;margin:18px 0">'+
+      '<a href="tel:988" style="text-decoration:none;background:#fff;border:.5px solid rgba(11,8,15,.1);border-radius:14px;padding:15px 17px;display:block"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#0b080f">US \u2014 988 Suicide &amp; Crisis Lifeline</div><div style="font-size:13px;color:#6b4a5c;margin-top:2px">call or text 988</div></a>'+
+      '<a href="tel:116123" style="text-decoration:none;background:#fff;border:.5px solid rgba(11,8,15,.1);border-radius:14px;padding:15px 17px;display:block"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#0b080f">UK \u2014 Samaritans</div><div style="font-size:13px;color:#6b4a5c;margin-top:2px">call 116 123</div></a>'+
+      '<a href="https://findahelpline.com" target="_blank" rel="noopener" style="text-decoration:none;background:#fff;border:.5px solid rgba(11,8,15,.1);border-radius:14px;padding:15px 17px;display:block"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#0b080f">Anywhere \u2014 findahelpline.com</div><div style="font-size:13px;color:#6b4a5c;margin-top:2px">find a line in your country</div></a>'+
+      '</div>'+
+      '<p>When our companion notices something serious, it will stop and point you here. Crisis messages are kept private, are never made public, and are never used for anything but supporting you. You\u2019re not alone. \uD83E\uDD0D</p></div>';
+
+    if(id==='ai') return this.head('AI Disclosure','shown before your first companion message')+
+      '<div class="ldoc"><div style="background:linear-gradient(160deg,#2e0d1a,#1a0a12);border-radius:18px;padding:24px;margin:18px 0;display:flex;gap:13px;align-items:flex-start">'+
+      '<svg viewBox="0 0 56 56" fill="none" style="width:34px;height:34px;flex:none"><circle cx="28" cy="28" r="27" fill="rgba(231,84,138,.14)"/><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeGL)"/><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeGL)"/><ellipse cx="21" cy="29" rx="4" ry="5" fill="#2a0d18"/><ellipse cx="35" cy="29" rx="4" ry="5" fill="#2a0d18"/></svg>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:16px;line-height:1.55;color:#f3c6da">you\u2019re talking to shutap\u2019s ai companion \u2014 not a human, and not a therapist. it\u2019s here to listen, reflect, and keep you company. it can get things wrong, and it can\u2019t give medical, mental-health, or legal advice. if things feel heavy, we\u2019ll point you to real help. \uD83E\uDD0D</div></div>'+
+      '<p>Several jurisdictions (notably California) increasingly require clear disclosure that a user is interacting with AI, not a person. Shutap shows this before the first companion message and keeps a persistent <b>ai</b> label on the eye.</p></div>';
+
+    if(id==='disclaimer') return this.head('Medical / Legal Disclaimer','formal + in-voice')+
+      '<div class="ldoc"><h3>Formal</h3><p>Shutap is a peer-support and journaling community with an AI companion. It does not provide medical, psychological, mental-health, crisis, or legal services or advice, and no professional relationship is created by using it. Content and AI responses are for support and reflection only and are not a substitute for professional care. In an emergency, contact 988 or 911 (US) or findahelpline.com.</p>'+
+      '<h3>In-voice</h3><div style="background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:14px;padding:16px 18px;font-family:Newsreader,serif;font-style:italic;font-size:15.5px;color:#3a2630;line-height:1.55">\u201cshutap is your group chat, not your therapist. we\u2019re here to listen, not to treat. if it\u2019s heavy, here\u2019s real help \u2192\u201d</div></div>';
+
+    return this.head('Not found','');
+  }
+
+  buildFooter(){
+    if(!this.$footer) return;
+    this.$footer.innerHTML='<div style="max-width:980px;margin:0 auto;padding:26px 22px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between">'+
+      '<div style="display:flex;flex-wrap:wrap;gap:8px 18px">'+
+        this.DOCS.map(d=>'<a href="#'+d.id+'" data-doc="'+d.id+'" class="llink" style="text-decoration:none;font-family:Inter,sans-serif;font-size:12.5px;color:#6b4a5c">'+d.label+'</a>').join('')+
+        '<a href="mailto:hello@shutap.com" class="llink" style="text-decoration:none;font-family:Inter,sans-serif;font-size:12.5px;color:#6b4a5c">Contact</a>'+
+      '</div>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:12px;color:#9e7a8c">18+ \u00b7 pseudonymous \u00b7 not a medical or legal service</div>'+
+    '</div>';
+    this.$footer.querySelectorAll('[data-doc]').forEach(a=>a.addEventListener('click',()=>setTimeout(()=>this.show(a.getAttribute('data-doc')),10)));
+  }
+
+  renderVals(){
+    return {
+      sidebar: el=>{ this.$sidebar=el; },
+      main: el=>{ this.$main=el; },
+      footer: el=>{ this.$footer=el; }
+    };
+  }
+}
+</script>
+</body>
+</html>
