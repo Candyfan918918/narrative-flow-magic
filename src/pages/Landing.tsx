@@ -1,24 +1,43 @@
-/* Pixel-perfect port of project/Landing.dc.html. */
+/* Pixel-perfect port of project/Landing.dc.html with agent bridge. */
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useServerFn } from '@tanstack/react-start'
+import { runSpill } from '@/lib/agents/spill.functions'
 
 export function LandingPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const navigate = useNavigate()
+  const spill = useServerFn(runSpill)
   useEffect(() => {
-    const onMsg = (e: MessageEvent) => {
-      const d = e.data as { type?: string; plan?: string } | null
+    const onMsg = async (e: MessageEvent) => {
+      const d = e.data as { type?: string; plan?: string; raw?: string; pillar?: string; reqId?: string; is_public?: boolean } | null
       if (!d) return
       if (d.type === 'shutap-subscribe') {
         const plan = d.plan === 'monthly' ? 'monthly' : 'annual'
         navigate(`/subscribe?plan=${plan}`)
       } else if (d.type === 'shutap-manage-sub') {
         navigate('/profile')
+      } else if (d.type === 'shutap-spill' && d.raw) {
+        const post = (payload: unknown) =>
+          iframeRef.current?.contentWindow?.postMessage(
+            { type: 'shutap-spill-result', reqId: d.reqId, ...((payload as object) || {}) },
+            '*',
+          )
+        try {
+          const pillar = (d.pillar === 'marriage' || d.pillar === 'family' || d.pillar === 'career')
+            ? d.pillar : 'relationships'
+          const result = await spill({
+            data: { raw: d.raw, pillar, is_public: d.is_public ?? true },
+          })
+          post(result)
+        } catch (err) {
+          post({ error: err instanceof Error ? err.message : 'spill failed' })
+        }
       }
     }
     window.addEventListener('message', onMsg)
     return () => window.removeEventListener('message', onMsg)
-  }, [navigate])
+  }, [navigate, spill])
   return (
     <iframe
       ref={iframeRef}
@@ -28,3 +47,4 @@ export function LandingPage() {
     />
   )
 }
+
