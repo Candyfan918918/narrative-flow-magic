@@ -145,6 +145,5 @@ export const runSpill = createServerFn({ method: 'POST' })
       matched_stories: match.stories.map((s) => ({ id: s.id, excerpt: s.excerpt })),
       companion_message: companion.text,
       crisis: false,
-      ...(insErr ? { _persist_error: insErr.message } as Record<string, unknown> : {}),
     }
   })
