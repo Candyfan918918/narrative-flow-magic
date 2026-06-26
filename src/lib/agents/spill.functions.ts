@@ -115,6 +115,15 @@ export const runSpill = createServerFn({ method: 'POST' })
       )
     }
 
+    // 5b. Schedule the day0..day14 check-in cadence
+    if (sit?.id) {
+      const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+      await supabaseAdmin.rpc('schedule_checkins', {
+        p_situation_id: sit.id,
+        p_alias_id: context.userId,
+      })
+    }
+
     // 6. Companion — active felt-heard
     const companion = await runCompanion({
       data: {
