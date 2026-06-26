@@ -117,8 +117,15 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 .react-btn:hover{border-color:#e7548a;background:#fdf0f5;transform:translateY(-1px)}
 .react-btn.active{border-color:currentColor;background:currentColor}
 .react-btn.active span{color:#fff}
-.scan-opt{cursor:pointer;display:flex;align-items:center;gap:11px;padding:15px 18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);border-radius:14px;font-family:'Newsreader',serif;font-style:italic;font-size:16px;color:#f7e8f0;transition:.16s}
+.scan-opt{cursor:pointer;display:flex;align-items:center;gap:11px;padding:15px 18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);border-radius:14px;font-family:'Newsreader',serif;font-style:italic;font-size:16px;line-height:1.35;color:#f7e8f0;transition:.16s}
 .scan-opt:hover{border-color:#e7548a;background:rgba(231,84,138,.10)}
+.scan-text{width:100%;min-height:96px;resize:vertical;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#f7e8f0;font-family:'Newsreader',serif;font-style:italic;font-size:16px;line-height:1.45;outline:none;transition:.16s}
+.scan-text:focus{border-color:#e7548a;background:rgba(231,84,138,.08)}
+.scan-text::placeholder{color:#9e7a8c;font-style:italic}
+.scan-submit{cursor:pointer;align-self:flex-end;padding:11px 18px;border-radius:999px;border:none;background:#e7548a;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;transition:.16s}
+.scan-submit:hover{background:#c1216b}
+.scan-submit.is-ghost{background:transparent;color:#9e7a8c;border:1px solid rgba(255,255,255,.14)}
+.scan-reflect{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;background:rgba(231,84,138,.06);border:.5px solid rgba(231,84,138,.18);border-radius:12px;font-family:'Newsreader',serif;font-style:italic;font-size:14px;line-height:1.5;color:#f7b8d4;animation:fadeUp .3s ease}
 .slot-reel{display:flex;flex-direction:column;align-items:center;gap:0;overflow:hidden;height:48px;position:relative}
 .slot-item{font-family:'Sora',sans-serif;font-weight:700;font-size:24px;color:#f7e8f0;height:48px;display:flex;align-items:center;justify-content:center;transition:transform .12s}
 </style>
@@ -434,57 +441,174 @@ class Component extends DCLogic {
      body:"i don't know what shifted. same room, same chair, same questions we've been circling for two years. she asked about my mother and something just — opened. i sat there ugly-crying for twenty minutes. on the train home I felt lighter than I have in years. also embarrassed. also relieved. i wanted to tell someone and this felt like the right room."}
   ];}
 
-  get SCAN_Q(){ return [
-    {kind:'intro'},
-    {kind:'tap', q:"what kind of situation?", key:'topic', opts:[
-      {v:'love',    label:'Romance / relationship', emoji:'💛', w:0},
-      {v:'family',  label:'Family',                 emoji:'🏠', w:0},
-      {v:'work',    label:'Work',                   emoji:'💼', w:0},
-      {v:'friends', label:'Friendship',             emoji:'🫂', w:0},
-      {v:'self',    label:'Something internal',     emoji:'🪞', w:0},
-      {v:'other',   label:'Something else',         emoji:'🌊', w:0}
-    ]},
-    {kind:'tap', q:"how long has this been building?", key:'duration', opts:[
-      {v:'today',   label:'It happened today',          w:200},
-      {v:'week',    label:'A few days or this week',    w:350},
-      {v:'month',   label:'A month or two',             w:520},
-      {v:'longer',  label:'Longer than that',           w:720},
-      {v:'years',   label:'Years',                      w:880}
-    ]},
-    {kind:'tap', q:"where does it live in your body right now?", key:'body', opts:[
-      {v:'chest',  label:'In my chest',          emoji:'🫀', w:750},
-      {v:'throat', label:'In my throat',         emoji:'🗣️', w:680},
-      {v:'stomach',label:'In my stomach',        emoji:'🌀', w:600},
-      {v:'head',   label:'Mostly in my head',   emoji:'🧠', w:480},
-      {v:'calm',   label:'Not really anywhere — I feel calm', emoji:'🌬️', w:150}
-    ]},
-    {kind:'tap', q:"is this something you've been through before?", key:'pattern', opts:[
-      {v:'first',   label:'First time',                     w:250},
-      {v:'variant', label:'Variations of it, yes',          w:480},
-      {v:'always',  label:'This keeps finding me',          w:750},
-      {v:'reverse', label:"I've been on the other side of it", w:620}
-    ]},
-    {kind:'tap', q:"if nothing changes, what does six months look like?", key:'inaction', opts:[
-      {v:'same',     label:'Same as now',          w:550},
-      {v:'worse',    label:'Worse',                w:800},
-      {v:'adjust',   label:"I'd quietly adjust",   w:380},
-      {v:'leave',    label:"I'd leave",             w:680},
-      {v:'detonate', label:"I'd explode",           w:920}
-    ]},
-    {kind:'tap', q:"what are you most hoping for right now?", key:'hope', opts:[
-      {v:'heard',    label:'To feel heard',                  w:200},
-      {v:'clarity',  label:'Clarity on what to do',          w:400},
-      {v:'validate', label:"To know I'm not wrong",          w:550},
-      {v:'comfort',  label:'To feel less alone in it',       w:300},
-      {v:'change',   label:'For something to actually change',w:700}
-    ]},
-    {kind:'tap', q:"is there someone in your life you could tell this to?", key:'support', opts:[
-      {v:'yes',      label:"Yes — I just haven't yet",       w:300},
-      {v:'maybe',    label:'Maybe one person',               w:450},
-      {v:'no',       label:'Not really, no',                 w:750},
-      {v:'here',     label:'I came here instead of them',    w:620}
-    ]}
-  ];}
+  get SCAN_Q(){
+    const TOPIC_PROMPT={
+      love:"a sentence about them — what just happened, or what keeps happening?",
+      family:"a sentence about the family thing — who, and what just happened?",
+      work:"a sentence about work — what happened, or who said what?",
+      friends:"a sentence about the friendship — what shifted, or what didn't?",
+      self:"a sentence — what does the feeling sound like in your head right now?",
+      other:"a sentence — what's the shape of it, in your own words?"
+    };
+    const WHO_OPTS={
+      love:[
+        {v:'partner',  label:'A partner',                  emoji:'💞', w:560},
+        {v:'dating',   label:"Someone I'm dating",         emoji:'🌹', w:480},
+        {v:'situation',label:'A situationship',            emoji:'🌀', w:620},
+        {v:'ex',       label:'An ex',                      emoji:'🕯️', w:740},
+        {v:'crush',    label:'Someone I haven\u2019t said it to', emoji:'🤫', w:500},
+        {v:'married',  label:'A spouse',                   emoji:'💍', w:700}
+      ],
+      family:[
+        {v:'parent',   label:'A parent',                   emoji:'🧓', w:680},
+        {v:'sibling',  label:'A sibling',                  emoji:'👯', w:540},
+        {v:'child',    label:'My kid',                     emoji:'🧒', w:650},
+        {v:'extended', label:'Extended family',            emoji:'🏠', w:500},
+        {v:'chosen',   label:'Chosen family',              emoji:'🌿', w:520},
+        {v:'inlaws',   label:'In-laws',                    emoji:'🫥', w:600}
+      ],
+      work:[
+        {v:'boss',     label:'My boss',                    emoji:'🪪', w:680},
+        {v:'coworker', label:'A coworker',                 emoji:'🪑', w:520},
+        {v:'report',   label:'Someone I manage',           emoji:'📎', w:560},
+        {v:'client',   label:'A client',                   emoji:'📧', w:540},
+        {v:'company',  label:'The company itself',         emoji:'🏢', w:700},
+        {v:'self',     label:'Me, mostly',                 emoji:'🪞', w:600}
+      ],
+      friends:[
+        {v:'best',     label:'A close friend',             emoji:'🫂', w:620},
+        {v:'group',    label:'A friend group',             emoji:'👥', w:540},
+        {v:'drift',    label:'Someone drifting',           emoji:'🍃', w:600},
+        {v:'new',      label:'Someone new',                emoji:'🌱', w:380},
+        {v:'former',   label:'A former friend',            emoji:'🪞', w:720}
+      ],
+      self:[
+        {v:'anxiety',  label:'Anxious thoughts',           emoji:'⚡', w:680},
+        {v:'shame',    label:'Shame I can\u2019t shake',   emoji:'🌫️', w:780},
+        {v:'grief',    label:'Grief',                      emoji:'🕯️', w:820},
+        {v:'numb',     label:'Numbness',                   emoji:'🌑', w:700},
+        {v:'decision', label:'A decision I can\u2019t make', emoji:'🛤️', w:620},
+        {v:'body',     label:'Something my body keeps doing', emoji:'🌀', w:600}
+      ],
+      other:[
+        {v:'money',    label:'Money',                      emoji:'💸', w:620},
+        {v:'health',   label:'Health',                     emoji:'🩺', w:700},
+        {v:'identity', label:'Who I am',                   emoji:'🪞', w:640},
+        {v:'place',    label:'Where I live',               emoji:'🗺️', w:500},
+        {v:'world',    label:'The world right now',        emoji:'🌍', w:560},
+        {v:'unsure',   label:"Honestly not sure yet",      emoji:'🌊', w:420}
+      ]
+    };
+    const FRICTION_OPTS={
+      love:[
+        {v:'silence',  label:'A silence neither of us is breaking', w:680},
+        {v:'fights',   label:'The same fight on repeat',            w:760},
+        {v:'distance', label:'Distance I can feel',                  w:640},
+        {v:'trust',    label:'Something about trust',                w:800},
+        {v:'mismatch', label:'We want different things',             w:720},
+        {v:'unsaid',   label:"A thing I haven't said",               w:600}
+      ],
+      family:[
+        {v:'boundary', label:'A boundary nobody respects',           w:720},
+        {v:'inherited',label:'A pattern I inherited',                w:680},
+        {v:'unspoken', label:'The thing we don\u2019t talk about',   w:760},
+        {v:'caretake', label:'I\u2019m the one holding it together', w:740},
+        {v:'estrange', label:'Distance / estrangement',              w:820}
+      ],
+      work:[
+        {v:'workload', label:'Too much, not enough hours',           w:620},
+        {v:'recog',    label:'Doing the work, not getting seen',     w:660},
+        {v:'values',   label:"I don't believe in what we're doing",  w:740},
+        {v:'politics', label:'Politics, alliances, weirdness',       w:640},
+        {v:'burnout',  label:'I\u2019m running on empty',            w:800}
+      ],
+      friends:[
+        {v:'betray',   label:'They did something that hurt',         w:780},
+        {v:'oneway',   label:'I\u2019m the one always reaching out', w:660},
+        {v:'jealousy', label:'Jealousy — mine or theirs',            w:640},
+        {v:'event',    label:'A specific thing that happened',       w:700},
+        {v:'drift',    label:'No reason — just less',                w:560}
+      ],
+      self:[
+        {v:'ongoing',  label:'It\u2019s been like this for a while', w:720},
+        {v:'recent',   label:'Something specific kicked it off',     w:680},
+        {v:'nothing',  label:'Nothing happened — it\u2019s just here',w:640},
+        {v:'anniv',    label:'An anniversary / season is coming',    w:700},
+        {v:'spiral',   label:'I keep looping the same thought',      w:760}
+      ],
+      other:[
+        {v:'sudden',   label:'Something just happened',              w:680},
+        {v:'creep',    label:'It\u2019s been slowly building',       w:620},
+        {v:'systemic', label:'It\u2019s bigger than me',             w:660},
+        {v:'private',  label:'I haven\u2019t named it to anyone',    w:720}
+      ]
+    };
+    return [
+      {kind:'intro'},
+      {kind:'tap', q:"what kind of situation?", key:'topic', opts:[
+        {v:'love',    label:'Romance / relationship', emoji:'💛', w:0},
+        {v:'family',  label:'Family',                 emoji:'🏠', w:0},
+        {v:'work',    label:'Work',                   emoji:'💼', w:0},
+        {v:'friends', label:'Friendship',             emoji:'🫂', w:0},
+        {v:'self',    label:'Something internal',     emoji:'🪞', w:0},
+        {v:'other',   label:'Something else',         emoji:'🌊', w:0}
+      ]},
+      {kind:'text', key:'detail',
+        q:a=>TOPIC_PROMPT[a.topic?.v]||TOPIC_PROMPT.other,
+        placeholder:'just a line. names get scrubbed before anyone sees this.',
+        hint:'private to your read — nothing is posted.'},
+      {kind:'tap', key:'who',
+        q:a=>({love:"who is it about?",family:"who in the family?",work:"who at work?",friends:"which kind of friendship?",self:"what shape is the feeling?",other:"what is it about?"})[a.topic?.v]||"who is it about?",
+        opts:a=>WHO_OPTS[a.topic?.v]||WHO_OPTS.other},
+      {kind:'tap', key:'friction',
+        q:a=>({love:"what's the friction underneath?",family:"what's the dynamic?",work:"what's grinding on you?",friends:"what's actually off?",self:"what's keeping it lit?",other:"why now?"})[a.topic?.v]||"what's the friction?",
+        opts:a=>FRICTION_OPTS[a.topic?.v]||FRICTION_OPTS.other},
+      {kind:'tap', q:"how long has this been building?", key:'duration', opts:[
+        {v:'today',   label:'It happened today',          w:200},
+        {v:'week',    label:'A few days or this week',    w:350},
+        {v:'month',   label:'A month or two',             w:520},
+        {v:'longer',  label:'Longer than that',           w:720},
+        {v:'years',   label:'Years',                      w:880}
+      ]},
+      {kind:'tap', q:"where does it live in your body right now?", key:'body', opts:[
+        {v:'chest',  label:'In my chest',          emoji:'🫀', w:750},
+        {v:'throat', label:'In my throat',         emoji:'🗣️', w:680},
+        {v:'stomach',label:'In my stomach',        emoji:'🌀', w:600},
+        {v:'head',   label:'Mostly in my head',   emoji:'🧠', w:480},
+        {v:'calm',   label:'Not really anywhere — I feel calm', emoji:'🌬️', w:150}
+      ]},
+      {kind:'tap', q:"is this something you've been through before?", key:'pattern', opts:[
+        {v:'first',   label:'First time',                     w:250},
+        {v:'variant', label:'Variations of it, yes',          w:480},
+        {v:'always',  label:'This keeps finding me',          w:750},
+        {v:'reverse', label:"I've been on the other side of it", w:620}
+      ]},
+      {kind:'tap', q:"if nothing changes, what does six months look like?", key:'inaction', opts:[
+        {v:'same',     label:'Same as now',          w:550},
+        {v:'worse',    label:'Worse',                w:800},
+        {v:'adjust',   label:"I'd quietly adjust",   w:380},
+        {v:'leave',    label:"I'd leave",             w:680},
+        {v:'detonate', label:"I'd explode",           w:920}
+      ]},
+      {kind:'tap', q:"what are you most hoping for right now?", key:'hope', opts:[
+        {v:'heard',    label:'To feel heard',                  w:200},
+        {v:'clarity',  label:'Clarity on what to do',          w:400},
+        {v:'validate', label:"To know I'm not wrong",          w:550},
+        {v:'comfort',  label:'To feel less alone in it',       w:300},
+        {v:'change',   label:'For something to actually change',w:700}
+      ]},
+      {kind:'tap', q:"is there someone in your life you could tell this to?", key:'support', opts:[
+        {v:'yes',      label:"Yes — I just haven't yet",       w:300},
+        {v:'maybe',    label:'Maybe one person',               w:450},
+        {v:'no',       label:'Not really, no',                 w:750},
+        {v:'here',     label:'I came here instead of them',    w:620}
+      ]},
+      {kind:'text', key:'relief', optional:true,
+        q:a=>"last one — what would feel like relief, even a little?",
+        placeholder:'no pressure. skip if nothing comes.',
+        hint:'optional — helps the room know what to send back.'}
+    ];
+  }
 
   get SIGS(){ return [
     {min:0,   max:199, label:'Letting It Settle',        sub:"something is there. it hasn't landed yet."},
@@ -1209,7 +1333,7 @@ class Component extends DCLogic {
   }
   _reallyOpenScan(){
     if(!this.$scanRoot) return;
-    this.scan={ answers:{}, idx:1 };
+    this.scan={ answers:{}, idx:1, cursor:0 };
     this.$scanRoot.style.display='block';
     document.body.style.overflow='hidden';
     if(this.$pill) this.$pill.style.display='none';
@@ -1217,38 +1341,157 @@ class Component extends DCLogic {
   }
   closeScan(){ if(!this.$scanRoot) return; this.$scanRoot.style.display='none'; document.body.style.overflow=''; if(this.$pill) this.$pill.style.display='flex'; }
 
+  scanReflection(prevKey, prevAns, topic){
+    if(!prevAns) return '';
+    if(prevKey==='topic'){
+      return ({love:"love stuff. okay — i'm here.",family:"family. that one has weight.",work:"work. let's sit with it.",friends:"a friendship thing. those count too.",self:"something internal. that's the hardest place to point at.",other:"okay — tell me the shape of it."})[prevAns.v]||"okay. i'm with you.";
+    }
+    if(prevKey==='detail'){
+      const t=(prevAns.v||'').trim(); if(!t) return "okay — we can keep it abstract.";
+      return "got it. holding that line as we go.";
+    }
+    if(prevKey==='who') return "okay — i'm picturing them.";
+    if(prevKey==='friction') return "that one lands. noted.";
+    if(prevKey==='duration'){
+      return ({today:"today. still raw, then.",week:"this week. fresh.",month:"a month or two — long enough to wear on you.",longer:"longer than that. you've been carrying this.",years:"years. that's not nothing."})[prevAns.v]||"";
+    }
+    if(prevKey==='body'){
+      return ({chest:"chest. that one tells the truth.",throat:"throat — the words wanting out.",stomach:"stomach. the gut knows first.",head:"in the head. looping.",calm:"calm in the body. interesting."})[prevAns.v]||"";
+    }
+    if(prevKey==='pattern'){
+      return ({first:"first time. that explains the disorientation.",variant:"variations of it. patterns rhyme.",always:"this keeps finding you. that's worth naming.",reverse:"you've been on the other side. that's its own weight."})[prevAns.v]||"";
+    }
+    if(prevKey==='inaction') return "okay. that's useful to know.";
+    if(prevKey==='hope') return "noted what you're reaching for.";
+    return "";
+  }
+  scanVisible(){
+    const all=this.SCAN_Q;
+    const out=[];
+    for(let i=1;i<all.length;i++){
+      const s=all[i];
+      if(s.when && !s.when(this.scan.answers)) continue;
+      out.push({step:s, origIdx:i});
+    }
+    return out;
+  }
   scanRender(){
     if(this.scan.idx==='result') return this.scanResult();
-    const total=this.SCAN_Q.length-1;
-    const q=this.SCAN_Q[this.scan.idx];
-    if(!q){ this.scan.idx='result'; return this.scanResult(); }
+    const visible=this.scanVisible();
+    const total=visible.length;
+    const cur=this.scan.cursor||0;
+    if(cur>=total){ this.scan.idx='result'; return this.scanResult(); }
+    const q=visible[cur].step;
     if(!this.$scanScreen) return;
+    const answers=this.scan.answers;
+    const resolve=v=>typeof v==='function'?v(answers):v;
+    const qText=resolve(q.q);
+    const opts=q.kind==='tap'?resolve(q.opts):null;
+
+    // reflection: echo the previous answer through the companion
+    let reflectHTML='';
+    if(cur>0){
+      const prev=visible[cur-1].step;
+      const prevAns=answers[prev.key];
+      const text=this.scanReflection(prev.key, prevAns, answers.topic);
+      if(text) reflectHTML='<div class="scan-reflect">'+this.companionSVG(20,20)+'<div>'+text+'</div></div>';
+    }
+
     this.$scanScreen.innerHTML='';
-    // chrome
     const chrome=document.createElement('div');
     chrome.style.cssText='flex:none;padding:18px 22px 14px;display:flex;align-items:center;gap:16px;border-bottom:.5px solid rgba(255,255,255,.06)';
-    const dots=Array.from({length:total},(_,i)=>'<span style="height:3px;flex:1;border-radius:2px;background:'+(i<this.scan.idx?'#e7548a':'rgba(255,255,255,.12)')+';transition:background .3s"></span>').join('');
-    chrome.innerHTML='<div style="display:flex;gap:4px;flex:1">'+dots+'</div><span style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.14em;color:#9e7a8c;text-transform:uppercase">'+this.scan.idx+' of '+total+'</span><div data-close role="button" style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;cursor:pointer">close</div>';
+    const dots=Array.from({length:total},(_,i)=>'<span style="height:3px;flex:1;border-radius:2px;background:'+(i<cur?'#e7548a':i===cur?'rgba(231,84,138,.45)':'rgba(255,255,255,.12)')+';transition:background .3s"></span>').join('');
+    chrome.innerHTML='<div style="display:flex;gap:4px;flex:1">'+dots+'</div><span style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.14em;color:#9e7a8c;text-transform:uppercase">'+(cur+1)+' of '+total+'</span><div data-close role="button" style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;cursor:pointer">close</div>';
     chrome.querySelector('[data-close]').addEventListener('click',()=>this.closeScan());
     this.$scanScreen.appendChild(chrome);
-    // body
+
     const body=document.createElement('div');
-    body.style.cssText='flex:1;overflow-y:auto;padding:36px 22px 28px;max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:22px';
+    body.style.cssText='flex:1;overflow-y:auto;padding:30px 22px 28px;max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:20px';
+    const kindLabel=q.kind==='text'?'scan · in your words':'scan · question '+(cur+1);
     body.innerHTML=
-      '<div style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a">scan · question '+this.scan.idx+'</div>'+
-      '<div style="display:flex;gap:13px;align-items:flex-start">'+this.companionSVG(32,32)+'<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:21px;line-height:1.42;color:#f7e8f0">'+q.q+'</div></div>'+
-      '<div style="display:flex;flex-direction:column;gap:9px;margin-left:39px"></div>';
+      '<div style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a">'+kindLabel+'</div>'+
+      reflectHTML+
+      '<div style="display:flex;gap:13px;align-items:flex-start">'+this.companionSVG(32,32)+'<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:21px;line-height:1.42;color:#f7e8f0">'+qText+'</div></div>'+
+      '<div data-slot style="display:flex;flex-direction:column;gap:9px;margin-left:39px"></div>';
     this.$scanScreen.appendChild(body);
-    const opts=body.querySelector('div:last-child');
-    q.opts.forEach(o=>{
-      const el=document.createElement('div');
-      el.className='scan-opt';
-      el.innerHTML=(o.emoji?'<span style="font-size:17px">'+o.emoji+'</span>':'')+'<span>'+o.label+'</span>';
-      el.addEventListener('click',()=>{ this.scan.answers[q.key]={v:o.v,w:o.w}; this.scan.idx++; this.scanRender(); });
-      opts.appendChild(el);
-    });
+    const slot=body.querySelector('[data-slot]');
+
+    const advance=()=>{ this.scan.cursor=(this.scan.cursor||0)+1; this.scanRender(); };
+
+    if(q.kind==='tap'){
+      opts.forEach(o=>{
+        const el=document.createElement('div');
+        el.className='scan-opt';
+        el.innerHTML=(o.emoji?'<span style="font-size:17px;flex:none">'+o.emoji+'</span>':'')+'<span>'+o.label+'</span>';
+        el.addEventListener('click',()=>{ answers[q.key]={v:o.v,w:o.w,label:o.label}; advance(); });
+        slot.appendChild(el);
+      });
+    } else if(q.kind==='text'){
+      const ta=document.createElement('textarea');
+      ta.className='scan-text'; ta.placeholder=resolve(q.placeholder)||'';
+      ta.maxLength=400;
+      slot.appendChild(ta);
+      if(q.hint){
+        const h=document.createElement('div');
+        h.style.cssText='font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#9e7a8c';
+        h.textContent=q.hint;
+        slot.appendChild(h);
+      }
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;gap:10px;justify-content:flex-end;align-items:center';
+      if(q.optional){
+        const skip=document.createElement('button');
+        skip.type='button'; skip.className='scan-submit is-ghost'; skip.textContent='skip';
+        skip.addEventListener('click',()=>{ answers[q.key]={v:'',w:0,label:''}; advance(); });
+        row.appendChild(skip);
+      }
+      const go=document.createElement('button');
+      go.type='button'; go.className='scan-submit'; go.textContent='continue →';
+      go.addEventListener('click',()=>{
+        const v=(ta.value||'').trim();
+        if(!v && !q.optional){ ta.focus(); return; }
+        answers[q.key]={v:v,w:0,label:v};
+        advance();
+      });
+      row.appendChild(go);
+      slot.appendChild(row);
+      setTimeout(()=>ta.focus(),120);
+      ta.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter') go.click(); });
+    }
   }
 
+  scanNarrativeHTML(a){
+    const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const topic=a.topic?.v, who=a.who?.label, friction=a.friction?.label;
+    const dur=a.duration?.v, body=a.body?.v, pat=a.pattern?.v, hope=a.hope?.v, sup=a.support?.v;
+    const detail=(a.detail?.v||'').trim();
+    const relief=(a.relief?.v||'').trim();
+    const TOPIC_LEAD={love:"a love thing",family:"a family thing",work:"a work thing",friends:"a friendship thing",self:"something internal",other:"something you're carrying"};
+    const DUR={today:"and it just happened today",week:"over the last few days",month:"for a month or two",longer:"for a while now",years:"for years"};
+    const BODY={chest:"sitting in your chest",throat:"caught in your throat",stomach:"low in your stomach",head:"looping in your head",calm:"not loud in the body"};
+    const PAT={first:"first time you've met this shape",variant:"a variation of something you know",always:"a pattern that keeps finding you",reverse:"familiar from the other side"};
+    const HOPE={heard:"mostly you want to be heard",clarity:"you're after clarity",validate:"you need to know you're not wrong",comfort:"you want to feel less alone in it",change:"you want something to actually move"};
+    const SUP={yes:"there's someone you could tell — you just haven't",maybe:"maybe one person could hold it",no:"nobody around you really has the room for it",here:"you came here instead of them"};
+    const lines=[];
+    let lead="here's what i'm hearing: "+(TOPIC_LEAD[topic]||"something you're carrying");
+    if(who) lead+=" — "+who.toLowerCase();
+    if(DUR[dur]) lead+=", "+DUR[dur];
+    lead+=", "+(BODY[body]||"somewhere you can feel it")+".";
+    lines.push(lead);
+    if(detail) lines.push('<span style="color:#f7b8d4">you said:</span> &ldquo;'+esc(detail)+'&rdquo;');
+    if(friction) lines.push("the friction underneath is "+friction.toLowerCase()+".");
+    const tail=[];
+    if(PAT[pat]) tail.push(PAT[pat]);
+    if(HOPE[hope]) tail.push(HOPE[hope]);
+    if(SUP[sup]) tail.push(SUP[sup]);
+    if(tail.length) lines.push(tail.join(", ")+".");
+    if(relief) lines.push('relief, in your words: &ldquo;'+esc(relief)+'&rdquo;');
+    lines.push("that's the read. not a verdict — a mirror.");
+    return '<div style="background:rgba(255,255,255,.03);border:.5px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 18px 16px">'+
+      '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a;margin-bottom:10px">what i\u2019m hearing</div>'+
+      lines.map(l=>'<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.6;color:#f7e8f0;margin-bottom:8px">'+l+'</div>').join('')+
+    '</div>';
+  }
   scanResult(){
     const answers=this.scan.answers;
     let sum=0,n=0;
@@ -1277,6 +1520,7 @@ class Component extends DCLogic {
         '<div style="margin-top:12px;font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:#f7e8f0;margin-bottom:8px">'+sig.label+'</div>'+
         '<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;color:#c4a0b2;line-height:1.55">'+sig.sub+'</div>'+
       '</div>'+
+      this.scanNarrativeHTML(answers)+
       '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#9e7a8c;text-align:center">saved privately to your journal.</div>'+
       '<div data-mirror style="display:flex;gap:11px;align-items:flex-start;background:rgba(231,84,138,.08);border:.5px solid rgba(231,84,138,.22);border-radius:14px;padding:14px 16px;cursor:pointer">'+
         this.companionSVG(24,24)+
