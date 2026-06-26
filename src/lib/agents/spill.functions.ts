@@ -89,7 +89,7 @@ export const runSpill = createServerFn({ method: 'POST' })
     })
 
     // 5. Persist situation (owner-scoped)
-    const { data: sit, error: insErr } = await context.supabase
+    const { data: sit } = await context.supabase
       .from('situations')
       .insert({
         alias_id: context.userId,
