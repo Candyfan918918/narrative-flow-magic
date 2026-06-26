@@ -19,14 +19,17 @@ import { Route as FamilyRouteImport } from './routes/family'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug'
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
+import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicHooksDispatchCheckinsRouteImport } from './routes/api/public/hooks/dispatch-checkins'
 
 const TrustRoute = TrustRouteImport.update({
   id: '/trust',
@@ -78,6 +81,10 @@ const SplatRoute = SplatRouteImport.update({
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -108,6 +115,11 @@ const ApiFeedbackEventsRoute = ApiFeedbackEventsRouteImport.update({
   path: '/api/feedback/events',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCheckinIdRoute = AuthenticatedCheckinIdRouteImport.update({
+  id: '/checkin/$id',
+  path: '/checkin/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const HallsHallRegionWindowRoute = HallsHallRegionWindowRouteImport.update({
   id: '/halls/$hall/$region/$window',
   path: '/halls/$hall/$region/$window',
@@ -117,6 +129,12 @@ const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
     path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksDispatchCheckinsRoute =
+  ApiPublicHooksDispatchCheckinsRouteImport.update({
+    id: '/api/public/hooks/dispatch-checkins',
+    path: '/api/public/hooks/dispatch-checkins',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -136,7 +154,9 @@ export interface FileRoutesByFullPath {
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -156,13 +176,16 @@ export interface FileRoutesByTo {
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
   '/career': typeof CareerRoute
@@ -177,7 +200,9 @@ export interface FileRoutesById {
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -199,7 +224,9 @@ export interface FileRouteTypes {
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/checkin/$id'
     | '/api/feedback/events'
+    | '/api/public/hooks/dispatch-checkins'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesByTo: FileRoutesByTo
@@ -219,12 +246,15 @@ export interface FileRouteTypes {
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/checkin/$id'
     | '/api/feedback/events'
+    | '/api/public/hooks/dispatch-checkins'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/$'
     | '/about'
     | '/career'
@@ -239,13 +269,16 @@ export interface FileRouteTypes {
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/_authenticated/checkin/$id'
     | '/api/feedback/events'
+    | '/api/public/hooks/dispatch-checkins'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   AboutRoute: typeof AboutRoute
   CareerRoute: typeof CareerRoute
@@ -261,6 +294,7 @@ export interface RootRouteChildren {
   UPseudonymRoute: typeof UPseudonymRoute
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
+  ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
 }
@@ -337,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -379,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFeedbackEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/checkin/$id': {
+      id: '/_authenticated/checkin/$id'
+      path: '/checkin/$id'
+      fullPath: '/checkin/$id'
+      preLoaderRoute: typeof AuthenticatedCheckinIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/halls/$hall/$region/$window': {
       id: '/halls/$hall/$region/$window'
       path: '/halls/$hall/$region/$window'
@@ -393,11 +441,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/dispatch-checkins': {
+      id: '/api/public/hooks/dispatch-checkins'
+      path: '/api/public/hooks/dispatch-checkins'
+      fullPath: '/api/public/hooks/dispatch-checkins'
+      preLoaderRoute: typeof ApiPublicHooksDispatchCheckinsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCheckinIdRoute: typeof AuthenticatedCheckinIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCheckinIdRoute: AuthenticatedCheckinIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   AboutRoute: AboutRoute,
   CareerRoute: CareerRoute,
@@ -413,6 +480,7 @@ const rootRouteChildren: RootRouteChildren = {
   UPseudonymRoute: UPseudonymRoute,
   WhatHappensSlugRoute: WhatHappensSlugRoute,
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
+  ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   HallsHallRegionWindowRoute: HallsHallRegionWindowRoute,
 }
