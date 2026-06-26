@@ -22,7 +22,6 @@ export function WelcomePage() {
         recordLegalAcceptance({ data: {} }).catch(() => {})
       }
     })
-    return () => { sub.subscription.unsubscribe() }
 
     const post = (msg: unknown) => {
       iframeRef.current?.contentWindow?.postMessage(msg, '*')
@@ -60,7 +59,10 @@ export function WelcomePage() {
     }
 
     window.addEventListener('message', onMessage)
-    return () => window.removeEventListener('message', onMessage)
+    return () => {
+      sub.subscription.unsubscribe()
+      window.removeEventListener('message', onMessage)
+    }
   }, [])
 
   return (
