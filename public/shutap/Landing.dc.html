@@ -1462,6 +1462,23 @@ class Component extends DCLogic {
       setTimeout(()=>ta.focus(),120);
       ta.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter') go.click(); });
     }
+
+    // AI upgrade: replace the local reflection with a tailored one from the companion.
+    if(prevForAI && window.claude && window.claude.complete){
+      const myCursor=cur, myKey=prevForAI.key, myAns=prevForAI.ans||{};
+      const topicLabel=(answers.topic && answers.topic.label) || (answers.topic && answers.topic.v) || 'their situation';
+      const detail=(answers.detail && answers.detail.v) || '';
+      const ansText=myAns.v && typeof myAns.v==='string' && myAns.v.length<300 ? myAns.v : (myAns.label||myAns.v||'');
+      const sys="You are the companion on Shutap — warm, perceptive, lowercase, never clinical. The user is in a quick private scan. They just answered a question. Write ONE short line (max 14 words) that echoes what you heard, in their voice, no advice, no questions back. No quotes, no preamble.";
+      const prompt='Topic: '+topicLabel+'\nWhat they shared earlier: '+(detail?('"'+detail.slice(0,240)+'"'):'(nothing yet)')+'\nThey just answered "'+myKey+'": '+ansText+'\n\nReturn one line, lowercase.';
+      window.claude.complete({system:sys, messages:[{role:'user',content:prompt}], maxTokens:60})
+        .then(t=>{
+          const line=(t||'').trim().replace(/^["']|["']$/g,'').split('\n')[0];
+          if(!line || this.scan.cursor!==myCursor || this.scan.idx==='result') return;
+          const el=this.$scanScreen && this.$scanScreen.querySelector('[data-reflect-text]');
+          if(el) el.textContent=line;
+        }).catch(()=>{});
+    }
   }
 
   scanNarrativeHTML(a){
