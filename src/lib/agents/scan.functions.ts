@@ -43,7 +43,7 @@ function deterministicScan(text: string, pillar: string): ScanResult {
   const reflection =
     band === 'quiet' ? 'sounds like a small thing said out loud — still counts.'
     : band === 'real' ? 'yeah, this one is actually weighing on you.'
-    : band === 'hot' ? 'ok this is hot — makes sense it's loud in your head.'
+    : band === 'hot' ? "ok this is hot — makes sense it's loud in your head."
     : band === 'heavy' ? "yeah, this one's sitting heavy — makes sense."
     : "this is a lot. I'm taking it seriously."
   return { scan: score, band, reflection }
