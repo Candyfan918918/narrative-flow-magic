@@ -117,8 +117,15 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 .react-btn:hover{border-color:#e7548a;background:#fdf0f5;transform:translateY(-1px)}
 .react-btn.active{border-color:currentColor;background:currentColor}
 .react-btn.active span{color:#fff}
-.scan-opt{cursor:pointer;display:flex;align-items:center;gap:11px;padding:15px 18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);border-radius:14px;font-family:'Newsreader',serif;font-style:italic;font-size:16px;color:#f7e8f0;transition:.16s}
+.scan-opt{cursor:pointer;display:flex;align-items:center;gap:11px;padding:15px 18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);border-radius:14px;font-family:'Newsreader',serif;font-style:italic;font-size:16px;line-height:1.35;color:#f7e8f0;transition:.16s}
 .scan-opt:hover{border-color:#e7548a;background:rgba(231,84,138,.10)}
+.scan-text{width:100%;min-height:96px;resize:vertical;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#f7e8f0;font-family:'Newsreader',serif;font-style:italic;font-size:16px;line-height:1.45;outline:none;transition:.16s}
+.scan-text:focus{border-color:#e7548a;background:rgba(231,84,138,.08)}
+.scan-text::placeholder{color:#9e7a8c;font-style:italic}
+.scan-submit{cursor:pointer;align-self:flex-end;padding:11px 18px;border-radius:999px;border:none;background:#e7548a;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;transition:.16s}
+.scan-submit:hover{background:#c1216b}
+.scan-submit.is-ghost{background:transparent;color:#9e7a8c;border:1px solid rgba(255,255,255,.14)}
+.scan-reflect{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;background:rgba(231,84,138,.06);border:.5px solid rgba(231,84,138,.18);border-radius:12px;font-family:'Newsreader',serif;font-style:italic;font-size:14px;line-height:1.5;color:#f7b8d4;animation:fadeUp .3s ease}
 .slot-reel{display:flex;flex-direction:column;align-items:center;gap:0;overflow:hidden;height:48px;position:relative}
 .slot-item{font-family:'Sora',sans-serif;font-weight:700;font-size:24px;color:#f7e8f0;height:48px;display:flex;align-items:center;justify-content:center;transition:transform .12s}
 </style>
