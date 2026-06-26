@@ -2031,15 +2031,30 @@ class Component extends DCLogic {
     }
     this._mHist=(this._mHist||[]).concat([{role:'user',content:v}]).slice(-8);
     (async()=>{
-      let out;
+      const sys='You are the Mirror on Shutap — not a chatbot and not "the companion." You are the user\'s sharpest, most loving friend in the group chat: warm, funny, a little bitchy — but ALWAYS aimed at the SITUATION, never at the person. lowercase, texty, group-chat energy. You LISTEN first, reflect back what you hear in their own words, and ask ONE real question. You are grounded in what this person shared (they vent about relationships, family, work). DOES (friend / reflection): reflect patterns ("you\'ve spilled about her three times this month — always after a sunday call"); relate ("we\'ve all done that, you\'re not crazy"); validate the feeling ("that\'d piss me off too"); ask, keep their agency ("what do YOU actually want here?"). NEVER (clinical — needs a license): never diagnose (no "you have anxiety / that\'s trauma / he\'s a narcissist"); never prescribe or treat; never direct high-stakes specifics ("leave him / quit / cut her off") — you may EXPLORE, never INSTRUCT; never say "you should/need to". Build test for every line: would a sharp, loving friend say this, or a therapist? friend → ship; therapist → reframe as a reflection or a question. Keep it to 1–2 short sentences, specific, never generic. If they express self-harm or crisis, DROP the voice entirely — no jokes — and warmly tell them to reach 988 or a local line right now.';
+      let out='', bubble=null;
+      const ensureBubble=()=>{
+        if(bubble) return bubble;
+        typ.remove();
+        bubble=document.createElement('div');
+        bubble.style.cssText='align-self:flex-start;max-width:90%;font-family:Newsreader,serif;font-style:italic;font-size:16px;line-height:1.55;color:#f7eef2;animation:fadeUp .5s ease;white-space:pre-wrap';
+        convo.appendChild(bubble);
+        return bubble;
+      };
       try{
-        const sys='You are the Mirror on Shutap — not a chatbot and not "the companion." You are the user\'s sharpest, most loving friend in the group chat: warm, funny, a little bitchy — but ALWAYS aimed at the SITUATION, never at the person. lowercase, texty, group-chat energy. You LISTEN first, reflect back what you hear in their own words, and ask ONE real question. You are grounded in what this person shared (they vent about relationships, family, work). DOES (friend / reflection): reflect patterns ("you\'ve spilled about her three times this month — always after a sunday call"); relate ("we\'ve all done that, you\'re not crazy"); validate the feeling ("that\'d piss me off too"); ask, keep their agency ("what do YOU actually want here?"). NEVER (clinical — needs a license): never diagnose (no "you have anxiety / that\'s trauma / he\'s a narcissist"); never prescribe or treat; never direct high-stakes specifics ("leave him / quit / cut her off") — you may EXPLORE, never INSTRUCT; never say "you should/need to". Build test for every line: would a sharp, loving friend say this, or a therapist? friend → ship; therapist → reframe as a reflection or a question. Keep it to 1–2 short sentences, specific, never generic. If they express self-harm or crisis, DROP the voice entirely — no jokes — and warmly tell them to reach 988 or a local line right now.';
-        const raw=await window.claude.complete({system:sys, messages:this._mHist});
-        out=(raw||'').trim();
+        if(window.claude.stream){
+          out=await window.claude.stream({system:sys, messages:this._mHist, onChunk:(_c,acc)=>{
+            const b=ensureBubble(); b.innerHTML=this.esc(acc).replace(/\n+/g,'<br>'); bottom();
+          }});
+          out=(out||'').trim();
+        } else {
+          const raw=await window.claude.complete({system:sys, messages:this._mHist});
+          out=(raw||'').trim();
+        }
       }catch(e){ out=''; }
-      if(!out) out=this.mirrorReply(v);
+      if(!out){ out=this.mirrorReply(v); render(out); }
+      else { const b=ensureBubble(); b.innerHTML=this.esc(out).replace(/\n+/g,'<br>'); bottom(); }
       this._mHist=this._mHist.concat([{role:'assistant',content:out}]).slice(-8);
-      render(this.esc(out).replace(/\n+/g,'<br>'));
       this.renderMirrorChips(['tell me more','that\u2019s exactly it','i hadn\u2019t thought of that','something else is bothering me']);
     })();
   }
