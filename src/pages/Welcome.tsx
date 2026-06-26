@@ -65,12 +65,65 @@ export function WelcomePage() {
     }
   }, [])
 
+  // Inject a click/submit bridge into the bundler-unpacked document so that
+  // any "Google"/"Apple"/"email" affordance routes through parent auth.
+  const onLoad = () => {
+    const tryInject = (attempt = 0) => {
+      const doc = iframeRef.current?.contentDocument
+      if (!doc || !doc.body) {
+        if (attempt < 40) setTimeout(() => tryInject(attempt + 1), 150)
+        return
+      }
+      if (doc.getElementById('__shutap_bridge')) return
+      const s = doc.createElement('script')
+      s.id = '__shutap_bridge'
+      s.textContent = `(() => {
+        const post = (m) => { try { parent.postMessage(m, '*') } catch(e){} };
+        const matchMethod = (el) => {
+          const t = ((el.innerText || el.textContent || '') + ' ' + (el.getAttribute('aria-label')||'')).toLowerCase();
+          if (/google/.test(t)) return 'google';
+          if (/apple/.test(t)) return 'apple';
+          return null;
+        };
+        document.addEventListener('click', (e) => {
+          let n = e.target;
+          while (n && n !== document.body) {
+            if (n.tagName === 'BUTTON' || n.tagName === 'A' || n.getAttribute?.('role') === 'button') {
+              const m = matchMethod(n);
+              if (m) { e.preventDefault(); post({ type: 'shutap-auth', method: m }); return; }
+            }
+            n = n.parentNode;
+          }
+        }, true);
+        document.addEventListener('submit', (e) => {
+          const form = e.target;
+          const input = form.querySelector?.('input[type=email], input[name*=email i]');
+          if (input && input.value) { e.preventDefault(); post({ type: 'shutap-auth', method: 'email', email: input.value }); }
+        }, true);
+        window.addEventListener('message', (ev) => {
+          const d = ev.data || {};
+          if (d.type === 'shutap-auth-magic' || d.type === 'shutap-auth-error') {
+            const el = document.createElement('div');
+            el.textContent = d.msg || '';
+            el.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#2e0a1a;color:#fcf1f5;padding:10px 18px;border-radius:999px;font:14px -apple-system,sans-serif;z-index:99999;box-shadow:0 6px 24px rgba(0,0,0,.3)';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 4000);
+          }
+        });
+      })();`
+      doc.body.appendChild(s)
+    }
+    tryInject()
+  }
+
   return (
     <iframe
       ref={iframeRef}
       src="/shutap/Welcome.dc.html"
       title="Shutap — Welcome"
-      style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, background: '#1a0a12' }}
+      onLoad={onLoad}
+      style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, background: '#fcf1f5' }}
     />
   )
 }
+
