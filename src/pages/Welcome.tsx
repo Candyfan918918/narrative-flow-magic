@@ -65,56 +65,67 @@ export function WelcomePage() {
     }
   }, [])
 
-  // Inject a click/submit bridge into the bundler-unpacked document so that
-  // any "Google"/"Apple"/"email" affordance routes through parent auth.
+  // Inject a click/submit bridge. The unpacker replaces documentElement after
+  // load, which nukes any script we injected during onLoad, so we poll and
+  // re-inject whenever the marker is missing.
   const onLoad = () => {
-    const tryInject = (attempt = 0) => {
+    const bridgeSrc = `(() => {
+      if (window.__shutap_bridge_installed) return;
+      window.__shutap_bridge_installed = true;
+      const post = (m) => { try { parent.postMessage(m, '*') } catch(e){} };
+      const matchMethod = (el) => {
+        const t = ((el.innerText || el.textContent || '') + ' ' + (el.getAttribute('aria-label')||'')).toLowerCase();
+        if (/google/.test(t)) return 'google';
+        if (/apple/.test(t)) return 'apple';
+        return null;
+      };
+      document.addEventListener('click', (e) => {
+        let n = e.target;
+        while (n && n !== document.body) {
+          if (n.tagName === 'BUTTON' || n.tagName === 'A' || n.getAttribute?.('role') === 'button') {
+            const m = matchMethod(n);
+            if (m) { e.preventDefault(); post({ type: 'shutap-auth', method: m }); return; }
+          }
+          n = n.parentNode;
+        }
+      }, true);
+      document.addEventListener('submit', (e) => {
+        const form = e.target;
+        const input = form.querySelector?.('input[type=email], input[name*=email i]');
+        if (input && input.value) { e.preventDefault(); post({ type: 'shutap-auth', method: 'email', email: input.value }); }
+      }, true);
+      window.addEventListener('message', (ev) => {
+        const d = ev.data || {};
+        if (d.type === 'shutap-auth-magic' || d.type === 'shutap-auth-error') {
+          const el = document.createElement('div');
+          el.textContent = d.msg || '';
+          el.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#2e0a1a;color:#fcf1f5;padding:10px 18px;border-radius:999px;font:14px -apple-system,sans-serif;z-index:99999;box-shadow:0 6px 24px rgba(0,0,0,.3)';
+          (document.body || document.documentElement).appendChild(el);
+          setTimeout(() => el.remove(), 4000);
+        }
+      });
+    })();`
+
+    const inject = () => {
+      const win = iframeRef.current?.contentWindow as (Window & { __shutap_bridge_installed?: boolean }) | null
       const doc = iframeRef.current?.contentDocument
-      if (!doc || !doc.body) {
-        if (attempt < 40) setTimeout(() => tryInject(attempt + 1), 150)
-        return
-      }
-      if (doc.getElementById('__shutap_bridge')) return
+      if (!win || !doc || !doc.body) return
+      if (win.__shutap_bridge_installed) return
       const s = doc.createElement('script')
-      s.id = '__shutap_bridge'
-      s.textContent = `(() => {
-        const post = (m) => { try { parent.postMessage(m, '*') } catch(e){} };
-        const matchMethod = (el) => {
-          const t = ((el.innerText || el.textContent || '') + ' ' + (el.getAttribute('aria-label')||'')).toLowerCase();
-          if (/google/.test(t)) return 'google';
-          if (/apple/.test(t)) return 'apple';
-          return null;
-        };
-        document.addEventListener('click', (e) => {
-          let n = e.target;
-          while (n && n !== document.body) {
-            if (n.tagName === 'BUTTON' || n.tagName === 'A' || n.getAttribute?.('role') === 'button') {
-              const m = matchMethod(n);
-              if (m) { e.preventDefault(); post({ type: 'shutap-auth', method: m }); return; }
-            }
-            n = n.parentNode;
-          }
-        }, true);
-        document.addEventListener('submit', (e) => {
-          const form = e.target;
-          const input = form.querySelector?.('input[type=email], input[name*=email i]');
-          if (input && input.value) { e.preventDefault(); post({ type: 'shutap-auth', method: 'email', email: input.value }); }
-        }, true);
-        window.addEventListener('message', (ev) => {
-          const d = ev.data || {};
-          if (d.type === 'shutap-auth-magic' || d.type === 'shutap-auth-error') {
-            const el = document.createElement('div');
-            el.textContent = d.msg || '';
-            el.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#2e0a1a;color:#fcf1f5;padding:10px 18px;border-radius:999px;font:14px -apple-system,sans-serif;z-index:99999;box-shadow:0 6px 24px rgba(0,0,0,.3)';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 4000);
-          }
-        });
-      })();`
+      s.textContent = bridgeSrc
       doc.body.appendChild(s)
     }
-    tryInject()
+
+    // Poll for ~20s — the unpacker may replace documentElement after we inject,
+    // wiping the script. Stop once the marker survives a few ticks.
+    let ticks = 0
+    const iv = window.setInterval(() => {
+      ticks++
+      inject()
+      if (ticks > 80) window.clearInterval(iv)
+    }, 250)
   }
+
 
   return (
     <iframe
