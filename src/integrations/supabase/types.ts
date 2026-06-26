@@ -22,9 +22,13 @@ export type Database = {
           created_at: string
           creature: string
           display_name: string
+          email_suppressed: boolean
           emoji: string
           emotion: string
           nation: string
+          notif_email: string | null
+          notif_email_opt_in: boolean
+          timezone: string
           updated_at: string
           user_id: string
         }
@@ -35,9 +39,13 @@ export type Database = {
           created_at?: string
           creature: string
           display_name: string
+          email_suppressed?: boolean
           emoji: string
           emotion: string
           nation: string
+          notif_email?: string | null
+          notif_email_opt_in?: boolean
+          timezone?: string
           updated_at?: string
           user_id: string
         }
@@ -48,9 +56,13 @@ export type Database = {
           created_at?: string
           creature?: string
           display_name?: string
+          email_suppressed?: boolean
           emoji?: string
           emotion?: string
           nation?: string
+          notif_email?: string | null
+          notif_email_opt_in?: boolean
+          timezone?: string
           updated_at?: string
           user_id?: string
         }
@@ -58,10 +70,12 @@ export type Database = {
       }
       checkin_responses: {
         Row: {
+          action: string | null
           alias_id: string
           checkin_id: string
           clean_text: string | null
           created_at: string
+          feeling_tap: string | null
           id: string
           rescan: number | null
           resolution: Database["public"]["Enums"]["situation_status"] | null
@@ -70,10 +84,12 @@ export type Database = {
           would_again: string | null
         }
         Insert: {
+          action?: string | null
           alias_id: string
           checkin_id: string
           clean_text?: string | null
           created_at?: string
+          feeling_tap?: string | null
           id?: string
           rescan?: number | null
           resolution?: Database["public"]["Enums"]["situation_status"] | null
@@ -82,10 +98,12 @@ export type Database = {
           would_again?: string | null
         }
         Update: {
+          action?: string | null
           alias_id?: string
           checkin_id?: string
           clean_text?: string | null
           created_at?: string
+          feeling_tap?: string | null
           id?: string
           rescan?: number | null
           resolution?: Database["public"]["Enums"]["situation_status"] | null
@@ -481,6 +499,7 @@ export type Database = {
           is_public: boolean
           pillar: Database["public"]["Enums"]["situation_pillar"]
           reflection: string | null
+          resolved_at: string | null
           room_id: string | null
           scan_band: Database["public"]["Enums"]["scan_band"] | null
           status: Database["public"]["Enums"]["situation_status"]
@@ -497,6 +516,7 @@ export type Database = {
           is_public?: boolean
           pillar: Database["public"]["Enums"]["situation_pillar"]
           reflection?: string | null
+          resolved_at?: string | null
           room_id?: string | null
           scan_band?: Database["public"]["Enums"]["scan_band"] | null
           status?: Database["public"]["Enums"]["situation_status"]
@@ -513,6 +533,7 @@ export type Database = {
           is_public?: boolean
           pillar?: Database["public"]["Enums"]["situation_pillar"]
           reflection?: string | null
+          resolved_at?: string | null
           room_id?: string | null
           scan_band?: Database["public"]["Enums"]["scan_band"] | null
           status?: Database["public"]["Enums"]["situation_status"]
@@ -643,6 +664,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      schedule_checkins: {
+        Args: { p_alias_id: string; p_situation_id: string }
+        Returns: undefined
       }
     }
     Enums: {
