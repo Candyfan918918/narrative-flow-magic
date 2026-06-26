@@ -6,6 +6,21 @@
 <script src="./support.js"></script>
 </head>
 <body>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#fcf1f5"/>
+  <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <g transform="translate(30,0)">
+    <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+    <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  </g>
+  <ellipse cx="23" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="35" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="65" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="77" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+</svg>
+</template>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +49,8 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 </style>
 <script src="./seed-data.js"></script>
 <script src="./share-engine.js"></script>
+<script src="./feedback-engine.js"></script>
+<script src="./auth-sheet.js"></script>
 </helmet>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
