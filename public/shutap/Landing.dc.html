@@ -1508,10 +1508,46 @@ class Component extends DCLogic {
     if(tail.length) lines.push(tail.join(", ")+".");
     if(relief) lines.push('relief, in your words: &ldquo;'+esc(relief)+'&rdquo;');
     lines.push("that's the read. not a verdict — a mirror.");
-    return '<div style="background:rgba(255,255,255,.03);border:.5px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 18px 16px">'+
-      '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a;margin-bottom:10px">what i\u2019m hearing</div>'+
-      lines.map(l=>'<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.6;color:#f7e8f0;margin-bottom:8px">'+l+'</div>').join('')+
+    return '<div data-scan-read style="background:rgba(255,255,255,.03);border:.5px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 18px 16px">'+
+      '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a;margin-bottom:10px;display:flex;align-items:center;gap:8px">what i\u2019m hearing<span data-scan-read-ai style="font-family:Newsreader,serif;font-style:italic;font-size:11px;letter-spacing:0;text-transform:none;color:#9e7a8c;font-weight:400">· reading…</span></div>'+
+      '<div data-scan-read-body>'+lines.map(l=>'<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.6;color:#f7e8f0;margin-bottom:8px">'+l+'</div>').join('')+'</div>'+
     '</div>';
+  }
+  scanAIUpgrade(answers, score, sig){
+    if(!window.claude || !window.claude.complete) {
+      const tag=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read-ai]');
+      if(tag) tag.remove();
+      return;
+    }
+    const pick=k=>answers[k]?(answers[k].label||answers[k].v):'';
+    const profile={
+      topic:pick('topic'), detail:(answers.detail&&answers.detail.v)||'',
+      who:pick('who'), friction:pick('friction'),
+      duration:pick('duration'), body:pick('body'),
+      pattern:pick('pattern'), inaction:pick('inaction'),
+      hope:pick('hope'), support:pick('support'),
+      relief:(answers.relief&&answers.relief.v)||'',
+      intensity:score, signature:sig.label
+    };
+    const sys="You are the companion on Shutap — warm, perceptive, lowercase, never clinical, never therapy-speak. Reflect what THIS specific person just told you in a private scan. Use their own words where you can (especially the 'detail' and 'relief' lines, quoted). Be specific, not generic. Don't diagnose. Don't prescribe. Don't say 'I hear you' or 'great answer'. No emojis. Return 3 short paragraphs separated by blank lines: (1) one sentence naming the shape of what they're carrying, weaving in topic + who + duration; (2) one or two sentences quoting their own line back and saying what it tells you; (3) one sentence about what they're reaching for, and one tiny suggestion of what the room can offer (no commands). Total under 110 words.";
+    const prompt='Their scan:\n'+JSON.stringify(profile,null,2)+'\n\nWrite the read now.';
+    window.claude.complete({system:sys, messages:[{role:'user',content:prompt}], maxTokens:380})
+      .then(text=>{
+        const t=(text||'').trim(); if(!t) return;
+        const root=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read]');
+        if(!root) return;
+        const bodyEl=root.querySelector('[data-scan-read-body]');
+        const tag=root.querySelector('[data-scan-read-ai]');
+        if(tag) tag.remove();
+        if(bodyEl){
+          const paras=t.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
+          bodyEl.innerHTML=paras.map(p=>'<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.6;color:#f7e8f0;margin-bottom:10px">'+p.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>').join('');
+        }
+      })
+      .catch(()=>{
+        const tag=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read-ai]');
+        if(tag) tag.remove();
+      });
   }
   scanResult(){
     const answers=this.scan.answers;
