@@ -19,6 +19,7 @@ import { Route as FamilyRouteImport } from './routes/family'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug'
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
@@ -80,6 +81,10 @@ const SplatRoute = SplatRouteImport.update({
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -111,9 +116,9 @@ const ApiFeedbackEventsRoute = ApiFeedbackEventsRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedCheckinIdRoute = AuthenticatedCheckinIdRouteImport.update({
-  id: '/_authenticated/checkin/$id',
+  id: '/checkin/$id',
   path: '/checkin/$id',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const HallsHallRegionWindowRoute = HallsHallRegionWindowRouteImport.update({
   id: '/halls/$hall/$region/$window',
@@ -180,6 +185,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
   '/career': typeof CareerRoute
@@ -248,6 +254,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/$'
     | '/about'
     | '/career'
@@ -271,6 +278,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   AboutRoute: typeof AboutRoute
   CareerRoute: typeof CareerRoute
@@ -285,7 +293,6 @@ export interface RootRouteChildren {
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
   UPseudonymRoute: typeof UPseudonymRoute
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
-  AuthenticatedCheckinIdRoute: typeof AuthenticatedCheckinIdRoute
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -364,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -411,7 +425,7 @@ declare module '@tanstack/react-router' {
       path: '/checkin/$id'
       fullPath: '/checkin/$id'
       preLoaderRoute: typeof AuthenticatedCheckinIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/halls/$hall/$region/$window': {
       id: '/halls/$hall/$region/$window'
@@ -437,8 +451,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCheckinIdRoute: typeof AuthenticatedCheckinIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCheckinIdRoute: AuthenticatedCheckinIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   AboutRoute: AboutRoute,
   CareerRoute: CareerRoute,
@@ -453,7 +479,6 @@ const rootRouteChildren: RootRouteChildren = {
   IsItNormalSlugRoute: IsItNormalSlugRoute,
   UPseudonymRoute: UPseudonymRoute,
   WhatHappensSlugRoute: WhatHappensSlugRoute,
-  AuthenticatedCheckinIdRoute: AuthenticatedCheckinIdRoute,
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
