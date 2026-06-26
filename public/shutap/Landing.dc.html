@@ -1389,13 +1389,16 @@ class Component extends DCLogic {
     const qText=resolve(q.q);
     const opts=q.kind==='tap'?resolve(q.opts):null;
 
-    // reflection: echo the previous answer through the companion
+    // reflection: echo the previous answer through the companion (local now, AI upgrade after)
     let reflectHTML='';
+    let prevForAI=null;
     if(cur>0){
       const prev=visible[cur-1].step;
       const prevAns=answers[prev.key];
       const text=this.scanReflection(prev.key, prevAns, answers.topic);
-      if(text) reflectHTML='<div class="scan-reflect">'+this.companionSVG(20,20)+'<div>'+text+'</div></div>';
+      const safe=text||'okay. with you.';
+      reflectHTML='<div class="scan-reflect" data-reflect>'+this.companionSVG(20,20)+'<div data-reflect-text>'+safe+'</div></div>';
+      prevForAI={key:prev.key, ans:prevAns};
     }
 
     this.$scanScreen.innerHTML='';
