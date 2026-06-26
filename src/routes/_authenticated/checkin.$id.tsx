@@ -29,7 +29,14 @@ function CheckinCard() {
   if (done) return <Shell><p className="italic">thanks for telling me. i'll keep listening.</p></Shell>
 
   const submit = async (value: string) => {
-    const payload: Parameters<typeof recordCheckinResponse>[0]['data'] = {
+    const payload: {
+      checkin_id: string
+      clean_text: string | null
+      trajectory?: 'better' | 'same' | 'worse'
+      action?: string
+      resolution?: 'in_progress' | 'resolved' | 'avoided' | 'worse'
+      feeling_tap?: string
+    } = {
       checkin_id: ck.id,
       clean_text: note || null,
     }
