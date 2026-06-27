@@ -376,22 +376,22 @@ async function upsertRoomForSituation(
   }
   const { data: room, error } = await sb
     .from('rooms')
-    .insert(payload)
+    .insert(payload as never)
     .select('id')
     .single()
   if (error || !room) throw new Error(error?.message ?? 'room insert failed')
-  await sb.from('situations').update({ room_id: room.id, is_public: true }).eq('id', situationId)
+  await sb.from('situations').update({ room_id: room.id, is_public: true } as never).eq('id', situationId)
   return room.id
 }
 
 function hallFromBand(band: string | null | undefined): 'healing' | 'brave' | 'relatable' | 'loving' {
   switch (band) {
-    case 'storm':
-    case 'spike':
+    case 'serious':
+    case 'heavy':
       return 'brave'
-    case 'simmer':
+    case 'hot':
       return 'relatable'
-    case 'calm':
+    case 'quiet':
       return 'loving'
     default:
       return 'healing'
