@@ -325,7 +325,7 @@ export const updateComment = createServerFn({ method: 'POST' })
     const s = await scrubText({ data: { raw: data.text } })
     const { error } = await context.supabase
       .from('comments')
-      .update({ clean_text: s.clean_text || data.text, edited: true })
+      .update({ clean_text: s.clean_text || data.text, edited: true } as never)
       .eq('id', data.id)
       .eq('alias_id', context.userId)
     if (error) throw new Error(error.message)
