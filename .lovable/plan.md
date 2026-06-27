@@ -1,74 +1,74 @@
-## Goal
+# Spill v2 + Content Ownership — exactly per the attached specs
 
-Implement the Shutap Agent Specs (Launch v2) on top of the existing app: a unified Companion/Mirror voice powered by the Lovable AI Gateway, with the Scrubber and Guard always in front, Scan + Matcher as services, a Scheduler state machine for check-ins, and a Memory pass that builds the moat. Everything inherits the Companion Constitution (§0).
+You attached `Shutap-Launch-LOVABLE-PROMPT.md` + `Shutap-Updates-LOVABLE-PROMPT.md` and the refreshed `Shutap-Landing.html / Profile.html / Stream.html / Feedback-Admin.html`. The Updates prompt is the addendum that wins where it conflicts with launch. This plan implements both, no creative additions.
 
-## Build order (mirrors §"Build order" of the spec)
+## 0. Drop in the refreshed prototypes (visual reference)
+- Replace `public/shutap/Shutap-0627.html` with `Shutap-Landing.html` from the upload (and same for Profile / Stream / Feedback-Admin variants under `public/shutap/`). Iframes already point at these.
+- Re-inject `ai-bridge.js` so `window.claude.complete` keeps routing to `/api/complete`.
 
-### Phase A — Data model + the two gatekeepers (Scrubber, Guard)
+## 1. Data model delta (one migration)
+Add to `public.situations`:
+- `kind text` (`null | 'scan'`)
+- `body text` (the composed in-voice post; distinct from `clean_text` raw transcript)
+- `edited boolean default false`
+- `deleted_at timestamptz`
+- `'deleted'` added to `situation_status` enum
 
-Database additions (one migration, with GRANTs + RLS):
-- `situations` (extends today's `rooms` semantics with launch-spec fields): `id`, `alias_id`, `pillar`, `clean_text`, `initial_scan`, `scan_band`, `crisis_flag`, `status` (`in_progress|resolved|avoided|worse`), `tags[]`, `embedding` (nullable, for future), `is_public`, `created_at`. Keep `rooms` for the live UI; add a thin compatibility view or migrate carefully.
-- `pii_scrub_log` (`situation_id`, `detected_type`, `replacement_token`, `count`).
-- `checkins` (`situation_id`, `type` day0/1/2/3/7/14/adaptive, `scheduled_at`, `channel`, `state`).
-- `checkin_responses` (`checkin_id`, `rescan`, `trajectory`, `resolution`, `would_again`, `clean_text` optional).
-- `outcomes` (`situation_id`, `decision_summary`, `resolution`, `trajectory_curve` jsonb, `would_again`, `captured_at`).
-- `user_patterns` (`alias_id`, `trigger`, `tendency`, `what_helps`, `support` int).
-- `crisis_events` (access-controlled — no anon/auth read; service_role only).
+New table `public.comments` (room comments are not yet owned per the addendum's open item):
+`id, room_id (→ rooms.id), user_id (→ auth.users.id), alias_id, clean_text, edited bool, created_at, updated_at, deleted_at` + GRANTs + RLS (anyone signed-in can read non-deleted; only author can update/soft-delete).
 
-Server functions (in `src/lib/agents/`):
-- `scrubber.functions.ts` — `scrubText(raw)` returns `{clean_text, replacements[], notice}`. Regex pass for phones/emails/addresses + LLM pass via gateway; over-redact on conflict. Writes `pii_scrub_log`. **No raw text ever persisted.**
-- `guard.functions.ts` — `classifyCrisis(clean_text)` returns `{crisis, category, severity}`. Used on spill, optional check-in text, and Mirror outputs.
-- Wire both into every existing write path that ingests free text (spill, check-in text, comments).
+New table `public.pii_scrub_log` already exists — reuse it; just make sure `comments` writes through the same scrubber.
 
-### Phase B — Companion (spill + felt-heard) + Scan + Matcher
+Fix the security findings flagged in the current scan in the same migration:
+- Tighten `aliases` SELECT policy: replace `USING (true)` with `auth.uid() = user_id`, and add a separate narrow policy exposing only `display_name, emoji, pillar` for community reads via a view `aliases_public` (`security_invoker=on`).
+- Revoke `EXECUTE` on `schedule_checkins` from `authenticated` (it's an internal scheduler — only `service_role` should call it).
+- Replace any remaining `USING (true)` write policies with scoped ones.
 
-- `scan.functions.ts` — LLM-assisted scoring through gateway, with **deterministic heuristic fallback** (length, pillar, emotion keywords, taps). Returns `{scan 0–999, band, reflection}`.
-- `matcher.functions.ts` — MVP `pillar + tags` retrieval over public, non-crisis situations + a truthful `relate` count; LLM rerank optional. Enforces pillar liquidity floor.
-- `companion.functions.ts` — three modes (`spill | felt_heard | checkin`). Uses the Constitution as system prompt; spill is ≤3 questions then hands off; felt-heard composes reflection + Matcher resonance + Scan reveal + soft permission ask. Crisis flag replaces the payoff entirely.
-- Wire into the Spill overlay on Landing: scrub → guard → scan → matcher → companion. Replace today's ad-hoc `/api/complete` calls for spill with these typed server fns.
+## 2. Server functions — `src/lib/situations.functions.ts` (all `requireSupabaseAuth`)
+- `runSpillTurn({ transcript, arc, alias })` — one model call per turn, returns the strict JSON contract from §1 of the addendum (`say[], has_question, relief_lever, humor_ok, updated{...arc}, decision, why`). Persona + JSON contract enforced server-side via Lovable AI Gateway (`google/gemini-3-flash-preview`), system prompt loaded from `src/lib/spill-persona.server.ts`. Crisis Guardian + PII scrubber run on every turn.
+- `composePost({ transcript, arc })` — returns `{title, body, tags[]}`, re-scrubbed, traceable to transcript, invents nothing.
+- `aiEditPost({ situationId, instruction })` — sticky-to-voice rewrite, re-runs PII scrubber, refuses to invent missing facts (asks instead).
+- `saveSituation({ kind?, pillar, clean_text, body, title, tags, visibility })` — persists the record (room or journal or scan), returns `{id, visibility}`.
+- `listMySituations({ kind?, visibility? })` — drives Profile sections.
+- `getSituation({ id })` — load for owner editor.
+- `updateSituation({ id, body?, title?, pillar?, visibility?, status? })` — edit, flip visibility, soft-delete. Flips reuse the SAME record (no duplicate). On public→private, hide from Stream + cancel scheduled check-ins. On private→public, re-run resonance.
+- `deleteSituation({ id })` — soft delete (`status='deleted'`, `deleted_at=now()`); cancels pending check-ins; honored `DELETE_GRACE_DAYS=7` purge handled by a separate cron later (out of scope here).
+- `listMyComments` / `createComment` / `updateComment` / `deleteComment` — same pattern, per the addendum's "open item".
 
-### Phase C — Scheduler + Companion check-in voice
+## 3. Landing iframe — wire the spill turn engine + close
+In the dropped-in `Shutap-Landing.html`:
+- Replace the local `runSpill` orchestrator's per-turn AI call with `fetch('/api/complete'...)` → `runSpillTurn` server fn (via the `ai-bridge` shim). Same strict JSON contract.
+- Implement the close exactly: land-it reflection → support-mode prompt → Guardian check → `composePost` → **preview screen** (editable title/body + "edit with spill" instruction box + Post-to-room / Keep-as-journal buttons).
+- On "post to a room": `saveSituation({ visibility:'public' })` → postMessage `shutap-nav` to `/stream#room-<id>` (the actual room URL the parent SPA renders).
+- On "keep as journal": `saveSituation({ visibility:'private' })` → postMessage `shutap-nav` to `/profile#journal`.
+- Scan stays as `kind:'scan'` private situation.
+- Cheerful greeting calls user by alias (fetched from `getMyAlias` on iframe boot).
 
-- App-side state machine (TanStack server fns + a `pg_cron`-driven `/api/public/cron/checkins` route) for `day0→day1→day2→day3→day7→day14→adaptive30`.
-- Channel routing: eye-when-present (in-app card), else email via Resend (requires sending domain — flag if not set).
-- Deterministic rules: backoff if day1 + day2 unopened, no stacking, snooze/mute, crisis/`worse` override (no rating, no paywall next).
-- Check-in card UI: one-tap enums + optional text (run text back through Scrubber).
-- Companion `checkin` mode generates the in-voice line per beat.
+## 4. Profile becomes a real React page
+Replace `src/pages/Profile.tsx`'s iframe shell with a React page styled with the prototype's CSS tokens (Sora UI, Newsreader italic, pink) — uses `Shutap-Profile.html` only as visual reference. Three real sections:
+- **your rooms** — public situations. Per card: edit-with-spill, move to private journal, delete. Empty-state nudges to spill.
+- **private journal** — private situations + scans, newest first, relative timestamps. Per card: post-to-room, edit-with-spill, delete.
+- **your scans** — `kind='scan'` rows with band + date + delete.
 
-### Phase D — Memory + Mirror
+All actions hit the server fns from §2 via TanStack Query with optimistic UI and proper invalidation.
 
-- `memory.functions.ts` — runs on `outcome`-eligible events; produces strict JSON `outcome` + per-user `patterns` (support ≥ 2). Excludes crisis situations. No prose to user.
-- `mirror.functions.ts` — paid persona, reads `outcomes` + `user_patterns` only; never invents longitudinal claims. Output guard via Guard. Soft paywall only at the day7–14 felt moment; uses existing Stripe subscription gate (`has_active_mirror`).
-- Mirror UI: teaser ("your Mirror is forming") for free users; full arc + cross-situation patterns for subscribers; in-voice paywall presentation.
+## 5. Shared editor — `src/components/SituationEditor.tsx`
+The compose/preview surface, used by Profile and by Room owner controls. Matches the prototype: editable title + body, tags chip row, "edit with spill" instruction box → preview diff → save / discard. Buttons: Post-to-room / Keep-as-journal / Delete (with undo grace toast).
 
-### Phase E — Instrumentation
+## 6. Room owner controls
+In the room view (`src/pages/Room.tsx`), when the signed-in user owns the situation, the ⋯ menu shows **edit with spill / move to private journal / delete** instead of the report menu. Opens the same `SituationEditor` from §5. Non-owners see the normal public room + (later) comment box.
 
-Extend `feedback_events` (or add `agent_events`) with the spec's event names:
-`spill_started/completed`, `felt_heard_passive/active`, `notif_permission_*`, `pii_scrubbed`, `crisis_detected`, `crisis_resources_shown`, `scan_*`, `resonance_surfaced`, `checkin_scheduled/sent/opened/responded`, `outcome_captured`, `situation_resolved`, `mirror_teaser_shown`, `paywall_shown`, `subscribe_*`. Surface counts in `/admin/feedback`.
+## 7. Acceptance (copied from the addendum)
+- Spill named "spill", greets by alias, opens cheerfully.
+- Each turn = 1–3 short bubbles ≤~30 words, `has_question` flag, no paragraphs.
+- Interview walks the full arc; lands only after actions+plan beats or soft cap.
+- Close composes in user's voice/facts; preview shown before publish.
+- User can edit preview by hand AND with AI (voice/facts locked, re-scrubs).
+- Post → lands in their new room URL; Save → lands on the journal page.
+- Rooms / journals / scans are editable / movable / deletable from Room page and Profile; flips reuse the same record.
+- Comments persisted + editable/deletable by author.
 
-## Hard rules baked into every prompt
-
-- Single system prompt: the §0 Constitution prepended to every Companion/Mirror call.
-- Spill prompt = ≤3 questions, never authors the story.
-- Scan = intensity, not judgment; suppressed when `crisis_flag`.
-- Scrubber notice surfaced in-voice in the UI ("heads up — I swapped…").
-- Guard overrides everything: persona drop + fixed (non-generated) crisis copy block; crisis situations excluded from corpus, matcher, mirror, paywall.
-- Mirror diagnosis test: pattern = ship, label = reframe; only re-voices Memory output.
-
-## Technical notes
-
-- All agent calls go through the existing `/api/complete` gateway path (Lovable AI Gateway, `google/gemini-3-flash-preview` default; ANTHROPIC override preserved). New `src/lib/agents/*.functions.ts` wrap typed prompts.
-- Cron via Supabase `pg_cron` hitting `/api/public/cron/checkins` (signature-verified).
-- Resend send requires a verified domain — will surface a setup step when reached in Phase C.
-- Embeddings deferred; Matcher MVP uses pillar + tags + relate counts.
-- Existing `rooms`, `room_relates`, `room_reactions` keep powering the Stream/HallOfFame UI; new `situations` table is the canonical source feeding agents. Add a migration that backfills `situations` from `rooms` to avoid a content reset.
-
-## Scope notes / what's NOT in this plan
-
-- No fine-tuning; behavior comes from prompts + the Constitution.
-- No new auth/payments — reuses existing Lovable Cloud auth, Stripe subscription, and `_authenticated` gate.
-- No design overhaul; the iframe-ported `.dc.html` pages stay as the visual layer. New UI affordances (scrubber notice, check-in card, Mirror panel) added inline.
-
-## Suggested commit cadence
-
-One commit per phase (A→E). Each phase is independently shippable behind a feature flag (`VITE_AGENTS_PHASE`) so we can preview without breaking the live site.
+## Out of scope this pass
+- 7-day hard-purge cron (table column + soft delete only).
+- Email/eye check-in scheduler (already exists; this plan just makes sure delete/flip cancels pending ones).
+- Mirror paywall changes.
