@@ -190,6 +190,47 @@ export type Database = {
           },
         ]
       }
+      comments: {
+        Row: {
+          alias_id: string
+          clean_text: string
+          created_at: string
+          deleted_at: string | null
+          edited: boolean
+          id: string
+          room_id: string
+          updated_at: string
+        }
+        Insert: {
+          alias_id: string
+          clean_text: string
+          created_at?: string
+          deleted_at?: string | null
+          edited?: boolean
+          id?: string
+          room_id: string
+          updated_at?: string
+        }
+        Update: {
+          alias_id?: string
+          clean_text?: string
+          created_at?: string
+          deleted_at?: string | null
+          edited?: boolean
+          id?: string
+          room_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crisis_events: {
         Row: {
           alias_id: string | null
@@ -503,12 +544,16 @@ export type Database = {
       situations: {
         Row: {
           alias_id: string
+          body: string | null
           clean_text: string
           created_at: string
           crisis_flag: boolean
+          deleted_at: string | null
+          edited: boolean
           id: string
           initial_scan: number | null
           is_public: boolean
+          kind: string | null
           pillar: Database["public"]["Enums"]["situation_pillar"]
           reflection: string | null
           resolved_at: string | null
@@ -516,16 +561,21 @@ export type Database = {
           scan_band: Database["public"]["Enums"]["scan_band"] | null
           status: Database["public"]["Enums"]["situation_status"]
           tags: string[]
+          title: string | null
           updated_at: string
         }
         Insert: {
           alias_id: string
+          body?: string | null
           clean_text: string
           created_at?: string
           crisis_flag?: boolean
+          deleted_at?: string | null
+          edited?: boolean
           id?: string
           initial_scan?: number | null
           is_public?: boolean
+          kind?: string | null
           pillar: Database["public"]["Enums"]["situation_pillar"]
           reflection?: string | null
           resolved_at?: string | null
@@ -533,16 +583,21 @@ export type Database = {
           scan_band?: Database["public"]["Enums"]["scan_band"] | null
           status?: Database["public"]["Enums"]["situation_status"]
           tags?: string[]
+          title?: string | null
           updated_at?: string
         }
         Update: {
           alias_id?: string
+          body?: string | null
           clean_text?: string
           created_at?: string
           crisis_flag?: boolean
+          deleted_at?: string | null
+          edited?: boolean
           id?: string
           initial_scan?: number | null
           is_public?: boolean
+          kind?: string | null
           pillar?: Database["public"]["Enums"]["situation_pillar"]
           reflection?: string | null
           resolved_at?: string | null
@@ -550,6 +605,7 @@ export type Database = {
           scan_band?: Database["public"]["Enums"]["scan_band"] | null
           status?: Database["public"]["Enums"]["situation_status"]
           tags?: string[]
+          title?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -666,6 +722,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      alias_public: {
+        Args: { _user_id: string }
+        Returns: {
+          display_name: string
+          emoji: string
+          user_id: string
+        }[]
+      }
+      cancel_pending_checkins: {
+        Args: { _situation_id: string }
+        Returns: undefined
+      }
       has_active_mirror: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean
@@ -702,7 +770,14 @@ export type Database = {
         | "adaptive30"
       scan_band: "quiet" | "real" | "hot" | "heavy" | "serious"
       situation_pillar: "relationships" | "marriage" | "family" | "career"
-      situation_status: "in_progress" | "resolved" | "avoided" | "worse"
+      situation_status:
+        | "in_progress"
+        | "resolved"
+        | "avoided"
+        | "worse"
+        | "deleted"
+        | "abandoned"
+        | "open"
       trajectory: "better" | "same" | "worse"
     }
     CompositeTypes: {
@@ -852,7 +927,15 @@ export const Constants = {
       ],
       scan_band: ["quiet", "real", "hot", "heavy", "serious"],
       situation_pillar: ["relationships", "marriage", "family", "career"],
-      situation_status: ["in_progress", "resolved", "avoided", "worse"],
+      situation_status: [
+        "in_progress",
+        "resolved",
+        "avoided",
+        "worse",
+        "deleted",
+        "abandoned",
+        "open",
+      ],
       trajectory: ["better", "same", "worse"],
     },
   },
