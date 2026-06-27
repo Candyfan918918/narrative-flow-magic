@@ -338,7 +338,7 @@ export const deleteComment = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from('comments')
-      .update({ deleted_at: new Date().toISOString() })
+      .update({ deleted_at: new Date().toISOString() } as never)
       .eq('id', data.id)
       .eq('alias_id', context.userId)
     if (error) throw new Error(error.message)
