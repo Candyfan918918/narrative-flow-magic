@@ -49,11 +49,12 @@ const SaveInput = z.object({
   body: z.string().max(8000).nullable().optional(),
   tags: z.array(z.string().max(40)).max(12).default([]),
   initial_scan: z.number().int().min(0).max(999).nullable().optional(),
-  scan_band: z.enum(['calm', 'noticing', 'simmer', 'spike', 'storm']).nullable().optional(),
+  scan_band: z.enum(['quiet', 'real', 'hot', 'heavy', 'serious']).nullable().optional(),
   is_public: z.boolean().default(false),
   emoji: z.string().max(8).optional(),
   alias: z.string().max(40).optional(),
 })
+type ScanBand = 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'
 
 export const saveSituation = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
