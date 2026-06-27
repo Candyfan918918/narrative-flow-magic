@@ -146,7 +146,7 @@ export const updateSituation = createServerFn({ method: 'POST' })
 
     const { error: upErr } = await context.supabase
       .from('situations')
-      .update(patch)
+      .update(patch as never)
       .eq('id', data.id)
     if (upErr) throw new Error(upErr.message)
 
@@ -166,7 +166,7 @@ export const updateSituation = createServerFn({ method: 'POST' })
       })
     } else if (goingPrivate && roomId) {
       await context.supabase.from('rooms').delete().eq('id', roomId).eq('author_id', context.userId)
-      await context.supabase.from('situations').update({ room_id: null }).eq('id', data.id)
+      await context.supabase.from('situations').update({ room_id: null } as never).eq('id', data.id)
       await context.supabase.rpc('cancel_pending_checkins', { _situation_id: data.id })
       roomId = null
     } else if (roomId && (patch.title || patch.body)) {
@@ -174,7 +174,7 @@ export const updateSituation = createServerFn({ method: 'POST' })
       const update: Record<string, unknown> = {}
       if (patch.title) update.title = patch.title
       if (patch.body) update.body = patch.body
-      await context.supabase.from('rooms').update(update).eq('id', roomId).eq('author_id', context.userId)
+      await context.supabase.from('rooms').update(update as never).eq('id', roomId).eq('author_id', context.userId)
     }
     return { id: data.id, is_public: data.is_public ?? current.data.is_public, room_id: roomId }
   })
