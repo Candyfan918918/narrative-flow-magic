@@ -191,7 +191,7 @@ export const deleteSituation = createServerFn({ method: 'POST' })
     if (!current || current.alias_id !== context.userId) throw new Error('forbidden')
     await context.supabase
       .from('situations')
-      .update({ status: 'deleted', deleted_at: new Date().toISOString(), is_public: false })
+      .update({ status: 'deleted', deleted_at: new Date().toISOString(), is_public: false } as never)
       .eq('id', data.id)
     if (current.room_id) {
       await context.supabase.from('rooms').delete().eq('id', current.room_id).eq('author_id', context.userId)
