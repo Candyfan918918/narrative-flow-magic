@@ -1698,7 +1698,7 @@ class Component extends DCLogic {
       '<div style="margin-top:14px;display:inline-flex;gap:6px;align-items:center;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c">opening your journal<i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .4s infinite"></i></div>';
     this.$spillScreen.appendChild(body);
     document.body.style.overflow='';
-    setTimeout(()=>{ window.location.href='Profile.dc.html#journal'; }, 850);
+    setTimeout(()=>{ try{ window.parent && window.parent!==window && window.parent.postMessage({type:'shutap-nav',to:'/profile',hash:'#journal'},'*'); }catch(e){} window.location.href='/profile#journal'; }, 850);
   }
 
   postToRoom(){
@@ -2026,7 +2026,7 @@ class Component extends DCLogic {
       '<div style="margin-top:10px;display:inline-flex;gap:6px;align-items:center;font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c4a0b2">taking you in<i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .4s infinite"></i></div>';
     this.$spillScreen.appendChild(body);
     document.body.style.overflow='';
-    setTimeout(()=>{ window.location.href='Stream.dc.html#room-'+sit.id; }, 850);
+    setTimeout(()=>{ const h='#room-'+sit.id; try{ window.parent && window.parent!==window && window.parent.postMessage({type:'shutap-nav',to:'/stream',hash:h},'*'); }catch(e){} window.location.href='/stream'+h; }, 850);
   }
 
   /* ═══════════ SCAN ═══════════ */

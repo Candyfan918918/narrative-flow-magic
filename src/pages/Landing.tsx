@@ -10,8 +10,12 @@ export function LandingPage() {
   const spill = useServerFn(runSpill)
   useEffect(() => {
     const onMsg = async (e: MessageEvent) => {
-      const d = e.data as { type?: string; plan?: string; raw?: string; pillar?: string; reqId?: string; is_public?: boolean } | null
+      const d = e.data as { type?: string; plan?: string; raw?: string; pillar?: string; reqId?: string; is_public?: boolean; to?: string; hash?: string } | null
       if (!d) return
+      if (d.type === 'shutap-nav' && d.to) {
+        navigate(d.to + (d.hash || ''))
+        return
+      }
       if (d.type === 'shutap-subscribe') {
         const plan = d.plan === 'monthly' ? 'monthly' : 'annual'
         navigate(`/subscribe?plan=${plan}`)
