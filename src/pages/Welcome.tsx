@@ -24,15 +24,17 @@ export function WelcomePage() {
 
   // detect existing session
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user && !data.user.is_anonymous) {
         sessionStorage.setItem('shutap_authed', '1')
         recordLegalAcceptance({ data: {} }).catch(() => {})
         setPhase('birthday')
       }
     })
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
+    const { data: sub } = supabase.auth.onAuthStateChange(async (event) => {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        const { data: u } = await supabase.auth.getUser()
+        if (!u.user || u.user.is_anonymous) return
         recordLegalAcceptance({ data: {} }).catch(() => {})
         if (sessionStorage.getItem('shutap_pending_save')) navigate('/')
         else setPhase('birthday')
