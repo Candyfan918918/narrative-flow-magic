@@ -1,68 +1,39 @@
-# Shutap Launch Infrastructure — Build Plan
+## Phase 3 — Retention Engine
 
-Source: `shutap-launch-infra-solutions.md`. Six phases ordered so each unblocks the next, matching the spec's build order (§ at end of doc).
+Move check-ins from "scheduled rows we never deliver" to "rows the server actually fires on time," and add the two channels needed at launch.
 
-Current state check: Auth + Postgres are already live (Lovable Cloud). The `embedding` column does **not** yet exist; pgvector is not enabled; check-ins schedule via `pg_cron`-style RPC but dispatch is partial; PostHog is not wired; Matcher is tag/recency only; comments already exist.
+### Scope (3 slices)
 
-So Phase 1 (the "kill localStorage" prerequisite) is largely done — we'll just audit residual `localStorage` situation/checkin code and remove it.
+**3a. Server scheduler (required, ships first)**
+- New public route `src/routes/api/public/checkins.run.ts` that:
+  - Selects due `checkins` rows: `state='scheduled' AND scheduled_at <= now()` (cap 200/run).
+  - For each: render copy based on `type` (day0…day14), dispatch via the row's `channel` (`eye` = in-app only, `email` = Resend), then mark `state='sent'` and stamp `sent_at`.
+  - Idempotent (single update guarded by `state='scheduled'`).
+  - Auth: caller must include `apikey` header = `SUPABASE_PUBLISHABLE_KEY` (canonical pg_cron pattern; no new secret).
+- New `pg_cron` job every 1 minute that POSTs to `…/api/public/checkins.run` on the stable `project--{id}.lovable.app` URL.
+- Admin view extension: a tiny "scheduler health" card on `/admin/relate-queue` showing `scheduled / sent / failed` counts for the last 24h.
 
----
+**3b. Email channel via Resend (required for `email` channel rows)**
+- Adds `RESEND_API_KEY` secret (I'll request it via the secret tool).
+- New server-only helper `src/lib/email.server.ts` with `sendCheckinEmail({ to, type, situationId })`.
+- Templates inline (5 variants: day1, day2, day3, day7, day14) — copy mirrors the launch spec's check-in voice; each ends with a deep link to `/checkin/<id>`.
+- Failure → mark row `state='failed'`, log to `feedback_events`, leave for retry on next tick (cap 3 attempts via a new `attempts` column).
+- Migration adds: `checkins.attempts int default 0`, `checkins.last_error text`.
 
-## Phase 1 — Audit & finalize the DB-of-record (§8.5 prereq)
-- Sweep for any situation / check-in / identity state still in `localStorage` (e.g. `shutap_pending_save`, situation merges in `Stream.dc.html`). Keep localStorage only as a session cache + pseudonym mirror.
-- Confirm RLS + GRANTs on all situation/comment/checkin/subscription tables.
+**3c. PWA Web Push (deferred recommendation)**
+The PWA skill we have to follow forbids registering an app-shell service worker in Lovable preview, requires a dedicated `firebase-messaging-sw.js`-style worker, and needs VAPID keys + a `push_subscriptions` table + a `<UNSAFE>` user permission prompt. Recommend cutting from launch and shipping email + in-app `eye` check-ins only — push is a real 1–2 day slice on its own and the spec already treats `eye` (in-app) as the primary day0 surface.
 
-## Phase 2 — Honest liquidity (§7)
-**2a. Matcher v2 + honest resonance number (§7.3, §7.5)**
-- Enable `pgvector` extension; add `embedding vector(1536)` (already nullable per spec note — verify), backfill job using Lovable AI Gateway embeddings.
-- `matchSituations` server fn: cosine top-K over **real, public, non-crisis, non-seed** corpus, rerank by recency + relate density.
-- UI rule: show numeric "N lived this" only when N ≥ 5; else story-based "someone went through almost exactly this →"; at 0, lean on Companion + SLA. Strip every hard-coded count.
+### Out of scope this round
+- Crisis-flag escalation paths (separate spec).
+- Marketing emails / digest (different cadence + unsubscribe infra).
 
-**2b. Seed wall-off**
-- `is_seed = true` rows: never counted, never matched, visually labeled "ambient" once real density crosses a floor.
+### Data model touch
+```text
+ALTER TABLE public.checkins
+  ADD COLUMN attempts int NOT NULL DEFAULT 0,
+  ADD COLUMN last_error text;
+```
 
-**2c. Single-pillar gating**
-- `pillar_status` table: `{ pillar, opened_at, real_story_floor, sla_target }`. Public stream filters to opened pillars only.
-
-**2d. Human-relate SLA + ops queue (§7.6)**
-- New `/admin/relate-queue`: un-responded public spills oldest first, with `support_mode` badge, one-click reactions, comment box.
-- `time_to_first_human_response` computed per situation; alert row when past threshold.
-
-## Phase 3 — Retention spine (§8)
-- Move scheduling from any client timer to **`pg_cron` minute-poll** of `checkins` (table exists). Dispatcher = server fn (Supabase-native option; Inngest not needed at this scale).
-- Channel cascade: in-app eye → web push → email (Resend connector). Idempotent per `(situation_id, beat)`; backoff; suppress emails after 2 unopened beats; quiet hours + tz; crisis override routes to safety, never paywall.
-- **PWA + Web Push:** service worker, VAPID keys, permission prompt fired at felt-heard moment ("want me to check in on you?") — never on landing.
-- Cancel jobs on situation delete.
-
-## Phase 4 — Mirror's real intelligence (§9)
-- Embedding job on every new situation (reuses Phase 2 infra).
-- `patterns` table; **Memory batch** server fn: per-user clusters, trigger correlation, decision↔outcome correlation, trajectory curves.
-- Cross-user corpus aggregates with **k-anonymity** floor (`k ≥ 5`).
-- Mirror persona re-voices structured findings only; every claim cites support count; below-threshold UI says **"your Mirror is still forming — N more check-ins"** (no illustrative bars).
-
-## Phase 5 — Observability & growth (§11, §12)
-- Typed PostHog layer (`src/lib/analytics.ts`), pseudonymous id only.
-- 7 dashboards via PostHog: Activation, Liquidity, Retention, Monetization, Capture, Safety, Growth.
-- Signed share-token on MGM cards `{ sharer_pseudonym_id, situation_id, channel }`; attribute click + signup; K-factor dashboard.
-
-## Phase 6 — Reach (§13–§15)
-- SEO: convert QAPage / Dataset / hub routes to SSR (TanStack Start already supports it — just remove `ssr: false` on the relevant public routes and feed loader data into `head()`); de-index on delete.
-- A11y pass (contrast on pink-on-blush, `prefers-reduced-motion`, keyboard nav).
-- i18n scaffolding + locale-tuned persona prompts (not literal string swap).
-- Native (Expo) only when retention economics justify — deferred.
-
----
-
-## Technical notes
-- **No Edge Functions** for app-internal logic — all dispatchers/matchers are `createServerFn`. `pg_cron` calls a `/api/public/hooks/dispatch-checkins` route (already exists) on a 1-min schedule.
-- **Embeddings model:** `google/text-embedding-004` via Lovable AI Gateway (1536-d → fits existing column once added).
-- **Resend** is a connector — add via standard connectors when Phase 3 lands.
-- **VAPID keys** stored as secrets (`VAPID_PUBLIC_KEY` exposed via `VITE_`, `VAPID_PRIVATE_KEY` server-only).
-- Per spec: never astroturf, never fake counts, never match seed/crisis/private rows.
-
----
-
-## Suggested first slice (1 PR-worth)
-Phase 2a + 2b + 2d — the trust-critical pieces. This makes the live app honest *today* (no fake "N lived this"), enables real matching as soon as embeddings backfill, and gives you the ops queue to actually meet the SLA. Phases 3–6 follow in order.
-
-Shall I start with Phase 2a (pgvector + honest resonance + Matcher v2)?
+### Decisions I need from you
+1. Confirm **3a + 3b** for this round and **defer 3c (web push)** to a follow-up — or keep push in scope and I'll add the extra ~1 day of work.
+2. Do you have a Resend account / sender domain already wired (Lovable Cloud email infra), or should I scaffold a generic `onboarding@resend.dev` sender for sandbox and gate prod sends behind a domain-verify check?
