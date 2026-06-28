@@ -21,6 +21,21 @@ const badgeStyle = (support: string): React.CSSProperties => ({
   letterSpacing: '.05em',
 })
 
+const BAND_COLOR: Record<string, string> = {
+  settling: '#5B8A5E',
+  sitting: '#7F77DD',
+  weighing: '#c1a02b',
+  heavy: '#c87c4a',
+  consuming: '#c1216b',
+}
+const BAND_LABEL: Record<string, string> = {
+  settling: 'settling',
+  sitting: 'sitting with it',
+  weighing: 'weighing',
+  heavy: 'heavy / loud',
+  consuming: 'consuming',
+}
+
 interface Guide {
   guide: string
   starters: string[]
@@ -64,6 +79,8 @@ export function RoomDetail({
 
   const n = Math.min(room.sitting, 16)
   const seatGlyphs = ['🌸', '✦', '○', '·', '◦']
+  const isScan = room.kind === 'scan' && typeof room.initial_scan === 'number'
+  const scanAccent = BAND_COLOR[(room.scan_band || 'sitting') as keyof typeof BAND_COLOR] || '#7F77DD'
 
   // ── companion-offered "not alone" share at the resonance peak (§22 T4) ──
   const offerShare = () => {
@@ -85,13 +102,29 @@ export function RoomDetail({
 
   const shareRoom = () => {
     if (!window.ShutapShare) return
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shutap.com'
+    if (isScan) {
+      window.ShutapShare.manual({
+        trigger: 'manual_room_scan',
+        kind: 'scan',
+        accent: scanAccent,
+        big: String(room.initial_scan ?? ''),
+        headline: room.scan_signature || room.title,
+        companion: 'sharing this scan — de-identified. only the number and signature line travel, never the full story.',
+        caption: '“' + (room.scan_signature || room.title) + '” — i scanned ' + room.initial_scan + '/100. where are you? →',
+        url: origin + '/room?id=' + room.id,
+        loopLabel: 'scan yours →',
+        privacy: 'only the number + signature leave — never the full story or any name.',
+      })
+      return
+    }
     window.ShutapShare.manual({
       trigger: 'manual_room',
       kind: 'generic',
       headline: '“' + room.title + '”',
       companion: 'sharing this room — de-identified. only the headline and a link travel, never the full story.',
       caption: '“' + room.title + '” — a room on Shutap. someone in here has lived your exact thing →',
-      url: 'https://shutap.com/room/' + room.id,
+      url: origin + '/room?id=' + room.id,
       loopLabel: 'take yours →',
       privacy: 'only the headline + link leave — never the full story.',
     })
@@ -222,23 +255,48 @@ export function RoomDetail({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap', marginBottom: 14 }}>
-          <span style={badgeStyle(room.support)}>{room.support === 'heard' ? 'looking to be heard' : 'open to advice'}</span>
+          {isScan ? (
+            <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 10, letterSpacing: '.14em', color: scanAccent, background: scanAccent + '15', border: '.5px solid ' + scanAccent + '30', padding: '4px 10px', borderRadius: 999 }}>
+              SCAN · {BAND_LABEL[(room.scan_band || 'sitting') as keyof typeof BAND_LABEL]}
+            </span>
+          ) : (
+            <span style={badgeStyle(room.support)}>{room.support === 'heard' ? 'looking to be heard' : 'open to advice'}</span>
+          )}
           <span style={{ fontSize: 12.5, color: '#9e7a8c', fontFamily: 'Newsreader,serif', fontStyle: 'italic' }}>{room.hours} ago</span>
         </div>
 
-        <h2
-          style={{
-            fontFamily: 'Sora,sans-serif',
-            fontWeight: 700,
-            fontSize: 'clamp(20px,4vw,26px)',
-            lineHeight: 1.2,
-            margin: '0 0 14px',
-            color: '#0b080f',
-            letterSpacing: '-.01em',
-          }}
-        >
-          {room.title}
-        </h2>
+        {isScan ? (
+          /* --- SCAN SCORE CARD HERO --- */
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, marginBottom: 18 }}>
+            <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 88, lineHeight: 1, letterSpacing: '-.04em', color: scanAccent }}>
+              {room.initial_scan}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h2 style={{ fontFamily: 'Cormorant Garamond,Newsreader,serif', fontStyle: 'italic', fontWeight: 500, fontSize: 'clamp(22px,4vw,30px)', lineHeight: 1.15, margin: 0, color: '#2e1a26' }}>
+                {room.scan_signature || room.title}
+              </h2>
+              {room.pillar && (
+                <div style={{ marginTop: 10, display: 'inline-block', fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase', color: '#6b4a5c', background: '#f7e8f0', padding: '3px 10px', borderRadius: 999 }}>
+                  {room.pillar}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <h2
+            style={{
+              fontFamily: 'Sora,sans-serif',
+              fontWeight: 700,
+              fontSize: 'clamp(20px,4vw,26px)',
+              lineHeight: 1.2,
+              margin: '0 0 14px',
+              color: '#0b080f',
+              letterSpacing: '-.01em',
+            }}
+          >
+            {room.title}
+          </h2>
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
           <span style={{ width: 28, height: 28, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 16, flex: 'none' }}>
@@ -247,9 +305,11 @@ export function RoomDetail({
           <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, color: '#6b4a5c' }}>{room.alias}</span>
         </div>
 
-        <p style={{ fontFamily: 'Newsreader,serif', fontSize: 17, lineHeight: 1.65, color: '#2e1a26', margin: '0 0 26px', whiteSpace: 'pre-line' }}>
-          {room.body}
-        </p>
+        {room.body && (
+          <p style={{ fontFamily: 'Newsreader,serif', fontSize: 17, lineHeight: 1.65, color: '#2e1a26', margin: '0 0 26px', whiteSpace: 'pre-line' }}>
+            {room.body}
+          </p>
+        )}
 
         {/* companion reflection */}
         <div

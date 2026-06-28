@@ -34,6 +34,11 @@ export interface Room {
   rested?: boolean
   comments?: RoomComment[]
   is_seed?: boolean
+  kind?: 'spill' | 'scan'
+  initial_scan?: number | null
+  scan_band?: 'settling' | 'sitting' | 'weighing' | 'heavy' | 'consuming' | null
+  scan_signature?: string | null
+  pillar?: string | null
 }
 
 export interface HofEntry {
