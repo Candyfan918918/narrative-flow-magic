@@ -23,6 +23,14 @@ body{margin:0;background:#fdf0f5;color:#1b0f16;font-family:'Inter',system-ui,san
 .ldoc li{font-size:14.5px;line-height:1.65;color:#3a2630;margin-bottom:7px}
 .ldoc b{color:#1b0f16}
 .brk{background:rgba(231,159,39,.16);color:#9a6a10;border-radius:5px;padding:0 5px;font-family:'Sora',sans-serif;font-weight:600;font-size:12.5px}
+
+/* subtle app scrollbars */
+*{scrollbar-width:thin;scrollbar-color:rgba(231,84,138,.4) transparent}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(231,84,138,.38);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(231,84,138,.6);background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
 </style>
 </helmet>
 

@@ -43,6 +43,14 @@ body{margin:0;background:#1a0a12;color:#f7e8f0;font-family:'Inter',system-ui,san
 .oauth-btn:hover{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.25)}
 .step{display:none;animation:fadeUp .4s ease}
 .step.active{display:flex;flex-direction:column}
+
+/* subtle app scrollbars */
+*{scrollbar-width:thin;scrollbar-color:rgba(231,84,138,.4) transparent}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(231,84,138,.38);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(231,84,138,.6);background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
 </style>
 <script src="./feedback-engine.js"></script>
 </helmet>

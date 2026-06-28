@@ -27,7 +27,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,18,400;0,18,500;1,18,400;1,18,500&display=swap" rel="stylesheet">
 <title>Your profile — Shutap</title>
-<script src="./ai-bridge.js"></script>
 <script src="./seed-data.js"></script>
 <script src="./share-engine.js"></script>
 <style>
@@ -50,6 +49,14 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 .switch.on i{left:20px}
 .srow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-bottom:.5px solid rgba(11,8,15,.07)}
 .srow:last-child{border-bottom:none}
+
+/* subtle app scrollbars */
+*{scrollbar-width:thin;scrollbar-color:rgba(231,84,138,.4) transparent}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(231,84,138,.38);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(231,84,138,.6);background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
 </style>
 <script src="./feedback-engine.js"></script>
 <script src="./auth-sheet.js"></script>
@@ -66,7 +73,11 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
       <span style="width:32px;height:23px;display:block;animation:eblink 6.4s infinite;transform-origin:center"><svg viewBox="0 0 140 96" fill="none" style="display:block;width:100%;height:100%"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><path d="M44 22 C41 18 35 18 35 24 C35 30 44 36 44 36 C44 36 53 30 53 24 C53 18 47 18 44 22Z" fill="#fff" opacity=".95"></path><path d="M112 22 C109 18 103 18 103 24 C103 30 112 36 112 36 C112 36 121 30 121 24 C121 18 115 18 112 22Z" fill="#fff" opacity=".95"></path></svg></span>
       <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.04em">shut<span style="color:#e7548a">ap</span></span>
     </a>
-    <a href="Stream.dc.html" style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#6b4a5c;text-decoration:none">← rooms</a>
+    <div style="display:flex;align-items:center;gap:8px">
+      <a href="Stream.dc.html" style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#6b4a5c;text-decoration:none;padding:6px 12px">rooms</a>
+      <a href="HallOfFame.dc.html" style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#6b4a5c;text-decoration:none;padding:6px 12px">halls</a>
+      <div ref="{{ authArea }}" style="position:relative"></div>
+    </div>
   </div>
 </header>
 
@@ -145,6 +156,82 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 class Component extends DCLogic {
 
   getAlias(){ try{ return JSON.parse(localStorage.getItem('shutap_alias')||'null'); }catch(e){ return null; } }
+  isAdmin(){ try{ return localStorage.getItem('shutap_role')==='admin'; }catch(e){ return false; } }
+  goJoin(){ try{ sessionStorage.setItem('shutap_returnTo', location.href); }catch(e){} location.href='Welcome.dc.html'; }
+  signOut(){ try{ localStorage.removeItem('shutap_alias'); }catch(e){} this.buildAuthHeader(); this.toast&&this.toast('signed out.'); }
+  buildAuthHeader(){
+    if(!this.$authArea) return;
+    const alias=this.getAlias();
+    if(alias){
+      this.$authArea.innerHTML=
+        '<div data-toggle role="button" tabindex="0" style="display:flex;align-items:center;gap:7px;background:#fff;border:.5px solid rgba(11,8,15,.12);border-radius:999px;padding:5px 12px 5px 5px;cursor:pointer;transition:.18s">'+
+          '<span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f060a0,#890041);display:grid;place-items:center;font-size:14px;flex:none">'+(alias.emoji||'\uD83E\uDD89')+'</span>'+
+          '<span style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#4a3040">'+(alias.name||'Anonymous')+'</span>'+
+        '</div>'+
+        '<div data-menu style="position:absolute;top:calc(100% + 9px);right:0;width:210px;background:#fff;border:.5px solid rgba(11,8,15,.10);border-radius:16px;box-shadow:0 24px 50px -24px rgba(60,10,30,.35);padding:7px;display:none;z-index:70;animation:pop .16s ease">'+
+          '<a href="Profile.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">your profile</a>'+
+          '<a href="Profile.dc.html#settings" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">settings</a>'+
+          '<div data-spill class="menu-item" role="button" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#c1216b;cursor:pointer">spill it \u2192</div>'+
+          '<a href="Landing.dc.html#mirror" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#a01a55;text-decoration:none">the mirror ✦</a>'+
+          '<div style="height:.5px;background:rgba(11,8,15,.08);margin:6px 0"></div>'+
+          (this.isAdmin()?'<a href="Admin.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;text-decoration:none">admin dashboard</a>':'')+
+          '<div data-signout class="menu-item" role="button" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;cursor:pointer">sign out</div>'+
+        '</div>';
+      const t=this.$authArea.querySelector('[data-toggle]'),m=this.$authArea.querySelector('[data-menu]');
+      t.addEventListener('click',e=>{ e.stopPropagation(); m.style.display=m.style.display==='block'?'none':'block'; });
+      this.$authArea.querySelector('[data-spill]').addEventListener('click',()=>{ m.style.display='none'; window.location.href='Landing.dc.html#spill'; });
+      this.$authArea.querySelector('[data-signout]').addEventListener('click',()=>{ m.style.display='none'; this.signOut(); });
+    } else {
+      this.$authArea.innerHTML='<div data-join role="button" tabindex="0" style="display:inline-flex;align-items:center;background:#e7548a;color:#fff;border-radius:999px;padding:9px 18px;font-family:Sora,sans-serif;font-weight:700;font-size:13px;cursor:pointer">join \u2192</div>';
+      this.$authArea.querySelector('[data-join]').addEventListener('click',()=>this.goJoin());
+    }
+  }
+  situations(){ try{ return JSON.parse(localStorage.getItem('shutap_situations')||'[]'); }catch(e){ return []; } }
+  saveSituations(s){ try{ localStorage.setItem('shutap_situations', JSON.stringify(s.slice(-30))); }catch(e){} }
+  esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  timeAgo(t){ if(!t) return 'just now'; const d=Date.now()-t; const m=Math.floor(d/60000), h=Math.floor(d/3600000), dy=Math.floor(d/86400000); if(dy>=7) return Math.floor(dy/7)+'w ago'; if(dy>=1) return dy+'d ago'; if(h>=1) return h+'h ago'; if(m>=1) return m+'m ago'; return 'just now'; }
+  promoteJournalToRoom(id){
+    const all=this.situations(); const s=all.find(x=>String(x.id)===String(id)); if(!s) return;
+    s.visibility='public'; s.edited=true; s.updatedAt=Date.now(); this.saveSituations(all);
+    if(window.ShutapFeedback) ShutapFeedback.track('visibility_changed',{from:'private',to:'public'});
+    window.location.href='Stream.dc.html#room-'+s.id;
+  }
+  makePrivate(id){
+    const all=this.situations(); const s=all.find(x=>String(x.id)===String(id)); if(!s) return;
+    s.visibility='private'; s.edited=true; s.updatedAt=Date.now(); this.saveSituations(all);
+    if(window.ShutapFeedback) ShutapFeedback.track('visibility_changed',{from:'public',to:'private'});
+    this.toast('moved to your private journal \u2014 only you can see it now.');
+    this.show('rooms');
+  }
+  deleteSituation(id, fromTab){
+    const all=this.situations(); const s=all.find(x=>String(x.id)===String(id)); if(!s) return;
+    s.status='deleted'; s.deletedAt=Date.now(); this.saveSituations(all);
+    if(window.ShutapFeedback) ShutapFeedback.track('room_deleted',{had_outcome:false});
+    this.show(fromTab||'rooms');
+    // grace-window undo
+    if(this.$toast){
+      this.$toast.innerHTML='deleted. <span data-undo style="color:#f7b8d4;cursor:pointer;text-decoration:underline">undo</span>';
+      this.$toast.style.transform='translate(-50%,0)'; clearTimeout(this._t);
+      const u=this.$toast.querySelector('[data-undo]');
+      if(u) u.addEventListener('click',()=>{ const a2=this.situations(); const s2=a2.find(x=>String(x.id)===String(id)); if(s2){ s2.status='open'; delete s2.deletedAt; this.saveSituations(a2); } this.$toast.style.transform='translate(-50%,300px)'; this.show(fromTab||'rooms'); });
+      this._t=setTimeout(()=>{ this.$toast.style.transform='translate(-50%,300px)'; },5000);
+    }
+  }
+  actionBar(s, tab){
+    const A=(label,attr,color)=>'<span '+attr+' role="button" style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:'+(color||'#c1216b')+';cursor:pointer">'+label+'</span>';
+    const edit='<a href="Landing.dc.html?editJournal='+s.id+'" style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#c1216b;text-decoration:none">edit with spill \u2192</a>';
+    const move = tab==='journal'
+      ? A('post to a room \u2192','data-promote="'+s.id+'"')
+      : A('move to private journal','data-private="'+s.id+'"');
+    const del = A('delete','data-del="'+s.id+'"','#b3261e');
+    return '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:11px;padding-top:11px;border-top:.5px solid rgba(11,8,15,.06)">'+edit+move+del+'</div>';
+  }
+  wireActions(tab){
+    if(!this.$panel) return;
+    this.$panel.querySelectorAll('[data-promote]').forEach(b=>b.addEventListener('click',()=>this.promoteJournalToRoom(b.getAttribute('data-promote'))));
+    this.$panel.querySelectorAll('[data-private]').forEach(b=>b.addEventListener('click',()=>this.makePrivate(b.getAttribute('data-private'))));
+    this.$panel.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>this.deleteSituation(b.getAttribute('data-del'), tab)));
+  }
   getSettings(){ try{ return Object.assign({notifyRelate:true,notifyHearts:true,notifyComments:true,notifySide:true,notifyHall:true,notifyOutcome:true,notifyCompanion:false,seatVisible:true,allowAdvice:true,hofOptOut:false,quietHours:false,emailDigest:true,rerollsLeft:3,aliasLocked:false}, JSON.parse(localStorage.getItem('shutap_settings')||'{}')); }catch(e){ return {}; } }
   setSetting(k,v){ const s=this.getSettings(); s[k]=v; try{ localStorage.setItem('shutap_settings', JSON.stringify(s)); }catch(e){} }
 
@@ -157,6 +244,7 @@ class Component extends DCLogic {
       aliasName: el=>{ this.$alias=el; },
       handle: el=>{ this.$handle=el; },
       panel: el=>{ this.$panel=el; },
+      authArea: el=>{ this.$authArea=el; this.buildAuthHeader(); },
       toastEl: el=>{ this.$toast=el; },
       tabRooms: el=>{ this.$tabs=Object.assign({},this.$tabs,{rooms:el}); },
       tabActivity: el=>{ this.$tabs=Object.assign({},this.$tabs,{activity:el}); },
@@ -179,6 +267,7 @@ class Component extends DCLogic {
   }
 
   componentDidMount(){
+    document.addEventListener('click',e=>{ if(this.$authArea&&!this.$authArea.contains(e.target)){ const m=this.$authArea.querySelector('[data-menu]'); if(m) m.style.display='none'; } });
     const a=this.getAlias();
     if(a){
       if(this.$avatar) this.$avatar.textContent=a.emoji||'🦉';
@@ -188,6 +277,7 @@ class Component extends DCLogic {
     this.$tabs=this.$tabs||{};
     this.show('rooms');
     if(location.hash==='#settings') this.show('settings');
+    else if(location.hash==='#journal') this.show('journal');
   }
 
   toast(m){ if(!this.$toast) return; this.$toast.textContent=m; this.$toast.style.transform='translate(-50%,0)'; clearTimeout(this._t); this._t=setTimeout(()=>{ this.$toast.style.transform='translate(-50%,300px)'; },3200); }
@@ -209,13 +299,14 @@ class Component extends DCLogic {
 
   renderRooms(){
     if(!this.$panel) return;
-    const mine=this.ROOMS.slice(0,3);
-    this.$panel.style.animation='fadeUp .3s ease'; this.$panel.style.animation='';
+    const a=this.getAlias()||{emoji:'\uD83E\uDD89'};
+    const mine=this.situations().filter(s=>s&&s.visibility==='public'&&s.status!=='deleted').slice().reverse();
     this.$panel.innerHTML=
-      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#6b4a5c;margin-bottom:14px">rooms you opened — your stories, your rules. you can rest or reopen them anytime.</div>'+
-      '<div style="display:flex;flex-direction:column;gap:11px">'+
-        mine.map((r,i)=>this.roomLink(r, [r.relates+' said \'omg same\' · open','rested · '+r.relates+' carried it',''+r.sitting+' sitting in now'][i%3])).join('')+
-      '</div>';
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#6b4a5c;margin-bottom:14px">rooms you opened — your stories, your rules. you can edit, rest, or reopen them anytime.</div>'+
+      (mine.length
+        ? '<div style="display:flex;flex-direction:column;gap:14px">'+mine.map(s=>'<div>'+this.roomLink({id:s.id,emoji:a.emoji||'\uD83C\uDF38',title:s.title||'my situation'}, (s.relates? (s.relates+' said \u2018omg same\u2019 \u00b7 open') : 'just opened \u00b7 '+(s.sitting||1)+' sitting in now'))+this.actionBar(s,'rooms')+'</div>').join('')+'</div>'
+        : '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;background:#fff;border:.5px dashed rgba(11,8,15,.14);border-radius:16px;padding:22px;text-align:center">no rooms yet. when you spill and post it publicly, your room shows up here.<div style="margin-top:12px"><span class="prose-link" onclick="window.location.href=\'Landing.dc.html#spill\'">spill something \u2192</span></div></div>');
+    this.wireActions('rooms');
   }
 
   renderActivity(){
@@ -234,17 +325,42 @@ class Component extends DCLogic {
 
   renderJournal(){
     if(!this.$panel) return;
+    const journals=this.situations().filter(s=>s&&s.visibility==='private'&&s.status!=='deleted'&&s.kind!=='scan');
+    const scans=this.situations().filter(s=>s&&s.kind==='scan'&&s.status!=='deleted').slice().reverse();
+    const entry=(s)=>{
+      const body=(s.body||'').replace(/\s+/g,' ').slice(0,150);
+      return '<div style="background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:16px;padding:16px 17px">'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-family:Sora,sans-serif;font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#6b4a5c;background:rgba(11,8,15,.06);border-radius:999px;padding:3px 9px">private draft</span>'+(s.pillar?'<span style="font-size:11.5px;color:#9e7a8c;font-family:Newsreader,serif;font-style:italic">'+this.esc(s.pillar)+'</span>':'')+'</div>'+
+        '<h4 style="font-family:Sora,sans-serif;font-weight:700;font-size:15px;line-height:1.3;margin:0 0 6px;color:#0b080f">'+this.esc(s.title||'untitled')+'</h4>'+
+        '<p style="font-family:Newsreader,serif;font-size:13.5px;line-height:1.55;color:#6b4a5c;margin:0 0 4px">'+this.esc(body)+((s.body||'').length>150?'\u2026':'')+'</p>'+
+        this.actionBar(s,'journal')+
+      '</div>';
+    };
+    const real = journals.length ? journals.slice().reverse().map(entry).join('') : '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;background:#fff;border:.5px dashed rgba(11,8,15,.14);border-radius:16px;padding:22px;text-align:center">no private drafts yet. when you spill and keep it private, it lands here \u2014 ready to edit or post whenever.</div>';
     this.$panel.innerHTML=
-      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#6b4a5c;margin-bottom:14px">private scans — saved only to you. nobody else can see these.</div>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#6b4a5c;margin-bottom:14px">private drafts &amp; scans — saved only to you. nobody else can see these.</div>'+
+      '<div style="display:flex;flex-direction:column;gap:11px">'+real+'</div>'+
+      '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9e7a8c;margin:22px 0 12px">your private scans</div>'+
       '<div style="display:flex;flex-direction:column;gap:11px">'+
-        [['😮‍💨','Still Standing',780,'work · 3 days ago'],['🌧','Carrying It Quietly',610,'family · last week'],['🌤','Both Things at Once',460,'romance · 2 weeks ago']].map(j=>
-          '<div style="display:flex;align-items:center;gap:14px;background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:15px;padding:14px 16px">'+
-            '<span style="width:44px;height:44px;border-radius:50%;background:#fdf0f5;display:grid;place-items:center;font-size:20px;flex:none">'+j[0]+'</span>'+
-            '<div style="flex:1"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px">'+j[1]+'</div><div style="font-size:11.5px;color:#9e7a8c;font-family:Newsreader,serif;font-style:italic">'+j[3]+'</div></div>'+
-            '<div style="text-align:right;flex:none"><b style="font-family:Sora,sans-serif;font-weight:800;font-size:18px;color:#c1216b">'+j[2]+'</b><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9e7a8c">intensity</div></div>'+
-          '</div>').join('')+
+        (scans.length
+          ? scans.map(s=>{ const col=s.scan<200?'#9e8f9c':s.scan<400?'#7F77DD':s.scan<600?'#c87c4a':s.scan<800?'#e7548a':'#c1216b'; const emoji=s.scan<200?'🌤':s.scan<400?'🌥':s.scan<600?'🌧':s.scan<800?'⛈':'🔥'; return '<div style="background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:15px;padding:14px 16px">'+
+              '<div style="display:flex;align-items:center;gap:14px">'+
+                '<span style="width:44px;height:44px;border-radius:50%;background:#fdf0f5;display:grid;place-items:center;font-size:20px;flex:none">'+emoji+'</span>'+
+                '<div style="flex:1"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px">'+this.esc(s.title||'a read')+'</div><div style="font-size:11.5px;color:#9e7a8c;font-family:Newsreader,serif;font-style:italic">'+this.timeAgo(s.createdAt)+'</div></div>'+
+                '<div style="text-align:right;flex:none"><b style="font-family:Sora,sans-serif;font-weight:800;font-size:18px;color:'+col+'">'+s.scan+'</b><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9e7a8c">intensity</div></div>'+
+              '</div>'+
+              '<div style="display:flex;gap:16px;margin-top:11px;padding-top:11px;border-top:.5px solid rgba(11,8,15,.06)"><span data-del="'+s.id+'" role="button" style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#b3261e;cursor:pointer">delete</span></div>'+
+            '</div>'; }).join('')
+          : [['😮‍💨','Still Standing',780,'work · 3 days ago'],['🌧','Carrying It Quietly',610,'family · last week'],['🌤','Both Things at Once',460,'romance · 2 weeks ago']].map(j=>
+              '<div style="display:flex;align-items:center;gap:14px;background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:15px;padding:14px 16px">'+
+                '<span style="width:44px;height:44px;border-radius:50%;background:#fdf0f5;display:grid;place-items:center;font-size:20px;flex:none">'+j[0]+'</span>'+
+                '<div style="flex:1"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px">'+j[1]+'</div><div style="font-size:11.5px;color:#9e7a8c;font-family:Newsreader,serif;font-style:italic">'+j[3]+'</div></div>'+
+                '<div style="text-align:right;flex:none"><b style="font-family:Sora,sans-serif;font-weight:800;font-size:18px;color:#c1216b">'+j[2]+'</b><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9e7a8c">intensity</div></div>'+
+              '</div>').join('')
+        )+
       '</div>'+
       '<div style="margin-top:16px;text-align:center"><span class="prose-link" onclick="window.location.href=\'Landing.dc.html#scan\'">scan something new →</span></div>';
+    this.wireActions('journal');
   }
 
   renderSettings(){

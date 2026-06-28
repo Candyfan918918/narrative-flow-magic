@@ -75,6 +75,10 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 @keyframes eyeCelebrate{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.14) rotate(-6deg)}60%{transform:scale(1.14) rotate(6deg)}}
 @keyframes eyeCalm{0%,100%{opacity:.7}50%{opacity:1}}
 @keyframes eyeBlink{0%,90%,100%{transform:scaleY(1)}94%{transform:scaleY(.12)}97%{transform:scaleY(1)}}
+@keyframes scSheen{0%{transform:translateX(-130%) skewX(-16deg)}55%,100%{transform:translateX(240%) skewX(-16deg)}}
+@keyframes scSpin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes scGrain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}100%{transform:translate(0,0)}}
+@keyframes scAura{0%,100%{opacity:.5}50%{opacity:.85}}
 .sc-eye{transform-origin:center center;animation:eyeBlink 4.5s ease-in-out infinite}
 .sc-eye.is-listening{animation:eyeListen 1.5s ease-in-out infinite}
 .sc-eye.is-reflecting{animation:eyeReflect 2.8s ease-in-out infinite}
@@ -117,19 +121,19 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 .react-btn:hover{border-color:#e7548a;background:#fdf0f5;transform:translateY(-1px)}
 .react-btn.active{border-color:currentColor;background:currentColor}
 .react-btn.active span{color:#fff}
-.scan-opt{cursor:pointer;display:flex;align-items:center;gap:11px;padding:15px 18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);border-radius:14px;font-family:'Newsreader',serif;font-style:italic;font-size:16px;line-height:1.35;color:#f7e8f0;transition:.16s}
+.scan-opt{cursor:pointer;display:flex;align-items:center;gap:11px;padding:15px 18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);border-radius:14px;font-family:'Newsreader',serif;font-style:italic;font-size:16px;color:#f7e8f0;transition:.16s}
 .scan-opt:hover{border-color:#e7548a;background:rgba(231,84,138,.10)}
-.scan-text{width:100%;min-height:96px;resize:vertical;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#f7e8f0;font-family:'Newsreader',serif;font-style:italic;font-size:16px;line-height:1.45;outline:none;transition:.16s}
-.scan-text:focus{border-color:#e7548a;background:rgba(231,84,138,.08)}
-.scan-text::placeholder{color:#9e7a8c;font-style:italic}
-.scan-submit{cursor:pointer;align-self:flex-end;padding:11px 18px;border-radius:999px;border:none;background:#e7548a;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;transition:.16s}
-.scan-submit:hover{background:#c1216b}
-.scan-submit.is-ghost{background:transparent;color:#9e7a8c;border:1px solid rgba(255,255,255,.14)}
-.scan-reflect{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;background:rgba(231,84,138,.06);border:.5px solid rgba(231,84,138,.18);border-radius:12px;font-family:'Newsreader',serif;font-style:italic;font-size:14px;line-height:1.5;color:#f7b8d4;animation:fadeUp .3s ease}
 .slot-reel{display:flex;flex-direction:column;align-items:center;gap:0;overflow:hidden;height:48px;position:relative}
 .slot-item{font-family:'Sora',sans-serif;font-weight:700;font-size:24px;color:#f7e8f0;height:48px;display:flex;align-items:center;justify-content:center;transition:transform .12s}
+
+/* subtle app scrollbars */
+*{scrollbar-width:thin;scrollbar-color:rgba(231,84,138,.4) transparent}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(231,84,138,.38);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(231,84,138,.6);background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
 </style>
-<script src="./ai-bridge.js"></script>
 <script src="./seed-data.js"></script>
 <script src="./share-engine.js"></script>
 <script src="./feedback-engine.js"></script>
@@ -189,6 +193,11 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
           <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.01em;color:#c1216b">scan it</div>
           <div style="font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#6b4a5c;line-height:1.4">60-second read — get a private intensity score.</div>
         </div>
+      </div>
+      <div onClick="{{ openMirror }}" role="button" tabindex="0" style="margin-top:12px;max-width:480px;display:flex;align-items:center;gap:12px;background:linear-gradient(160deg,#2e0d1a,#1a0a12);border:.5px solid rgba(231,84,138,.32);border-radius:16px;padding:13px 15px;cursor:pointer">
+        <span style="width:30px;height:21px;display:block;flex:none"><svg viewBox="0 0 140 96" fill="none" style="display:block;width:100%;height:100%"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse></svg></span>
+        <div style="flex:1;min-width:0"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#f7e8f0">the mirror <span style="color:#e9c06a">✦</span></div><div style="font-family:'Newsreader',serif;font-style:italic;font-size:12.5px;color:#caaebb;margin-top:2px;line-height:1.4">your patterns &amp; your arc — drawn from everything you’ve poured in.</div></div>
+        <span style="font-family:'Sora',sans-serif;font-weight:700;font-size:12.5px;color:#f7b8d4;flex:none">open →</span>
       </div>
       </div>
       <div ref="{{ heroAlias }}" style="margin-top:18px;font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#9e7a8c"></div>
@@ -365,7 +374,7 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 </div>
 
 <!-- SCAN OVERLAY -->
-<div ref="{{ scanRoot }}" style="position:fixed;inset:0;z-index:80;display:none;background:#1a0a12">
+<div ref="{{ scanRoot }}" style="position:fixed;inset:0;z-index:80;display:none;background:#100b1c">
   <div ref="{{ scanScreen }}" style="height:100%;display:flex;flex-direction:column"></div>
 </div>
 
@@ -442,174 +451,57 @@ class Component extends DCLogic {
      body:"i don't know what shifted. same room, same chair, same questions we've been circling for two years. she asked about my mother and something just — opened. i sat there ugly-crying for twenty minutes. on the train home I felt lighter than I have in years. also embarrassed. also relieved. i wanted to tell someone and this felt like the right room."}
   ];}
 
-  get SCAN_Q(){
-    const TOPIC_PROMPT={
-      love:"a sentence about them — what just happened, or what keeps happening?",
-      family:"a sentence about the family thing — who, and what just happened?",
-      work:"a sentence about work — what happened, or who said what?",
-      friends:"a sentence about the friendship — what shifted, or what didn't?",
-      self:"a sentence — what does the feeling sound like in your head right now?",
-      other:"a sentence — what's the shape of it, in your own words?"
-    };
-    const WHO_OPTS={
-      love:[
-        {v:'partner',  label:'A partner',                  emoji:'💞', w:560},
-        {v:'dating',   label:"Someone I'm dating",         emoji:'🌹', w:480},
-        {v:'situation',label:'A situationship',            emoji:'🌀', w:620},
-        {v:'ex',       label:'An ex',                      emoji:'🕯️', w:740},
-        {v:'crush',    label:'Someone I haven\u2019t said it to', emoji:'🤫', w:500},
-        {v:'married',  label:'A spouse',                   emoji:'💍', w:700}
-      ],
-      family:[
-        {v:'parent',   label:'A parent',                   emoji:'🧓', w:680},
-        {v:'sibling',  label:'A sibling',                  emoji:'👯', w:540},
-        {v:'child',    label:'My kid',                     emoji:'🧒', w:650},
-        {v:'extended', label:'Extended family',            emoji:'🏠', w:500},
-        {v:'chosen',   label:'Chosen family',              emoji:'🌿', w:520},
-        {v:'inlaws',   label:'In-laws',                    emoji:'🫥', w:600}
-      ],
-      work:[
-        {v:'boss',     label:'My boss',                    emoji:'🪪', w:680},
-        {v:'coworker', label:'A coworker',                 emoji:'🪑', w:520},
-        {v:'report',   label:'Someone I manage',           emoji:'📎', w:560},
-        {v:'client',   label:'A client',                   emoji:'📧', w:540},
-        {v:'company',  label:'The company itself',         emoji:'🏢', w:700},
-        {v:'self',     label:'Me, mostly',                 emoji:'🪞', w:600}
-      ],
-      friends:[
-        {v:'best',     label:'A close friend',             emoji:'🫂', w:620},
-        {v:'group',    label:'A friend group',             emoji:'👥', w:540},
-        {v:'drift',    label:'Someone drifting',           emoji:'🍃', w:600},
-        {v:'new',      label:'Someone new',                emoji:'🌱', w:380},
-        {v:'former',   label:'A former friend',            emoji:'🪞', w:720}
-      ],
-      self:[
-        {v:'anxiety',  label:'Anxious thoughts',           emoji:'⚡', w:680},
-        {v:'shame',    label:'Shame I can\u2019t shake',   emoji:'🌫️', w:780},
-        {v:'grief',    label:'Grief',                      emoji:'🕯️', w:820},
-        {v:'numb',     label:'Numbness',                   emoji:'🌑', w:700},
-        {v:'decision', label:'A decision I can\u2019t make', emoji:'🛤️', w:620},
-        {v:'body',     label:'Something my body keeps doing', emoji:'🌀', w:600}
-      ],
-      other:[
-        {v:'money',    label:'Money',                      emoji:'💸', w:620},
-        {v:'health',   label:'Health',                     emoji:'🩺', w:700},
-        {v:'identity', label:'Who I am',                   emoji:'🪞', w:640},
-        {v:'place',    label:'Where I live',               emoji:'🗺️', w:500},
-        {v:'world',    label:'The world right now',        emoji:'🌍', w:560},
-        {v:'unsure',   label:"Honestly not sure yet",      emoji:'🌊', w:420}
-      ]
-    };
-    const FRICTION_OPTS={
-      love:[
-        {v:'silence',  label:'A silence neither of us is breaking', w:680},
-        {v:'fights',   label:'The same fight on repeat',            w:760},
-        {v:'distance', label:'Distance I can feel',                  w:640},
-        {v:'trust',    label:'Something about trust',                w:800},
-        {v:'mismatch', label:'We want different things',             w:720},
-        {v:'unsaid',   label:"A thing I haven't said",               w:600}
-      ],
-      family:[
-        {v:'boundary', label:'A boundary nobody respects',           w:720},
-        {v:'inherited',label:'A pattern I inherited',                w:680},
-        {v:'unspoken', label:'The thing we don\u2019t talk about',   w:760},
-        {v:'caretake', label:'I\u2019m the one holding it together', w:740},
-        {v:'estrange', label:'Distance / estrangement',              w:820}
-      ],
-      work:[
-        {v:'workload', label:'Too much, not enough hours',           w:620},
-        {v:'recog',    label:'Doing the work, not getting seen',     w:660},
-        {v:'values',   label:"I don't believe in what we're doing",  w:740},
-        {v:'politics', label:'Politics, alliances, weirdness',       w:640},
-        {v:'burnout',  label:'I\u2019m running on empty',            w:800}
-      ],
-      friends:[
-        {v:'betray',   label:'They did something that hurt',         w:780},
-        {v:'oneway',   label:'I\u2019m the one always reaching out', w:660},
-        {v:'jealousy', label:'Jealousy — mine or theirs',            w:640},
-        {v:'event',    label:'A specific thing that happened',       w:700},
-        {v:'drift',    label:'No reason — just less',                w:560}
-      ],
-      self:[
-        {v:'ongoing',  label:'It\u2019s been like this for a while', w:720},
-        {v:'recent',   label:'Something specific kicked it off',     w:680},
-        {v:'nothing',  label:'Nothing happened — it\u2019s just here',w:640},
-        {v:'anniv',    label:'An anniversary / season is coming',    w:700},
-        {v:'spiral',   label:'I keep looping the same thought',      w:760}
-      ],
-      other:[
-        {v:'sudden',   label:'Something just happened',              w:680},
-        {v:'creep',    label:'It\u2019s been slowly building',       w:620},
-        {v:'systemic', label:'It\u2019s bigger than me',             w:660},
-        {v:'private',  label:'I haven\u2019t named it to anyone',    w:720}
-      ]
-    };
-    return [
-      {kind:'intro'},
-      {kind:'tap', q:"what kind of situation?", key:'topic', opts:[
-        {v:'love',    label:'Romance / relationship', emoji:'💛', w:0},
-        {v:'family',  label:'Family',                 emoji:'🏠', w:0},
-        {v:'work',    label:'Work',                   emoji:'💼', w:0},
-        {v:'friends', label:'Friendship',             emoji:'🫂', w:0},
-        {v:'self',    label:'Something internal',     emoji:'🪞', w:0},
-        {v:'other',   label:'Something else',         emoji:'🌊', w:0}
-      ]},
-      {kind:'text', key:'detail',
-        q:a=>TOPIC_PROMPT[a.topic?.v]||TOPIC_PROMPT.other,
-        placeholder:'just a line. names get scrubbed before anyone sees this.',
-        hint:'private to your read — nothing is posted.'},
-      {kind:'tap', key:'who',
-        q:a=>({love:"who is it about?",family:"who in the family?",work:"who at work?",friends:"which kind of friendship?",self:"what shape is the feeling?",other:"what is it about?"})[a.topic?.v]||"who is it about?",
-        opts:a=>WHO_OPTS[a.topic?.v]||WHO_OPTS.other},
-      {kind:'tap', key:'friction',
-        q:a=>({love:"what's the friction underneath?",family:"what's the dynamic?",work:"what's grinding on you?",friends:"what's actually off?",self:"what's keeping it lit?",other:"why now?"})[a.topic?.v]||"what's the friction?",
-        opts:a=>FRICTION_OPTS[a.topic?.v]||FRICTION_OPTS.other},
-      {kind:'tap', q:"how long has this been building?", key:'duration', opts:[
-        {v:'today',   label:'It happened today',          w:200},
-        {v:'week',    label:'A few days or this week',    w:350},
-        {v:'month',   label:'A month or two',             w:520},
-        {v:'longer',  label:'Longer than that',           w:720},
-        {v:'years',   label:'Years',                      w:880}
-      ]},
-      {kind:'tap', q:"where does it live in your body right now?", key:'body', opts:[
-        {v:'chest',  label:'In my chest',          emoji:'🫀', w:750},
-        {v:'throat', label:'In my throat',         emoji:'🗣️', w:680},
-        {v:'stomach',label:'In my stomach',        emoji:'🌀', w:600},
-        {v:'head',   label:'Mostly in my head',   emoji:'🧠', w:480},
-        {v:'calm',   label:'Not really anywhere — I feel calm', emoji:'🌬️', w:150}
-      ]},
-      {kind:'tap', q:"is this something you've been through before?", key:'pattern', opts:[
-        {v:'first',   label:'First time',                     w:250},
-        {v:'variant', label:'Variations of it, yes',          w:480},
-        {v:'always',  label:'This keeps finding me',          w:750},
-        {v:'reverse', label:"I've been on the other side of it", w:620}
-      ]},
-      {kind:'tap', q:"if nothing changes, what does six months look like?", key:'inaction', opts:[
-        {v:'same',     label:'Same as now',          w:550},
-        {v:'worse',    label:'Worse',                w:800},
-        {v:'adjust',   label:"I'd quietly adjust",   w:380},
-        {v:'leave',    label:"I'd leave",             w:680},
-        {v:'detonate', label:"I'd explode",           w:920}
-      ]},
-      {kind:'tap', q:"what are you most hoping for right now?", key:'hope', opts:[
-        {v:'heard',    label:'To feel heard',                  w:200},
-        {v:'clarity',  label:'Clarity on what to do',          w:400},
-        {v:'validate', label:"To know I'm not wrong",          w:550},
-        {v:'comfort',  label:'To feel less alone in it',       w:300},
-        {v:'change',   label:'For something to actually change',w:700}
-      ]},
-      {kind:'tap', q:"is there someone in your life you could tell this to?", key:'support', opts:[
-        {v:'yes',      label:"Yes — I just haven't yet",       w:300},
-        {v:'maybe',    label:'Maybe one person',               w:450},
-        {v:'no',       label:'Not really, no',                 w:750},
-        {v:'here',     label:'I came here instead of them',    w:620}
-      ]},
-      {kind:'text', key:'relief', optional:true,
-        q:a=>"last one — what would feel like relief, even a little?",
-        placeholder:'no pressure. skip if nothing comes.',
-        hint:'optional — helps the room know what to send back.'}
-    ];
-  }
+  get SCAN_Q(){ return [
+    {kind:'intro'},
+    {kind:'tap', q:"what kind of situation?", key:'topic', opts:[
+      {v:'love',    label:'Romance / relationship', emoji:'💛', w:0},
+      {v:'family',  label:'Family',                 emoji:'🏠', w:0},
+      {v:'work',    label:'Work',                   emoji:'💼', w:0},
+      {v:'friends', label:'Friendship',             emoji:'🫂', w:0},
+      {v:'self',    label:'Something internal',     emoji:'🪞', w:0},
+      {v:'other',   label:'Something else',         emoji:'🌊', w:0}
+    ]},
+    {kind:'tap', q:"how long has this been building?", key:'duration', opts:[
+      {v:'today',   label:'It happened today',          w:200},
+      {v:'week',    label:'A few days or this week',    w:350},
+      {v:'month',   label:'A month or two',             w:520},
+      {v:'longer',  label:'Longer than that',           w:720},
+      {v:'years',   label:'Years',                      w:880}
+    ]},
+    {kind:'tap', q:"where does it live in your body right now?", key:'body', opts:[
+      {v:'chest',  label:'In my chest',          emoji:'🫀', w:750},
+      {v:'throat', label:'In my throat',         emoji:'🗣️', w:680},
+      {v:'stomach',label:'In my stomach',        emoji:'🌀', w:600},
+      {v:'head',   label:'Mostly in my head',   emoji:'🧠', w:480},
+      {v:'calm',   label:'Not really anywhere — I feel calm', emoji:'🌬️', w:150}
+    ]},
+    {kind:'tap', q:"is this something you've been through before?", key:'pattern', opts:[
+      {v:'first',   label:'First time',                     w:250},
+      {v:'variant', label:'Variations of it, yes',          w:480},
+      {v:'always',  label:'This keeps finding me',          w:750},
+      {v:'reverse', label:"I've been on the other side of it", w:620}
+    ]},
+    {kind:'tap', q:"if nothing changes, what does six months look like?", key:'inaction', opts:[
+      {v:'same',     label:'Same as now',          w:550},
+      {v:'worse',    label:'Worse',                w:800},
+      {v:'adjust',   label:"I'd quietly adjust",   w:380},
+      {v:'leave',    label:"I'd leave",             w:680},
+      {v:'detonate', label:"I'd explode",           w:920}
+    ]},
+    {kind:'tap', q:"what are you most hoping for right now?", key:'hope', opts:[
+      {v:'heard',    label:'To feel heard',                  w:200},
+      {v:'clarity',  label:'Clarity on what to do',          w:400},
+      {v:'validate', label:"To know I'm not wrong",          w:550},
+      {v:'comfort',  label:'To feel less alone in it',       w:300},
+      {v:'change',   label:'For something to actually change',w:700}
+    ]},
+    {kind:'tap', q:"is there someone in your life you could tell this to?", key:'support', opts:[
+      {v:'yes',      label:"Yes — I just haven't yet",       w:300},
+      {v:'maybe',    label:'Maybe one person',               w:450},
+      {v:'no',       label:'Not really, no',                 w:750},
+      {v:'here',     label:'I came here instead of them',    w:620}
+    ]}
+  ];}
 
   get SIGS(){ return [
     {min:0,   max:199, label:'Letting It Settle',        sub:"something is there. it hasn't landed yet."},
@@ -716,13 +608,16 @@ class Component extends DCLogic {
         '<div data-menu style="position:absolute;top:calc(100% + 9px);right:0;width:210px;background:#fff;border:.5px solid rgba(11,8,15,.10);border-radius:16px;box-shadow:0 24px 50px -24px rgba(60,10,30,.35);padding:7px;display:none;z-index:70;animation:pop .16s ease">'+
           '<a href="Profile.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">your profile</a>'+
           '<a href="Profile.dc.html#settings" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">settings</a>'+
-          (this.isAdmin()?'<a href="Admin.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;text-decoration:none">admin dashboard</a>':'')+
+          '<div data-spill class="menu-item" role="button" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#c1216b;cursor:pointer">spill it →</div>'+
+          '<a href="Landing.dc.html#mirror" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#a01a55;text-decoration:none">the mirror ✦</a>'+
           '<div style="height:.5px;background:rgba(11,8,15,.08);margin:6px 0"></div>'+
+          (this.isAdmin()?'<a href="Admin.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;text-decoration:none">admin dashboard</a>':'')+
           '<div data-signout class="menu-item" role="button" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;cursor:pointer">sign out</div>'+
         '</div>';
       const toggle=this.$authArea.querySelector('[data-toggle]');
       const menu=this.$authArea.querySelector('[data-menu]');
       toggle.addEventListener('click',e=>{ e.stopPropagation(); menu.style.display=menu.style.display==='block'?'none':'block'; });
+      this.$authArea.querySelector('[data-spill]').addEventListener('click',()=>{ menu.style.display='none'; window.location.href='Landing.dc.html#spill'; });
       this.$authArea.querySelector('[data-signout]').addEventListener('click',()=>{ menu.style.display='none'; this.signOut(); });
     } else {
       this.$authArea.innerHTML=
@@ -784,24 +679,28 @@ class Component extends DCLogic {
     if(h==='#scan') setTimeout(()=>this.openScan(),350);
     if(h==='#ask') setTimeout(()=>this.openComposer(),350);
     if(h==='#mirror') setTimeout(()=>this.openMirror(),350);
+    try{ const ej=new URLSearchParams(location.search).get('editJournal'); if(ej) setTimeout(()=>this.openJournalForEdit(ej),350); }catch(e){}
     window.addEventListener('hashchange',()=>{ if(location.hash==='#spill') this.openSpill(); else if(location.hash==='#scan') this.openScan(); else if(location.hash==='#ask') this.openComposer(); else if(location.hash==='#mirror') this.openMirror(); });
-    // §21B — the companion pops when the mirror first has something true to reflect (threshold, not timer)
-    try{ if(this.getAlias() && !localStorage.getItem('shutap_mirror_popped')){ setTimeout(()=>this.popMirror(),2600); } }catch(e){}
+    // §21B — the Mirror (the cash engine) surfaces PROACTIVELY once there's real memory to reflect, re-triggerable with a cooldown
+    try{ const mem=this.mirrorMemory(); const last=+(localStorage.getItem('shutap_mirror_lastpop')||0); const cooled=(Date.now()-last)>1000*60*60*6; if(this.getAlias() && mem.total>=2 && !this.mirrorActive() && cooled){ setTimeout(()=>this.popMirror(),2600); } }catch(e){}
   }
 
   popMirror(){
     if(!this.$pill || document.getElementById('_mirrorpop')) return;
+    try{ localStorage.setItem('shutap_mirror_lastpop',String(Date.now())); }catch(e){}
+    const mem=this.mirrorMemory();
+    const line = mem.topPillar ? ('you keep circling back to '+mem.topPillar+'. i\u2019ve started to see the shape of it \u2014 want to look?') : (mem.trend==='easing' ? ('something\u2019s been easing in you lately. i can show you where.') : ('i\u2019ve been noticing something about you. want to see?'));
     const b=document.createElement('div');
     b.id='_mirrorpop';
     const pr=this.$pill.getBoundingClientRect();
     b.style.cssText='position:fixed;z-index:36;max-width:250px;background:linear-gradient(160deg,#2e0d1a,#1a0a12);border:.5px solid rgba(255,255,255,.16);border-radius:16px;padding:13px 15px;box-shadow:0 18px 40px -14px rgba(60,10,30,.6);animation:fadeUp .35s ease;cursor:pointer';
     b.style.left=Math.max(12, Math.min(window.innerWidth-262, pr.left+pr.width/2-125))+'px';
     b.style.bottom=(window.innerHeight-pr.top+12)+'px';
-    b.innerHTML='<div style="display:flex;gap:9px;align-items:flex-start"><svg viewBox="0 0 56 56" fill="none" style="width:20px;height:20px;flex:none;margin-top:1px"><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg><div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;line-height:1.45;color:#f7e8f0">i\u2019ve been noticing something about you. want to see?</div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:12px;color:#f7b8d4;margin-top:7px">open the mirror \u2192</div></div></div>';
-    b.addEventListener('click',()=>{ try{ localStorage.setItem('shutap_mirror_popped','1'); }catch(e){} b.remove(); this.openMirror(); });
+    b.innerHTML='<div style="display:flex;gap:9px;align-items:flex-start"><svg viewBox="0 0 56 56" fill="none" style="width:20px;height:20px;flex:none;margin-top:1px"><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg><div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;line-height:1.45;color:#f7e8f0">'+line+'</div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:12px;color:#f7b8d4;margin-top:7px">open the mirror \u2192</div></div></div>';
+    b.addEventListener('click',()=>{ try{ localStorage.setItem('shutap_mirror_lastpop',String(Date.now())); }catch(e){} b.remove(); this.openMirror(); });
     document.body.appendChild(b);
-    // auto-dismiss after a while; mark seen so it never nags again
-    clearTimeout(this._popT); this._popT=setTimeout(()=>{ try{ localStorage.setItem('shutap_mirror_popped','1'); }catch(e){} if(b.parentNode) b.remove(); }, 11000);
+    // auto-dismiss after a while; cooldown handles re-surfacing (never a permanent silence)
+    clearTimeout(this._popT); this._popT=setTimeout(()=>{ if(b.parentNode) b.remove(); }, 11000);
   }
 
   toast(msg){ if(!this.$toast) return; this.$toast.textContent=msg; this.$toast.style.transform='translate(-50%,0)'; clearTimeout(this._tt); this._tt=setTimeout(()=>{ this.$toast.style.transform='translate(-50%,300px)'; },4000); }
@@ -912,11 +811,22 @@ class Component extends DCLogic {
   _reallyOpenSpill(){
     this.setEyeState&&this.setEyeState('listening');
     if(!this.$spillRoot) return;
-    this.spill={ msgs:[], q:0 };
+    this.spill={ msgs:[{role:'companion',say:this.spillOpenerBubbles(),hasQ:true}], q:0, draft:{pillar:null,tags:[],anchor:null,emotional_core:null,the_real_thing:null,named_and_landed:false}, ready:false, humorOk:true, degraded:false };
     this.$spillRoot.style.display='block';
     document.body.style.overflow='hidden';
     if(this.$pill) this.$pill.style.display='none';
     this.spillRender();
+  }
+  get SPILL_OPENER(){ return "so — what's been going on with you?"; }
+  // a cheerful, friend-style welcome that calls the user by their alias
+  spillOpenerBubbles(){
+    const a=this.getAlias(); const name=(a&&a.name)||'friend';
+    const greets=[
+      ['hey '+name+'! 💗 so glad you came by.',"ok, i'm all yours — what's going on today?"],
+      ['heyyy '+name+' 🌸','i’ve got all the time, and i’m fully on your side. what’s up?'],
+      ['hi '+name+', good to see you 💗','tell me everything — what’s been going on?']
+    ];
+    return greets[Math.floor(Math.random()*greets.length)];
   }
   closeSpill(){ if(!this.$spillRoot) return; if(!this._spillPublished && this.spill && (this.spill.msgs||[]).length>0 && window.ShutapFeedback) ShutapFeedback.track('spill_abandon',{turns:(this.spill.msgs||[]).length,target:'spill'}); this._spillPublished=false; this.$spillRoot.style.display='none'; document.body.style.overflow=''; if(this.$pill) this.$pill.style.display='flex'; }
 
@@ -932,110 +842,331 @@ class Component extends DCLogic {
   async spillRender(){
     if(!this.$spillScreen) return;
     this.$spillScreen.innerHTML='';
-    this.$spillScreen.appendChild(this.spillChrome(this.spill.q, 7));
+    this.$spillScreen.appendChild(this.spillChrome(this.spill.q, 9));
     const body=document.createElement('div');
     body.style.cssText='flex:1;overflow-y:auto;padding:34px 22px 28px;max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:22px';
-    // companion question
-    const q=this.spillQ(this.spill.q, this.spill.msgs);
+    // the companion's latest turn = 1–3 short text bubbles (≤~30 words); last one tinted if it's a question
+    const lastC=[...this.spill.msgs].reverse().find(m=>m.role==='companion');
+    const bubbles=(lastC&&lastC.say&&lastC.say.length?lastC.say:[this.SPILL_OPENER]);
+    const hasQ=!!(lastC&&lastC.hasQ);
+    const bubbleHTML=bubbles.map((t,i)=>{
+      if(!t) return '';
+      const isQ=hasQ && i===bubbles.length-1;
+      const first=i===0;
+      return '<div style="align-self:flex-start;max-width:88%;background:'+(isQ?'rgba(231,84,138,.14)':'rgba(255,255,255,.05)')+';border:.5px solid '+(isQ?'rgba(231,84,138,.32)':'rgba(255,255,255,.1)')+';border-radius:'+(first?'4px 16px 16px 16px':'16px')+';padding:10px 14px;font-family:Newsreader,serif;font-style:italic;font-size:'+(first?'18px':'16px')+';line-height:1.45;color:'+(isQ?'#f7b8d4':'#f7e8f0')+'">'+this.esc(t)+'</div>';
+    }).join('');
     body.innerHTML=
-      '<div style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a">companion</div>'+
-      '<div style="display:flex;gap:12px;align-items:flex-start">'+this.companionSVG(32,32)+'<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:20px;line-height:1.45;color:#f7e8f0" data-q>'+q+'</div></div>'+
-      // conversation history
-      (this.spill.msgs.length>0?'<div style="display:flex;flex-direction:column;gap:12px">'+this.spill.msgs.slice(-4).map(m=>'<div style="padding:12px 15px;border-radius:12px;font-family:Newsreader,serif;font-style:italic;font-size:15px;line-height:1.5;color:'+(m.role==='user'?'#f7e8f0':'#c4a0b2')+';background:'+(m.role==='user'?'rgba(255,255,255,.07)':'transparent')+';border-left:'+(m.role==='companion'?'2px solid rgba(231,84,138,.4)':'none')+';padding-left:'+(m.role==='companion'?'13px':'15px')+'">'+m.text+'</div>').join('')+'</div>':'');
+      '<div style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a">spill</div>'+
+      '<div style="display:flex;gap:12px;align-items:flex-start"><div style="flex:none">'+this.companionSVG(32,32)+'</div>'+
+      '<div style="flex:1;display:flex;flex-direction:column;gap:7px" data-q>'+bubbleHTML+'</div></div>';
+    // thinking state — engine composing the next, specific question
+    if(this.spill.thinking){
+      const tw=document.createElement('div');
+      tw.style.cssText='display:flex;gap:5px;align-items:center;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c';
+      tw.innerHTML='<i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .4s infinite"></i> ok hang on…';
+      body.appendChild(tw);
+      this.$spillScreen.appendChild(body);
+      return;
+    }
     // input
+    const ph=hasQ?'answer however it comes…':'keep going… i\'m listening';
     const inputWrap=document.createElement('div');
     inputWrap.style.cssText='display:flex;align-items:flex-end;gap:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:13px 15px;transition:border-color .18s';
-    inputWrap.innerHTML='<textarea id="_sinput" rows="1" placeholder="say it however it comes out…" style="flex:1;background:none;border:none;outline:none;color:#f7e8f0;font-family:Newsreader,serif;font-style:italic;font-size:16px;resize:none;max-height:140px;line-height:1.5"></textarea><div id="_sgo" role="button" style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#e7548a;cursor:pointer;flex:none;padding-bottom:2px">send →</div>';
+    inputWrap.innerHTML='<textarea id="_sinput" rows="1" placeholder="'+ph+'" style="flex:1;background:none;border:none;outline:none;color:#f7e8f0;font-family:Newsreader,serif;font-style:italic;font-size:16px;resize:none;max-height:140px;line-height:1.5"></textarea><div id="_sgo" role="button" style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#e7548a;cursor:pointer;flex:none;padding-bottom:2px">send →</div>';
     inputWrap.addEventListener('focusin',()=>{ inputWrap.style.borderColor='#e7548a'; });
     inputWrap.addEventListener('focusout',()=>{ inputWrap.style.borderColor='rgba(255,255,255,.14)'; });
-    body.appendChild(inputWrap);
+    if(!this.spill.ready) body.appendChild(inputWrap);
     this.$spillScreen.appendChild(body);
-    const input=inputWrap.querySelector('#_sinput');
-    input.addEventListener('input',()=>{ input.style.height='auto'; input.style.height=Math.min(140,input.scrollHeight)+'px'; });
-    input.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); this.spillSubmit(input.value); } });
-    inputWrap.querySelector('#_sgo').addEventListener('click',()=>this.spillSubmit(input.value));
-    setTimeout(()=>input.focus(),200);
-    // if this is the reflect-back step
-    if(this.spill.q>=6) this.spillReflect(body);
+    if(!this.spill.ready){
+      const input=inputWrap.querySelector('#_sinput');
+      input.addEventListener('input',()=>{ input.style.height='auto'; input.style.height=Math.min(140,input.scrollHeight)+'px'; });
+      input.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); this.spillSubmit(input.value); } });
+      inputWrap.querySelector('#_sgo').addEventListener('click',()=>this.spillSubmit(input.value));
+      setTimeout(()=>input.focus(),200);
+    }
+    // reflect-back once the engine decides we're ready
+    if(this.spill.ready) this.spillReflect(body);
   }
 
-  spillQ(n, msgs){
-    const fallbacks=[
-      "something's been sitting with you. you showed up anyway. tell me — what happened?",
-      "how long have you been carrying this?",
-      "is there one person at the centre of this, or is it more complicated than that?",
-      "what's the part you keep coming back to?",
-      "what would change if the room actually heard you?",
-      "is there something you haven't said out loud yet — even to yourself?",
-      "i want to make sure i understand. can you tell me more about the hardest part?"
+  esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  // §3 — the turn engine: one model call per turn. it returns the friend's actual response
+  // as 1–3 SHORT bubbles (≤~30 words) plus a silently-updated draft. react-first, reads-not-blanks.
+  async spillTurn(){
+    const transcript=this.spill.msgs.map(m=>{ if(m.role==='user') return 'them: '+m.text; return 'you: '+((m.say||[]).join(' ')); }).join('\n');
+    const sys="You are THE SPILL on Shutap — the user's closest friend, TEXTING them in real time. relaxed, lowercase, instantly on their side. your job is to make them feel SEEN — AND to actually draw out the WHOLE story, not bail after a line or two.\n\nTEXT LIKE A HUMAN. each turn is 1-3 SHORT bubbles, <= ~30 words total. fragments are great ('a MONTH?? 😭'). NO paragraphs.\n\nEVERY turn: first REACT + take their side + NAME the feeling/maneuver (state what's obvious, never ask it). THEN ask ONE real, specific question that moves the story forward. warm, but genuinely curious — you DIG.\n\nTHE ARC you draw out, in roughly this order — each turn, ask the next thing that's still blank, phrased naturally and specific to THEIR story (never read the list out loud):\n1) what EXACTLY happened — the concrete scene, the details.\n2) how it happens / how OFTEN / WHERE — one-off or a pattern? when/where does it keep happening?\n3) what they FEEL — name it, then push past the first word.\n4) WHY they feel that way — the thing under it.\n5) did they TALK to the person yet — and what was the RESULT of that conversation.\n6) what ELSE they've tried — and what came of it.\n7) what they PLAN to do now.\n\nreads-not-blanks where you can: phrase questions as educated guesses they confirm/correct ('bet this isn't the first time?', 'i'm guessing you haven't said this to her face yet?') — but DO ask. don't infer your way past the ACTION beats (did you talk to them / what happened / what else have you tried / what's your plan) — those you actually ask, every time.\n\nevery turn delivers >=1 relief lever (not_crazy / anyone_would / i_see_it / named_the_real_thing / on_your_side). a turn that only collects info with no warmth is a FAILED turn. HARD BANS: 'sit with that','hold space','that's valid','i hear you','thank you for sharing','it sounds like','that must be hard','how did that make you feel'. reflection NOT diagnosis — name the SITUATION's pattern, validate the FEELING, never label the person. humor (at the situation, never the person) only when humor_ok.\n\nonly be 'ready' once the arc is GENUINELY covered — especially: whether they talked to the person + the result, what else they've tried + the result, and what they plan to do (a real 'i don't know' counts) — OR you hit the cap. do NOT land just because you named the feeling; keep going through the actions and the plan. fill the arc + pillar/anchor silently.\n\nreturn STRICT JSON only:\n{ \"say\":[\"<short bubble>\",\"<optional>\",\"<optional, max 3>\"], \"has_question\":true|false, \"relief_lever\":\"not_crazy|anyone_would|i_see_it|named_the_real_thing|on_your_side\", \"humor_ok\":true|false, \"updated\":{\"pillar\":\"relationships|marriage|family|career|null\",\"tags\":[\"...\"],\"anchor\":\"...|null\",\"emotional_core\":\"...|null\",\"the_real_thing\":\"...|null\",\"named_and_landed\":false,\"arc\":{\"what_happened\":\"...|null\",\"frequency\":\"...|null\",\"feeling\":\"...|null\",\"why\":\"...|null\",\"talked_to_them\":\"...|null\",\"other_attempts\":\"...|null\",\"plan\":\"...|null\"}}, \"decision\":\"continue\"|\"ready\", \"why\":\"<internal>\" }";
+    const arc=(this.spill.draft&&this.spill.draft.arc)||{};
+    const beats=['what_happened','frequency','feeling','why','talked_to_them','other_attempts','plan'];
+    const blank=beats.filter(b=>!arc[b]);
+    const arcNote=blank.length?('\nstill blank in the arc (ask the next one): '+blank.join(', ')):'\nthe arc looks covered — if it has truly landed, you may be ready.';
+    const al=this.getAlias(); const aliasNote=al&&al.name?('\nthe user goes by the alias "'+al.name+'" — you can warmly call them that now and then (not every line, not formal).'):'';
+    const userMsg=sys+'\n\n=== the conversation so far ===\n'+transcript+'\n\n=== what you have quietly understood ===\n'+JSON.stringify(this.spill.draft)+arcNote+aliasNote+'\nthis is turn '+this.spill.q+' of max 12.\n\nnow output ONLY your JSON move:';
+    const raw=await window.claude.complete({messages:[{role:'user',content:userMsg}]});
+    let cleaned=(raw||'').replace(/```json/gi,'').replace(/```/g,'');
+    const m=cleaned.match(/\{[\s\S]*\}/); if(!m) throw new Error('no json');
+    const obj=JSON.parse(m[0]);
+    if(!obj||typeof obj.decision!=='string'||!Array.isArray(obj.say)||!obj.say.length) throw new Error('bad json');
+    obj.say=obj.say.filter(Boolean).slice(0,3);
+    return obj;
+  }
+
+  mergeDraft(d,u){
+    d=d||{pillar:null,tags:[],anchor:null,emotional_core:null,the_real_thing:null,named_and_landed:false}; u=u||{};
+    if(u.pillar) d.pillar=u.pillar;
+    if(u.anchor) d.anchor=u.anchor;
+    if(u.emotional_core) d.emotional_core=u.emotional_core;
+    if(u.the_real_thing) d.the_real_thing=u.the_real_thing;
+    if(u.named_and_landed) d.named_and_landed=true;
+    if(u.arc){ d.arc=d.arc||{}; ['what_happened','frequency','feeling','why','talked_to_them','other_attempts','plan'].forEach(k=>{ if(u.arc[k]) d.arc[k]=u.arc[k]; }); }
+    if(Array.isArray(u.tags)) u.tags.forEach(t=>{ if(t&&d.tags.indexOf(t)<0) d.tags.push(t); });
+    return d;
+  }
+
+  // §9 — fallback: rare, and STILL a friend. reacts + names + validates, never slot-indexes.
+  spillFallbackTurn(lastAnswer){
+    const a=(lastAnswer||'').toLowerCase();
+    let pillar=this.spill.draft&&this.spill.draft.pillar;
+    if(!pillar){ if(/\b(partner|boyfriend|girlfriend|husband|wife|ex|dating)\b/.test(a))pillar='relationships'; else if(/\b(mom|dad|mother|father|sister|brother|family|parent)\b/.test(a))pillar='family'; else if(/\b(boss|work|job|manager|coworker|office)\b/.test(a))pillar='career'; else if(/\b(married|marriage|spouse)\b/.test(a))pillar='marriage'; }
+    const heavy=/\b(died|death|passed|hit me|hurt me|abuse|hopeless)\b/.test(a);
+    const reacts=["ok, that's genuinely not okay.","oh, that would get to anyone.","no — you're not wrong to be upset about that.","yeah, i'd be rattled too."];
+    const names=["you're not crazy for sitting with this.","anyone in your shoes would feel exactly this.","and you've clearly been carrying it a while."];
+    const used=this.spill._usedFB||(this.spill._usedFB=[]);
+    const reaction=reacts.filter(r=>used.indexOf(r)<0)[0]||reacts[0]; used.push(reaction);
+    const name=names[Math.min(this.spill.q,names.length-1)];
+    // walk the arc — one concrete question per turn until the action + plan beats are covered
+    const arcQs=[
+      "what actually happened \u2014 walk me through it?",
+      "is this a one-off, or does it keep happening? when?",
+      "what does it leave you feeling, mostly?",
+      "and why do you think it lands that hard for you?",
+      "have you said any of this to them yet?",
+      "how\u2019d that go \u2014 what did they do?",
+      "what else have you tried with this?",
+      "so what are you thinking you\u2019ll do now?"
     ];
-    return fallbacks[Math.min(n, fallbacks.length-1)];
+    const ready=this.spill.q>=arcQs.length;
+    const q=arcQs[Math.min(this.spill.q-1,arcQs.length-1)];
+    const say=ready?[reaction,name]:[reaction, q];
+    return { say, has_question:!ready,
+      relief_lever:'not_crazy', humor_ok:!heavy,
+      updated:{pillar:pillar||null,tags:[],anchor:null,emotional_core:null,the_real_thing:ready?'this has been building for a while':null,named_and_landed:ready},
+      decision:ready?'ready':'continue', why:'fallback' };
   }
 
   async spillSubmit(val){
     const v=(val||'').trim(); if(!v) return;
-    this.spill.msgs.push({role:'user',text:v});
-    if(this.spill.q<5){
-      // get next question
-      let nextQ;
-      try{
-        const history=this.spill.msgs.map(m=>({role:m.role==='user'?'user':'assistant',content:m.text}));
-        const sysPrompt='You are the companion on Shutap — warm, perceptive, short, a little witty, never cruel or clinical. Help someone put words to what they\'re carrying. Ask one short follow-up question (under 25 words). No preamble. No "great answer". No therapy-speak. Just the question, lowercase, conversational.';
-        const raw=await window.claude.complete({system:sysPrompt, messages:[...history,{role:'user',content:'[next question please]'}]});
-        nextQ=(raw||'').trim().replace(/^["']/,'').replace(/["']$/,'');
-      }catch(e){
-        nextQ=this.spillQ(this.spill.q+1, this.spill.msgs);
-      }
-      this.spill.msgs.push({role:'companion',text:nextQ});
-      this.spill.q++;
-      this.spillRender();
-    } else {
-      this.spill.q=6;
-      this.spillRender();
-    }
+    const scrubbed=this.scrubPII(v);
+    this.spill.msgs.push({role:'user',text:scrubbed.clean});
+    if(scrubbed.changes&&scrubbed.changes.length&&window.ShutapFeedback) ShutapFeedback.track('pii_scrubbed',{types:scrubbed.changes.map(c=>c.type),count:scrubbed.changes.reduce((a,c)=>a+c.count,0)});
+    this.spill.q++;
+    this.spill.thinking=true; this.spillRender();
+    let res;
+    try{ res=await this.spillTurn(); this.spill.degraded=false; }
+    catch(e){ res=this.spillFallbackTurn(v); this.spill.degraded=true; }
+    this.spill.thinking=false;
+    this.spill.draft=this.mergeDraft(this.spill.draft,res.updated);
+    this.spill.humorOk=!!res.humor_ok;
+    this.spill.msgs.push({role:'companion',say:(res.say&&res.say.length?res.say:['ok — i\u2019m with you. keep going.']),hasQ:!!res.has_question});
+    if(res.decision==='ready' || this.spill.q>=12){ this.spill.ready=true; }
+    this.spillRender();
   }
 
   async spillReflect(body){
     const loading=document.createElement('div');
     loading.style.cssText='display:flex;gap:5px;align-items:center;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c';
-    loading.innerHTML='<i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .4s infinite"></i> reflecting back…';
+    loading.innerHTML='<i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .4s infinite"></i> ok hang on…';
     body.appendChild(loading);
-    const ref=document.createElement('div');
-    ref.style.cssText='background:rgba(255,255,255,.04);border-left:2px solid rgba(231,84,138,.4);padding:14px 16px;border-radius:0 12px 12px 0;font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.55;color:#f7e8f0;min-height:1.55em;white-space:pre-wrap';
-    let summary='';
+    let summary;
     try{
       const convo=this.spill.msgs.filter(m=>m.role==='user').map(m=>m.text).join(' / ');
-      const prompt='In 2 sentences, warmly reflect back what you heard. Start "i heard that…". Preserve their exact words where possible. Then ask "did i get it right?" Lowercase. No preamble.';
-      const streamer=window.claude.stream||window.claude.complete;
-      if(window.claude.stream){
-        await window.claude.stream({
-          messages:[{role:'user',content:'Conversation: '+convo+'\n\n'+prompt}],
-          onChunk:(_chunk,acc)=>{
-            if(loading.parentNode){ loading.remove(); body.appendChild(ref); }
-            ref.textContent=acc;
-          }
-        });
-      } else {
-        summary=await streamer({messages:[{role:'user',content:'Conversation: '+convo+'\n\n'+prompt}]});
-        if(loading.parentNode){ loading.remove(); body.appendChild(ref); }
-        ref.textContent=summary;
-      }
+      const realThing=(this.spill.draft&&this.spill.draft.the_real_thing)||'';
+      const prompt='Say the whole thing back to them, centered on the real thing, in their words, relaxed and warm, lowercase, starting "ok so — stripped down, ". keep it to 1-2 sentences. end with "that about right?" no advice, no diagnosis, no preamble.';
+      summary=await window.claude.complete({messages:[{role:'user',content:'their words: '+convo+'\nthe real thing underneath: '+realThing+'\n\n'+prompt}]});
+      summary=(summary||'').trim();
     }catch(e){
-      if(loading.parentNode){ loading.remove(); body.appendChild(ref); }
-      ref.textContent="i heard that this has been sitting with you for a while, and putting it into words wasn't easy. did i get it right?";
+      summary="ok so — stripped down, this has been weighing on you for a while, and saying it out loud is the first time it's been outside your own head. that about right?";
     }
-    if(loading.parentNode) loading.remove();
-    if(!ref.parentNode) body.appendChild(ref);
+    loading.remove();
+    const ref=document.createElement('div');
+    ref.style.cssText='background:rgba(255,255,255,.04);border-left:2px solid rgba(231,84,138,.4);padding:14px 16px;border-radius:0 12px 12px 0;font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.55;color:#f7e8f0';
+    ref.textContent=summary||'';
+    body.appendChild(ref);
     // support mode + publish
     const act=document.createElement('div');
     act.style.cssText='display:flex;flex-direction:column;gap:12px;margin-top:8px';
-    act.innerHTML='<div style="font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c4a0b2">one last thing before the room hears this: are you looking for advice — or mostly just to be heard?</div>'+
+    act.innerHTML='<div style="font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c4a0b2">real quick — you want advice on this, or you just wanna get it out?</div>'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
         '<div data-sm="heard" style="cursor:pointer;padding:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:14px;text-align:center;transition:.15s"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#f7b8d4;margin-bottom:6px">just to be heard</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#f7e8f0">sit with me. you don\'t have to fix anything.</div></div>'+
         '<div data-sm="advice" style="cursor:pointer;padding:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:14px;text-align:center;transition:.15s"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#a8d4a9;margin-bottom:6px">open to advice</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#f7e8f0">the room can share what it\'d do.</div></div>'+
       '</div>';
     body.appendChild(act);
     act.querySelectorAll('[data-sm]').forEach(btn=>{ btn.addEventListener('click',()=>{ this.spill.supportMode=btn.dataset.sm; this.runGuardian(btn.dataset.sm); }); });
+  }
+
+  /* ═══════════ §6 — COMPOSE → PREVIEW → ROOM | JOURNAL ═══════════ */
+  // Spill writes the post in the user's OWN voice + facts, then shows it for preview/edit
+  // BEFORE anything goes live. nothing publishes unseen.
+  async spillCompose(mode, info){
+    this.spill.supportMode=mode||'heard'; this.spill._pubInfo=info||{};
+    if(this.$spillScreen){
+      this.$spillScreen.innerHTML='';
+      this.$spillScreen.appendChild(this.spillChrome(8,9));
+      const w=document.createElement('div');
+      w.style.cssText='flex:1;display:grid;place-items:center;padding:34px 22px;text-align:center';
+      w.innerHTML=this.companionSVG(40,40)+'<div style="margin-top:16px;display:inline-flex;gap:5px;align-items:center;font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c4a0b2"><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:6px;height:6px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .4s infinite"></i> &nbsp;writing it up in your words\u2026</div>';
+      this.$spillScreen.appendChild(w);
+    }
+    const convo=this.spill.msgs.filter(m=>m.role==='user').map(m=>m.text).join('\n');
+    const draft=this.spill.draft||{};
+    let composed;
+    try{
+      const prompt='You are THE SPILL on Shutap. Compose the user\u2019s OWN post from the words they just gave you \u2014 a public-ready story in THEIR voice. AUTHENTICITY IS THE PRODUCT: keep their slang, cadence, capitalization, profanity, the messy-real texture, their order of events. every sentence must be traceable to something they actually said. do NOT sanitize it into clean generic prose; do NOT invent any event, name, motive, quote, or detail they didn\u2019t give; do NOT soften or sharpen what happened. title = their own hook, tightened (lowercase ok). body = 2\u20136 short paragraphs, first person.\n\ntheir words (already anonymized \u2014 keep it that way):\n"""'+convo+'"""\n\nthe thing that mattered most: '+(draft.the_real_thing||draft.emotional_core||'')+'\n\nreturn STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"]}';
+      const raw=await window.claude.complete({messages:[{role:'user',content:prompt}]});
+      const j=JSON.parse(raw.slice(raw.indexOf('{'),raw.lastIndexOf('}')+1));
+      composed={title:(j.title||'').trim(), body:(j.body||'').trim(), tags:Array.isArray(j.tags)?j.tags.slice(0,5):(draft.tags||[])};
+    }catch(e){
+      const first=this.spill.msgs.find(m=>m.role==='user');
+      composed={title:((first&&first.text)||'my situation').replace(/\s+/g,' ').slice(0,72), body:convo, tags:(draft.tags||[]).slice(0,5)};
+    }
+    composed.title=this.scrubPII(composed.title||'').clean;
+    composed.body=this.scrubPII(composed.body||'').clean;
+    composed.pillar=draft.pillar||null;
+    this.spill.composed=composed;
+    this.spillPreview();
+  }
+
+  // read any manual (contenteditable) edits back into the composed draft, re-scrubbing.
+  syncPreviewDOM(){
+    const t=document.querySelector('[data-ptitle]'), b=document.querySelector('[data-pbody]');
+    if(!this.spill.composed) return;
+    if(t){ const r=this.scrubPII(t.innerText.replace(/\n+/g,' ').trim()); this.spill.composed.title=r.clean; if(r.changes.length) this._lastScrub=r; }
+    if(b){ const r=this.scrubPII(b.innerText.trim()); this.spill.composed.body=r.clean; if(r.changes.length) this._lastScrub=r; }
+  }
+
+  spillPreview(editNote){
+    if(!this.$spillScreen) return;
+    this.setEyeState&&this.setEyeState('reflecting');
+    const c=this.spill.composed||{title:'',body:'',tags:[],pillar:null};
+    const alias=this.getAlias()||{emoji:'\uD83E\uDD89',name:'Quiet Indonesian Owl'};
+    const journal=!!this.spill._journalId;
+    this.$spillScreen.innerHTML='';
+    this.$spillScreen.appendChild(this.spillChrome(8,9));
+    const body=document.createElement('div');
+    body.style.cssText='flex:1;overflow-y:auto;padding:26px 22px 24px;max-width:580px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px';
+    const tagChips=(c.tags||[]).map(t=>'<span style="font-family:Sora,sans-serif;font-weight:600;font-size:10.5px;letter-spacing:.02em;color:#e7548a;background:rgba(231,84,138,.13);border-radius:999px;padding:3px 10px">#'+this.esc(t)+'</span>').join('');
+    const changedNote = editNote ? '<div style="display:flex;gap:8px;align-items:flex-start;font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#a8d4a9">'+this.companionSVG(18,18)+'<span>'+this.esc(editNote)+'</span></div>' : '';
+    const paras=(c.body||'').split(/\n{2,}/).map(p=>'<p style="margin:0 0 11px">'+this.esc(p).replace(/\n/g,'<br>')+'</p>').join('');
+    body.innerHTML=
+      '<div style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a">preview \u00b7 in your words</div>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:15px;line-height:1.55;color:#c4a0b2">nothing\u2019s posted yet. type right over anything to fix it, or tell me what to change below \u2014 then pick where it lives.</div>'+
+      changedNote+
+      '<div style="background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:20px 20px 18px">'+
+        '<div style="display:flex;align-items:center;gap:8px;font-family:Inter;font-weight:500;font-size:12.5px;color:#9e7a8c;margin-bottom:12px">'+alias.emoji+' '+this.esc(alias.name)+'<span style="opacity:.5">\u00b7 '+(c.pillar?this.esc(c.pillar):'your story')+'</span></div>'+
+        '<div data-ptitle contenteditable="true" spellcheck="false" style="outline:none;font-family:Newsreader,serif;font-style:italic;font-size:23px;line-height:1.3;color:#f7e8f0;border-radius:6px;transition:background .15s">'+this.esc(c.title||'untitled')+'</div>'+
+        '<div data-pbody contenteditable="true" spellcheck="false" style="outline:none;margin-top:12px;font-family:Newsreader,serif;font-size:16px;line-height:1.65;color:#e7dce4;border-radius:6px;transition:background .15s">'+(paras||'<p style="margin:0">\u2026</p>')+'</div>'+
+        (tagChips?'<div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:6px">'+tagChips+'</div>':'')+
+      '</div>'+
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#9e7a8c">\uD83D\uDD12 every edit gets re-checked by the privacy shield before it saves.</div>'+
+      // edit-with-spill row
+      '<div style="display:flex;align-items:flex-end;gap:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:11px 14px;margin-top:2px">'+
+        '<textarea id="_seedit" rows="1" placeholder="or tell me: \u201cmake it shorter\u201d, \u201cadd the part about the rent\u201d\u2026" style="flex:1;background:none;border:none;outline:none;color:#f7e8f0;font-family:Newsreader,serif;font-style:italic;font-size:15px;resize:none;max-height:120px;line-height:1.5"></textarea>'+
+        '<div id="_seditgo" role="button" style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#e7548a;cursor:pointer;flex:none;padding-bottom:2px">edit \u2192</div>'+
+      '</div>'+
+      // destinations
+      '<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:11px">'+
+        '<div data-dest="journal" role="button" style="cursor:pointer;padding:15px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);border-radius:15px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#f7b8d4">keep as journal</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#c4a0b2;margin-top:5px">private draft. only you. edit it with me &amp; post to a room whenever.</div></div>'+
+        '<div data-dest="room" role="button" style="cursor:pointer;padding:15px 14px;background:#e7548a;border:1px solid #e7548a;border-radius:15px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff">post to a room \u2192</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#ffe0ee;margin-top:5px">open it up '+(this.spill.supportMode==='advice'?'for what the room would do.':'so others who lived it can sit with you.')+'</div></div>'+
+      '</div>'+
+      (journal?'<div data-dest="closejournal" style="text-align:center;margin-top:4px;font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#9e7a8c;cursor:pointer">save changes &amp; close</div>':'');
+    this.$spillScreen.appendChild(body);
+    // contenteditable: subtle focus bg + sync on blur
+    body.querySelectorAll('[contenteditable]').forEach(el=>{
+      el.addEventListener('focus',()=>{ el.style.background='rgba(231,84,138,.08)'; });
+      el.addEventListener('blur',()=>{ el.style.background='transparent'; this.syncPreviewDOM(); });
+    });
+    const ta=body.querySelector('#_seedit');
+    ta.addEventListener('input',()=>{ ta.style.height='auto'; ta.style.height=Math.min(120,ta.scrollHeight)+'px'; });
+    ta.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); this.spillAIEdit(ta.value); } });
+    body.querySelector('#_seditgo').addEventListener('click',()=>this.spillAIEdit(ta.value));
+    body.querySelector('[data-dest="room"]').addEventListener('click',()=>this.postToRoom());
+    body.querySelector('[data-dest="journal"]').addEventListener('click',()=>this.saveJournal());
+    const cj=body.querySelector('[data-dest="closejournal"]'); if(cj) cj.addEventListener('click',()=>{ this.syncPreviewDOM(); this.persistJournal(); this.toast('saved to your journal \u2014 it\u2019s yours.'); this.closeSpill(); });
+  }
+
+  // §10c — edit the post on the user's instruction. voice + facts locked; re-scrub before save.
+  async spillAIEdit(instruction){
+    const ins=(instruction||'').trim(); if(!ins) return;
+    this.syncPreviewDOM();
+    const go=document.querySelector('#_seditgo'); if(go){ go.textContent='\u2026'; }
+    const c=this.spill.composed;
+    let res;
+    try{
+      const prompt='You are editing the user\u2019s OWN Shutap post on their instruction. Their voice and facts are sacred. You may shorten, reorder, tighten, fix typos, or do EXACTLY what they asked \u2014 using ONLY material already in the post. Keep their slang, cadence, caps, profanity, mess. NEVER add an event, name, motive, quote, or detail they didn\u2019t give; never soften or sharpen what happened. If the instruction needs a fact that isn\u2019t there, do NOT invent it \u2014 set needs_input and ask (short) what to add.\n\ncurrent title: '+JSON.stringify(c.title)+'\ncurrent body:\n"""'+c.body+'"""\n\ntheir instruction: "'+ins+'"\n\nreturn STRICT JSON only: {"title":"...","body":"...","changed":"<one short line on what you changed>","needs_input":false}';
+      const raw=await window.claude.complete({messages:[{role:'user',content:prompt}]});
+      res=JSON.parse(raw.slice(raw.indexOf('{'),raw.lastIndexOf('}')+1));
+    }catch(e){ res=null; }
+    if(!res){ if(go) go.textContent='edit \u2192'; this.toast('couldn\u2019t make that edit \u2014 try saying it another way.'); return; }
+    if(res.needs_input){ if(go) go.textContent='edit \u2192'; this.spillPreview('hmm \u2014 '+(res.changed||'i\u2019d have to make something up for that. what should i add?')); return; }
+    if(res.title) this.spill.composed.title=this.scrubPII(res.title.trim()).clean;
+    if(res.body) this.spill.composed.body=this.scrubPII(res.body.trim()).clean;
+    if(window.ShutapFeedback) ShutapFeedback.track('spill_ai_edit',{instruction:ins.slice(0,80)});
+    this.spillPreview('done \u2014 '+(res.changed||'tweaked it. take a look.'));
+  }
+
+  // persist the composed post as a private journal record (a real, editable draft).
+  persistJournal(){
+    const c=this.spill.composed||{}; const cleanTitle=this.scrubPII(c.title||'your situation').clean;
+    if(this.spill._journalId){
+      const all=this.situations(); const s=all.find(x=>x.id===this.spill._journalId);
+      if(s){ s.title=cleanTitle; s.body=c.body; s.tags=c.tags||[]; s.pillar=c.pillar||null; s.visibility='private'; s.edited=true; s.updatedAt=Date.now(); this.saveSituations(all); return s; }
+    }
+    const sit=this.scheduleCaptureSpine(cleanTitle, this.spill.scan||null, this.spill.supportMode, {visibility:'private', body:c.body, tags:c.tags, pillar:c.pillar});
+    this.spill._journalId=sit.id;
+    if(window.ShutapFeedback) ShutapFeedback.track('journal_created',{visibility:'private',pillar:c.pillar||null});
+    this.recordMemory('spill',{outcome:'journal',pillar:c.pillar||null});
+    return sit;
+  }
+
+  saveJournal(){
+    this.syncPreviewDOM();
+    const sit=this.persistJournal();
+    const c=this.spill.composed||{};
+    if(!this.$spillScreen) return;
+    this.setEyeState&&this.setEyeState('calm-care');
+    this.$spillScreen.innerHTML='';
+    this.$spillScreen.appendChild(this.spillChrome(9,9));
+    const body=document.createElement('div');
+    body.style.cssText='flex:1;display:grid;place-items:center;padding:34px 22px;text-align:center;max-width:520px;margin:0 auto';
+    body.innerHTML=
+      this.companionSVG(48,48)+
+      '<div style="margin-top:20px;font-family:Newsreader,serif;font-style:italic;font-size:26px;line-height:1.35;color:#f7e8f0">saved to your journal.</div>'+
+      '<div style="margin-top:10px;font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c4a0b2;line-height:1.6;max-width:38ch">a private draft \u2014 only you. edit it with me anytime, and post it to a room whenever you\u2019re ready.</div>'+
+      '<div style="margin-top:14px;display:inline-flex;gap:6px;align-items:center;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c">opening your journal<i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .4s infinite"></i></div>';
+    this.$spillScreen.appendChild(body);
+    document.body.style.overflow='';
+    setTimeout(()=>{ window.location.href='Profile.dc.html#journal'; }, 850);
+  }
+
+  postToRoom(){
+    this.syncPreviewDOM();
+    this.spillPublish(this.spill.supportMode||'heard', this.spill._pubInfo||{});
+  }
+
+  // reopen a saved private journal straight into the preview, so it can be edited with spill + posted.
+  openJournalForEdit(id){
+    this.requireAuth(()=>this.aiGate(()=>{
+      const all=this.situations(); const s=all.find(x=>String(x.id)===String(id));
+      if(!s){ this.toast('that draft isn\u2019t here anymore.'); return; }
+      this.setEyeState&&this.setEyeState('reflecting');
+      if(!this.$spillRoot) return;
+      this.spill={ msgs:[], q:0,
+        draft:{pillar:s.pillar||null,tags:s.tags||[],anchor:null,emotional_core:null,the_real_thing:null,named_and_landed:true},
+        ready:true, humorOk:true, degraded:false,
+        composed:{title:s.title||'', body:s.body||'', tags:s.tags||[], pillar:s.pillar||null},
+        supportMode:s.mode||'heard', _journalId:s.id, _pubInfo:{} };
+      this.$spillRoot.style.display='block'; document.body.style.overflow='hidden'; if(this.$pill) this.$pill.style.display='none';
+      this.spillPreview();
+    }), 'spill');
   }
 
   /* ═══════════ MODERATION: privacy shield (rules) + guardian (AI) ═══════════ */
@@ -1103,15 +1234,27 @@ class Component extends DCLogic {
   saveSituations(s){ try{ localStorage.setItem('shutap_situations', JSON.stringify(s.slice(-30))); }catch(e){} }
 
   // create a situation + schedule the whole spine on spill publish (day 0)
-  scheduleCaptureSpine(title, scan, mode){
+  scheduleCaptureSpine(title, scan, mode, opts){
+    opts=opts||{};
     const all=this.situations();
     const now=Date.now();
     const sit={ id:'s'+now, title:title||'your situation', scan:scan||null, mode:mode||'heard', createdAt:now,
+      visibility:opts.visibility||'public', body:opts.body||null, tags:opts.tags||[], pillar:opts.pillar||null, edited:false,
       notifOptIn:false, status:'open',
       beats:this.BEATS.map((b,i)=>({type:b.type, day:b.day, state:i===0?'due':'scheduled', dueAt:now+(i===0?0:i*1200), response:null})) };
     all.push(sit); this.saveSituations(all);
     if(window.ShutapFeedback) ShutapFeedback.track('checkin_scheduled',{count:sit.beats.length,target:'spill'});
     return sit;
+  }
+
+  // promote an existing private journal record into a public room (re-uses its check-in spine).
+  promoteJournal(id, mode){
+    const all=this.situations(); const s=all.find(x=>x.id===id);
+    if(!s) return null;
+    s.visibility='public'; if(mode) s.mode=mode; s.edited=true; s.updatedAt=Date.now();
+    this.saveSituations(all);
+    if(window.ShutapFeedback) ShutapFeedback.track('visibility_changed',{from:'private',to:'public'});
+    return s;
   }
 
   // earliest due, unanswered beat across situations (respects backoff/suppression)
@@ -1266,7 +1409,7 @@ class Component extends DCLogic {
     this.spill.guardian=guardian;
     this.queueModeration(guardian, shieldFlags);
     if(guardian.crisis){ this.crisisCard(); return; }
-    this.spillPublish(mode, {shieldFlags, guardian});
+    this.spillCompose(mode, {shieldFlags, guardian});
   }
 
   // append-only style record of what would enter the admin queue
@@ -1311,31 +1454,26 @@ class Component extends DCLogic {
     this._spillPublished=true;
     if(window.ShutapFeedback) ShutapFeedback.track('spill_publish',{mode:mode||'post',target:'spill'});
     info=info||{};
-    const shieldFlags=info.shieldFlags||[];
-    this.$spillScreen.innerHTML='';
-    this.$spillScreen.appendChild(this.spillChrome(7,7));
-    const body=document.createElement('div');
-    body.style.cssText='flex:1;display:grid;place-items:center;padding:34px 22px;text-align:left;max-width:520px;margin:0 auto';
-    const scrub=this._lastScrub||{changes:[]};
-    const notice=this.scrubNotice(scrub.changes);
-    const shieldNote = notice
-      ? '<div style="margin-top:18px;background:rgba(231,84,138,.1);border:1px solid rgba(231,84,138,.28);border-radius:14px;padding:14px 16px"><div style="display:flex;gap:9px;align-items:flex-start">'+this.companionSVG(22,22)+'<div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#f3c6da;line-height:1.5">'+notice+'</div></div><div style="margin-top:9px;display:flex;flex-wrap:wrap;gap:6px">'+scrub.changes.map(c=>'<span style="font-family:Sora,sans-serif;font-weight:600;font-size:10.5px;letter-spacing:.02em;color:#e7548a;background:rgba(231,84,138,.14);border-radius:999px;padding:3px 9px">'+c.label+(c.count>1?' ×'+c.count:'')+'</span>').join('')+'</div></div>'
-      : '<div style="margin-top:18px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c">🔒 privacy shield checked it — nothing identifying slipped through.</div>';
-    if(window.ShutapFeedback && scrub.changes.length) ShutapFeedback.track('pii_scrubbed',{types:scrub.changes.map(c=>c.type),count:scrub.changes.reduce((a,c)=>a+c.count,0)});
-    body.innerHTML=
-      this.companionSVG(50,50)+
-      '<div style="margin-top:20px;font-family:Newsreader,serif;font-style:italic;font-size:28px;line-height:1.35;color:#f7e8f0" data-roomopen>the room is open.</div>'+
-      '<div style="margin-top:14px;font-family:Newsreader,serif;font-style:italic;font-size:16px;color:#c4a0b2;line-height:1.6;max-width:38ch">sitting under <b style="font-style:normal;font-family:Inter;font-weight:500;color:#f7e8f0">'+((this.getAlias()&&this.getAlias().emoji)||'🦉')+' '+((this.getAlias()&&this.getAlias().name)||'Quiet Indonesian Owl')+'</b>. the room '+(mode==='heard'?'knows you\'re not looking to be fixed.':'knows you\'re open to what it thinks.')+'</div>'+
-      shieldNote+
-      '<div style="margin-top:24px;display:flex;gap:16px;flex-wrap:wrap"><a href="Stream.dc.html#room-0" style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;color:#e7548a;text-decoration:none;border-bottom:1px solid rgba(231,84,138,.38);padding-bottom:1px">enter the room →</a><span data-close style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;cursor:pointer">close</span></div>';
-    this.$spillScreen.appendChild(body);
-    this.setEyeState&&this.setEyeState('reflecting');
-    const title=(this.spill&&this.spill.composed&&this.spill.composed.case_title) || (this.spill&&this.spill.msgs&&this.spill.msgs.find(m=>m.role==='user')&&this.spill.msgs.find(m=>m.role==='user').text) || 'your situation';
+    const c=(this.spill&&this.spill.composed)||{};
+    const title=c.title || (this.spill&&this.spill.msgs&&this.spill.msgs.find(m=>m.role==='user')&&this.spill.msgs.find(m=>m.role==='user').text) || 'your situation';
     const cleanTitle=this.scrubPII(title).clean;
-    const sit=this.scheduleCaptureSpine(cleanTitle, (this.spill&&this.spill.scan)||null, mode);
-    body.querySelector('[data-close]').addEventListener('click',()=>{ this.closeSpill(); setTimeout(()=>this.day0CheckIn(sit), 400); });
-    // also offer the day-0 read inline as the natural next beat
-    setTimeout(()=>this.day0CheckIn(sit), 1400);
+    let sit;
+    if(this.spill&&this.spill._journalId){ sit=this.promoteJournal(this.spill._journalId, mode) || this.scheduleCaptureSpine(cleanTitle, (this.spill&&this.spill.scan)||null, mode, {visibility:'public', body:c.body, tags:c.tags, pillar:c.pillar}); }
+    else { sit=this.scheduleCaptureSpine(cleanTitle, (this.spill&&this.spill.scan)||null, mode, {visibility:'public', body:c.body, tags:c.tags, pillar:c.pillar}); }
+    if(window.ShutapFeedback) ShutapFeedback.track('room_created',{visibility:'public',pillar:c.pillar||null});
+    this.recordMemory('spill',{outcome:'room',pillar:c.pillar||null,mode:mode});
+    // brief splash, then drop the user straight into the room they just created
+    this.setEyeState&&this.setEyeState('celebrating');
+    this.$spillScreen.innerHTML='';
+    this.$spillScreen.appendChild(this.spillChrome(9,9));
+    const body=document.createElement('div');
+    body.style.cssText='flex:1;display:grid;place-items:center;padding:34px 22px;text-align:center';
+    body.innerHTML=this.companionSVG(50,50)+
+      '<div style="margin-top:20px;font-family:Newsreader,serif;font-style:italic;font-size:26px;line-height:1.35;color:#f7e8f0">your room is open.</div>'+
+      '<div style="margin-top:10px;display:inline-flex;gap:6px;align-items:center;font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c4a0b2">taking you in<i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#e7548a;display:block;animation:blinkdot 1.2s .4s infinite"></i></div>';
+    this.$spillScreen.appendChild(body);
+    document.body.style.overflow='';
+    setTimeout(()=>{ window.location.href='Stream.dc.html#room-'+sit.id; }, 850);
   }
 
   /* ═══════════ SCAN ═══════════ */
@@ -1347,347 +1485,293 @@ class Component extends DCLogic {
   }
   _reallyOpenScan(){
     if(!this.$scanRoot) return;
-    this.scan={ answers:{}, idx:1, cursor:0 };
+    this.scan={ qa:[], busy:false, done:false, _saved:false, _curPrompt:'' };
     this.$scanRoot.style.display='block';
     document.body.style.overflow='hidden';
     if(this.$pill) this.$pill.style.display='none';
-    this.scanRender();
+    this.scanNextCard();
   }
   closeScan(){ if(!this.$scanRoot) return; this.$scanRoot.style.display='none'; document.body.style.overflow=''; if(this.$pill) this.$pill.style.display='flex'; }
 
-  scanReflection(prevKey, prevAns, topic){
-    if(!prevAns) return '';
-    if(prevKey==='topic'){
-      return ({love:"love stuff. okay — i'm here.",family:"family. that one has weight.",work:"work. let's sit with it.",friends:"a friendship thing. those count too.",self:"something internal. that's the hardest place to point at.",other:"okay — tell me the shape of it."})[prevAns.v]||"okay. i'm with you.";
-    }
-    if(prevKey==='detail'){
-      const t=(prevAns.v||'').trim(); if(!t) return "okay — we can keep it abstract.";
-      return "got it. holding that line as we go.";
-    }
-    if(prevKey==='who') return "okay — i'm picturing them.";
-    if(prevKey==='friction') return "that one lands. noted.";
-    if(prevKey==='duration'){
-      return ({today:"today. still raw, then.",week:"this week. fresh.",month:"a month or two — long enough to wear on you.",longer:"longer than that. you've been carrying this.",years:"years. that's not nothing."})[prevAns.v]||"";
-    }
-    if(prevKey==='body'){
-      return ({chest:"chest. that one tells the truth.",throat:"throat — the words wanting out.",stomach:"stomach. the gut knows first.",head:"in the head. looping.",calm:"calm in the body. interesting."})[prevAns.v]||"";
-    }
-    if(prevKey==='pattern'){
-      return ({first:"first time. that explains the disorientation.",variant:"variations of it. patterns rhyme.",always:"this keeps finding you. that's worth naming.",reverse:"you've been on the other side. that's its own weight."})[prevAns.v]||"";
-    }
-    if(prevKey==='inaction') return "okay. that's useful to know.";
-    if(prevKey==='hope') return "noted what you're reaching for.";
-    return "";
-  }
-  scanVisible(){
-    const all=this.SCAN_Q;
-    const out=[];
-    for(let i=1;i<all.length;i++){
-      const s=all[i];
-      if(s.when && !s.when(this.scan.answers)) continue;
-      out.push({step:s, origIdx:i});
-    }
-    return out;
-  }
-  scanRender(){
-    if(this.scan.idx==='result') return this.scanResult();
-    const visible=this.scanVisible();
-    const total=visible.length;
-    const cur=this.scan.cursor||0;
-    if(cur>=total){ this.scan.idx='result'; return this.scanResult(); }
-    const q=visible[cur].step;
-    if(!this.$scanScreen) return;
-    const answers=this.scan.answers;
-    const resolve=v=>typeof v==='function'?v(answers):v;
-    const qText=resolve(q.q);
-    const opts=q.kind==='tap'?resolve(q.opts):null;
-
-    // reflection: echo the previous answer through the companion (local now, AI upgrade after)
-    let reflectHTML='';
-    let prevForAI=null;
-    if(cur>0){
-      const prev=visible[cur-1].step;
-      const prevAns=answers[prev.key];
-      const text=this.scanReflection(prev.key, prevAns, answers.topic);
-      const safe=text||'okay. with you.';
-      reflectHTML='<div class="scan-reflect" data-reflect>'+this.companionSVG(20,20)+'<div data-reflect-text>'+safe+'</div></div>';
-      prevForAI={key:prev.key, ans:prevAns};
-    }
-
-    this.$scanScreen.innerHTML='';
-    const chrome=document.createElement('div');
-    chrome.style.cssText='flex:none;padding:18px 22px 14px;display:flex;align-items:center;gap:16px;border-bottom:.5px solid rgba(255,255,255,.06)';
-    const dots=Array.from({length:total},(_,i)=>'<span style="height:3px;flex:1;border-radius:2px;background:'+(i<cur?'#e7548a':i===cur?'rgba(231,84,138,.45)':'rgba(255,255,255,.12)')+';transition:background .3s"></span>').join('');
-    chrome.innerHTML='<div style="display:flex;gap:4px;flex:1">'+dots+'</div><span style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.14em;color:#9e7a8c;text-transform:uppercase">'+(cur+1)+' of '+total+'</span><div data-close role="button" style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;cursor:pointer">close</div>';
-    chrome.querySelector('[data-close]').addEventListener('click',()=>this.closeScan());
-    this.$scanScreen.appendChild(chrome);
-
-    const body=document.createElement('div');
-    body.style.cssText='flex:1;overflow-y:auto;padding:30px 22px 28px;max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:20px';
-    const kindLabel=q.kind==='text'?'scan · in your words':'scan · question '+(cur+1);
-    body.innerHTML=
-      '<div style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a">'+kindLabel+'</div>'+
-      reflectHTML+
-      '<div style="display:flex;gap:13px;align-items:flex-start">'+this.companionSVG(32,32)+'<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:21px;line-height:1.42;color:#f7e8f0">'+qText+'</div></div>'+
-      '<div data-slot style="display:flex;flex-direction:column;gap:9px;margin-left:39px"></div>';
-    this.$scanScreen.appendChild(body);
-    const slot=body.querySelector('[data-slot]');
-
-    const advance=()=>{ this.scan.cursor=(this.scan.cursor||0)+1; this.scanRender(); };
-
-    if(q.kind==='tap'){
-      opts.forEach(o=>{
-        const el=document.createElement('div');
-        el.className='scan-opt';
-        el.innerHTML=(o.emoji?'<span style="font-size:17px;flex:none">'+o.emoji+'</span>':'')+'<span>'+o.label+'</span>';
-        el.addEventListener('click',()=>{ answers[q.key]={v:o.v,w:o.w,label:o.label}; advance(); });
-        slot.appendChild(el);
-      });
-    } else if(q.kind==='text'){
-      const ta=document.createElement('textarea');
-      ta.className='scan-text'; ta.placeholder=resolve(q.placeholder)||'';
-      ta.maxLength=400;
-      slot.appendChild(ta);
-      if(q.hint){
-        const h=document.createElement('div');
-        h.style.cssText='font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#9e7a8c';
-        h.textContent=q.hint;
-        slot.appendChild(h);
-      }
-      const row=document.createElement('div');
-      row.style.cssText='display:flex;gap:10px;justify-content:flex-end;align-items:center';
-      if(q.optional){
-        const skip=document.createElement('button');
-        skip.type='button'; skip.className='scan-submit is-ghost'; skip.textContent='skip';
-        skip.addEventListener('click',()=>{ answers[q.key]={v:'',w:0,label:''}; advance(); });
-        row.appendChild(skip);
-      }
-      const go=document.createElement('button');
-      go.type='button'; go.className='scan-submit'; go.textContent='continue →';
-      go.addEventListener('click',()=>{
-        const v=(ta.value||'').trim();
-        if(!v && !q.optional){ ta.focus(); return; }
-        answers[q.key]={v:v,w:0,label:v};
-        advance();
-      });
-      row.appendChild(go);
-      slot.appendChild(row);
-      setTimeout(()=>ta.focus(),120);
-      ta.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter') go.click(); });
-    }
-
-    // AI upgrade: stream a tailored reflection in the companion's voice.
-    if(prevForAI && window.claude && (window.claude.stream || window.claude.complete)){
-      const myCursor=cur, myKey=prevForAI.key, myAns=prevForAI.ans||{};
-      const topicLabel=(answers.topic && answers.topic.label) || (answers.topic && answers.topic.v) || 'their situation';
-      const detail=(answers.detail && answers.detail.v) || '';
-      const ansText=myAns.v && typeof myAns.v==='string' && myAns.v.length<300 ? myAns.v : (myAns.label||myAns.v||'');
-      const sys="You are the companion on Shutap — warm, perceptive, lowercase, never clinical. The user is in a quick private scan. They just answered a question. Write ONE short line (max 14 words) that echoes what you heard, in their voice, no advice, no questions back. No quotes, no preamble.";
-      const prompt='Topic: '+topicLabel+'\nWhat they shared earlier: '+(detail?('"'+detail.slice(0,240)+'"'):'(nothing yet)')+'\nThey just answered "'+myKey+'": '+ansText+'\n\nReturn one line, lowercase.';
-      const stillValid=()=>this.scan.cursor===myCursor && this.scan.idx!=='result';
-      const writeLine=(t)=>{
-        const line=(t||'').replace(/^["']+|["']+$/g,'').split('\n')[0];
-        if(!line || !stillValid()) return;
-        const el=this.$scanScreen && this.$scanScreen.querySelector('[data-reflect-text]');
-        if(el) el.textContent=line;
-      };
-      if(window.claude.stream){
-        window.claude.stream({system:sys, messages:[{role:'user',content:prompt}], maxTokens:60,
-          onChunk:(_c,acc)=>writeLine(acc)
-        }).catch(()=>{});
-      } else {
-        window.claude.complete({system:sys, messages:[{role:'user',content:prompt}], maxTokens:60})
-          .then(writeLine).catch(()=>{});
-      }
-    }
-  }
-
-  scanNarrativeHTML(a){
-    const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-    const topic=a.topic?.v, who=a.who?.label, friction=a.friction?.label;
-    const dur=a.duration?.v, body=a.body?.v, pat=a.pattern?.v, hope=a.hope?.v, sup=a.support?.v;
-    const detail=(a.detail?.v||'').trim();
-    const relief=(a.relief?.v||'').trim();
-    const TOPIC_LEAD={love:"a love thing",family:"a family thing",work:"a work thing",friends:"a friendship thing",self:"something internal",other:"something you're carrying"};
-    const DUR={today:"and it just happened today",week:"over the last few days",month:"for a month or two",longer:"for a while now",years:"for years"};
-    const BODY={chest:"sitting in your chest",throat:"caught in your throat",stomach:"low in your stomach",head:"looping in your head",calm:"not loud in the body"};
-    const PAT={first:"first time you've met this shape",variant:"a variation of something you know",always:"a pattern that keeps finding you",reverse:"familiar from the other side"};
-    const HOPE={heard:"mostly you want to be heard",clarity:"you're after clarity",validate:"you need to know you're not wrong",comfort:"you want to feel less alone in it",change:"you want something to actually move"};
-    const SUP={yes:"there's someone you could tell — you just haven't",maybe:"maybe one person could hold it",no:"nobody around you really has the room for it",here:"you came here instead of them"};
-    const lines=[];
-    let lead="here's what i'm hearing: "+(TOPIC_LEAD[topic]||"something you're carrying");
-    if(who) lead+=" — "+who.toLowerCase();
-    if(DUR[dur]) lead+=", "+DUR[dur];
-    lead+=", "+(BODY[body]||"somewhere you can feel it")+".";
-    lines.push(lead);
-    if(detail) lines.push('<span style="color:#f7b8d4">you said:</span> &ldquo;'+esc(detail)+'&rdquo;');
-    if(friction) lines.push("the friction underneath is "+friction.toLowerCase()+".");
-    const tail=[];
-    if(PAT[pat]) tail.push(PAT[pat]);
-    if(HOPE[hope]) tail.push(HOPE[hope]);
-    if(SUP[sup]) tail.push(SUP[sup]);
-    if(tail.length) lines.push(tail.join(", ")+".");
-    if(relief) lines.push('relief, in your words: &ldquo;'+esc(relief)+'&rdquo;');
-    lines.push("that's the read. not a verdict — a mirror.");
-    return '<div data-scan-read style="background:rgba(255,255,255,.03);border:.5px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 18px 16px">'+
-      '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a;margin-bottom:10px;display:flex;align-items:center;gap:8px">what i\u2019m hearing<span data-scan-read-ai style="font-family:Newsreader,serif;font-style:italic;font-size:11px;letter-spacing:0;text-transform:none;color:#9e7a8c;font-weight:400">· reading…</span></div>'+
-      '<div data-scan-read-body>'+lines.map(l=>'<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.6;color:#f7e8f0;margin-bottom:8px">'+l+'</div>').join('')+'</div>'+
+  scanHeader(pct){
+    return '<div style="flex:none;padding:20px 22px 16px;display:flex;align-items:center;gap:14px;border-bottom:.5px solid rgba(255,255,255,.06)">'+
+      '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:13px;letter-spacing:.3em;color:#7F77DD">SCAN</div>'+
+      '<div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.10);overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#5B8A5E,#7F77DD);border-radius:3px;transition:width .4s"></div></div>'+
+      '<div data-close role="button" style="font-family:Sora,sans-serif;font-weight:600;font-size:12px;color:#9e7a8c;cursor:pointer">close</div>'+
     '</div>';
   }
-  scanAIUpgrade(answers, score, sig){
-    if(!window.claude || !(window.claude.stream || window.claude.complete)) {
-      const tag=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read-ai]');
-      if(tag) tag.remove();
-      return;
-    }
-    const pick=k=>answers[k]?(answers[k].label||answers[k].v):'';
-    const profile={
-      topic:pick('topic'), detail:(answers.detail&&answers.detail.v)||'',
-      who:pick('who'), friction:pick('friction'),
-      duration:pick('duration'), body:pick('body'),
-      pattern:pick('pattern'), inaction:pick('inaction'),
-      hope:pick('hope'), support:pick('support'),
-      relief:(answers.relief&&answers.relief.v)||'',
-      intensity:score, signature:sig.label
-    };
-    const sys="You are the companion on Shutap — warm, perceptive, lowercase, never clinical, never therapy-speak. Reflect what THIS specific person just told you in a private scan. Use their own words where you can (especially the 'detail' and 'relief' lines, quoted). Be specific, not generic. Don't diagnose. Don't prescribe. Don't say 'I hear you' or 'great answer'. No emojis. Return 3 short paragraphs separated by blank lines: (1) one sentence naming the shape of what they're carrying, weaving in topic + who + duration; (2) one or two sentences quoting their own line back and saying what it tells you; (3) one sentence about what they're reaching for, and one tiny suggestion of what the room can offer (no commands). Total under 110 words.";
-    const prompt='Their scan:\n'+JSON.stringify(profile,null,2)+'\n\nWrite the read now.';
-    const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const renderInto=(bodyEl, tag, t, isFinal)=>{
-      const paras=t.split(/\n{2,}/).map(p=>p.trim()).filter(Boolean);
-      const cursor=isFinal?'':'<span data-scan-cursor style="display:inline-block;width:6px;height:1em;vertical-align:-2px;background:#e7548a;margin-left:2px;animation:blinkdot 1s infinite"></span>';
-      bodyEl.innerHTML=paras.map((p,i)=>'<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.6;color:#f7e8f0;margin-bottom:10px">'+esc(p)+(i===paras.length-1?cursor:'')+'</div>').join('');
-      if(isFinal && tag) tag.remove();
-    };
-    const apply=(text,isFinal)=>{
-      const t=(text||'').trim(); if(!t) return;
-      const root=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read]');
-      if(!root) return;
-      const bodyEl=root.querySelector('[data-scan-read-body]');
-      const tag=root.querySelector('[data-scan-read-ai]');
-      if(bodyEl) renderInto(bodyEl, tag, t, isFinal);
-    };
-    const finalize=text=>{
-      apply(text,true);
-      const root=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read]');
-      if(root){ const t=root.querySelector('[data-scan-read-ai]'); if(t) t.remove(); }
-    };
-    if(window.claude.stream){
-      window.claude.stream({system:sys, messages:[{role:'user',content:prompt}], maxTokens:380,
-        onChunk:(_c,acc)=>apply(acc,false)
-      }).then(finalize).catch(()=>{
-        const tag=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read-ai]');
-        if(tag) tag.remove();
-      });
-      return;
-    }
-    window.claude.complete({system:sys, messages:[{role:'user',content:prompt}], maxTokens:380})
-      .then(text=>{
-        const t=(text||'').trim(); if(!t) return;
-        const root=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read]');
-        if(!root) return;
-        const bodyEl=root.querySelector('[data-scan-read-body]');
-        const tag=root.querySelector('[data-scan-read-ai]');
-        if(tag) tag.remove();
-        if(bodyEl) renderInto(bodyEl, tag, t, true);
-      })
-      .catch(()=>{
-        const tag=this.$scanScreen && this.$scanScreen.querySelector('[data-scan-read-ai]');
-        if(tag) tag.remove();
-      });
+
+  async scanNextCard(){
+    if(!this.$scanScreen) return;
+    this.scan.busy=true;
+    const pct=Math.min(90, this.scan.qa.length*8);
+    this.$scanScreen.innerHTML=this.scanHeader(pct)+
+      '<div style="flex:1;display:grid;place-items:center;padding:40px 24px;text-align:center">'+this.companionSVG(34,34)+
+      '<div style="margin-top:14px;display:inline-flex;gap:5px;align-items:center;font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#b3a0d0">'+(this.scan.qa.length?'reading that':'tuning in')+'<i style="width:5px;height:5px;border-radius:50%;background:#7F77DD;display:block;animation:blinkdot 1.2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#7F77DD;display:block;animation:blinkdot 1.2s .2s infinite"></i><i style="width:5px;height:5px;border-radius:50%;background:#7F77DD;display:block;animation:blinkdot 1.2s .4s infinite"></i></div></div>';
+    const cl=this.$scanScreen.querySelector('[data-close]'); if(cl) cl.addEventListener('click',()=>this.closeScan());
+    let res;
+    try{ res=await this.scanAI(); }catch(e){ res=this.scanFallbackCard(); }
+    if(!res) res=this.scanFallbackCard();
+    if(res.done){ this.scanFinish(res); return; }
+    this.scanRenderCard(res.line||'', res.card||{type:'choice',options:['ok']}, res.prompt||'');
   }
-  scanResult(){
-    const answers=this.scan.answers;
-    let sum=0,n=0;
-    Object.values(answers).forEach(a=>{ if(typeof a.w==='number'){ sum+=a.w; n++; } });
-    const score=n?Math.max(0,Math.min(999,Math.round(sum/n))):400;
-    const sig=this.SIGS.find(s=>score>=s.min&&score<=s.max)||this.SIGS[3];
-    if(window.ShutapFeedback) ShutapFeedback.track('scan_done',{score:score,signature:sig.label,target:'scan'});
-    // score color
+
+  async scanAI(){
+    const al=this.getAlias();
+    const transcript=this.scan.qa.map((x,i)=>(i+1)+'. '+x.prompt+' -> '+x.answer).join('\n')||'(nothing yet)';
+    const n=this.scan.qa.length;
+    const finishHint = n>=11 ? 'You are deep enough - reflect the core back and finish with the result now.' : (n>=7 ? 'Only finish if you have TRULY reached the emotional core (the fear/need/grief underneath) and it landed for them. If you are still on feelings or facts, go one layer DEEPER instead.' : 'Do NOT finish yet - you are still near the surface. dig.');
+    const sys="You are THE SCAN on Shutap - a quick, intuitive read of how heavy someone's situation is RIGHT NOW, scored 0-999. You are a warm, perceptive, FUNNY friend - caring, a little cheeky, never clinical, never a dry form. lowercase, texty.\n\nYou run an ADAPTIVE check: each step you design the NEXT input card, REACTING specifically to what they just said (name it, take their side, a gentle joke when it fits). VARY the input type EVERY step - never repeat the same kind twice in a row, and lean on the tactile widgets (spectrum, rank, rate, multi) far more than plain choice so it stays playful, hands-on and alive. ~9-12 cards - go the distance; do NOT stop at the surface; keep going until you reach the bottom of their heart, then finish.\n\nDIG LIKE THEIR CLOSEST FRIEND - this is the whole point. each card goes ONE LAYER DEEPER than the last: what happened -> the feeling -> the feeling UNDER that feeling -> the fear or need or grief at the very bottom (what they are most scared is true, what they actually need and are not getting, the thing they have not said out loud). when you sense the real thing, NAME it back to them tenderly and check if that is it. never settle for their first, tidiest answer - push, warmly, like someone who refuses to let them stay on the surface.\n\nCARD TYPES (pick what truly fits the question):\n- choice   -> one pick. fields: options:[4-7 short strings, an emoji is nice]\n- multi    -> pick several. fields: options:[5-9 strings], max:int\n- rate     -> a 0-10 slider. fields: min_label, max_label\n- spectrum -> drag a handle between two extremes. fields: left, right\n- rank     -> drag to order. fields: items:[4-6 short strings]\n- text     -> a few words. fields: placeholder\n\nReturn STRICT JSON, exactly ONE of:\n{\"line\":\"<short warm/funny reaction to their last answer, or a welcoming opener>\",\"prompt\":\"<the question, short, specific>\",\"card\":{\"type\":\"...\", ...fields}}\nOR when you have a real read:\n{\"done\":true,\"score\":<int 0-999>,\"signature\":\"<3-4 word title, Title Case>\",\"read\":\"<2 warm sentences that NAME the real thing at the bottom of their heart - the core fear or need underneath - specific to them, tender, a little funny>\",\"factors\":[\"<2-4 word driver>\",\"<...>\"]}\n\nSCORE BANDS (use the WHOLE range; judge by recency, how stuck/looping it is, body load, isolation, stakes): 0-199 barely landed / settling . 200-399 sitting with it . 400-599 weighing on you . 600-799 heavy and loud . 800-999 consuming, urgent.\n\n"+(al&&al.name?('the user goes by "'+al.name+'" - you can use their name warmly.\n'):'')+"\n=== what they have told you ===\n"+transcript+"\n\n"+finishHint+"\noutput ONLY the JSON.";
+    const raw=await window.claude.complete({messages:[{role:'user',content:sys}]});
+    let c=(raw||'').replace(/```json/gi,'').replace(/```/g,'');
+    const m=c.match(/\{[\s\S]*\}/); if(!m) throw new Error('no json');
+    return JSON.parse(m[0]);
+  }
+
+  scanNextBtn(fn,label){
+    const b=document.createElement('div');
+    b.style.cssText='margin-top:22px;align-self:flex-start;cursor:pointer;background:#7F77DD;color:#fff;border-radius:999px;padding:12px 26px;font-family:Sora,sans-serif;font-weight:700;font-size:14px;transition:.15s';
+    b.textContent=label||'next ->';
+    b.addEventListener('click',()=>{ if(this.scan.busy) return; fn(); });
+    return b;
+  }
+
+  scanRenderCard(line, card, prompt){
+    if(!this.$scanScreen) return;
+    this.scan.busy=false; this.scan._curPrompt=prompt||'';
+    this.setEyeState&&this.setEyeState('listening');
+    const pct=Math.min(90,(this.scan.qa.length+1)*8);
+    this.$scanScreen.innerHTML=this.scanHeader(pct)+'<div data-body style="flex:1;overflow-y:auto;padding:28px 24px 30px;max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:16px"></div>';
+    const cl=this.$scanScreen.querySelector('[data-close]'); if(cl) cl.addEventListener('click',()=>this.closeScan());
+    const body=this.$scanScreen.querySelector('[data-body]');
+    body.innerHTML='<div style="display:flex;gap:11px;align-items:flex-start">'+this.companionSVG(28,28)+'<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:16px;line-height:1.5;color:#dccff5">'+this.esc(line||'')+'</div></div>'+(prompt?'<h2 style="font-family:Sora,sans-serif;font-weight:700;font-size:21px;line-height:1.3;letter-spacing:-.01em;color:#f7e8f0;margin:2px 0 2px">'+this.esc(prompt)+'</h2>':'')+'<div data-widget></div>';
+    const w=body.querySelector('[data-widget]'); const t=card.type||'choice';
+    if(t==='multi') this.scanWMulti(w,card);
+    else if(t==='rate') this.scanWRate(w,card);
+    else if(t==='spectrum') this.scanWSpectrum(w,card);
+    else if(t==='rank') this.scanWRank(w,card);
+    else if(t==='text') this.scanWText(w,card);
+    else this.scanWChoice(w,card);
+  }
+
+  scanWChoice(w,card){
+    (card.options||['ok']).forEach(o=>{
+      const el=document.createElement('div');
+      el.style.cssText='cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 17px;margin-top:9px;border:1px solid rgba(127,119,221,.22);background:rgba(127,119,221,.06);border-radius:13px;font-family:Sora,sans-serif;font-weight:600;font-size:15px;color:#ece6f5;transition:.15s';
+      el.onmouseover=()=>{el.style.borderColor='#7F77DD';el.style.background='rgba(127,119,221,.16)';};
+      el.onmouseout=()=>{el.style.borderColor='rgba(127,119,221,.22)';el.style.background='rgba(127,119,221,.06)';};
+      el.textContent=o;
+      el.addEventListener('click',()=>this.scanAnswer(o));
+      w.appendChild(el);
+    });
+  }
+
+  scanWMulti(w,card){
+    const max=card.max||99; const sel=new Set();
+    const wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-wrap:wrap;gap:9px;margin-top:6px';
+    const btn=this.scanNextBtn(()=>{ if(sel.size) this.scanAnswer([...sel].join(', ')); });
+    btn.style.opacity='.4'; btn.style.pointerEvents='none';
+    (card.options||[]).forEach(o=>{
+      const chip=document.createElement('div');
+      chip.style.cssText='cursor:pointer;padding:11px 15px;border:1px solid rgba(127,119,221,.25);background:rgba(127,119,221,.06);border-radius:999px;font-family:Sora,sans-serif;font-weight:600;font-size:14px;color:#ece6f5;transition:.12s';
+      chip.textContent=o;
+      chip.addEventListener('click',()=>{
+        if(sel.has(o)){ sel.delete(o); chip.style.background='rgba(127,119,221,.06)'; chip.style.borderColor='rgba(127,119,221,.25)'; chip.style.color='#ece6f5'; }
+        else { if(sel.size>=max){ this.toast&&this.toast('pick up to '+max); return; } sel.add(o); chip.style.background='#7F77DD'; chip.style.borderColor='#7F77DD'; chip.style.color='#fff'; }
+        btn.style.opacity=sel.size?'1':'.4'; btn.style.pointerEvents=sel.size?'auto':'none';
+      });
+      wrap.appendChild(chip);
+    });
+    w.appendChild(wrap); w.appendChild(btn);
+  }
+
+  scanWRate(w,card){
+    let val=5;
+    const wrap=document.createElement('div'); wrap.style.cssText='margin-top:14px';
+    const num=document.createElement('div'); num.style.cssText='font-family:Sora,sans-serif;font-weight:800;font-size:44px;color:#7F77DD;text-align:center;margin-bottom:10px'; num.textContent='5';
+    const input=document.createElement('input'); input.type='range'; input.min='0'; input.max='10'; input.step='1'; input.value='5';
+    input.style.cssText='width:100%;accent-color:#7F77DD;height:6px;cursor:pointer';
+    input.addEventListener('input',()=>{ val=+input.value; num.textContent=val; });
+    const labels=document.createElement('div'); labels.style.cssText='display:flex;justify-content:space-between;margin-top:10px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9b8db5';
+    labels.innerHTML='<span>'+this.esc(card.min_label||'low')+'</span><span>'+this.esc(card.max_label||'high')+'</span>';
+    wrap.appendChild(num); wrap.appendChild(input); wrap.appendChild(labels); w.appendChild(wrap);
+    w.appendChild(this.scanNextBtn(()=>this.scanAnswer(val+'/10 (toward "'+(card.max_label||'high')+'")')));
+  }
+
+  scanWSpectrum(w,card){
+    let pos=50;
+    const wrap=document.createElement('div'); wrap.style.cssText='margin-top:22px;user-select:none';
+    const track=document.createElement('div'); track.style.cssText='position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,rgba(127,119,221,.3),rgba(231,84,138,.45));cursor:pointer';
+    const thumb=document.createElement('div'); thumb.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.45);border:3px solid #7F77DD;cursor:grab';
+    track.appendChild(thumb);
+    const labels=document.createElement('div'); labels.style.cssText='display:flex;justify-content:space-between;gap:16px;margin-top:16px;font-family:Sora,sans-serif;font-weight:600;font-size:13.5px;color:#ccbff0';
+    labels.innerHTML='<span style="max-width:44%">'+this.esc(card.left||'this')+'</span><span style="max-width:44%;text-align:right">'+this.esc(card.right||'that')+'</span>';
+    const setPos=(x)=>{ const r=track.getBoundingClientRect(); pos=Math.max(0,Math.min(100,Math.round((x-r.left)/r.width*100))); thumb.style.left=pos+'%'; };
+    let drag=false;
+    track.addEventListener('pointerdown',(e)=>{ drag=true; thumb.style.cursor='grabbing'; setPos((e.touches?e.touches[0]:e).clientX); if(e.preventDefault)e.preventDefault(); });
+    window.addEventListener('pointermove',(e)=>{ if(drag) setPos((e.touches?e.touches[0]:e).clientX); });
+    window.addEventListener('pointerup',()=>{ drag=false; thumb.style.cursor='grab'; });
+    wrap.appendChild(track); wrap.appendChild(labels); w.appendChild(wrap);
+    w.appendChild(this.scanNextBtn(()=>{ const ans=pos<40?('toward "'+(card.left||'this')+'" ('+pos+'%)'):pos>60?('toward "'+(card.right||'that')+'" ('+pos+'%)'):('balanced between "'+(card.left||'this')+'" and "'+(card.right||'that')+'"'); this.scanAnswer(ans); }));
+  }
+
+  scanWRank(w,card){
+    let order=(card.items||[]).slice(); let dragI=null;
+    const list=document.createElement('div'); list.style.cssText='display:flex;flex-direction:column;gap:9px;margin-top:8px';
+    const paint=()=>{ list.innerHTML=''; order.forEach((it,i)=>{
+      const row=document.createElement('div'); row.draggable=true;
+      row.style.cssText='display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid rgba(127,119,221,.22);background:rgba(127,119,221,.07);border-radius:12px;font-family:Sora,sans-serif;font-weight:600;font-size:14.5px;color:#ece6f5;cursor:grab';
+      row.innerHTML='<span style="font-family:Sora,sans-serif;font-weight:800;color:#7F77DD;flex:none">'+(i+1)+'</span><span style="flex:1">'+this.esc(it)+'</span><span style="color:#6f6790;flex:none;letter-spacing:-2px">::</span>';
+      row.addEventListener('dragstart',()=>{ dragI=i; row.style.opacity='.4'; });
+      row.addEventListener('dragend',()=>{ row.style.opacity='1'; });
+      row.addEventListener('dragover',(e)=>e.preventDefault());
+      row.addEventListener('drop',(e)=>{ e.preventDefault(); if(dragI===null||dragI===i) return; const mv=order.splice(dragI,1)[0]; order.splice(i,0,mv); dragI=null; paint(); });
+      list.appendChild(row);
+    }); };
+    paint(); w.appendChild(list);
+    const hint=document.createElement('div'); hint.style.cssText='margin-top:10px;font-family:Newsreader,serif;font-style:italic;font-size:12.5px;color:#8d80ab'; hint.textContent='drag to order them - heaviest on top';
+    w.appendChild(hint);
+    w.appendChild(this.scanNextBtn(()=>this.scanAnswer(order.map((x,i)=>(i+1)+'. '+x).join('; '))));
+  }
+
+  scanWText(w,card){
+    const wrap=document.createElement('div'); wrap.style.cssText='margin-top:8px;display:flex;align-items:flex-end;gap:10px;background:rgba(127,119,221,.08);border:1px solid rgba(127,119,221,.25);border-radius:15px;padding:13px 15px';
+    wrap.innerHTML='<textarea id="_scantext" rows="2" placeholder="'+this.esc(card.placeholder||'in a few words...')+'" style="flex:1;background:none;border:none;outline:none;color:#f3eefb;font-family:Newsreader,serif;font-style:italic;font-size:16px;resize:none;max-height:120px;line-height:1.5"></textarea><div id="_scantsend" role="button" style="font-family:Sora,sans-serif;font-weight:700;font-size:13px;color:#7F77DD;cursor:pointer;flex:none;padding-bottom:3px">send -></div>';
+    w.appendChild(wrap);
+    const ta=wrap.querySelector('#_scantext');
+    ta.addEventListener('input',()=>{ ta.style.height='auto'; ta.style.height=Math.min(120,ta.scrollHeight)+'px'; });
+    const go=()=>{ const v=(ta.value||'').trim(); if(!v) return; this.scanAnswer(this.scrubPII(v).clean); };
+    ta.addEventListener('keydown',(e)=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); go(); } });
+    wrap.querySelector('#_scantsend').addEventListener('click',go);
+    setTimeout(()=>ta.focus(),150);
+  }
+
+  scanAnswer(display){
+    if(this.scan.busy) return;
+    this.scan.qa.push({prompt:this.scan._curPrompt||'', answer:String(display)});
+    this.scanNextCard();
+  }
+
+  scanFallbackCard(){
+    const n=this.scan.qa.length;
+    const seq=[
+      {line:"ok, i'm here. let's get a real read on you - no wrong answers, take your time.",prompt:"what's this mostly about?",card:{type:'choice',options:['love / someone i love','family','a friend','work','me, internally','something else']}},
+      {line:"okay. tell me the shape of it -",prompt:"what actually happened? a few words.",card:{type:'text',placeholder:"the gist of it..."}},
+      {line:"got it. and be honest with me -",prompt:"how long's this been sitting with you?",card:{type:'rate',min_label:'just today',max_label:'years now'}},
+      {line:"mm. where's it living in you right now?",prompt:"drag toward where you feel it",card:{type:'spectrum',left:'all in my head',right:'all in my body'}},
+      {line:"let's find what's actually driving it.",prompt:"rank these - heaviest on top",card:{type:'rank',items:['what they did','what it means about me','what happens next','that no one sees it',"that i can't fix it"]}},
+      {line:"yeah. that tracks.",prompt:"what are you feeling, really?",card:{type:'multi',options:['hurt','angry','anxious','numb','guilty','relieved','exhausted'],max:3}},
+      {line:"okay, gut check -",prompt:"which voice is louder right now?",card:{type:'spectrum',left:"i'm overreacting",right:"i've been too patient"}},
+      {line:"and this part matters -",prompt:"have you said any of this out loud?",card:{type:'choice',options:['not to anyone','to one person','to a few people','everyone knows but me']}},
+      {line:"last thing, then i'll read you -",prompt:"what would actually help right now?",card:{type:'multi',options:['to be heard','some clarity',"to know i'm not wrong",'to feel less alone','for it to change','to let it go'],max:2}}
+    ];
+    if(n>=seq.length) return {done:true,score:520,signature:'Carrying It Quietly',read:"you're holding something real right now - not a five-alarm fire, but it's there, and it's yours. saying it out loud was the right move.",factors:['still looping','not said out loud']};
+    return seq[n];
+  }
+
+  scanPillar(){
+    const t=this.scan.qa.map(x=>x.answer+' '+x.prompt).join(' ').toLowerCase();
+    if(/partner|husband|wife|boyfriend|girlfriend|marriage|spouse|\bex\b|dating|relationship/.test(t)) return 'relationships';
+    if(/mom|mum|dad|father|mother|sister|brother|family|parent|\bson\b|daughter|kids?|child/.test(t)) return 'family';
+    if(/boss|\bwork\b|\bjob\b|career|manager|coworker|colleague|office/.test(t)) return 'work';
+    if(/friend|friendship/.test(t)) return 'friendship';
+    return 'self';
+  }
+  persistScan(visibility){
+    const r=(this.scan&&this.scan._res)||{score:400,label:'A Read',sub:'',factors:[],pillar:null};
+    const id='scan'+Date.now();
+    const sit={ id:id, kind:'scan', title:r.label, scan:r.score, read:r.sub, factors:r.factors||[], pillar:r.pillar||null, tags:[], visibility:visibility, status:'open', createdAt:Date.now(), beats:[] };
+    try{ const all=this.situations(); all.push(sit); this.saveSituations(all); }catch(e){}
+    if(window.ShutapFeedback) ShutapFeedback.track(visibility==='public'?'room_created':'journal_created',{kind:'scan',visibility:visibility,pillar:r.pillar||null});
+    this.recordMemory('scan',{score:r.score,pillar:r.pillar||null,visibility:visibility});
+    this.scan._saved=true;
+    return sit;
+  }
+  scanFinish(result){
+    const score=Math.max(0,Math.min(999,parseInt(result.score,10)||400));
+    this.scanShowResult(score, result.signature||"Where You're At", result.read||'', result.factors||[], result.pillar||this.scanPillar());
+  }
+
+  scanShowResult(score,label,sub,factors,pillar){
     const col=score<200?'#9e8f9c':score<400?'#7F77DD':score<600?'#c87c4a':score<800?'#e7548a':'#c1216b';
+    if(window.ShutapFeedback) ShutapFeedback.track('scan_done',{score:score,signature:label,target:'scan'});
+    this.scan._res={score:score,label:label,sub:sub,factors:factors||[],pillar:pillar||null};
     if(!this.$scanScreen) return;
     this.$scanScreen.innerHTML='';
     const chrome=document.createElement('div');
     chrome.style.cssText='flex:none;padding:18px 22px 14px;display:flex;align-items:center;gap:16px;border-bottom:.5px solid rgba(255,255,255,.06)';
-    chrome.innerHTML='<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c">your read</div><div data-close role="button" style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;cursor:pointer">close</div>';
+    chrome.innerHTML='<div style="flex:1;font-family:Sora,sans-serif;font-weight:800;font-size:13px;letter-spacing:.3em;color:#7F77DD">SCAN</div><div data-close role="button" style="font-family:Sora,sans-serif;font-weight:600;font-size:12px;color:#9e7a8c;cursor:pointer">close</div>';
     chrome.querySelector('[data-close]').addEventListener('click',()=>this.closeScan());
     this.$scanScreen.appendChild(chrome);
+    const pilChip = pillar ? '<span style="font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:'+col+';background:'+col+'22;border:.5px solid '+col+'55;border-radius:999px;padding:4px 12px">'+this.esc(pillar)+'</span>' : '';
+    const fchips='<div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center">'+pilChip+((factors&&factors.length)?factors.map(f=>'<span style="font-family:Sora,sans-serif;font-weight:600;font-size:10.5px;letter-spacing:.02em;color:#b9a9e6;background:rgba(127,119,221,.14);border-radius:999px;padding:4px 11px">'+this.esc(f)+'</span>').join(''):'')+'</div>';
     const body=document.createElement('div');
-    body.style.cssText='flex:1;overflow-y:auto;padding:36px 22px 36px;max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px';
-    body.innerHTML=
-      '<div style="text-align:center;padding:20px 0">'+
-        '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:clamp(72px,16vw,108px);letter-spacing:-.04em;line-height:1;color:'+col+'" data-score>0</div>'+
-        '<div style="margin-top:8px;font-family:Sora,sans-serif;font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:'+col+'">intensity</div>'+
-      '</div>'+
-      '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:20px">'+
-        this.companionSVG(28,28)+
-        '<div style="margin-top:12px;font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:#f7e8f0;margin-bottom:8px">'+sig.label+'</div>'+
-        '<div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;color:#c4a0b2;line-height:1.55">'+sig.sub+'</div>'+
-      '</div>'+
-      this.scanNarrativeHTML(answers)+
-      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#9e7a8c;text-align:center">saved privately to your journal.</div>'+
-      '<div data-mirror style="display:flex;gap:11px;align-items:flex-start;background:rgba(231,84,138,.08);border:.5px solid rgba(231,84,138,.22);border-radius:14px;padding:14px 16px;cursor:pointer">'+
-        this.companionSVG(24,24)+
-        '<div style="flex:1"><div style="font-family:Newsreader,serif;font-style:italic;font-size:14.5px;line-height:1.5;color:#f7e8f0">this is one moment. i\u2019m holding the whole pattern \u2014 every scan adds to the picture of you.</div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:12.5px;color:#f7b8d4;margin-top:8px">see your mirror \u2192</div></div>'+
-      '</div>'+
-      '<div data-share style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:linear-gradient(120deg,#ff7eb3,#c1216b);border-radius:14px;cursor:pointer"><span style="font-size:15px">✨</span><span style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#fff">share your score</span></div>'+
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">'+
-        '<div style="padding:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:14px;cursor:pointer;transition:.15s" data-keep><div style="font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#9e7a8c;margin-bottom:7px">keep private</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#f7e8f0;line-height:1.4">yours alone. saved to your journal.</div></div>'+
-        '<div style="padding:18px;background:rgba(231,84,138,.10);border:1.5px solid rgba(231,84,138,.35);border-radius:14px;cursor:pointer;transition:.15s" data-open><div style="font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#f7b8d4;margin-bottom:7px">open it</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#f7e8f0;line-height:1.4">the room hasn\'t heard yours yet.</div></div>'+
-      '</div>';
+    body.style.cssText='flex:1;overflow-y:auto;padding:32px 22px 36px;max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:22px';
+    body.innerHTML='<div style="text-align:center;padding:10px 0 0"><div style="font-family:Sora,sans-serif;font-weight:800;font-size:clamp(72px,16vw,108px);letter-spacing:-.04em;line-height:1;color:'+col+'" data-score>0</div><div style="margin-top:8px;font-family:Sora,sans-serif;font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:'+col+'">intensity</div></div>'+fchips+'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:20px">'+this.companionSVG(28,28)+'<div style="margin-top:12px;font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:#f7e8f0;margin-bottom:8px">'+this.esc(label)+'</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:15.5px;color:#c4a0b2;line-height:1.55">'+this.esc(sub)+'</div></div>'+'<div style="font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#9e7a8c;text-align:center">this is your read. keep it just for you, or let a room hold your number too.</div>'+'<div data-mirror style="display:flex;gap:11px;align-items:flex-start;background:rgba(231,84,138,.08);border:.5px solid rgba(231,84,138,.22);border-radius:14px;padding:14px 16px;cursor:pointer">'+this.companionSVG(24,24)+'<div style="flex:1"><div style="font-family:Newsreader,serif;font-style:italic;font-size:14.5px;line-height:1.5;color:#f7e8f0">this is one moment. i am holding the whole pattern - every scan adds to the picture of you.</div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:12.5px;color:#f7b8d4;margin-top:8px">see your mirror -></div></div></div>'+'<div data-share style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:linear-gradient(120deg,#ff7eb3,#c1216b);border-radius:14px;cursor:pointer"><span style="font-size:15px">+</span><span style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#fff">share your score</span></div>'+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:11px"><div style="padding:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:14px;cursor:pointer" data-keep><div style="font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#9e7a8c;margin-bottom:7px">keep private</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#f7e8f0;line-height:1.4">yours alone. saved to your journal.</div></div><div style="padding:18px;background:rgba(231,84,138,.10);border:1.5px solid rgba(231,84,138,.35);border-radius:14px;cursor:pointer" data-open><div style="font-family:Sora,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#f7b8d4;margin-bottom:7px">post to a room</div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#f7e8f0;line-height:1.4">let a room hold your number too.</div></div></div>';
     this.$scanScreen.appendChild(body);
-    // count up
     this.setEyeState&&this.setEyeState('celebrating');
-    this.scanAIUpgrade(answers, score, sig);
     const scoreEl=body.querySelector('[data-score]');
-    let cur=0; const step=Math.ceil(score/38);
+    let cur=0; const step=Math.max(1,Math.ceil(score/38));
     const tick=setInterval(()=>{ cur=Math.min(cur+step,score); if(scoreEl) scoreEl.textContent=cur; if(cur>=score) clearInterval(tick); },28);
-    body.querySelector('[data-keep]').addEventListener('click',()=>{ this.toast('saved to your journal.'); this.closeScan(); });
-    body.querySelector('[data-open]').addEventListener('click',()=>{ this.closeScan(); this.openSpill(); });
+    const sig={label:label, sub:sub};
+    body.querySelector('[data-keep]').addEventListener('click',()=>{ this.persistScan('private'); this.toast&&this.toast('saved to your journal — yours alone.'); this.closeScan(); });
+    body.querySelector('[data-open]').addEventListener('click',()=>{ const sit=this.persistScan('public'); document.body.style.overflow=''; this.toast&&this.toast('posting your read to a room…'); setTimeout(()=>{ window.location.href='Stream.dc.html#room-'+sit.id; },320); });
     body.querySelector('[data-share]').addEventListener('click',()=>this.shareScanCard(score, sig, col));
     const mir=body.querySelector('[data-mirror]'); if(mir) mir.addEventListener('click',()=>{ this.closeScan(); this.openMirror(); });
-    // §22 T1 — the companion catches the reveal peak and offers a finished card (positive valence only)
     const heavy = score>=820;
-    setTimeout(()=>{
-      if(!window.ShutapShare) return;
-      window.ShutapShare.offer('T1', {
-        valence: heavy?'heavy':'positive', kind:'scan',
-        big:String(score), headline:sig.label, accent:col,
-        companion:'this one\u2019s a keeper \u2014 want it as a card?',
-        caption:'turns out i\u2019m a '+score+' \u00b7 '+sig.label+' \ud83d\udc80 take yours \u2192',
-        loopLabel:'what\u2019s your number? \u2192',
-        url:'https://shutap.com',
-        privacy:'just your score + signature \u2014 nothing private.'
-      });
-    }, 1700);
+    setTimeout(()=>{ if(!window.ShutapShare) return; window.ShutapShare.offer('T1', { valence: heavy?'heavy':'positive', kind:'scan', big:String(score), headline:label, accent:col, companion:'this one is a keeper - want it as a card?', caption:'turns out i am a '+score+' . '+label+' - take yours ->', loopLabel:'what is your number? ->', url:'https://shutap.com', privacy:'just your score + signature - nothing private.' }); }, 1700);
   }
 
   /* ═══════════ 20A.1 — Scan score card (the hero share unit) ═══════════ */
   shareScanCard(score, sig, col){
     if(!this.$scanScreen) return;
-    const cap='turns out my situation is a "'+score+' · '+sig.label+'" \u2014 take yours \u2192 shutap.com';
+    const res=(this.scan&&this.scan._res)||{}; const pillar=res.pillar||null;
+    const band = score<200?'settling':score<400?'sitting with it':score<600?'weighing':score<800?'heavy & loud':'consuming';
+    const pct = Math.max(0,Math.min(100, Math.round(score/999*100)));
+    const R=120, CIRC=2*Math.PI*R;
+    const cap='turns out my situation is a "'+score+' \u00b7 '+sig.label+'" \u2014 take yours \u2192 shutap.com';
     const ov=document.createElement('div');
     ov.style.cssText='position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;padding:22px';
     ov.innerHTML=
-      '<div data-x style="position:absolute;inset:0;background:rgba(10,5,14,.8);backdrop-filter:blur(8px)"></div>'+
-      '<div role="dialog" style="position:relative;width:100%;max-width:330px;display:flex;flex-direction:column;gap:16px;animation:pop .3s ease">'+
-        // the 9:16 card
-        '<div style="aspect-ratio:9/16;border-radius:22px;overflow:hidden;background:linear-gradient(165deg,#2e0d1a,#1a0a12);border:.5px solid rgba(255,255,255,.14);box-shadow:0 30px 70px -24px rgba(0,0,0,.7);display:flex;flex-direction:column;justify-content:space-between;padding:26px 24px;position:relative">'+
-          '<div style="position:absolute;inset:-30% 20% auto auto;width:300px;height:300px;background:radial-gradient(circle,'+col+'44,transparent 65%);pointer-events:none"></div>'+
-          '<div style="display:flex;align-items:center;gap:8px;position:relative"><svg viewBox="0 0 56 56" fill="none" style="width:22px;height:22px"><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg><span style="font-family:Sora,sans-serif;font-weight:800;font-size:15px;letter-spacing:-.03em;color:#f7e8f0">shut<span style="color:#e7548a">ap</span></span></div>'+
-          '<div style="text-align:center;position:relative">'+
-            '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:84px;line-height:1;letter-spacing:-.04em;color:'+col+'">'+score+'</div>'+
-            '<div style="margin-top:10px;font-family:Sora,sans-serif;font-weight:800;font-size:21px;color:#f7e8f0;line-height:1.2">'+sig.label+'</div>'+
-            '<div style="margin-top:10px;font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#c4a0b2;line-height:1.5;max-width:24ch;margin-left:auto;margin-right:auto">'+sig.sub+'</div>'+
+      '<div data-x style="position:absolute;inset:0;background:rgba(10,5,14,.82);backdrop-filter:blur(10px)"></div>'+
+      '<div role="dialog" style="position:relative;width:100%;max-width:340px;display:flex;flex-direction:column;gap:16px;animation:pop .34s ease">'+
+        '<div data-card style="aspect-ratio:9/16;border-radius:26px;overflow:hidden;background:radial-gradient(135% 78% at 50% 0%,#3a1022,#1a0a12 60%,#120710);border:.5px solid rgba(255,255,255,.16);box-shadow:0 36px 80px -26px rgba(0,0,0,.78);position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:30px 26px">'+
+          '<div style="position:absolute;width:340px;height:340px;left:50%;top:33%;transform:translate(-50%,-50%);background:radial-gradient(circle,'+col+'55,transparent 64%);filter:blur(6px);animation:scAura 6s ease-in-out infinite;pointer-events:none"></div>'+
+          '<div style="position:absolute;width:430px;height:430px;left:50%;top:35%;transform:translate(-50%,-50%);background:conic-gradient(from 0deg,'+col+'00,'+col+'3a,'+col+'00 42%);animation:scSpin 15s linear infinite;opacity:.45;pointer-events:none"></div>'+
+          '<div style="position:absolute;inset:-20%;opacity:.06;background-image:radial-gradient(rgba(255,255,255,.8) .5px,transparent .5px);background-size:4px 4px;animation:scGrain 8s steps(8) infinite;pointer-events:none"></div>'+
+          '<div style="position:absolute;top:0;left:0;width:55%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.10),transparent);animation:scSheen 4.8s ease-in-out 1s infinite;pointer-events:none"></div>'+
+          '<div style="display:flex;align-items:center;justify-content:space-between;position:relative">'+
+            '<div style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 56 56" fill="none" class="sc-eye" style="width:22px;height:22px"><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg><span style="font-family:Sora,sans-serif;font-weight:800;font-size:15px;letter-spacing:-.03em;color:#f7e8f0">shut<span style="color:#e7548a">ap</span></span></div>'+
+            '<span style="font-family:Sora,sans-serif;font-weight:800;font-size:10px;letter-spacing:.34em;color:'+col+'">SCAN</span>'+
           '</div>'+
-          '<div style="text-align:center;position:relative;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9b8090">what\u2019s your number? · shutap.com</div>'+
+          '<div style="position:relative;display:grid;place-items:center;margin:2px 0">'+
+            '<svg viewBox="0 0 280 280" style="width:80%;max-width:244px;transform:rotate(-90deg)">'+
+              '<circle cx="140" cy="140" r="'+R+'" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>'+
+              '<circle data-ring cx="140" cy="140" r="'+R+'" fill="none" stroke="'+col+'" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+CIRC.toFixed(1)+'" stroke-dashoffset="'+CIRC.toFixed(1)+'" style="filter:drop-shadow(0 0 8px '+col+'88)"/>'+
+            '</svg>'+
+            '<div style="position:absolute;text-align:center">'+
+              '<div data-score style="font-family:Sora,sans-serif;font-weight:800;font-size:76px;line-height:.9;letter-spacing:-.04em;color:'+col+'">0</div>'+
+              '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:'+col+';opacity:.85;margin-top:5px">'+band+'</div>'+
+            '</div>'+
+          '</div>'+
+          '<div style="text-align:center;position:relative">'+
+            '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:22px;color:#f7e8f0;line-height:1.15">'+this.esc(sig.label)+'</div>'+
+            (pillar?'<div style="margin-top:9px"><span style="font-family:Sora,sans-serif;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:'+col+';background:'+col+'22;border:.5px solid '+col+'55;border-radius:999px;padding:4px 12px">'+this.esc(pillar)+'</span></div>':'')+
+            '<div style="margin-top:11px;font-family:Newsreader,serif;font-style:italic;font-size:14.5px;color:#d6b6c6;line-height:1.5;max-width:26ch;margin-left:auto;margin-right:auto">'+this.esc(sig.sub)+'</div>'+
+          '</div>'+
+          '<div style="position:relative">'+
+            '<div style="height:5px;border-radius:3px;background:linear-gradient(90deg,#9e8f9c,#7F77DD,#c87c4a,#e7548a,#c1216b);position:relative;margin-bottom:13px"><span data-mark style="position:absolute;top:50%;left:0%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:#fff;border:2.5px solid '+col+';box-shadow:0 2px 8px rgba(0,0,0,.55);transition:left 1.6s cubic-bezier(.2,.9,.25,1)"></span></div>'+
+            '<div style="text-align:center;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9b8090">what\u2019s your number? \u00b7 shutap.com</div>'+
+          '</div>'+
         '</div>'+
-        // targets
         '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">'+this.shareBtnsHTML()+'</div>'+
         '<div data-x2 style="text-align:center;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9b8090;cursor:pointer">close</div>'+
       '</div>';
     this.$scanScreen.appendChild(ov);
-    const close=()=>ov.remove();
+    const ring=ov.querySelector('[data-ring]'), scoreEl=ov.querySelector('[data-score]'), mark=ov.querySelector('[data-mark]');
+    requestAnimationFrame(()=>{ if(ring){ ring.style.transition='stroke-dashoffset 1.6s cubic-bezier(.2,.9,.25,1)'; ring.style.strokeDashoffset=(CIRC*(1-pct/100)).toFixed(1); } if(mark){ mark.style.left=pct+'%'; } });
+    let cur=0; const stp=Math.max(1,Math.ceil(score/52)); const tk=setInterval(()=>{ cur=Math.min(cur+stp,score); if(scoreEl) scoreEl.textContent=cur; if(cur>=score) clearInterval(tk); }, 30);
+    const close=()=>{ clearInterval(tk); ov.remove(); };
     ov.querySelector('[data-x]').addEventListener('click',close);
     ov.querySelector('[data-x2]').addEventListener('click',close);
     const url='https://shutap.com';
@@ -1829,6 +1913,127 @@ class Component extends DCLogic {
   /* ═══════════ THE MIRROR (§21) — private, reflective, premium ═══════════ */
   mirrorActive(){ try{ return ['trialing','active','grace','canceled'].includes(localStorage.getItem('shutap_sub_status')); }catch(e){ return false; } }
 
+  /* ═══════════ PERSISTENT MEMORY — the per-user record the Mirror is built from ═══════════ */
+  // every spill / scan / journal / check-in is logged to shutap_memory (an append-only timeline)
+  // AND lives as a situation; mirrorMemory() derives the longitudinal picture the Mirror reflects.
+  recordMemory(type, data){
+    try{ const log=JSON.parse(localStorage.getItem('shutap_memory')||'[]'); log.push(Object.assign({type:type, at:Date.now()}, data||{})); localStorage.setItem('shutap_memory', JSON.stringify(log.slice(-300))); }catch(e){}
+  }
+  mirrorMemory(){
+    let sits=[]; try{ sits=JSON.parse(localStorage.getItem('shutap_situations')||'[]'); }catch(e){}
+    sits=sits.filter(s=>s&&s.status!=='deleted');
+    const scans=sits.filter(s=>s.kind==='scan'&&typeof s.scan==='number').sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+    const spills=sits.filter(s=>s.kind!=='scan');
+    const rooms=sits.filter(s=>s.visibility==='public');
+    const journals=sits.filter(s=>s.visibility==='private');
+    const pc={}; sits.forEach(s=>{ if(s.pillar){ pc[s.pillar]=(pc[s.pillar]||0)+1; } });
+    const topPillar=Object.keys(pc).sort((a,b)=>pc[b]-pc[a])[0]||null;
+    const scores=scans.map(s=>({t:s.createdAt||0, v:s.scan, label:s.title, pillar:s.pillar}));
+    let trend='steady', delta=0, recent=scores.length?scores[scores.length-1].v:null;
+    if(scores.length>=2){ const mid=Math.floor(scores.length/2)||1; const avg=arr=>arr.reduce((x,y)=>x+y.v,0)/arr.length; const a1=avg(scores.slice(0,mid)), a2=avg(scores.slice(mid)); delta=Math.round(a1-a2); trend = a2<a1-25?'easing':a2>a1+25?'rising':'steady'; }
+    let better=0,same=0,worse=0; sits.forEach(s=>{ (s.beats||[]).forEach(b=>{ const r=b&&b.response; if(!r)return; const v=String(r.trajectory||r.action||r.resolution||r.v||''); if(/better|lighter|resolved|acted/i.test(v))better++; else if(/worse|heavier/i.test(v))worse++; else if(v)same++; }); });
+    const times=sits.map(s=>s.createdAt||0).filter(Boolean);
+    const firstAt=times.length?Math.min.apply(null,times):0, lastAt=times.length?Math.max.apply(null,times):0;
+    const daysSince=lastAt?Math.max(0,Math.floor((Date.now()-lastAt)/86400000)):0;
+    return { spills:spills.length, scans:scans.length, rooms:rooms.length, journals:journals.length, total:spills.length+scans.length, scores:scores, trend:trend, delta:delta, recent:recent, topPillar:topPillar, pillarCounts:pc, better:better, same:same, worse:worse, firstAt:firstAt, lastAt:lastAt, daysSince:daysSince };
+  }
+
+  // ── behavioral analytics → a LIVE reading, recomputed on open + on the fly ──
+  mirrorBehavior(){
+    const out={ events:0, visits:1, dwell:0, loves:0, frictions:0, questions:0, sentiment:0, top:null, topN:0, lastQ:null };
+    try{
+      if(!window.ShutapFeedback) return out;
+      const sig=ShutapFeedback.signals()||[]; const sum=ShutapFeedback.summary()||{};
+      out.events=sig.length;
+      const by={}; sig.forEach(e=>{ by[e.type]=(by[e.type]||0)+1; });
+      out.visits=1+(by.return_visit||0);
+      out.dwell=by.room_dwell_long||0;
+      out.loves=(sum.counts&&sum.counts.love)||0;
+      out.frictions=(sum.counts&&sum.counts.friction)||0;
+      out.questions=(sum.counts&&sum.counts.question)||0;
+      out.sentiment=typeof sum.sentiment==='number'?sum.sentiment:0;
+      const LOVE=['relate','react','scan_done','spill_publish','room_created','comment_post','mirror_open','mirror_reading','room_dwell_long','share_accept','return_visit'];
+      let best=null,bn=0; LOVE.forEach(k=>{ if((by[k]||0)>bn){ bn=by[k]; best=k; } });
+      out.top=best; out.topN=bn;
+      const lastQ=(sum.questions&&sum.questions[0])||null; out.lastQ=lastQ?lastQ.text:null;
+    }catch(e){}
+    return out;
+  }
+  behaviorLabel(k){
+    return ({ relate:'feeling less alone', react:'reaching toward someone', scan_done:'checking in on yourself',
+      spill_publish:'saying it out loud', room_created:'saying it out loud', comment_post:'showing up for others',
+      mirror_open:'looking inward', mirror_reading:'looking inward', room_dwell_long:'sitting with stories that land',
+      share_accept:'passing it on', return_visit:'finding your way back' })[k]||'being here';
+  }
+  behaviorStatsHTML(bh){
+    if(!bh || bh.events<4){
+      return '<div class="m-cap" style="margin-top:4px">i\u2019m still learning your rhythm \u2014 the more you move through shutap, the clearer this gets.</div>';
+    }
+    const chip=(v,l)=>'<div class="m-bw" style="flex:1"><div class="m-bv" style="font-size:23px">'+v+'</div><div class="m-bl">'+l+'</div></div>';
+    const topTxt=bh.top?this.behaviorLabel(bh.top):'being here';
+    const lead='<div class="m-say" style="margin-top:2px">what you reach for most here is <b>'+topTxt+'</b>.</div>';
+    const stats='<div class="m-bars" style="align-items:flex-start;gap:14px;margin-top:10px">'+
+      chip(bh.visits, bh.visits===1?'time here':'times you came back')+
+      chip(bh.sentiment+'%','open to being moved')+
+      chip(bh.dwell, bh.dwell===1?'story you stayed with':'stories you stayed with')+
+    '</div>';
+    const cap='<div class="m-cap">'+(bh.lastQ?('you last asked me \u201c'+this.esc(bh.lastQ)+'\u201d \u2014 i\u2019m holding that too.'):('drawn live from how you move through shutap \u2014 it updates as you go.'))+'</div>';
+    return lead+stats+cap;
+  }
+  refreshMirrorBehavior(){
+    const el=document.getElementById('_mbehavior'); if(!el) return;
+    el.innerHTML=this.behaviorStatsHTML(this.mirrorBehavior());
+  }
+  startMirrorLive(){
+    this.stopMirrorLive();
+    try{ if(window.ShutapFeedback && !ShutapFeedback._mWrapped){ const orig=ShutapFeedback.track.bind(ShutapFeedback); const self=this; ShutapFeedback.track=function(t,p){ const ev=orig(t,p); try{ if(self.$mirrorRoot && self.$mirrorRoot.style.display!=='none') self.refreshMirrorBehavior(); }catch(e){} return ev; }; ShutapFeedback._mWrapped=true; } }catch(e){}
+    this._mLiveIv=setInterval(()=>this.refreshMirrorBehavior(),3500);
+  }
+  stopMirrorLive(){ if(this._mLiveIv){ clearInterval(this._mLiveIv); this._mLiveIv=null; } }
+
+  // the "shape of you" - personalized from behavioral + situation data, supportive, progressing
+  mirrorShapeData(mem,bh){
+    mem=mem||this.mirrorMemory(); bh=bh||this.mirrorBehavior();
+    let prev=null; try{ prev=JSON.parse(localStorage.getItem('shutap_mirror_shape')||'null'); }catch(e){}
+    return { total:mem.total, scans:mem.scans, spills:mem.spills, topPillar:mem.topPillar, trend:mem.trend, delta:mem.delta, recent:mem.recent, better:mem.better, same:mem.same, worse:mem.worse, daysSince:mem.daysSince, firstAt:mem.firstAt, topAction:(bh.top?this.behaviorLabel(bh.top):null), sentiment:bh.sentiment, dwell:bh.dwell, visits:bh.visits, lastQ:bh.lastQ, prev:prev };
+  }
+  mirrorShapeFallback(sd){
+    if(!sd || sd.total<2) return {shape:'still taking shape', line:'pour in a little more and i\u2019ll start to see you', movement:''};
+    let shape='a quiet carrier', line='holding more than you let on';
+    if(sd.trend==='easing'){ shape='someone who\u2019s softening'; line='the grip is loosening, slowly'; }
+    else if(sd.trend==='rising'){ shape='someone in the thick of it'; line='carrying a lot \u2014 and still showing up'; }
+    if(sd.topPillar==='relationships'){ shape='a tender defender'; line='learning to defend yourself, too'; }
+    else if(sd.topPillar==='family'){ shape='the loyal one'; line='learning where you end and they begin'; }
+    else if(sd.topPillar==='work'){ shape='the quiet workhorse'; line='learning your work isn\u2019t your worth'; }
+    else if(sd.topPillar==='self'){ shape='someone turning inward'; line='learning to be your own soft place'; }
+    let movement='';
+    if(sd.trend==='easing') movement='lighter than when you started \u2014 you can feel it, can\u2019t you?';
+    else if(sd.scans>=2) movement='this is moving \u2014 you\u2019re not where you were.';
+    return {shape, line, movement};
+  }
+  shapeHTML(s){
+    const line=String((s&&s.line)||'').replace(/[.\s]+$/,'');
+    return '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-weight:500;font-size:25px;line-height:1.35;color:#ffe9f2;margin-top:9px">'+this.esc((s&&s.shape)||'')+' \u2014<br>'+this.esc(line)+'.</div>'+((s&&s.movement)?'<div style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9fb4ef;margin-top:11px;line-height:1.5"><span style="color:#7fd4a3">\u2197</span> '+this.esc(s.movement)+'</div>':'');
+  }
+  async updateMirrorShape(sd){
+    sd=sd||this.mirrorShapeData();
+    if(!window.claude||!window.claude.complete||!sd||sd.total<1) return;
+    try{
+      const al=this.getAlias()||{name:'friend'};
+      const days=sd.firstAt?Math.max(1,Math.round((Date.now()-sd.firstAt)/86400000)):0;
+      const prevTxt=(sd.prev&&sd.prev.shape)?('previously read as: \u201c'+sd.prev.shape+' \u2014 '+(sd.prev.line||'')+'\u201d, '+Math.max(0,Math.round((Date.now()-(sd.prev.at||Date.now()))/86400000))+' days ago'):'(no previous reading yet)';
+      const ctx='alias: '+al.name+'\njourney: '+sd.total+' entries ('+sd.spills+' spills, '+sd.scans+' scans) over ~'+days+' days; last active '+sd.daysSince+' days ago\nmain area: '+(sd.topPillar||'unknown')+'\nweight trend: '+sd.trend+(typeof sd.recent==='number'?(' (latest scan '+sd.recent+'/999)'):'')+'\noutcomes: '+sd.better+' got lighter, '+sd.same+' steady, '+sd.worse+' got heavier\nhow they move here: reaches most for '+(sd.topAction||'being here')+'; '+sd.sentiment+'% open to being moved; stayed with '+sd.dwell+' stories; '+sd.visits+' visits'+(sd.lastQ?('; last asked \u201c'+sd.lastQ+'\u201d'):'')+'\n'+prevTxt;
+      const sys="You are THE MIRROR on Shutap \u2014 a warm, perceptive companion who reflects a person back to themselves from their own data. lowercase, tender, specific, never clinical, never advice. From the signals below, name the SHAPE this person is in right now \u2014 who they are becoming \u2014 in the Mirror\u2019s voice. It must feel personal and supportive, like being truly seen. If a previous reading exists, name the MOVEMENT between then and now so it feels like progress they can feel (softening, steadying, growing braver).\n\nReturn STRICT JSON only:\n{\"shape\":\"<2-4 word identity, lowercase>\",\"line\":\"<one short clause, <=8 words, no trailing period>\",\"movement\":\"<<=14 words on how they shifted vs before, or empty string>\"}\n\nSIGNALS:\n"+ctx;
+      const raw=await window.claude.complete({messages:[{role:'user',content:sys}]});
+      let c=(raw||'').replace(/```json/gi,'').replace(/```/g,''); const m=c.match(/\{[\s\S]*\}/); if(!m) return;
+      const s=JSON.parse(m[0]); if(!s||!s.shape) return;
+      const el=document.getElementById('_mshape'); if(!el) return;
+      el.innerHTML=this.shapeHTML(s);
+      el.style.opacity='0'; el.style.transition='opacity .6s ease'; requestAnimationFrame(()=>{ el.style.opacity='1'; });
+      try{ const hist=((sd.prev&&sd.prev.history)||[]).slice(); if(sd.prev&&sd.prev.shape) hist.push({shape:sd.prev.shape,line:sd.prev.line,at:sd.prev.at}); localStorage.setItem('shutap_mirror_shape',JSON.stringify({shape:s.shape,line:s.line,movement:s.movement||'',at:Date.now(),history:hist.slice(-10)})); }catch(e){}
+    }catch(e){}
+  }
+
   openMirror(){
     if(window.ShutapFeedback) ShutapFeedback.track(this.mirrorActive()?'mirror_open':'mirror_open',{paid:this.mirrorActive(),target:'mirror'});
     if(this.$compRoot) this.$compRoot.style.display='none';
@@ -1838,12 +2043,18 @@ class Component extends DCLogic {
     if(this.$pill) this.$pill.style.display='none';
     this.renderMirror();
   }
-  closeMirror(){ if(this.$mirrorRoot) this.$mirrorRoot.style.display='none'; document.body.style.overflow=''; if(this.$pill) this.$pill.style.display='flex'; this.unmountMirrorChannel(); this.closeMirrorSession(); }
+  closeMirror(){ if(this.$mirrorRoot) this.$mirrorRoot.style.display='none'; document.body.style.overflow=''; if(this.$pill) this.$pill.style.display='flex'; this.unmountMirrorChannel(); this.closeMirrorSession(); this.stopMirrorLive(); }
 
   renderMirror(){
     if(!this.$mirrorBody) return;
     const paid=this.mirrorActive();
     const a=this.getAlias()||{name:'Quiet Indonesian Owl',emoji:'🦉'};
+    const mem=this.mirrorMemory();
+    const bhSig=this.mirrorBehavior(); const shapeData=this.mirrorShapeData(mem,bhSig);
+    const countsTxt=mem.spills+' spill'+(mem.spills===1?'':'s')+' \u00b7 '+mem.scans+' scan'+(mem.scans===1?'':'s');
+    const sinceTxt=mem.lastAt?(mem.daysSince===0?'deepening \u2014 you added to it today':'deepening since you last looked, '+mem.daysSince+' day'+(mem.daysSince===1?'':'s')+' ago'):'it begins the moment you spill or scan';
+    let arcPath='M6,74 L44,77 82,66 120,69 158,52 196,55 234,38 272,30 296,24', arcFill='M6,74 L44,77 82,66 120,69 158,52 196,55 234,38 272,30 296,24 L296,90 L6,90 Z', trendLabel='<span style="color:#9fb4ef">\u2014 steady</span>';
+    if(mem.scores.length>=2){ const pts=mem.scores.map((s,i)=>{ const x=mem.scores.length>1?(6+i*(290/(mem.scores.length-1))):150; const y=78-(Math.max(0,Math.min(999,s.v))/999)*58; return x.toFixed(0)+','+y.toFixed(0); }); arcPath='M'+pts.join(' L'); arcFill=arcPath+' L296,90 L6,90 Z'; const e=mem.trend; trendLabel='<span style="color:'+(e==='easing'?'#7fd4a3':e==='rising'?'#e8794a':'#9fb4ef')+'">'+(e==='easing'?'\u2193 easing':e==='rising'?'\u2191 rising':'\u2014 steady')+'</span>'; }
     const eyes='<svg viewBox="0 0 140 96" width="44" height="30" fill="none"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"/><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"/><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)"/><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)"/></svg>';
 
     const reading=(cls,iconSvg,title,move,say,extra,grounded)=>'<div class="m-rd '+cls+'"><div class="m-rdh"><span class="m-rdi">'+iconSvg+'</span><span class="m-rdt">'+title+'</span><span class="m-mv">'+move+'</span></div><div class="m-say">'+say+'</div>'+(extra||'')+(grounded?'<div class="m-grd">read from: '+grounded+'</div>':'')+'</div>';
@@ -1858,17 +2069,20 @@ class Component extends DCLogic {
       '<div style="display:flex;flex-direction:column;align-items:center;padding:24px 0 6px">'+
         '<div style="position:relative;width:92px;height:92px;display:grid;place-items:center"><span style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(239,122,171,.32),transparent 66%);animation:auraPulse 7s ease-in-out infinite"></span><span style="position:relative;z-index:2;filter:drop-shadow(0 0 12px rgba(239,122,171,.55))">'+eyes+'</span></div>'+
         '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:15px;color:#f7eef2;margin-top:10px">your <span style="color:#ef7aab">mirror</span></div>'+
-        '<div style="font-family:Sora,sans-serif;font-weight:500;font-size:9.5px;letter-spacing:.04em;color:#967f8e;margin-top:6px;text-align:center;line-height:1.6">read from everything you\u2019ve poured in \u00b7 <b style="color:#e9c06a;font-weight:600">7 spills \u00b7 12 scans</b><br>deepening since you last looked, 4 days ago</div>'+
+        '<div style="font-family:Sora,sans-serif;font-weight:500;font-size:9.5px;letter-spacing:.04em;color:#967f8e;margin-top:6px;text-align:center;line-height:1.6">read from everything you\u2019ve poured in \u00b7 <b style="color:#e9c06a;font-weight:600">'+countsTxt+'</b><br>'+sinceTxt+'</div>'+
       '</div>';
 
     const shape=
       '<div style="margin:18px 24px 2px;text-align:center">'+
         '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#e9c06a">the shape of you, right now</div>'+
-        '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-weight:500;font-size:25px;line-height:1.35;color:#ffe9f2;margin-top:9px">a tender defender \u2014<br>learning to defend yourself, too.</div>'+
+        '<div id="_mshape">'+this.shapeHTML(this.mirrorShapeFallback(shapeData))+'</div>'+
       '</div>';
 
     let core;
-    if(paid){
+    if(mem.total<2){
+      core='<div style="margin:30px 24px 6px;text-align:center;font-family:Newsreader,serif;font-style:italic;font-size:16.5px;line-height:1.65;color:#e9d5e2">your mirror is still forming.<br><span style="color:#cdb0c1;font-size:14.5px">spill or scan a few times and it\u2019ll start to see the shape of you \u2014 the patterns, what\u2019s easing, what keeps circling back.</span><div style="margin-top:18px;display:flex;gap:10px;justify-content:center"><span data-formspill role="button" style="display:inline-block;background:linear-gradient(120deg,#ff7eb3,#c1216b);color:#fff;padding:11px 20px;border-radius:999px;font-family:Sora,sans-serif;font-weight:700;font-size:13px;cursor:pointer">spill something \u2192</span><span data-formscan role="button" style="display:inline-block;background:rgba(127,119,221,.16);border:.5px solid rgba(127,119,221,.4);color:#cdc4f0;padding:11px 20px;border-radius:999px;font-family:Sora,sans-serif;font-weight:700;font-size:13px;cursor:pointer">take a scan</span></div></div>';
+    }
+    else if(paid){
       const qcard=
         '<div style="margin:20px 20px 0;border-radius:16px;padding:17px;background:linear-gradient(168deg,rgba(159,180,239,.1),rgba(255,255,255,.02));border:.5px solid rgba(159,180,239,.28)">'+
           '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#9fb4ef;margin-bottom:9px">the mirror wonders</div>'+
@@ -1876,9 +2090,9 @@ class Component extends DCLogic {
           '<div style="font-family:Sora,sans-serif;font-weight:500;font-size:10px;color:#967f8e;margin-top:11px">asked from: your weight easing after each spill</div>'+
         '</div>';
       const arc=reading('g warm','<svg viewBox="0 0 24 24" fill="none" stroke="#7fd4a3" stroke-width="2" stroke-linecap="round" style="width:15px;height:15px"><path d="M3 17l6-6 4 4 8-8"></path></svg>',
-        'you\u2019re healing \u2014 and here\u2019s the proof','<span style="color:#7fd4a3">\u2191 rising</span>',
+        'you\u2019re healing \u2014 and here\u2019s the proof',trendLabel,
         'your weight has been <b>lifting</b> for three weeks straight.',
-        '<div class="m-chart"><svg id="_arc" viewBox="0 0 300 90" preserveAspectRatio="none"><defs><linearGradient id="arcgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7fd4a3" stop-opacity=".4"/><stop offset="100%" stop-color="#7fd4a3" stop-opacity="0"/></linearGradient></defs><line stroke="rgba(255,255,255,.06)" x1="0" y1="68" x2="300" y2="68"/><path id="_arcfill" class="m-arcfill" d="M6,74 L44,77 82,66 120,69 158,52 196,55 234,38 272,30 296,24 L296,90 L6,90 Z"/><path id="_arcpath" class="m-arcpath" d="M6,74 L44,77 82,66 120,69 158,52 196,55 234,38 272,30 296,24"/></svg><div style="display:flex;justify-content:space-between;font-family:Sora,sans-serif;font-weight:600;font-size:9px;color:#967f8e;margin-top:5px"><span>8 weeks ago</span><span>now</span></div></div><div class="m-cap">a night like this took your <b>whole week</b> in february. now, days. you may not feel it \u2014 but you really are healing.</div>',
+        '<div class="m-chart"><svg id="_arc" viewBox="0 0 300 90" preserveAspectRatio="none"><defs><linearGradient id="arcgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7fd4a3" stop-opacity=".4"/><stop offset="100%" stop-color="#7fd4a3" stop-opacity="0"/></linearGradient></defs><line stroke="rgba(255,255,255,.06)" x1="0" y1="68" x2="300" y2="68"/><path id="_arcfill" class="m-arcfill" d="'+arcFill+'"/><path id="_arcpath" class="m-arcpath" d="'+arcPath+'"/></svg><div style="display:flex;justify-content:space-between;font-family:Sora,sans-serif;font-weight:600;font-size:9px;color:#967f8e;margin-top:5px"><span>8 weeks ago</span><span>now</span></div></div><div class="m-cap">a night like this took your <b>whole week</b> in february. now, days. you may not feel it \u2014 but you really are healing.</div>',
         'time-to-steady across 8 weeks');
       const bars=reading('p warm','<svg viewBox="0 0 24 24" fill="none" stroke="#ef7aab" stroke-width="2" stroke-linecap="round" style="width:15px;height:15px"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M3.5 20a6 6 0 0 1 11 0M14.5 18.5a5 5 0 0 1 6 1.5"/></svg>',
         'what you carry for others','<span style="color:#f3a0c1">who you are</span>',
@@ -1890,7 +2104,8 @@ class Component extends DCLogic {
         '<b>312 people here</b> have carried this exact weight.',
         '<div class="m-belong"><div class="m-dots" id="_dots"></div><div class="m-cap">and <b>2 in 3</b> came through it. you\u2019re one dot in a sky full of people who made it.</div></div>',
         '312 spills like yours \u00b7 118 confirmed outcomes');
-      core='<div style="font-family:Sora,sans-serif;font-weight:600;font-size:11px;letter-spacing:.04em;color:#cdb0c1;text-align:center;margin:26px 24px 4px">what the mirror sees in you<i style="display:block;font-family:Newsreader,serif;font-style:italic;color:#967f8e;font-weight:400;font-size:12px;margin-top:3px">your growth, in your own data</i></div>'+qcard+'<div class="m-cards">'+arc+bars+belong+'</div>';
+      const behaviorCard=reading('b warm','<svg viewBox="0 0 24 24" fill="none" stroke="#7fd4a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M3 12h4l2 7 4-15 2 8h4"/></svg>','how you move through this','<span style="display:inline-flex;align-items:center;gap:5px;color:#7fd4a3"><i style="width:6px;height:6px;border-radius:50%;background:#7fd4a3;display:block;animation:blinkdot 1.6s infinite"></i>live</span>','','<div id="_mbehavior">'+this.behaviorStatsHTML(this.mirrorBehavior())+'</div>','how you move through shutap, live');
+      core='<div style="font-family:Sora,sans-serif;font-weight:600;font-size:11px;letter-spacing:.04em;color:#cdb0c1;text-align:center;margin:26px 24px 4px">what the mirror sees in you<i style="display:block;font-family:Newsreader,serif;font-style:italic;color:#967f8e;font-weight:400;font-size:12px;margin-top:3px">your growth, in your own data</i></div>'+qcard+'<div class="m-cards">'+behaviorCard+arc+bars+belong+'</div>';
     } else {
       // FREE — shape-of-you is the gift; everything else is a covered mosaic with one pay button (§21E)
       const tile=(t)=>'<div style="position:relative;border-radius:14px;padding:18px 16px;background:rgba(255,255,255,.035);border:.5px solid rgba(255,236,244,.08);overflow:hidden;min-height:74px"><div style="font-family:Sora,sans-serif;font-weight:600;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#cdb0c1;filter:blur(.4px)">'+t+'</div><div style="margin-top:8px;height:9px;width:80%;border-radius:4px;background:rgba(255,255,255,.06);filter:blur(3px)"></div><div style="margin-top:7px;height:9px;width:60%;border-radius:4px;background:rgba(255,255,255,.06);filter:blur(3px)"></div></div>';
@@ -1914,8 +2129,12 @@ class Component extends DCLogic {
     this.$mirrorBody.querySelector('[data-close]').addEventListener('click',()=>this.closeMirror());
     const ms=this.$mirrorBody.querySelector('[data-mshare]'); if(ms) ms.addEventListener('click',()=>this.shareMirror());
     const unlock=this.$mirrorBody.querySelector('[data-unlock]'); if(unlock) unlock.addEventListener('click',()=>this.openPaywall());
+    const fsp=this.$mirrorBody.querySelector('[data-formspill]'); if(fsp) fsp.addEventListener('click',()=>{ this.closeMirror(); this.openSpill(); });
+    const fsc=this.$mirrorBody.querySelector('[data-formscan]'); if(fsc) fsc.addEventListener('click',()=>{ this.closeMirror(); this.openScan(); });
     this.mountMirrorChannel(paid);
     if(paid) requestAnimationFrame(()=>this.animateMirror());
+    if(paid) this.startMirrorLive();
+    this.updateMirrorShape(shapeData);
   }
 
   animateMirror(){
@@ -2031,30 +2250,18 @@ class Component extends DCLogic {
     }
     this._mHist=(this._mHist||[]).concat([{role:'user',content:v}]).slice(-8);
     (async()=>{
-      const sys='You are the Mirror on Shutap — not a chatbot and not "the companion." You are the user\'s sharpest, most loving friend in the group chat: warm, funny, a little bitchy — but ALWAYS aimed at the SITUATION, never at the person. lowercase, texty, group-chat energy. You LISTEN first, reflect back what you hear in their own words, and ask ONE real question. You are grounded in what this person shared (they vent about relationships, family, work). DOES (friend / reflection): reflect patterns ("you\'ve spilled about her three times this month — always after a sunday call"); relate ("we\'ve all done that, you\'re not crazy"); validate the feeling ("that\'d piss me off too"); ask, keep their agency ("what do YOU actually want here?"). NEVER (clinical — needs a license): never diagnose (no "you have anxiety / that\'s trauma / he\'s a narcissist"); never prescribe or treat; never direct high-stakes specifics ("leave him / quit / cut her off") — you may EXPLORE, never INSTRUCT; never say "you should/need to". Build test for every line: would a sharp, loving friend say this, or a therapist? friend → ship; therapist → reframe as a reflection or a question. Keep it to 1–2 short sentences, specific, never generic. If they express self-harm or crisis, DROP the voice entirely — no jokes — and warmly tell them to reach 988 or a local line right now.';
-      let out='', bubble=null;
-      const ensureBubble=()=>{
-        if(bubble) return bubble;
-        typ.remove();
-        bubble=document.createElement('div');
-        bubble.style.cssText='align-self:flex-start;max-width:90%;font-family:Newsreader,serif;font-style:italic;font-size:16px;line-height:1.55;color:#f7eef2;animation:fadeUp .5s ease;white-space:pre-wrap';
-        convo.appendChild(bubble);
-        return bubble;
-      };
+      let out;
       try{
-        if(window.claude.stream){
-          out=await window.claude.stream({system:sys, messages:this._mHist, onChunk:(_c,acc)=>{
-            const b=ensureBubble(); b.innerHTML=this.esc(acc).replace(/\n+/g,'<br>'); bottom();
-          }});
-          out=(out||'').trim();
-        } else {
-          const raw=await window.claude.complete({system:sys, messages:this._mHist});
-          out=(raw||'').trim();
-        }
+        const sys='You are the Mirror on Shutap — not a chatbot and not "the companion." You are the user\'s sharpest, most loving friend in the group chat: warm, funny, a little bitchy — but ALWAYS aimed at the SITUATION, never at the person. lowercase, texty, group-chat energy. You LISTEN first, reflect back what you hear in their own words, and ask ONE real question. You are grounded in what this person shared (they vent about relationships, family, work). DOES (friend / reflection): reflect patterns ("you\'ve spilled about her three times this month — always after a sunday call"); relate ("we\'ve all done that, you\'re not crazy"); validate the feeling ("that\'d piss me off too"); ask, keep their agency ("what do YOU actually want here?"). NEVER (clinical — needs a license): never diagnose (no "you have anxiety / that\'s trauma / he\'s a narcissist"); never prescribe or treat; never direct high-stakes specifics ("leave him / quit / cut her off") — you may EXPLORE, never INSTRUCT; never say "you should/need to". Build test for every line: would a sharp, loving friend say this, or a therapist? friend → ship; therapist → reframe as a reflection or a question. Keep it to 1–2 short sentences, specific, never generic. If they express self-harm or crisis, DROP the voice entirely — no jokes — and warmly tell them to reach 988 or a local line right now.';
+        // window.claude.complete ignores the `system` param here — fold the whole persona + transcript into one user message
+        const transcript=this._mHist.map(m=>(m.role==='user'?'them: ':'you (the mirror): ')+m.content).join('\n');
+        const userMsg=sys+'\n\n=== the conversation so far ===\n'+transcript+'\n\nreply as the mirror — just your next line, no labels, no quotes.';
+        const raw=await window.claude.complete({messages:[{role:'user',content:userMsg}]});
+        out=(raw||'').replace(/```[a-z]*\n?/gi,'').replace(/```/g,'').trim();
       }catch(e){ out=''; }
-      if(!out){ out=this.mirrorReply(v); render(out); }
-      else { const b=ensureBubble(); b.innerHTML=this.esc(out).replace(/\n+/g,'<br>'); bottom(); }
+      if(!out) out=this.mirrorReply(v);
       this._mHist=this._mHist.concat([{role:'assistant',content:out}]).slice(-8);
+      render(this.esc(out).replace(/\n+/g,'<br>'));
       this.renderMirrorChips(['tell me more','that\u2019s exactly it','i hadn\u2019t thought of that','something else is bothering me']);
     })();
   }
