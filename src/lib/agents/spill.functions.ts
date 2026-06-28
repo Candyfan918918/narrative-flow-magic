@@ -73,6 +73,7 @@ export const runSpill = createServerFn({ method: 'POST' })
         notice: scrub.notice,
         resonance_line: '',
         matched_count: 0,
+        matched_display_count: null,
         matched_stories: [],
         companion_message: CRISIS_COPY,
         crisis: true,
