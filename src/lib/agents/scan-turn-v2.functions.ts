@@ -3,7 +3,6 @@
 // payload or a DONE payload with score / signature / read / factors / pillar.
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { callAgent, tryParseJson } from './gateway'
 import { scrubText } from './scrubber.functions'
 import { classifyCrisis } from './guard.functions'
@@ -78,7 +77,6 @@ function fallbackTurn(input: z.infer<typeof ScanInput>): ScanTurnResult {
 }
 
 export const scanTurnV2 = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => ScanInput.parse(d))
   .handler(async ({ data }): Promise<ScanTurnResult> => {
     // Crisis scan over all text answers so far (cheap).
