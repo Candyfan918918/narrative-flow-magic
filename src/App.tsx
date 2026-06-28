@@ -26,6 +26,7 @@ export function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/feedback" element={<AdminFeedbackPage />} />
+        <Route path="/admin/relate-queue" element={<AdminRelateQueuePage />} />
         <Route path="/subscribe" element={<SubscribePage />} />
         <Route path="/subscribe/return" element={<SubscribeReturnPage />} />
         <Route path="/legal" element={<LegalPage />} />
