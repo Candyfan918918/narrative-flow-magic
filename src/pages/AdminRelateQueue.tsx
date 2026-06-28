@@ -50,11 +50,13 @@ export function AdminRelateQueuePage() {
               every public spill without a human reaction yet. oldest first. target: a real response within {sla} minutes — no astroturf, no fake "me too".
             </p>
           </div>
-          <nav style={{ display: 'flex', gap: 10, fontSize: 13 }}>
+          <nav style={{ display: 'flex', gap: 10, fontSize: 13, alignItems: 'center' }}>
             <Link to="/admin" style={navStyle}>admin</Link>
             <Link to="/admin/feedback" style={navStyle}>feedback</Link>
+            <BackfillButton />
           </nav>
         </div>
+
 
         {summary && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginTop: 22 }}>
