@@ -89,6 +89,18 @@ export const saveSituation = createServerFn({ method: 'POST' })
       .single()
     if (error || !sit) throw new Error(error?.message ?? 'save failed')
 
+    // Embed for cosine matching (fail-soft, non-blocking semantics).
+    try {
+      const { embedText, toVectorLiteral } = await import('./agents/embeddings.server')
+      const vec = await embedText(insertRow.clean_text || insertRow.body || '')
+      if (vec) {
+        await context.supabase
+          .from('situations')
+          .update({ embedding: toVectorLiteral(vec) } as never)
+          .eq('id', sit.id)
+      }
+    } catch { /* non-blocking */ }
+
     let roomId: string | null = sit.room_id
     if (data.is_public && !roomId) {
       roomId = await upsertRoomForSituation(context.supabase, sit.id, {
