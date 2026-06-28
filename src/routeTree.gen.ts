@@ -38,6 +38,7 @@ import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authentica
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicHooksDispatchCheckinsRouteImport } from './routes/api/public/hooks/dispatch-checkins'
+import { Route as ApiPublicCheckinsRunRouteImport } from './routes/api/public/checkins/run'
 
 const TrustRoute = TrustRouteImport.update({
   id: '/trust',
@@ -185,6 +186,11 @@ const ApiPublicHooksDispatchCheckinsRoute =
     path: '/api/public/hooks/dispatch-checkins',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCheckinsRunRoute = ApiPublicCheckinsRunRouteImport.update({
+  id: '/api/public/checkins/run',
+  path: '/api/public/checkins/run',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/api/public/checkins/run': typeof ApiPublicCheckinsRunRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
@@ -242,6 +249,7 @@ export interface FileRoutesByTo {
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/api/public/checkins/run': typeof ApiPublicCheckinsRunRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/api/public/checkins/run': typeof ApiPublicCheckinsRunRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/what-happens/$slug'
     | '/checkin/$id'
     | '/api/feedback/events'
+    | '/api/public/checkins/run'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/what-happens/$slug'
     | '/checkin/$id'
     | '/api/feedback/events'
+    | '/api/public/checkins/run'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
@@ -367,6 +378,7 @@ export interface FileRouteTypes {
     | '/what-happens/$slug'
     | '/_authenticated/checkin/$id'
     | '/api/feedback/events'
+    | '/api/public/checkins/run'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
@@ -396,6 +408,7 @@ export interface RootRouteChildren {
   UPseudonymRoute: typeof UPseudonymRoute
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
+  ApiPublicCheckinsRunRoute: typeof ApiPublicCheckinsRunRoute
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
@@ -606,6 +619,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksDispatchCheckinsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/checkins/run': {
+      id: '/api/public/checkins/run'
+      path: '/api/public/checkins/run'
+      fullPath: '/api/public/checkins/run'
+      preLoaderRoute: typeof ApiPublicCheckinsRunRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -648,6 +668,7 @@ const rootRouteChildren: RootRouteChildren = {
   UPseudonymRoute: UPseudonymRoute,
   WhatHappensSlugRoute: WhatHappensSlugRoute,
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
+  ApiPublicCheckinsRunRoute: ApiPublicCheckinsRunRoute,
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   HallsHallRegionWindowRoute: HallsHallRegionWindowRoute,

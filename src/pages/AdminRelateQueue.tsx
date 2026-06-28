@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom'
 import { useServerFn } from '@tanstack/react-start'
 import { listRelateQueue, relateQueueStats, type RelateQueueRow } from '@/lib/relate-queue.functions'
 import { backfillEmbeddings } from '@/lib/embeddings-backfill.functions'
+import { schedulerHealth, type SchedulerHealth } from '@/lib/scheduler-health.functions'
+
 
 
 const PILLARS = ['all', 'relationships', 'marriage', 'family', 'career'] as const
@@ -65,6 +67,9 @@ export function AdminRelateQueuePage() {
             <Stat label="open in queue" value={String(rows.length)} sub={`${past} past SLA`} accent={past > 0 ? '#c1216b' : undefined} />
           </div>
         )}
+
+        <SchedulerHealthCard />
+
 
         <div style={{ display: 'flex', gap: 8, margin: '22px 0 12px', flexWrap: 'wrap' }}>
           {PILLARS.map((p) => (
@@ -151,6 +156,37 @@ function BackfillButton() {
     </button>
   )
 }
+
+function SchedulerHealthCard() {
+  const run = useServerFn(schedulerHealth)
+  const [h, setH] = useState<SchedulerHealth | null>(null)
+  const [err, setErr] = useState<string | null>(null)
+  useEffect(() => {
+    let cancel = false
+    run()
+      .then((r) => !cancel && setH(r))
+      .catch((e) => !cancel && setErr(e instanceof Error ? e.message : 'failed'))
+    return () => { cancel = true }
+  }, [run])
+  if (err) return <div style={{ marginTop: 16, fontSize: 13, color: '#c1216b' }}>scheduler: {err}</div>
+  if (!h) return null
+  const overdueColor = h.scheduled_overdue > 10 ? '#c1216b' : undefined
+  return (
+    <div style={{ marginTop: 16, padding: 14, background: '#fff', borderRadius: 14, border: '1px solid rgba(11,8,15,.08)' }}>
+      <div style={{ fontSize: 11, letterSpacing: 1.2, textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 8 }}>
+        retention scheduler · 24h
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 12 }}>
+        <Stat label="sent" value={String(h.sent_24h)} />
+        <Stat label="failed" value={String(h.failed_24h)} accent={h.failed_24h > 0 ? '#c1216b' : undefined} />
+        <Stat label="retrying" value={String(h.retrying)} />
+        <Stat label="overdue" value={String(h.scheduled_overdue)} sub={h.oldest_overdue_minutes != null ? `oldest ${h.oldest_overdue_minutes}m` : undefined} accent={overdueColor} />
+      </div>
+    </div>
+  )
+}
+
+
 
 
 const navStyle: React.CSSProperties = {
