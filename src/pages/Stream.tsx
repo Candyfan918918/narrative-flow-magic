@@ -180,7 +180,7 @@ export function StreamPage() {
         />
       )}
 
-      <Toast message={toast} />
+      {ToastHost}
     </div>
   )
 }
