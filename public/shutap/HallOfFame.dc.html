@@ -47,8 +47,15 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 .prose-link{color:#c1216b;border-bottom:1px solid rgba(193,33,107,.3);text-decoration:none;cursor:pointer}
 .wtab{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;border:1px solid rgba(11,8,15,.10);background:#fff;cursor:pointer;font-family:'Sora',sans-serif;font-weight:600;font-size:11px;letter-spacing:.06em;color:#6b4a5c;transition:.18s}
 .wtab.active{background:#0b080f;color:#f7e8f0;border-color:#0b080f}
+
+/* subtle app scrollbars */
+*{scrollbar-width:thin;scrollbar-color:rgba(231,84,138,.4) transparent}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(231,84,138,.38);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(231,84,138,.6);background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
 </style>
-<script src="./ai-bridge.js"></script>
 <script src="./seed-data.js"></script>
 <script src="./share-engine.js"></script>
 <script src="./feedback-engine.js"></script>
@@ -68,7 +75,11 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
       </span>
       <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.04em;color:#0b080f">shut<span style="color:#e7548a">ap</span></span>
     </a>
-    <a href="Stream.dc.html" style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#6b4a5c;text-decoration:none">← rooms</a>
+    <div style="display:flex;align-items:center;gap:8px">
+      <a href="Stream.dc.html" style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#6b4a5c;text-decoration:none;padding:6px 12px">rooms</a>
+      <a href="HallOfFame.dc.html" style="font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#0b080f;text-decoration:none;padding:6px 12px">halls</a>
+      <div ref="{{ authArea }}" style="position:relative"></div>
+    </div>
   </div>
 </header>
 
@@ -118,6 +129,38 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
+
+  getAlias(){ try{ return JSON.parse(localStorage.getItem('shutap_alias')||'null'); }catch(e){ return null; } }
+  isAdmin(){ try{ return localStorage.getItem('shutap_role')==='admin'; }catch(e){ return false; } }
+  goJoin(){ try{ sessionStorage.setItem('shutap_returnTo', location.href); }catch(e){} location.href='Welcome.dc.html'; }
+  signOut(){ try{ localStorage.removeItem('shutap_alias'); }catch(e){} this.buildAuthHeader(); this.toast&&this.toast('signed out.'); }
+  buildAuthHeader(){
+    if(!this.$authArea) return;
+    const alias=this.getAlias();
+    if(alias){
+      this.$authArea.innerHTML=
+        '<div data-toggle role="button" tabindex="0" style="display:flex;align-items:center;gap:7px;background:#fff;border:.5px solid rgba(11,8,15,.12);border-radius:999px;padding:5px 12px 5px 5px;cursor:pointer;transition:.18s">'+
+          '<span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f060a0,#890041);display:grid;place-items:center;font-size:14px;flex:none">'+(alias.emoji||'\uD83E\uDD89')+'</span>'+
+          '<span style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#4a3040">'+(alias.name||'Anonymous')+'</span>'+
+        '</div>'+
+        '<div data-menu style="position:absolute;top:calc(100% + 9px);right:0;width:210px;background:#fff;border:.5px solid rgba(11,8,15,.10);border-radius:16px;box-shadow:0 24px 50px -24px rgba(60,10,30,.35);padding:7px;display:none;z-index:70;animation:pop .16s ease">'+
+          '<a href="Profile.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">your profile</a>'+
+          '<a href="Profile.dc.html#settings" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">settings</a>'+
+          '<div data-spill class="menu-item" role="button" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#c1216b;cursor:pointer">spill it \u2192</div>'+
+          '<a href="Landing.dc.html#mirror" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#a01a55;text-decoration:none">the mirror ✦</a>'+
+          '<div style="height:.5px;background:rgba(11,8,15,.08);margin:6px 0"></div>'+
+          (this.isAdmin()?'<a href="Admin.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;text-decoration:none">admin dashboard</a>':'')+
+          '<div data-signout class="menu-item" role="button" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;cursor:pointer">sign out</div>'+
+        '</div>';
+      const t=this.$authArea.querySelector('[data-toggle]'),m=this.$authArea.querySelector('[data-menu]');
+      t.addEventListener('click',e=>{ e.stopPropagation(); m.style.display=m.style.display==='block'?'none':'block'; });
+      this.$authArea.querySelector('[data-spill]').addEventListener('click',()=>{ m.style.display='none'; window.location.href='Landing.dc.html#spill'; });
+      this.$authArea.querySelector('[data-signout]').addEventListener('click',()=>{ m.style.display='none'; this.signOut(); });
+    } else {
+      this.$authArea.innerHTML='<div data-join role="button" tabindex="0" style="display:inline-flex;align-items:center;background:#e7548a;color:#fff;border-radius:999px;padding:9px 18px;font-family:Sora,sans-serif;font-weight:700;font-size:13px;cursor:pointer">join \u2192</div>';
+      this.$authArea.querySelector('[data-join]').addEventListener('click',()=>this.goJoin());
+    }
+  }
 
   get HALLS(){ const base=this.FALLBACK_HALLS; if(typeof window!=='undefined'&&window.SHUTAP_SEED&&window.SHUTAP_SEED.hof){ const meta={loving:['Most Loving','🤍','#e7548a'],brave:['Bravest','💪','#5B8A5E'],healing:['Most Healing','🌿','#4a8c6e'],relatable:['Most Relatable','🫂','#c87c4a'],hardwon:['Hardest-Won','🪨','#7F77DD'],funny:['Funniest','😭','#c1a02b']}; const out={}; Object.keys(meta).forEach(k=>{ const arr=(window.SHUTAP_SEED.hof[k]||[]); if(!arr.length){ out[k]=base[k]; return;} out[k]={label:meta[k][0],emoji:meta[k][1],color:meta[k][2],daily:arr,weekly:arr,all:arr.slice(0,3)}; }); return out; } return base; }
   get FALLBACK_HALLS(){ return {
@@ -249,6 +292,7 @@ class Component extends DCLogic {
     const mw=(win,tab)=>()=>this.setWin(win,tab);
     return {
       board: el=>{ this.$board=el; },
+      authArea: el=>{ this.$authArea=el; this.buildAuthHeader(); },
       tabLoving:   el=>{ this.$tabs={...this.$tabs, loving:el}; },
       tabBrave:    el=>{ this.$tabs={...this.$tabs, brave:el}; },
       tabHealing:  el=>{ this.$tabs={...this.$tabs, healing:el}; },
@@ -279,7 +323,7 @@ class Component extends DCLogic {
     el.addEventListener('pointerdown',down); window.addEventListener('pointermove',move,{passive:false}); window.addEventListener('pointerup',up);
   }
 
-  componentDidMount(){ this.$tabs=this.$tabs||{}; this.$wins=this.$wins||{}; const h=(location.hash||'').replace('#',''); const valid=['loving','brave','healing','relatable','hardwon','funny']; this.hall=valid.includes(h)?h:'loving'; this.win='daily'; setTimeout(()=>{ Object.entries(this.$tabs).forEach(([k,el])=>{ if(el) el.classList.toggle('active',k===this.hall); }); this.render(); },50); const bub=document.querySelector('[aria-label="Ask the companion"]'); if(bub) this.wireCompanion(bub); }
+  componentDidMount(){ document.addEventListener('click',e=>{ if(this.$authArea&&!this.$authArea.contains(e.target)){ const m=this.$authArea.querySelector('[data-menu]'); if(m) m.style.display='none'; } }); this.$tabs=this.$tabs||{}; this.$wins=this.$wins||{}; const h=(location.hash||'').replace('#',''); const valid=['loving','brave','healing','relatable','hardwon','funny']; this.hall=valid.includes(h)?h:'loving'; this.win='daily'; setTimeout(()=>{ Object.entries(this.$tabs).forEach(([k,el])=>{ if(el) el.classList.toggle('active',k===this.hall); }); this.render(); },50); const bub=document.querySelector('[aria-label="Ask the companion"]'); if(bub) this.wireCompanion(bub); }
 
   toast(m){ let t=document.getElementById('_hoftoast'); if(!t){ t=document.createElement('div'); t.id='_hoftoast'; t.style.cssText='position:fixed;left:50%;bottom:26px;transform:translate(-50%,300px);z-index:92;background:#0b080f;border-radius:999px;padding:11px 18px;color:#fff;font-family:Newsreader,serif;font-style:italic;font-size:14px;box-shadow:0 20px 44px -20px rgba(60,10,30,.5);transition:transform .4s cubic-bezier(.2,.7,.2,1)'; document.body.appendChild(t); } t.textContent=m; t.style.transform='translate(-50%,0)'; clearTimeout(this._tt); this._tt=setTimeout(()=>{ t.style.transform='translate(-50%,300px)'; },2800); }
 

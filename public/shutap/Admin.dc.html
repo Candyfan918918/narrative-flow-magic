@@ -27,7 +27,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,18,400;1,18,400&display=swap" rel="stylesheet">
 <title>Admin — Shutap</title>
-<script src="./ai-bridge.js"></script>
 <script src="./seed-data.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -50,6 +49,14 @@ body{margin:0;background:#0f0a12;color:#f2e9ef;font-family:'Inter',system-ui,san
 .btn-approve:hover{background:#229160}
 .btn-reject{background:rgba(255,255,255,.06);color:#d99}
 .btn-reject:hover{background:rgba(226,75,74,.16)}
+
+/* subtle app scrollbars */
+*{scrollbar-width:thin;scrollbar-color:rgba(231,84,138,.4) transparent}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(231,84,138,.38);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(231,84,138,.6);background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
 </style>
 <script src="./feedback-engine.js"></script>
 </helmet>
