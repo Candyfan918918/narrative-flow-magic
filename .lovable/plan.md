@@ -1,61 +1,68 @@
-# Close the Claude / Lovable gap — port the four dynamic pages to real React
+# Shutap Launch Infrastructure — Build Plan
 
-## Why
+Source: `shutap-launch-infra-solutions.md`. Six phases ordered so each unblocks the next, matching the spec's build order (§ at end of doc).
 
-Today the four dynamic pages are Claude design HTMLs (`public/shutap/*.dc.html`) mounted in iframes. Visuals come from the HTML; behavior (auth, AI, persistence, scan-as-room, score cards) is bridged through `postMessage` to React/server fns. Every Claude design pass re-introduces drift; every behavior change has to be re-bridged. This plan eliminates the bridge.
+Current state check: Auth + Postgres are already live (Lovable Cloud). The `embedding` column does **not** yet exist; pgvector is not enabled; check-ins schedule via `pg_cron`-style RPC but dispatch is partial; PostHog is not wired; Matcher is tag/recency only; comments already exist.
 
-After the port: design tokens, layout, and behavior all live in `src/`. Updating a Claude HTML becomes a *reference*, not the implementation. Scan-as-room, stream tiles, and share cards all share React components and update in one place.
+So Phase 1 (the "kill localStorage" prerequisite) is largely done — we'll just audit residual `localStorage` situation/checkin code and remove it.
 
-## Scope
+---
 
-In: `Landing`, `Stream`, `Room`, `Profile`.
-Out: `Welcome`, `Halls`, `Admin`, `Legal`, `HallOfFame` — stay iframe-bridged for now (low churn, low dynamism).
+## Phase 1 — Audit & finalize the DB-of-record (§8.5 prereq)
+- Sweep for any situation / check-in / identity state still in `localStorage` (e.g. `shutap_pending_save`, situation merges in `Stream.dc.html`). Keep localStorage only as a session cache + pseudonym mirror.
+- Confirm RLS + GRANTs on all situation/comment/checkin/subscription tables.
 
-## Build order
+## Phase 2 — Honest liquidity (§7)
+**2a. Matcher v2 + honest resonance number (§7.3, §7.5)**
+- Enable `pgvector` extension; add `embedding vector(1536)` (already nullable per spec note — verify), backfill job using Lovable AI Gateway embeddings.
+- `matchSituations` server fn: cosine top-K over **real, public, non-crisis, non-seed** corpus, rerank by recency + relate density.
+- UI rule: show numeric "N lived this" only when N ≥ 5; else story-based "someone went through almost exactly this →"; at 0, lean on Companion + SLA. Strip every hard-coded count.
 
-### Step 1 — Design tokens
-Extract the Claude HTML inline styles into `src/styles/tokens.css` (most already there) + a new `src/styles/components.css` for `.rtile`, `.react-btn`, `.menu-item`, `.prose-link`, keyframes (`breathe`, `fadeUp`, `eblink`, `thump`, `slideUp`, `pop`). Import into `src/styles/global.css`. No new deps.
+**2b. Seed wall-off**
+- `is_seed = true` rows: never counted, never matched, visually labeled "ambient" once real density crosses a floor.
 
-### Step 2 — Shared chrome
-- `src/components/SiteHeader.tsx` — the unified header with eye, brand, dropdown (profile/settings/spill it/the mirror ✦/admin/sign out). Replaces both the React `Header.tsx` and the inline HTML headers.
-- `src/components/EyeCompanion.tsx` — floating eye + speech bubble, used by Landing & Stream.
-- `src/components/CTAButton.tsx`, `src/components/SectionLabel.tsx` — primitives.
-- `src/components/PageShell.tsx` — wraps the SiteHeader + page slot.
+**2c. Single-pillar gating**
+- `pillar_status` table: `{ pillar, opened_at, real_story_floor, sla_target }`. Public stream filters to opened pillars only.
 
-### Step 3 — Stream (smallest, validates the pattern)
-- `src/pages/Stream.tsx` becomes a real React page: pulls rooms from Supabase (`situations` joined with reactions/relates counts), merges seed data, renders `<RoomTile>` grid.
-- `src/components/RoomTile.tsx` — single tile component. Branches on `kind === 'scan'`: scan tiles render score card (band-colored big number, SCAN badge, pillar chip, signature) instead of body/reactions strip.
-- Filters/sort/halls row → simple React state.
-- Delete `public/shutap/Stream.dc.html` from the route (keep file as reference).
+**2d. Human-relate SLA + ops queue (§7.6)**
+- New `/admin/relate-queue`: un-responded public spills oldest first, with `support_mode` badge, one-click reactions, comment box.
+- `time_to_first_human_response` computed per situation; alert row when past threshold.
 
-### Step 4 — Room
-- `src/pages/Room.tsx` mounts existing `<RoomDetail>` with live data (already there — currently bypassed by iframe).
-- `<RoomDetail>` gets a `<ScanScoreHeader>` block when `room.kind === 'scan'`: band-colored 3-digit score, band label, signature, pillar chip, "the read" prose, relate label switches to "same number".
-- Delete the iframe shim.
+## Phase 3 — Retention spine (§8)
+- Move scheduling from any client timer to **`pg_cron` minute-poll** of `checkins` (table exists). Dispatcher = server fn (Supabase-native option; Inngest not needed at this scale).
+- Channel cascade: in-app eye → web push → email (Resend connector). Idempotent per `(situation_id, beat)`; backoff; suppress emails after 2 unopened beats; quiet hours + tz; crisis override routes to safety, never paywall.
+- **PWA + Web Push:** service worker, VAPID keys, permission prompt fired at felt-heard moment ("want me to check in on you?") — never on landing.
+- Cancel jobs on situation delete.
 
-### Step 5 — Share card
-- Add `kind === 'scan'` artifact variant in `src/lib/share.ts` (mostly already there) and wire it from `<ScanScoreHeader>`'s share button so external shares render the score card.
+## Phase 4 — Mirror's real intelligence (§9)
+- Embedding job on every new situation (reuses Phase 2 infra).
+- `patterns` table; **Memory batch** server fn: per-user clusters, trigger correlation, decision↔outcome correlation, trajectory curves.
+- Cross-user corpus aggregates with **k-anonymity** floor (`k ≥ 5`).
+- Mirror persona re-voices structured findings only; every claim cites support count; below-threshold UI says **"your Mirror is still forming — N more check-ins"** (no illustrative bars).
 
-### Step 6 — Profile
-- `src/pages/Profile.tsx` already exists as real React — just wrap in `PageShell`, ensure scan entries render with mini score chip, delete the iframe shim.
-- Tabs: spills · scans · journals · drafts.
+## Phase 5 — Observability & growth (§11, §12)
+- Typed PostHog layer (`src/lib/analytics.ts`), pseudonymous id only.
+- 7 dashboards via PostHog: Activation, Liquidity, Retention, Monetization, Capture, Safety, Growth.
+- Signed share-token on MGM cards `{ sharer_pseudonym_id, situation_id, channel }`; attribute click + signup; K-factor dashboard.
 
-### Step 7 — Landing (last; biggest)
-- `src/pages/Landing.tsx` becomes the React hero: eye mascot, "spill it" / "scan" / "the mirror ✦" CTA cards, room previews row, eye companion, slide-up overlays.
-- `src/components/SpillOverlay.tsx` and `src/components/ScanOverlay.tsx` mount the existing `ScanRunner` / Spill flow as real React (replace the bridged versions).
-- Pending-save resume logic moves into `Landing.tsx` directly (no postMessage).
+## Phase 6 — Reach (§13–§15)
+- SEO: convert QAPage / Dataset / hub routes to SSR (TanStack Start already supports it — just remove `ssr: false` on the relevant public routes and feed loader data into `head()`); de-index on delete.
+- A11y pass (contrast on pink-on-blush, `prefers-reduced-motion`, keyboard nav).
+- i18n scaffolding + locale-tuned persona prompts (not literal string swap).
+- Native (Expo) only when retention economics justify — deferred.
 
-### Step 8 — Cleanup
-- Remove `SpaShell`, `ScaffoldShell`, `ai-bridge.js` once nothing iframes them.
-- Keep `public/shutap/*.dc.html` checked in as design references only; remove from the route table.
+---
 
-## Risk / mitigation
-- **Visual drift during port** → port one page at a time; keep iframe live until React replacement renders 1:1, then flip the route.
-- **Lost behavior** → audit each `postMessage` channel before deleting (`shutap_pending_save`, `auth-sheet`, share offers, feedback events).
-- **Bundle size** → no new deps; existing tokens/CSS already present.
+## Technical notes
+- **No Edge Functions** for app-internal logic — all dispatchers/matchers are `createServerFn`. `pg_cron` calls a `/api/public/hooks/dispatch-checkins` route (already exists) on a 1-min schedule.
+- **Embeddings model:** `google/text-embedding-004` via Lovable AI Gateway (1536-d → fits existing column once added).
+- **Resend** is a connector — add via standard connectors when Phase 3 lands.
+- **VAPID keys** stored as secrets (`VAPID_PUBLIC_KEY` exposed via `VITE_`, `VAPID_PRIVATE_KEY` server-only).
+- Per spec: never astroturf, never fake counts, never match seed/crisis/private rows.
 
-## Estimate
-~2-3 hours of focused work. I'll ship in the order above and let you review after Stream (Step 3) before committing to the rest.
+---
 
-## After this plan
-Every future Claude design = a visual reference I diff into the React components. No bridges. Scan-as-room, stream tile, and share card update in one place by default.
+## Suggested first slice (1 PR-worth)
+Phase 2a + 2b + 2d — the trust-critical pieces. This makes the live app honest *today* (no fake "N lived this"), enables real matching as soon as embeddings backfill, and gives you the ops queue to actually meet the SLA. Phases 3–6 follow in order.
+
+Shall I start with Phase 2a (pgvector + honest resonance + Matcher v2)?
