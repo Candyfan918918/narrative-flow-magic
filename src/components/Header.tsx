@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { getAlias, rememberReturnTo, signOut as doSignOut } from '../lib/auth'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { getAlias, isAdmin as getIsAdmin, rememberReturnTo, signOut as doSignOut } from '../lib/auth'
 import type { Alias } from '../data/types'
 
-/* Sticky header from Stream.dc.html: blinking eye logo + "shutap" wordmark,
-   a "halls" link, and an auth area that is either a "join →" pill (logged out)
-   or the alias chip + dropdown menu (logged in). */
+/* Canonical sticky header — identical across Landing, Stream, Halls, Profile.
+   Blinking eye + wordmark on the left; `rooms` + `halls` nav with the current
+   page emphasized; alias pill (or `join →` pill) on the right. */
 export function Header({ onToast }: { onToast?: (m: string) => void }) {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
   const [alias, setAliasState] = useState<Alias | null>(() => getAlias())
   const [menuOpen, setMenuOpen] = useState(false)
   const areaRef = useRef<HTMLDivElement>(null)
+  const admin = getIsAdmin()
+
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
