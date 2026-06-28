@@ -11,7 +11,7 @@ export async function callAgent(opts: {
   maxTokens?: number
   jsonMode?: boolean
 }): Promise<{ text: string; error?: string }> {
-  const maxTokens = Math.min(Math.max(opts.maxTokens ?? 1200, 64), 2048)
+  const maxTokens = Math.min(Math.max(opts.maxTokens ?? 1500, 64), 4096)
   const lovableKey = process.env.LOVABLE_API_KEY
   if (!lovableKey) return { text: '', error: 'no AI key' }
   const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-3.1-pro-preview'

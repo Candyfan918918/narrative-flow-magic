@@ -25,7 +25,7 @@ export const Route = createFileRoute('/api/complete')({
           const body = (await request.json()) as CompleteBody
           const messages = Array.isArray(body.messages) ? body.messages : []
           if (!messages.length) return json({ error: 'messages required' }, 400)
-          const maxTokens = Math.min(Math.max(body.maxTokens ?? 1200, 64), 2048)
+          const maxTokens = Math.min(Math.max(body.maxTokens ?? 1500, 64), 4096)
           const wantStream = body.stream === true
 
           const lovableKey = process.env.LOVABLE_API_KEY
