@@ -85,9 +85,9 @@ export const runSpill = createServerFn({ method: 'POST' })
       data: { clean_text: scrub.clean_text, pillar: data.pillar },
     })
 
-    // 4. Matcher
+    // 4. Matcher — pgvector cosine over real, public corpus; honest count
     const match = await findMatches({
-      data: { pillar: data.pillar, tags: [] },
+      data: { pillar: data.pillar, query_text: scrub.clean_text, tags: [] },
     })
 
     // 5. Persist situation (owner-scoped)
