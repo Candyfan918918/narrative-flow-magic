@@ -9,7 +9,7 @@ export function StreamPage() {
   const { hash } = useLocation()
   // Initial src carries the hash so the prototype's routeHash() fires on first load.
   const initialSrc = useMemo(
-    () => '/shutap/Stream.dc.html' + (hash || ''),
+    () => '/shutap/Shutap-Stream.html' + (hash || ''),
     // intentionally lock to first render — later hash changes are forwarded via postMessage
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
