@@ -156,6 +156,20 @@ function RootComponent() {
     let mounted = true;
     (async () => {
       const { supabase } = await import("@/integrations/supabase/client");
+      // Pseudonymous-first: every visitor must have a real Supabase session so
+      // `requireSupabaseAuth` server fns work. If there's no session, mint an
+      // anonymous one. The alias in localStorage is the display identity; the
+      // anonymous user is the auth identity. OAuth/email later upgrades this
+      // same user in place via linkIdentity/updateUser (see Welcome).
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+          await supabase.auth.signInAnonymously();
+        }
+      } catch (e) {
+        console.warn("[auth] anonymous bootstrap failed", e);
+      }
+      if (!mounted) return;
       const { data: sub } = supabase.auth.onAuthStateChange((event) => {
         if (!mounted) return;
         if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
@@ -170,6 +184,7 @@ function RootComponent() {
       (RootComponent as unknown as { _unsub?: () => void })._unsub?.();
     };
   }, [router, queryClient]);
+
 
   return (
     <QueryClientProvider client={queryClient}>
