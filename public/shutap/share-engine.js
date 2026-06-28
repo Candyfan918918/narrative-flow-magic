@@ -68,8 +68,23 @@
     var inner='';
     if(kind==='scan'){
       bg='radial-gradient(120% 90% at 50% 0%, #3a1020, #160810)';
-      inner='<div style="font-family:Sora,sans-serif;font-weight:800;font-size:64px;line-height:1;letter-spacing:-.04em;color:'+accent+'">'+(opts.big||'')+'</div>'+
-            '<div style="margin-top:10px;font-family:Sora,sans-serif;font-weight:700;font-size:16px;color:#f7e8f0">'+(opts.headline||'')+'</div>';
+      // dynamic radial ring: score (0-1000) drives stroke-dasharray on r=110 circle.
+      var score = (opts.big!=null && opts.big!=='') ? Number(opts.big) : null;
+      var pct = score!=null ? Math.max(0, Math.min(1, score/1000)) : 0;
+      var C = 2*Math.PI*110; // ≈ 691.15
+      var dash = (C*pct).toFixed(1)+' '+C.toFixed(1);
+      var scoreTxt = score!=null ? String(Math.round(score)) : '—';
+      var ring =
+        '<svg viewBox="0 0 300 300" style="width:min(260px,72vw);height:auto;display:block;margin:6px auto 4px" xmlns="http://www.w3.org/2000/svg">'+
+          '<circle cx="150" cy="150" r="110" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="14"></circle>'+
+          '<circle cx="150" cy="150" r="110" fill="none" stroke="'+accent+'" stroke-width="14" stroke-linecap="round" stroke-dasharray="'+dash+'" transform="rotate(-90 150 150)"></circle>'+
+          '<text x="150" y="162" text-anchor="middle" font-family="Sora,Arial,sans-serif" font-weight="800" font-size="78" letter-spacing="-3" fill="'+accent+'">'+scoreTxt+'</text>'+
+          '<text x="150" y="200" text-anchor="middle" font-family="Sora,Arial,sans-serif" font-weight="800" font-size="14" letter-spacing="4" fill="#f7e8f0" opacity=".85">SCAN</text>'+
+        '</svg>';
+      var sigLine = opts.sub ? '<div style="margin-top:2px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#c9a3b6">'+opts.sub+'</div>' : '';
+      var headLine = opts.headline ? '<div style="margin-top:8px;font-family:Sora,sans-serif;font-weight:700;font-size:15px;letter-spacing:-.01em;color:#f7e8f0">'+opts.headline+'</div>' : '';
+      var pillarChip = opts.pillar ? '<div style="margin:10px auto 0;display:inline-block;font-family:Sora,sans-serif;font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:'+accent+';background:rgba(231,84,138,.10);border:.5px solid rgba(231,84,138,.28);border-radius:999px;padding:5px 11px">'+opts.pillar+'</div>' : '';
+      inner = ring + headLine + sigLine + pillarChip;
     } else if(kind==='signature'){
       inner='<div style="font-family:\'Cormorant Garamond\',Newsreader,serif;font-style:italic;font-size:38px;line-height:1.1;color:#f7e8f0">'+(opts.headline||'')+'</div>'+
             (opts.sub?'<div style="margin-top:12px;font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c9a3b6">'+opts.sub+'</div>':'');
