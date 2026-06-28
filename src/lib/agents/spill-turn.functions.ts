@@ -5,7 +5,6 @@
 // arc-walking question if both fail.
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { callAgent, tryParseJson } from './gateway'
 import { scrubText } from './scrubber.functions'
 import { classifyCrisis } from './guard.functions'
@@ -120,7 +119,6 @@ function fallbackTurn(input: z.infer<typeof TurnInput>): SpillTurnResult {
 }
 
 export const spillTurn = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => TurnInput.parse(d))
   .handler(async ({ data }): Promise<SpillTurnResult> => {
     const last = data.transcript[data.transcript.length - 1]
