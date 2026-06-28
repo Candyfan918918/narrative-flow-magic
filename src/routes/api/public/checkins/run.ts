@@ -43,18 +43,25 @@ export const Route = createFileRoute('/api/public/checkins/run')({
 
           // Resolve recipient email when channel = email.
           let to: string | null = null
+          let suppressed = false
           if (row.channel === 'email') {
             const { data: alias } = await supabaseAdmin
               .from('aliases')
-              .select('user_id')
-              .eq('id', row.alias_id as string)
+              .select('user_id, notif_email, notif_email_opt_in, email_suppressed')
+              .eq('user_id', row.alias_id as string)
               .maybeSingle()
-            const userId = alias?.user_id as string | undefined
-            if (userId) {
-              const { data: user } = await supabaseAdmin.auth.admin.getUserById(userId)
-              to = user.user?.email ?? null
+            if (alias) {
+              suppressed = !!alias.email_suppressed || !alias.notif_email_opt_in
+              if (!suppressed) {
+                to = (alias.notif_email as string | null) ?? null
+                if (!to) {
+                  const { data: u } = await supabaseAdmin.auth.admin.getUserById(alias.user_id as string)
+                  to = u.user?.email ?? null
+                }
+              }
             }
           }
+
 
           let ok = true
           let err: string | null = null
