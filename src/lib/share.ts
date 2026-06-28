@@ -391,7 +391,7 @@ function showSheet(id: string, opts: ShareOpts) {
   foot.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px'
   foot.innerHTML =
     '<span style="font-family:Newsreader,serif;font-style:italic;font-size:12px;color:#9b8090">' +
-    (opts.privacy || 'only this card leaves — never your words or name.') +
+    escHtml(opts.privacy || 'only this card leaves — never your words or name.') +
     '</span>'
   const no = document.createElement('span')
   no.textContent = 'not now'
