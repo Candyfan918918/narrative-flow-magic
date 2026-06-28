@@ -138,7 +138,24 @@ function canFire(id: string, opts: ShareOpts) {
   return true
 }
 
-function artifact(opts: ShareOpts): string {
+function escHtml(s: unknown): string {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+function artifact(rawOpts: ShareOpts): string {
+  const opts: ShareOpts = {
+    ...rawOpts,
+    big: escHtml(rawOpts.big || ''),
+    headline: escHtml(rawOpts.headline || ''),
+    sub: rawOpts.sub ? escHtml(rawOpts.sub) : rawOpts.sub,
+    badge: rawOpts.badge ? escHtml(rawOpts.badge) : rawOpts.badge,
+    loopLabel: rawOpts.loopLabel ? escHtml(rawOpts.loopLabel) : rawOpts.loopLabel,
+    accent: /^#[0-9a-fA-F]{3,8}$/.test(rawOpts.accent || '') ? rawOpts.accent : '#e7548a',
+  }
   const kind = opts.kind || 'generic'
   const accent = opts.accent || '#e7548a'
   let bg = 'linear-gradient(165deg,#2a0d18,#160810)'
