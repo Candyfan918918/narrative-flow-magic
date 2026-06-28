@@ -485,6 +485,8 @@ export function RoomDetail({
             <CommentField cmtRef={cmtRef} autosize={autosize} onSend={submitComment} />
 
             <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c', marginTop: 8 }}>{helpText}</div>
+
+            {room.id && <CommentsThread roomId={room.id} />}
           </div>
         </div>
       </div>
