@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { getAlias, rememberReturnTo, signOut as doSignOut } from '../lib/auth'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { getAlias, isAdmin as getIsAdmin, rememberReturnTo, signOut as doSignOut } from '../lib/auth'
 import type { Alias } from '../data/types'
 
-/* Sticky header from Stream.dc.html: blinking eye logo + "shutap" wordmark,
-   a "halls" link, and an auth area that is either a "join →" pill (logged out)
-   or the alias chip + dropdown menu (logged in). */
+/* Canonical sticky header — identical across Landing, Stream, Halls, Profile.
+   Blinking eye + wordmark on the left; `rooms` + `halls` nav with the current
+   page emphasized; alias pill (or `join →` pill) on the right. */
 export function Header({ onToast }: { onToast?: (m: string) => void }) {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
   const [alias, setAliasState] = useState<Alias | null>(() => getAlias())
   const [menuOpen, setMenuOpen] = useState(false)
   const areaRef = useRef<HTMLDivElement>(null)
+  const admin = getIsAdmin()
+
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -87,11 +90,18 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Link
+            to="/stream"
+            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: pathname.startsWith('/stream') || pathname.startsWith('/room') ? '#0b080f' : '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}
+          >
+            rooms
+          </Link>
+          <Link
             to="/halls"
-            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}
+            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: pathname.startsWith('/halls') ? '#0b080f' : '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}
           >
             halls
           </Link>
+
           <div ref={areaRef} style={{ position: 'relative' }}>
             {alias ? (
               <>
@@ -147,22 +157,12 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                       animation: 'pop .16s ease',
                     }}
                   >
-                    <Link to="/" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
-                      home
-                    </Link>
-                    <Link to="/halls" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
-                      hall of fame
-                    </Link>
-                    <Link to="/mirror" className="menu-item" style={{ ...menuItem, color: '#7F77DD' }} onClick={() => setMenuOpen(false)}>
-                      the mirror ✦
-                    </Link>
                     <Link to="/profile" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
                       your profile
                     </Link>
-                    <Link to="/room" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
-                      open a room
+                    <Link to="/profile#settings" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
+                      settings
                     </Link>
-                    <div style={{ height: '.5px', background: 'rgba(11,8,15,.08)', margin: '6px 0' }} />
                     <div
                       className="menu-item"
                       role="button"
@@ -172,8 +172,17 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                         navigate('/#spill')
                       }}
                     >
-                      say something →
+                      spill it →
                     </div>
+                    <Link to="/mirror" className="menu-item" style={{ ...menuItem, color: '#7F77DD' }} onClick={() => setMenuOpen(false)}>
+                      the mirror ✦
+                    </Link>
+                    {admin && (
+                      <Link to="/admin" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
+                        admin dashboard
+                      </Link>
+                    )}
+                    <div style={{ height: '.5px', background: 'rgba(11,8,15,.08)', margin: '6px 0' }} />
                     <div
                       className="menu-item"
                       role="button"
@@ -182,6 +191,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                     >
                       sign out
                     </div>
+
                   </div>
                 )}
               </>
