@@ -117,6 +117,20 @@ export const runSpill = createServerFn({ method: 'POST' })
       )
     }
 
+    // 5a. Embed the situation for future cosine matching (fail-soft).
+    if (sit?.id) {
+      try {
+        const { embedText, toVectorLiteral } = await import('./embeddings.server')
+        const vec = await embedText(scrub.clean_text)
+        if (vec) {
+          await context.supabase
+            .from('situations')
+            .update({ embedding: toVectorLiteral(vec) } as never)
+            .eq('id', sit.id)
+        }
+      } catch { /* embedding is non-blocking */ }
+    }
+
     // 5b. Schedule the day0..day14 check-in cadence
     if (sit?.id) {
       const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
