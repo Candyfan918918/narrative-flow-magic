@@ -133,7 +133,7 @@ ${transcript || '(none yet — open with a warm greeting that uses the alias)'}`
       cont.card = { ...cont.card, type: 'text', placeholder: 'in a few words…' }
     }
     return {
-      line: sanitizeLine(cont.line, 200) || 'okay — i'm with you.',
+      line: sanitizeLine(cont.line, 200) || "okay — i'm with you.",
       prompt: sanitizeLine(cont.prompt, 200) || 'what else?',
       card: cont.card ?? { type: 'text', placeholder: 'in a few words…' },
     }
