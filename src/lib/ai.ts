@@ -15,9 +15,13 @@ export async function complete(opts: {
   system?: string
   maxTokens?: number
 }): Promise<string> {
+  const { supabase } = await import('@/integrations/supabase/client')
+  const { data: { session } } = await supabase.auth.getSession()
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`
   const res = await fetch('/api/complete', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(opts),
   })
   if (!res.ok) throw new Error(`complete failed: ${res.status}`)
