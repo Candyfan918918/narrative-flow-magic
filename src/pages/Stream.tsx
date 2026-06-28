@@ -108,9 +108,6 @@ export function StreamPage() {
       <Header onToast={toastMsg} />
 
 
-  return (
-    <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-      <Header onToast={toastMsg} />
 
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: '26px 22px 90px' }}>
         {/* page eyebrow */}
