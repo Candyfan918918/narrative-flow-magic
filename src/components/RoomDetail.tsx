@@ -21,6 +21,21 @@ const badgeStyle = (support: string): React.CSSProperties => ({
   letterSpacing: '.05em',
 })
 
+const BAND_COLOR: Record<string, string> = {
+  settling: '#5B8A5E',
+  sitting: '#7F77DD',
+  weighing: '#c1a02b',
+  heavy: '#c87c4a',
+  consuming: '#c1216b',
+}
+const BAND_LABEL: Record<string, string> = {
+  settling: 'settling',
+  sitting: 'sitting with it',
+  weighing: 'weighing',
+  heavy: 'heavy / loud',
+  consuming: 'consuming',
+}
+
 interface Guide {
   guide: string
   starters: string[]
