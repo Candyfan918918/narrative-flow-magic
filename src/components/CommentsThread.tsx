@@ -1,0 +1,239 @@
+// Auth-owned comments thread for a room. Renders existing comments, lets
+// signed-in users post, and lets the author of each comment edit / delete.
+import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useServerFn } from '@tanstack/react-start'
+import {
+  listRoomComments,
+  createComment,
+  updateComment,
+  deleteComment,
+} from '@/lib/situations.functions'
+import { supabase } from '@/integrations/supabase/client'
+
+function timeAgo(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime()
+  const m = Math.floor(ms / 60000)
+  if (m < 1) return 'just now'
+  if (m < 60) return `${m}m`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h`
+  return `${Math.floor(h / 24)}d`
+}
+
+export function CommentsThread({ roomId }: { roomId: string }) {
+  const qc = useQueryClient()
+  const [meId, setMeId] = useState<string | null>(null)
+  const [draft, setDraft] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editDraft, setEditDraft] = useState('')
+
+  // session
+  useState(() => {
+    supabase.auth.getUser().then(({ data }) => setMeId(data.user?.id ?? null))
+    return null
+  })
+
+  const fetchComments = useServerFn(listRoomComments)
+  const create = useServerFn(createComment)
+  const update = useServerFn(updateComment)
+  const remove = useServerFn(deleteComment)
+
+  const { data: comments = [] } = useQuery({
+    queryKey: ['comments', roomId],
+    queryFn: () => fetchComments({ data: { roomId } }),
+  })
+
+  const invalidate = () => qc.invalidateQueries({ queryKey: ['comments', roomId] })
+
+  const post = useMutation({
+    mutationFn: (text: string) => create({ data: { roomId, text } }),
+    onSuccess: () => {
+      setDraft('')
+      invalidate()
+    },
+  })
+  const save = useMutation({
+    mutationFn: ({ id, text }: { id: string; text: string }) =>
+      update({ data: { id, text } }),
+    onSuccess: () => {
+      setEditingId(null)
+      setEditDraft('')
+      invalidate()
+    },
+  })
+  const del = useMutation({
+    mutationFn: (id: string) => remove({ data: { id } }),
+    onSuccess: invalidate,
+  })
+
+  return (
+    <section style={{ marginTop: 28 }}>
+      <div
+        style={{
+          fontFamily: 'Sora, sans-serif',
+          fontWeight: 700,
+          fontSize: 11,
+          letterSpacing: '.14em',
+          color: '#9e7a8c',
+          marginBottom: 12,
+        }}
+      >
+        WHAT OTHERS SAID
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {comments.length === 0 && (
+          <p style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: '#6b4a5c' }}>
+            nobody yet. you can be the first.
+          </p>
+        )}
+        {comments.map((c) => {
+          const mine = meId && c.alias_id === meId
+          const editing = editingId === c.id
+          return (
+            <div
+              key={c.id}
+              style={{
+                background: '#fff',
+                border: '.5px solid rgba(11,8,15,.08)',
+                borderRadius: 14,
+                padding: '12px 14px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: 6,
+                  fontFamily: 'Sora, sans-serif',
+                  fontSize: 11,
+                  color: '#9e7a8c',
+                }}
+              >
+                <span>{mine ? 'you' : 'someone'}{c.edited ? ' · edited' : ''} · {timeAgo(c.created_at)}</span>
+                {mine && !editing && (
+                  <span style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={() => {
+                        setEditingId(c.id)
+                        setEditDraft(c.clean_text)
+                      }}
+                      style={{ background: 'none', border: 0, color: '#c1216b', cursor: 'pointer', fontSize: 12 }}
+                    >
+                      edit
+                    </button>
+                    <button
+                      onClick={() => del.mutate(c.id)}
+                      style={{ background: 'none', border: 0, color: '#9e7a8c', cursor: 'pointer', fontSize: 12 }}
+                    >
+                      delete
+                    </button>
+                  </span>
+                )}
+              </div>
+              {editing ? (
+                <>
+                  <textarea
+                    value={editDraft}
+                    onChange={(e) => setEditDraft(e.target.value)}
+                    rows={3}
+                    style={{
+                      width: '100%',
+                      border: '.5px solid rgba(11,8,15,.18)',
+                      borderRadius: 10,
+                      padding: 10,
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: 14,
+                      resize: 'vertical',
+                    }}
+                  />
+                  <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                    <button
+                      disabled={save.isPending || editDraft.trim().length < 1}
+                      onClick={() => save.mutate({ id: c.id, text: editDraft.trim() })}
+                      style={{ background: '#e7548a', color: '#fff', border: 0, borderRadius: 999, padding: '6px 14px', fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+                    >
+                      save
+                    </button>
+                    <button
+                      onClick={() => { setEditingId(null); setEditDraft('') }}
+                      style={{ background: 'none', border: 0, color: '#6b4a5c', cursor: 'pointer', fontSize: 12 }}
+                    >
+                      cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p
+                  style={{
+                    margin: 0,
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: 14,
+                    color: '#0b080f',
+                    whiteSpace: 'pre-wrap',
+                  }}
+                >
+                  {c.clean_text}
+                </p>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {meId ? (
+        <div style={{ marginTop: 16 }}>
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="say what this stirred in you…"
+            rows={3}
+            style={{
+              width: '100%',
+              border: '.5px solid rgba(11,8,15,.18)',
+              borderRadius: 12,
+              padding: 12,
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 14,
+              resize: 'vertical',
+            }}
+          />
+          <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              disabled={post.isPending || draft.trim().length < 1}
+              onClick={() => post.mutate(draft.trim())}
+              style={{
+                background: '#e7548a',
+                color: '#fff',
+                border: 0,
+                borderRadius: 999,
+                padding: '9px 18px',
+                fontFamily: 'Sora, sans-serif',
+                fontWeight: 700,
+                fontSize: 13,
+                cursor: 'pointer',
+                opacity: draft.trim().length < 1 ? 0.5 : 1,
+              }}
+            >
+              post →
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p
+          style={{
+            marginTop: 16,
+            fontFamily: 'Newsreader, serif',
+            fontStyle: 'italic',
+            color: '#6b4a5c',
+            fontSize: 14,
+          }}
+        >
+          sign in to reply.
+        </p>
+      )}
+    </section>
+  )
+}
