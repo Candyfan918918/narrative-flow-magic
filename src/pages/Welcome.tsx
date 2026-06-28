@@ -44,6 +44,17 @@ export function WelcomePage() {
   async function signInOAuth(method: 'google' | 'apple') {
     setPending(true); setMsg('')
     try {
+      // If the visitor is already on an anonymous session, link the OAuth
+      // identity to that user so their spills/scans/mirror carry over.
+      const { data: u } = await supabase.auth.getUser()
+      if (u.user?.is_anonymous) {
+        const { error } = await supabase.auth.linkIdentity({
+          provider: method,
+          options: { redirectTo: window.location.origin + '/welcome' },
+        } as never)
+        if (error) setMsg(error.message || 'sign-in failed')
+        return
+      }
       const res = await lovable.auth.signInWithOAuth(method, { redirect_uri: window.location.origin + '/welcome' })
       if (res.error) setMsg(res.error.message || 'sign-in failed')
     } catch (e) { setMsg(e instanceof Error ? e.message : 'sign-in failed') }
@@ -53,6 +64,16 @@ export function WelcomePage() {
     e.preventDefault()
     setPending(true); setMsg('')
     try {
+      // Upgrade anonymous → named in place when possible.
+      const { data: u } = await supabase.auth.getUser()
+      if (u.user?.is_anonymous) {
+        const { error } = await supabase.auth.updateUser(
+          { email },
+          { emailRedirectTo: window.location.origin + '/welcome' } as never,
+        )
+        if (error) setMsg(error.message); else setMsg('check your inbox to confirm and finish joining.')
+        return
+      }
       const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin + '/welcome' } })
       if (error) setMsg(error.message); else setMsg('magic link sent — check your inbox.')
     } finally { setPending(false) }
