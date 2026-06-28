@@ -22,6 +22,25 @@ export const Route = createFileRoute('/api/complete')({
     handlers: {
       POST: async ({ request }) => {
         try {
+          // Require an authenticated Supabase user (bearer token) to prevent quota abuse.
+          const authHeader = request.headers.get('authorization') || ''
+          if (!authHeader.toLowerCase().startsWith('bearer ')) {
+            return json({ error: 'Unauthorized' }, 401)
+          }
+          const token = authHeader.slice(7).trim()
+          try {
+            const { createClient } = await import('@supabase/supabase-js')
+            const sb = createClient(
+              process.env.SUPABASE_URL!,
+              process.env.SUPABASE_PUBLISHABLE_KEY!,
+              { auth: { persistSession: false, autoRefreshToken: false } },
+            )
+            const { data, error } = await sb.auth.getUser(token)
+            if (error || !data?.user) return json({ error: 'Unauthorized' }, 401)
+          } catch {
+            return json({ error: 'Unauthorized' }, 401)
+          }
+
           const body = (await request.json()) as CompleteBody
           const messages = Array.isArray(body.messages) ? body.messages : []
           if (!messages.length) return json({ error: 'messages required' }, 400)
