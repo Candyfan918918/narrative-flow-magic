@@ -1,6 +1,5 @@
-import React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { SpaShell } from '@/components/SpaShell'
 
 const HOME_TITLE = "Shutap — finally, somewhere to not shut up."
 const HOME_DESCRIPTION =
@@ -31,38 +30,5 @@ export const Route = createFileRoute('/')({
       },
     ],
   }),
-  component: ClientApp,
+  component: SpaShell,
 })
-
-function ClientApp() {
-  const [Mounted, setMounted] = useState<null | (React.ComponentType)>(null)
-  useEffect(() => {
-    let cancelled = false
-    Promise.all([
-      import('react-router-dom'),
-      import('@/App'),
-      import('@/lib/share'),
-      import('@/lib/feedback'),
-    ]).then(([rr, appMod, share, fb]) => {
-      if (cancelled) return
-      share.installShareEngine()
-      fb.installFeedback()
-      const { BrowserRouter } = rr
-      const { App } = appMod
-      setMounted(() => () => (
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      ))
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-  // Render nothing while the SPA chunk loads — a fleeting blank beats the
-  // unstyled SSR placeholder the user was seeing.
-  if (!Mounted) return null
-  return <Mounted />
-}
-
-
