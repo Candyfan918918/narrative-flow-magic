@@ -1,27 +1,20 @@
-/* Pixel-perfect port of project/Admin.dc.html — served verbatim,
-   with a small floating nav so admins can reach the React-built
-   Feedback dashboard. */
+/* Admin home — minimal React (was an iframe). */
 import { Link } from 'react-router-dom'
+import { Header } from '@/components/Header'
 
 export function AdminPage() {
   return (
-    <>
-      <iframe
-        src="/shutap/Admin.dc.html"
-        title="Shutap — Admin"
-        style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, background: '#fdf0f5' }}
-      />
-      <div style={{ position: 'fixed', top: 14, right: 14, zIndex: 10, display: 'flex', gap: 8 }}>
-        <Link to="/admin/relate-queue" style={navBtn('#0b080f')}>🤝 relate queue</Link>
-        <Link to="/admin/feedback" style={navBtn('#c1216b')}>🫶 feedback</Link>
-      </div>
-    </>
+    <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
+      <Header />
+      <main style={{ maxWidth: 740, margin: '0 auto', padding: '36px 22px 80px' }}>
+        <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 12, letterSpacing: '.18em', color: '#9e7a8c' }}>ADMIN</div>
+        <h1 style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 28, margin: '6px 0 16px' }}>admin</h1>
+        <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: 10 }}>
+          <li><Link style={card} to="/admin/feedback">feedback dashboard →</Link></li>
+          <li><Link style={card} to="/admin/relate-queue">relate queue →</Link></li>
+        </ul>
+      </main>
+    </div>
   )
 }
-
-const navBtn = (bg: string): React.CSSProperties => ({
-  background: bg, color: '#fff', textDecoration: 'none',
-  padding: '8px 14px', borderRadius: 999, fontWeight: 600, fontSize: 13,
-  boxShadow: '0 6px 18px rgba(11,8,15,.25)',
-  fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
-})
+const card: React.CSSProperties = { display: 'block', padding: '14px 16px', background: '#fff', borderRadius: 14, border: '.5px solid rgba(11,8,15,.08)', textDecoration: 'none', color: '#0b080f', fontFamily: 'Sora,sans-serif', fontSize: 14 }
