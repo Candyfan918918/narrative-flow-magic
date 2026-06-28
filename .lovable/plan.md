@@ -1,39 +1,36 @@
-## Phase 3 — Retention Engine
+## Goal
+Verify Spill v2 works end-to-end: interview turns → AI compose → preview → publish to room OR keep as journal, with a real `situations` row created and the user landed on the right destination.
 
-Move check-ins from "scheduled rows we never deliver" to "rows the server actually fires on time," and add the two channels needed at launch.
+## Approach
+Drive the live preview with headless Playwright against `localhost:8080`, using the pseudonymous-first session bootstrap (root route auto-creates an anon Supabase session), so no manual login is needed.
 
-### Scope (3 slices)
+## Steps
 
-**3a. Server scheduler (required, ships first)**
-- New public route `src/routes/api/public/checkins.run.ts` that:
-  - Selects due `checkins` rows: `state='scheduled' AND scheduled_at <= now()` (cap 200/run).
-  - For each: render copy based on `type` (day0…day14), dispatch via the row's `channel` (`eye` = in-app only, `email` = Resend), then mark `state='sent'` and stamp `sent_at`.
-  - Idempotent (single update guarded by `state='scheduled'`).
-  - Auth: caller must include `apikey` header = `SUPABASE_PUBLISHABLE_KEY` (canonical pg_cron pattern; no new secret).
-- New `pg_cron` job every 1 minute that POSTs to `…/api/public/checkins.run` on the stable `project--{id}.lovable.app` URL.
-- Admin view extension: a tiny "scheduler health" card on `/admin/relate-queue` showing `scheduled / sent / failed` counts for the last 24h.
+1. **Pre-state snapshot (DB)**
+   - `supabase--read_query` on `public.situations`: capture max `created_at` and a count, scoped to a fresh anon user we're about to create.
 
-**3b. Email channel via Resend (required for `email` channel rows)**
-- Adds `RESEND_API_KEY` secret (I'll request it via the secret tool).
-- New server-only helper `src/lib/email.server.ts` with `sendCheckinEmail({ to, type, situationId })`.
-- Templates inline (5 variants: day1, day2, day3, day7, day14) — copy mirrors the launch spec's check-in voice; each ends with a deep link to `/checkin/<id>`.
-- Failure → mark row `state='failed'`, log to `feedback_events`, leave for retry on next tick (cap 3 attempts via a new `attempts` column).
-- Migration adds: `checkins.attempts int default 0`, `checkins.last_error text`.
+2. **Scenario A — Publish to a room**
+   - Launch Chromium (1280×1800), goto `/`, wait for the landing iframe + anon session to settle.
+   - Open Spill, type the seed line from the session replay ("I cannot afford to see a doctor"), step through 3–4 interview turns answering the bot until it returns `decision: "ready"`.
+   - Screenshot the chat at each turn to confirm 1–3 short bubbles, react-before-question, no banned phrases.
+   - On preview: screenshot the composed title/body/tags, confirm editable.
+   - Choose "post to a room" → wait for `postMessage` round-trip → assert URL becomes `/stream#room-<uuid>`.
+   - Screenshot the resulting room tile.
 
-**3c. PWA Web Push (deferred recommendation)**
-The PWA skill we have to follow forbids registering an app-shell service worker in Lovable preview, requires a dedicated `firebase-messaging-sw.js`-style worker, and needs VAPID keys + a `push_subscriptions` table + a `<UNSAFE>` user permission prompt. Recommend cutting from launch and shipping email + in-app `eye` check-ins only — push is a real 1–2 day slice on its own and the spec already treats `eye` (in-app) as the primary day0 surface.
+3. **Scenario B — Keep as private journal**
+   - Fresh browser context (new anon user), repeat the interview with a different seed.
+   - Choose "keep as journal" → assert URL becomes `/profile` and journal entry is visible.
 
-### Out of scope this round
-- Crisis-flag escalation paths (separate spec).
-- Marketing emails / digest (different cadence + unsubscribe infra).
+4. **Post-state verification (DB)**
+   - `supabase--read_query` on `public.situations` for the two new rows:
+     - Row A: `is_public = true`, `room_id` not null, `body` populated (composed, not raw transcript), `kind`, `support_mode`, `pillar`, `tags`.
+     - Row B: `is_public = false`, `room_id` null, `body` populated.
+   - Query `public.rooms` for Row A's `room_id` to confirm the linked room exists with matching title/body.
 
-### Data model touch
-```text
-ALTER TABLE public.checkins
-  ADD COLUMN attempts int NOT NULL DEFAULT 0,
-  ADD COLUMN last_error text;
-```
+5. **Report**
+   - Pass/fail per scenario with screenshots and the actual DB row contents.
+   - Flag any banned therapy-speak in bot bubbles, any failed bridge calls (console errors / 401s), and whether navigation happened from React (`Landing.tsx`) vs the iframe.
 
-### Decisions I need from you
-1. Confirm **3a + 3b** for this round and **defer 3c (web push)** to a follow-up — or keep push in scope and I'll add the extra ~1 day of work.
-2. Do you have a Resend account / sender domain already wired (Lovable Cloud email infra), or should I scaffold a generic `onboarding@resend.dev` sender for sandbox and gate prod sends behind a domain-verify check?
+## Notes
+- No code changes; read-only verification.
+- If a bridge call 401s, it likely means the anon-session bootstrap in `__root.tsx` hasn't landed before the user clicks publish — I'll capture the timing in the report rather than patch.
