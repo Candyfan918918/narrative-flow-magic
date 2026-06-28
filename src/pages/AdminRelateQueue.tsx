@@ -128,6 +128,31 @@ function Badge({ children, color }: { children: React.ReactNode; color: string }
   )
 }
 
+function BackfillButton() {
+  const run = useServerFn(backfillEmbeddings)
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+  return (
+    <button
+      onClick={async () => {
+        setBusy(true); setMsg(null)
+        try {
+          const r = await run({ data: { limit: 50 } })
+          setMsg(`+${r.embedded}/${r.scanned} · ${r.remaining} left`)
+        } catch (e) {
+          setMsg(e instanceof Error ? e.message : 'failed')
+        } finally { setBusy(false) }
+      }}
+      disabled={busy}
+      style={{ ...navStyle, cursor: 'pointer', fontWeight: 600, color: '#c1216b' }}
+      title="Backfill embeddings for situations missing a vector"
+    >
+      {busy ? 'embedding…' : msg ? `embed · ${msg}` : 'embed batch'}
+    </button>
+  )
+}
+
+
 const navStyle: React.CSSProperties = {
   color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px', borderRadius: 999,
   border: '1px solid rgba(11,8,15,.12)', background: '#fff',
