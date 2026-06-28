@@ -51,6 +51,7 @@ const SaveInput = z.object({
   initial_scan: z.number().int().min(0).max(999).nullable().optional(),
   scan_band: z.enum(['quiet', 'real', 'hot', 'heavy', 'serious']).nullable().optional(),
   is_public: z.boolean().default(false),
+  support_mode: z.enum(['heard', 'advice']).nullable().optional(),
   emoji: z.string().max(8).optional(),
   alias: z.string().max(40).optional(),
 })
@@ -79,6 +80,7 @@ export const saveSituation = createServerFn({ method: 'POST' })
       initial_scan: data.initial_scan ?? null,
       scan_band: data.scan_band ?? null,
       is_public: data.is_public,
+      support_mode: data.support_mode ?? null,
       status: 'open' as const,
     }
 

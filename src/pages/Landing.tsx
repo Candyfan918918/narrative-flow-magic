@@ -74,6 +74,9 @@ export function LandingPage() {
           }
           const res = await save({ data: d.payload as never })
           post({ type: 'shutap-persist-situation-result', reqId: d.reqId, id: res.id, room_id: res.room_id })
+          // Drop the user straight into the destination.
+          if (res?.room_id) navigate(`/stream#room-${res.room_id}`)
+          else if (res?.id) navigate('/profile')
         } catch (err) {
           post({ type: 'shutap-persist-situation-result', reqId: d.reqId, error: err instanceof Error ? err.message : 'save failed' })
         }
