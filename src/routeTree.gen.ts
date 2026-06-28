@@ -31,6 +31,7 @@ import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedMirrorRouteImport } from './routes/_authenticated/mirror'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
@@ -147,6 +148,11 @@ const ApiCompleteRoute = ApiCompleteRouteImport.update({
   path: '/api/complete',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMirrorRoute = AuthenticatedMirrorRouteImport.update({
   id: '/mirror',
   path: '/mirror',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/mirror': typeof AuthenticatedMirrorRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/mirror': typeof AuthenticatedMirrorRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -259,6 +267,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/_authenticated/mirror': typeof AuthenticatedMirrorRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -290,6 +299,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trust'
     | '/mirror'
+    | '/profile'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trust'
     | '/mirror'
+    | '/profile'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -349,6 +360,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trust'
     | '/_authenticated/mirror'
+    | '/_authenticated/profile'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -545,6 +557,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/mirror': {
       id: '/_authenticated/mirror'
       path: '/mirror'
@@ -592,11 +611,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedMirrorRoute: typeof AuthenticatedMirrorRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedCheckinIdRoute: typeof AuthenticatedCheckinIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMirrorRoute: AuthenticatedMirrorRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedCheckinIdRoute: AuthenticatedCheckinIdRoute,
 }
 
