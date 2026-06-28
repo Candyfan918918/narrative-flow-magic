@@ -41,15 +41,16 @@ export function LandingPage() {
         }
       } else if (d.type === 'shutap-persist-situation' && d.payload) {
         try {
-          const res = await save({ data: d.payload as Parameters<typeof save>[0]['data'] })
+          const res = await save({ data: d.payload as never })
           post({ type: 'shutap-persist-situation-result', reqId: d.reqId, id: res.id, room_id: res.room_id })
         } catch (err) {
           post({ type: 'shutap-persist-situation-result', reqId: d.reqId, error: err instanceof Error ? err.message : 'save failed' })
         }
       } else if (d.type === 'shutap-update-situation' && d.id && d.patch) {
         try {
-          const res = await update({ data: { id: d.id, ...d.patch } as Parameters<typeof update>[0]['data'] })
+          const res = await update({ data: { id: d.id, ...d.patch } as never })
           post({ type: 'shutap-update-situation-result', reqId: d.reqId, id: res.id, room_id: res.room_id })
+
         } catch (err) {
           post({ type: 'shutap-update-situation-result', reqId: d.reqId, error: err instanceof Error ? err.message : 'update failed' })
         }
