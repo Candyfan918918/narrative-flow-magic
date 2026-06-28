@@ -4,6 +4,7 @@ import { REACTIONS } from '../data/constants'
 import { complete, extractJSON } from '../lib/ai'
 import { eyeSVG } from './EyeDefs'
 import { track } from '../lib/feedback'
+import { CommentsThread } from './CommentsThread'
 
 const badgeStyle = (support: string): React.CSSProperties => ({
   display: 'inline-flex',
