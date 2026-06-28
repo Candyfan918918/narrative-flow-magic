@@ -25,13 +25,13 @@ export const Route = createFileRoute('/api/complete')({
           const body = (await request.json()) as CompleteBody
           const messages = Array.isArray(body.messages) ? body.messages : []
           if (!messages.length) return json({ error: 'messages required' }, 400)
-          const maxTokens = Math.min(Math.max(body.maxTokens ?? 1500, 64), 4096)
+          const maxTokens = Math.min(Math.max(body.maxTokens ?? 1200, 64), 2048)
           const wantStream = body.stream === true
 
           const lovableKey = process.env.LOVABLE_API_KEY
           if (!lovableKey) return fallback('no AI key configured')
 
-          const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-3-flash-preview'
+          const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-3.1-pro-preview'
           const gateway = createLovableAiGatewayProvider(lovableKey)
           const model = gateway(modelId)
           const msgs = messages.map((m) => ({ role: m.role, content: m.content }))
