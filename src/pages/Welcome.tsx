@@ -15,13 +15,22 @@ export function WelcomePage() {
       if (data.session) {
         try { sessionStorage.setItem('shutap_authed', '1') } catch {}
         recordLegalAcceptance({ data: {} }).catch(() => {})
+        if (sessionStorage.getItem('shutap_pending_save')) {
+          window.location.replace('/')
+        }
       }
     })
+
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN') {
         recordLegalAcceptance({ data: {} }).catch(() => {})
+        // Resume a pending Spill if the user was bounced here mid-publish.
+        if (sessionStorage.getItem('shutap_pending_save')) {
+          window.location.replace('/')
+        }
       }
     })
+
 
     const post = (msg: unknown) => {
       iframeRef.current?.contentWindow?.postMessage(msg, '*')

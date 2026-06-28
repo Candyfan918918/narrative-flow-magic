@@ -12,6 +12,29 @@ export function LandingPage() {
   const spill = useServerFn(runSpill)
   const save = useServerFn(saveSituation)
   const update = useServerFn(updateSituation)
+
+  // Resume a pending Spill save after the user returns from sign-in.
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const raw = sessionStorage.getItem('shutap_pending_save')
+      if (!raw) return
+      const { data: sess } = await supabase.auth.getSession()
+      if (!sess.session || cancelled) return
+      try {
+        const payload = JSON.parse(raw)
+        const res = await save({ data: payload as never })
+        sessionStorage.removeItem('shutap_pending_save')
+        if (res?.room_id) navigate(`/stream#room-${res.room_id}`)
+        else if (res?.id) navigate(`/profile`)
+      } catch {
+        // leave the payload so the user can retry
+      }
+    })()
+    return () => { cancelled = true }
+  }, [navigate, save])
+
+
   useEffect(() => {
     const onMsg = async (e: MessageEvent) => {
       const d = e.data as
