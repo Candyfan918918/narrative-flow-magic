@@ -702,6 +702,7 @@ export type Database = {
           edited: boolean
           embedding: string | null
           emotional_core: string | null
+          factors: string[] | null
           human_response_at: string | null
           id: string
           initial_scan: number | null
@@ -709,6 +710,7 @@ export type Database = {
           is_seed: boolean
           kind: string | null
           pillar: Database["public"]["Enums"]["situation_pillar"]
+          read: string | null
           reflection: string | null
           resolved_at: string | null
           room_id: string | null
@@ -716,6 +718,7 @@ export type Database = {
           scan_factors: string[]
           scan_read: string | null
           scan_signature: string | null
+          signature: string | null
           status: Database["public"]["Enums"]["situation_status"]
           support_mode: string | null
           tags: string[]
@@ -734,6 +737,7 @@ export type Database = {
           edited?: boolean
           embedding?: string | null
           emotional_core?: string | null
+          factors?: string[] | null
           human_response_at?: string | null
           id?: string
           initial_scan?: number | null
@@ -741,6 +745,7 @@ export type Database = {
           is_seed?: boolean
           kind?: string | null
           pillar: Database["public"]["Enums"]["situation_pillar"]
+          read?: string | null
           reflection?: string | null
           resolved_at?: string | null
           room_id?: string | null
@@ -748,6 +753,7 @@ export type Database = {
           scan_factors?: string[]
           scan_read?: string | null
           scan_signature?: string | null
+          signature?: string | null
           status?: Database["public"]["Enums"]["situation_status"]
           support_mode?: string | null
           tags?: string[]
@@ -766,6 +772,7 @@ export type Database = {
           edited?: boolean
           embedding?: string | null
           emotional_core?: string | null
+          factors?: string[] | null
           human_response_at?: string | null
           id?: string
           initial_scan?: number | null
@@ -773,6 +780,7 @@ export type Database = {
           is_seed?: boolean
           kind?: string | null
           pillar?: Database["public"]["Enums"]["situation_pillar"]
+          read?: string | null
           reflection?: string | null
           resolved_at?: string | null
           room_id?: string | null
@@ -780,6 +788,7 @@ export type Database = {
           scan_factors?: string[]
           scan_read?: string | null
           scan_signature?: string | null
+          signature?: string | null
           status?: Database["public"]["Enums"]["situation_status"]
           support_mode?: string | null
           tags?: string[]
