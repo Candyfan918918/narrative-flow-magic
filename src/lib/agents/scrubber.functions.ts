@@ -70,7 +70,7 @@ export const scrubText = createServerFn({ method: 'POST' })
       return {
         clean_text: parsed.clean_text,
         replacements: all,
-        notice: parsed.notice || "heads up — I tidied a couple of identifying bits to keep this anonymous 🔒",
+        notice: parsed.notice || "heads up — I tidied a couple of identifying bits so your real name never shows 🔒",
       }
     }
 
@@ -79,7 +79,7 @@ export const scrubText = createServerFn({ method: 'POST' })
       clean_text: first.text,
       replacements: first.replacements,
       notice: first.replacements.length
-        ? "heads up — I swapped out a couple of identifying bits to keep you anonymous 🔒"
+        ? "heads up — I swapped out a couple of identifying bits so your real name never shows 🔒"
         : "kept your words as-is — nothing identifying caught my eye 🔒",
     }
   })
