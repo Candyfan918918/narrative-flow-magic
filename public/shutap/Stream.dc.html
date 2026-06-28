@@ -141,7 +141,29 @@ class Component extends DCLogic {
     {k:'brave', emoji:'✨', label:"so brave",          color:'#c1a02b'},
   ];}
 
-  get ROOMS(){ if(typeof window!=='undefined'&&window.SHUTAP_SEED&&window.SHUTAP_SEED.rooms&&window.SHUTAP_SEED.rooms.length) return window.SHUTAP_SEED.rooms; return this.FALLBACK_ROOMS; }
+  userRooms(){
+    try{
+      const sits=JSON.parse(localStorage.getItem('shutap_situations')||'[]');
+      return sits.filter(s=>s&&s.visibility==='public'&&s.id&&s.title).map(s=>{
+        const mins=Math.max(1,Math.round((Date.now()-(s.createdAt||Date.now()))/60000));
+        const hours = mins<60 ? mins+'m' : (mins<1440 ? Math.round(mins/60)+'h' : Math.round(mins/1440)+'d');
+        return { id:s.id, alias:'you', emoji:'🌸',
+          title:s.title, support:(s.mode==='advice'?'advice':'heard'),
+          relates:0, sitting:1, hours,
+          reactions:{heard:0,same:0,strong:0,time:0,brave:0},
+          body:s.body||s.title,
+          reflection:'just opened. the room is here when others arrive.',
+          hall:'healing', _mine:true };
+      }).reverse();
+    }catch(e){ return []; }
+  }
+  get ROOMS(){
+    const user=this.userRooms();
+    const seed=(typeof window!=='undefined'&&window.SHUTAP_SEED&&window.SHUTAP_SEED.rooms&&window.SHUTAP_SEED.rooms.length)?window.SHUTAP_SEED.rooms:this.FALLBACK_ROOMS;
+    const seen={}; const out=[];
+    user.concat(seed).forEach(r=>{ if(r&&!seen[r.id]){ seen[r.id]=1; out.push(r); } });
+    return out;
+  }
   get FALLBACK_ROOMS(){ return [
     {id:'0',alias:'Quiet Nigerian Swan',emoji:'🦢',title:"I told my mum I've been struggling for months. she cried and said she never knew.",support:'heard',relates:47,sitting:18,hours:'2h',reactions:{heard:55,same:28,strong:10,time:5,brave:2},body:"I've been holding this for a long time. managing it, mostly. it gets hard in the evenings. last week I finally told her — sitting at her kitchen table, hands around tea, trying to find normal words for it. she went very quiet and then she cried. not out of pity. out of not knowing. that was somehow harder than anything.",reflection:"something about the way she said she never knew. that part is sitting with me too.",hall:'healing'},
     {id:'1',alias:'Defiant Kenyan Lion',emoji:'🦁',title:"I left a six-figure job and nobody in my family has spoken to me since.",support:'advice',relates:83,sitting:26,hours:'5h',reactions:{heard:38,same:41,strong:12,time:6,brave:3},body:"I gave seven years to that job. the salary was real, the title was real, and the thing it was slowly doing to me was also real. I left in January. I haven't regretted it for one day. but I also haven't spoken to my dad, my sister, or my aunt since the announcement. I don't know if I'm supposed to wait them out or reach out first.",reflection:"seven years is not a small thing to hand back. neither is the silence after.",hall:'brave'},
