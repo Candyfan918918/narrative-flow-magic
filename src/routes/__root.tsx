@@ -156,6 +156,17 @@ function RootComponent() {
     let mounted = true;
     (async () => {
       const { supabase } = await import("@/integrations/supabase/client");
+      // Anonymous-first bootstrap: ensure every visitor has a valid JWT so
+      // `requireSupabaseAuth` server fns succeed without a sign-up.
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+          await supabase.auth.signInAnonymously();
+        }
+      } catch (e) {
+        console.error("[auth] anonymous bootstrap failed", e);
+      }
+      if (!mounted) return;
       const { data: sub } = supabase.auth.onAuthStateChange((event) => {
         if (!mounted) return;
         if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
