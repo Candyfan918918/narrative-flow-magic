@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useServerFn } from '@tanstack/react-start'
 import { runSpill } from '@/lib/agents/spill.functions'
 import { saveSituation, updateSituation } from '@/lib/situations.functions'
+import { supabase } from '@/integrations/supabase/client'
 
 export function LandingPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
