@@ -1,113 +1,38 @@
-/* Shutap design system tokens — see Shutap-Design-System.md */
+/* Shutap v2 design tokens — sourced from the supportive-room redesign
+   (Stream.dc.html). The prototype uses literal hex inline; these custom
+   properties capture the same values for reuse across the React app. */
 :root {
-  /* light surfaces */
-  --bg: #fdf0f5;
-  --bg-2: #fdf3f6;
-  --surface: #ffffff;
-  --surface-2: #f8eef2;
-  --surface-3: #f7e8f0;
+  /* surfaces */
+  --bg: #fdf0f5;          /* page background — warm blush, never pure white */
+  --ink: #0b080f;         /* primary text */
+  --surface: #ffffff;     /* cards */
+  --surface-2: #f7e8f0;   /* hover fills, avatars, tints */
 
-  /* text */
-  --ink: #0b080f;
-  --ink-soft: #4a3040;
-  --text-2: #6b4a5c;
-  --text-3: #967f8e;
+  /* text hierarchy */
+  --text-2: #6b4a5c;      /* secondary */
+  --text-3: #9e7a8c;      /* tertiary / timestamps */
+  --ink-soft: #4a3040;    /* react labels */
 
-  /* borders */
-  --border: rgba(11, 8, 15, 0.08);
-  --border-2: rgba(11, 8, 15, 0.12);
+  /* brand pinks */
+  --pink: #e7548a;        /* primary accent */
+  --wine: #c1216b;        /* prose links, emphasis numerals */
+  --wine-dark: #890041;   /* prose-link hover */
 
-  /* brand pink ladder */
-  --pink: #e7548a;
-  --pink-link: #c1216b;
-  --pink-link-hover: #890041;
-  --pink-deep: #a01a55;
-  --pink-soft: #ffd0e8;
-  --pink-glow: #f060a0;
-  /* legacy aliases */
-  --wine: #c1216b;
-  --wine-dark: #890041;
-
-  /* scan / mirror identity */
-  --indigo: #7f77dd;
-
-  /* dark surfaces */
+  /* warm aubergine (companion / dark surfaces) */
   --dark-1: #2e0d1a;
   --dark-2: #1a0a12;
-  --dark-flat: #181320;
-  --on-dark: #f7eef2;
-  --on-dark-2: #cdb0c1;
-  --on-dark-3: #967f8e;
-  --on-dark-voice: #c4a0b2;
 
-  /* gradients */
-  --grad-dark-shell: linear-gradient(160deg, #2e0d1a, #1a0a12);
-  --grad-cta: linear-gradient(155deg, #ff7eb3, #e7548a 55%, #c1216b);
-  --grad-mirror: linear-gradient(135deg, #e7548a, #a01a55);
-  --grad-avatar: linear-gradient(135deg, #f060a0, #890041);
+  /* live / supportive signals */
+  --live: #5dcaa5;        /* breathing presence dot */
 
-  /* mirror reading categories */
-  --mirror-good: #7fd4a3;
-  --mirror-you: #f3a0c1;
-  --mirror-corpus: #9fb4ef;
-
-  /* scan intensity spectrum */
-  --scan-1: #888780;
-  --scan-2: #7f77dd;
-  --scan-3: #d85a30;
-  --scan-4: #ef9f27;
-  --scan-5: #e24b4a;
-
-  /* safety */
-  --crisis: #e24b4a;
-  --north-star: #1d9e75;
-  --live: #5dcaa5;
-
-  /* legacy reaction palette */
+  /* reaction palette */
   --r-heard: #e7548a;
   --r-same: #c87c4a;
   --r-strong: #5b8a5e;
   --r-time: #7f77dd;
   --r-brave: #c1a02b;
 
-  /* shadows — plum-tinted */
-  --shadow-card: 0 12px 30px -24px rgba(80, 10, 45, 0.30);
-  --shadow-card-hover: 0 22px 44px -26px rgba(60, 10, 30, 0.42);
-  --shadow-sheet: 0 -24px 70px -30px rgba(80, 10, 45, 0.60);
-  --shadow-menu: 0 26px 54px -26px rgba(80, 10, 45, 0.32);
-  --shadow-cta: 0 18px 38px -18px rgba(193, 33, 107, 0.55);
-
-  /* radius */
-  --r-tile: 18px;
-  --r-feature: 22px;
-  --r-input: 14px;
-  --r-chip: 8px;
-
-  /* fonts */
-  --font-display: 'Sora', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-voice: 'Newsreader', Georgia, serif;
-  --font-voice-display: 'Cormorant Garamond', Georgia, serif;
-
-  /* shadcn bridge (so existing primary/foreground utilities map onto the brand) */
-  --background: var(--bg);
-  --foreground: var(--ink);
-  --card: var(--surface);
-  --card-foreground: var(--ink);
-  --popover: var(--surface);
-  --popover-foreground: var(--ink);
-  --primary: var(--pink);
-  --primary-foreground: #ffffff;
-  --secondary: var(--surface-2);
-  --secondary-foreground: var(--ink);
-  --muted: var(--surface-2);
-  --muted-foreground: var(--text-2);
-  --accent: var(--surface-3);
-  --accent-foreground: var(--ink);
-  --destructive: var(--crisis);
-  --destructive-foreground: #ffffff;
-  --border-color: var(--border);
-  --input: var(--border);
-  --ring: var(--pink);
-  --radius: 14px;
+  /* borders */
+  --border: rgba(11, 8, 15, 0.08);
+  --border-2: rgba(11, 8, 15, 0.16);
 }

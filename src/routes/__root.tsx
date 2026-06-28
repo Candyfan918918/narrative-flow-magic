@@ -109,7 +109,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&family=Newsreader:ital,wght@1,400;1,500;1,600&family=Cormorant+Garamond:ital,wght@1,400;1,500;1,600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&family=Newsreader:ital,wght@1,400;1,500&display=swap",
       },
     ],
     scripts: [
@@ -156,17 +156,6 @@ function RootComponent() {
     let mounted = true;
     (async () => {
       const { supabase } = await import("@/integrations/supabase/client");
-      // Anonymous-first bootstrap: ensure every visitor has a valid JWT so
-      // `requireSupabaseAuth` server fns succeed without a sign-up.
-      try {
-        const { data } = await supabase.auth.getSession();
-        if (!data.session) {
-          await supabase.auth.signInAnonymously();
-        }
-      } catch (e) {
-        console.error("[auth] anonymous bootstrap failed", e);
-      }
-      if (!mounted) return;
       const { data: sub } = supabase.auth.onAuthStateChange((event) => {
         if (!mounted) return;
         if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;

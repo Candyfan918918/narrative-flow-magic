@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" fill="#fcf1f5"/>
+  <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  <g transform="translate(30,0)">
+    <rect x="15.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+    <rect x="29.25" y="34" width="11.5" height="24" rx="5.75" fill="#c1216b"/>
+  </g>
+  <ellipse cx="23" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="35" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="65" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+  <ellipse cx="77" cy="48" rx="4" ry="5" fill="#2e0a1a"/>
+</svg>
+</template>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,18,400;0,18,500;1,18,400;1,18,500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1a0a12;color:#f7e8f0;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+@keyframes eblink{0%,34%,40%,78%,84%,100%{transform:scaleY(1)}37%,81%{transform:scaleY(.1)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+@keyframes sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-3px) rotate(3deg)}}
+@keyframes thump{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes slotIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes shimmer{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+@keyframes spin{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
+.oauth-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px 20px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;font-size:15px;color:#f7e8f0;transition:.18s}
+.oauth-btn:hover{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.25)}
+.step{display:none;animation:fadeUp .4s ease}
+.step.active{display:flex;flex-direction:column}
+
+/* subtle app scrollbars */
+*{scrollbar-width:thin;scrollbar-color:rgba(231,84,138,.4) transparent}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(231,84,138,.38);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(231,84,138,.6);background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
+</style>
+<script src="./feedback-engine.js"></script>
+</helmet>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <radialGradient id="eyeG" cx="40%" cy="18%" r="75%"><stop offset="0%" stop-color="#fff"></stop><stop offset="18%" stop-color="#ffd0e8"></stop><stop offset="48%" stop-color="#f060a0"></stop><stop offset="78%" stop-color="#c0206a"></stop><stop offset="100%" stop-color="#880040"></stop></radialGradient>
+  <radialGradient id="pupG" cx="50%" cy="55%" r="58%"><stop offset="0%" stop-color="#3a1020"></stop><stop offset="100%" stop-color="#060106"></stop></radialGradient>
+</defs></svg>
+
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="width:100%;max-width:420px">
+
+    <!-- STEP 1: AUTH -->
+    <div id="step-auth" class="step active" style="gap:28px">
+      <div style="text-align:center">
+        <span style="display:block;width:52px;height:37px;margin:0 auto 20px;animation:eblink 3.4s infinite;transform-origin:center">
+          <svg viewBox="0 0 140 96" fill="none" style="display:block;width:100%;height:100%"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><path d="M44 22 C41 18 35 18 35 24 C35 30 44 36 44 36 C44 36 53 30 53 24 C53 18 47 18 44 22Z" fill="#fff" opacity=".95"></path><path d="M112 22 C109 18 103 18 103 24 C103 30 112 36 112 36 C112 36 121 30 121 24 C121 18 115 18 112 22Z" fill="#fff" opacity=".95"></path></svg>
+        </span>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.04em;margin-bottom:10px">shut<span style="color:#e7548a">ap</span></div>
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-size:18px;line-height:1.45;color:#c4a0b2;margin-bottom:4px">before the room hears you,</div>
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-size:18px;line-height:1.45;color:#f7e8f0">you need a name.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="oauth-btn" onClick="{{ authGoogle }}">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.615 24 12.255 24z"/><path fill="#FBBC05" d="M5.525 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62h-3.98a11.86 11.86 0 000 10.76l3.98-3.09z"/><path fill="#EA4335" d="M12.255 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C18.205 1.19 15.495 0 12.255 0c-4.64 0-8.74 2.7-10.71 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+          continue with Google
+        </button>
+        <button class="oauth-btn" onClick="{{ authApple }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#f7e8f0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          continue with Apple
+        </button>
+        <div style="display:flex;align-items:center;gap:11px;margin:6px 0">
+          <div style="flex:1;height:.5px;background:rgba(255,255,255,.12)"></div>
+          <span style="font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#9e7a8c">or</span>
+          <div style="flex:1;height:.5px;background:rgba(255,255,255,.12)"></div>
+        </div>
+        <div style="display:flex;gap:9px">
+          <input type="email" placeholder="your email" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:13px 15px;color:#f7e8f0;font-family:'Inter',sans-serif;font-size:15px;outline:none">
+          <button onClick="{{ authEmail }}" style="padding:13px 18px;background:#e7548a;border:none;border-radius:12px;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap">go →</button>
+        </div>
+      </div>
+      <div style="text-align:center;font-family:'Newsreader',serif;font-style:italic;font-size:12.5px;color:#9e7a8c">18+ only · your real name is never attached to anything here</div>
+    </div>
+
+    <!-- STEP 2: AGE GATE -->
+    <div id="step-age" class="step" style="gap:24px;text-align:center">
+      <div>
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-size:22px;line-height:1.4;color:#f7e8f0;margin-bottom:8px">one small thing first.</div>
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-size:15px;color:#c4a0b2;line-height:1.55;max-width:34ch;margin:0 auto">shutap is 18 and over. some of what's shared here is honest in ways that need a little life experience to hold.</div>
+      </div>
+      <div>
+        <div style="font-family:'Sora',sans-serif;font-weight:600;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9e7a8c;margin-bottom:14px">your date of birth</div>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#9e7a8c;font-family:'Sora',sans-serif">Day</div>
+            <div ref="{{ bdayDay }}" style="width:70px;height:160px;overflow-y:auto;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.04);scroll-snap-type:y mandatory;scrollbar-width:none;position:relative"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#9e7a8c;font-family:'Sora',sans-serif">Month</div>
+            <div ref="{{ bdayMonth }}" style="width:100px;height:160px;overflow-y:auto;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.04);scroll-snap-type:y mandatory;scrollbar-width:none;position:relative"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#9e7a8c;font-family:'Sora',sans-serif">Year</div>
+            <div ref="{{ bdayYear }}" style="width:82px;height:160px;overflow-y:auto;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.04);scroll-snap-type:y mandatory;scrollbar-width:none;position:relative"></div>
+          </div>
+        </div>
+        <div ref="{{ bdayError }}" style="margin-top:12px;font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#e7548a;min-height:20px;text-align:center"></div>
+      </div>
+      <button onClick="{{ confirmAge }}" style="width:100%;padding:15px 20px;background:#e7548a;border:none;border-radius:14px;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:15px;cursor:pointer">confirm →</button>
+    </div>
+
+    <!-- STEP 3: ALIAS SLOT MACHINE -->
+    <div id="step-alias" class="step" style="gap:28px">
+      <div>
+        <div style="font-family:'Sora',sans-serif;font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#e7548a;margin-bottom:14px">your name in the room</div>
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-size:18px;line-height:1.5;color:#f7e8f0;margin-bottom:8px">it won't be yours. it will be the name the room knows you by.</div>
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-size:15px;color:#c4a0b2">one alias. always yours. never your real name.</div>
+      </div>
+
+      <!-- SLOT MACHINE -->
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:20px;padding:28px 24px;text-align:center">
+        <div style="font-size:44px;margin-bottom:16px" ref="{{ aliasEmoji }}">🦉</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;min-height:52px">
+          <span ref="{{ slotEmotion }}" style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;color:#f7b8d4;animation:slotIn .35s ease">Quiet</span>
+          <span style="color:#e7548a;font-family:'Sora',sans-serif;font-weight:800;font-size:18px">·</span>
+          <span ref="{{ slotNation }}" style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;color:#f7e8f0;animation:slotIn .35s ease">Indonesian</span>
+          <span style="color:#e7548a;font-family:'Sora',sans-serif;font-weight:800;font-size:18px">·</span>
+          <span ref="{{ slotCreature }}" style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;color:#f7e8f0;animation:slotIn .35s ease">Owl</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button onClick="{{ spinAlias }}" style="width:100%;padding:15px 20px;background:rgba(231,84,138,.12);border:1.5px solid rgba(231,84,138,.35);border-radius:14px;color:#f7b8d4;font-family:'Sora',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:.18s">spin again</button>
+        <button onClick="{{ keepAlias }}" style="width:100%;padding:15px 20px;background:#e7548a;border:none;border-radius:14px;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:15px;cursor:pointer">this is me →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: WELCOME -->
+    <div id="step-welcome" class="step" style="gap:24px;text-align:center">
+      <span style="display:block;width:52px;height:37px;margin:0 auto;animation:eblink 3.4s infinite;transform-origin:center">
+        <svg viewBox="0 0 140 96" fill="none" style="display:block;width:100%;height:100%"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><path d="M44 22 C41 18 35 18 35 24 C35 30 44 36 44 36 C44 36 53 30 53 24 C53 18 47 18 44 22Z" fill="#fff" opacity=".95"></path><path d="M112 22 C109 18 103 18 103 24 C103 30 112 36 112 36 C112 36 121 30 121 24 C121 18 115 18 112 22Z" fill="#fff" opacity=".95"></path></svg>
+      </span>
+      <div>
+        <div ref="{{ welcomeName }}" style="font-family:'Newsreader',serif;font-style:italic;font-size:26px;color:#f7b8d4;margin-bottom:10px"></div>
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-size:16px;line-height:1.6;color:#c4a0b2;max-width:34ch;margin:0 auto">the room knows you now. whatever you're carrying, you can put it down here.</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:18px 20px;text-align:left;display:flex;gap:12px;align-items:flex-start">
+        <svg viewBox="0 0 140 96" fill="none" style="display:block;width:22px;height:16px;flex:none;margin-top:3px"><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)"></rect><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)"></ellipse><path d="M44 22 C41 18 35 18 35 24 C35 30 44 36 44 36 C44 36 53 30 53 24 C53 18 47 18 44 22Z" fill="#fff" opacity=".95"></path><path d="M112 22 C109 18 103 18 103 24 C103 30 112 36 112 36 C112 36 121 30 121 24 C121 18 115 18 112 22Z" fill="#fff" opacity=".95"></path></svg>
+        <div ref="{{ welcomeCompanion }}" style="font-family:'Newsreader',serif;font-style:italic;font-size:15.5px;line-height:1.55;color:#f7e8f0"></div>
+      </div>
+      <div ref="{{ enterBtn }}" style="display:block;width:100%;padding:15px 20px;background:#e7548a;border-radius:14px;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:15px;text-align:center;cursor:pointer">enter the room →</div>
+    </div>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+
+  get PARTS(){ return {
+    emotions:['Quiet','Wistful','Defiant','Restless','Tender','Patient','Bitter','Forlorn','Tired','Honest','Careful','Steady','Mortified','Hopeful','Reluctant','Curious','Fierce','Gentle'],
+    nations:['Nigerian','Filipino','Brazilian','Kenyan','Indian','Ethiopian','Pakistani','Moroccan','Chilean','Polish','Cuban','Vietnamese','Lebanese','Indonesian','Ghanaian','Korean','Italian','Welsh','Turkish','Argentinian'],
+    creatures:[
+      {n:'Owl',e:'🦉'},{n:'Fox',e:'🦊'},{n:'Bear',e:'🐻'},{n:'Lion',e:'🦁'},
+      {n:'Butterfly',e:'🦋'},{n:'Hedgehog',e:'🦔'},{n:'Swan',e:'🦢'},{n:'Heron',e:'🪿'},
+      {n:'Wolf',e:'🐺'},{n:'Hawk',e:'🦅'},{n:'Crane',e:'🕊'},{n:'Fawn',e:'🦌'},
+      {n:'Hare',e:'🐇'},{n:'Stork',e:'🦩'},{n:'Dove',e:'🕊'},{n:'Pelican',e:'🦢'}
+    ]
+  };}
+
+  renderVals(){
+    return {
+      slotEmotion: el=>{ this.$emo=el; },
+      slotNation:  el=>{ this.$nat=el; },
+      slotCreature:el=>{ this.$cre=el; },
+      aliasEmoji:  el=>{ this.$emoji=el; },
+      enterBtn: el=>{ if(el) el.addEventListener('click',()=>{ location.href=this.returnTo()||'Landing.dc.html'; }); },
+      welcomeName: el=>{ this.$wname=el; },
+      welcomeCompanion: el=>{ this.$wcomp=el; },
+      bdayDay:   el=>{ this.$bday=el; this.buildWheel(el,'day'); },
+      bdayMonth: el=>{ this.$bmon=el; this.buildWheel(el,'month'); },
+      bdayYear:  el=>{ this.$byr=el;  this.buildWheel(el,'year'); },
+      bdayError: el=>{ this.$berr=el; },
+      authGoogle:  ()=>this.next('step-age'),
+      authApple:   ()=>this.next('step-age'),
+      authEmail:   ()=>this.next('step-age'),
+      confirmAge:  ()=>this.checkAge(),
+      spinAlias:   ()=>this.spinAlias(),
+      keepAlias:   ()=>this.keepAlias()
+    };
+  }
+
+  componentDidMount(){ this.alias={emotion:'Quiet',nation:'Indonesian',creature:{n:'Owl',e:'🦉'}}; }
+
+  buildWheel(el, kind){
+    if(!el) return;
+    el.innerHTML='';
+    const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const now=new Date();
+    const maxYear=now.getFullYear()-18; // cutoff recalculates daily
+    let items=[];
+    if(kind==='day')   items=Array.from({length:31},(_,i)=>String(i+1).padStart(2,'0'));
+    if(kind==='month') items=MONTHS;
+    if(kind==='year')  items=Array.from({length:maxYear-1924+1},(_,i)=>String(maxYear-i));
+    // spacer top/bottom so selection aligns to centre
+    const spacer=()=>{ const s=document.createElement('div'); s.style.cssText='height:64px;flex:none;scroll-snap-align:none'; return s; };
+    el.appendChild(spacer());
+    items.forEach(v=>{
+      const d=document.createElement('div');
+      d.dataset.val=v;
+      d.style.cssText='height:40px;display:flex;align-items:center;justify-content:center;font-family:Newsreader,serif;font-style:italic;font-size:16px;color:#f7e8f0;scroll-snap-align:center;flex:none;cursor:pointer;border-radius:8px;margin:4px 5px;transition:background .15s';
+      d.textContent=v;
+      d.addEventListener('click',()=>{ el.scrollTo({top:d.offsetTop-64,behavior:'smooth'}); });
+      el.appendChild(d);
+    });
+    el.appendChild(spacer());
+    // highlight selected on scroll
+    el.addEventListener('scroll',()=>this.highlightSelected(el));
+    setTimeout(()=>this.highlightSelected(el),100);
+    // default to middle of range for year, 1 Jan for day/month
+    if(kind==='year'){
+      const midIdx=Math.floor(items.length/2);
+      setTimeout(()=>{ const mid=el.querySelectorAll('[data-val]')[midIdx]; if(mid) el.scrollTo({top:mid.offsetTop-64}); },50);
+    }
+  }
+
+  highlightSelected(el){
+    const centre=el.scrollTop+80;
+    el.querySelectorAll('[data-val]').forEach(d=>{
+      const mid=d.offsetTop+20;
+      const sel=Math.abs(mid-centre)<24;
+      d.style.background=sel?'rgba(231,84,138,.18)':'';
+      d.style.color=sel?'#f7b8d4':'#f7e8f0';
+      d.style.fontWeight=sel?'500':'400';
+    });
+  }
+
+  getWheelVal(el){
+    if(!el) return null;
+    const centre=el.scrollTop+80;
+    let best=null,bestDist=Infinity;
+    el.querySelectorAll('[data-val]').forEach(d=>{
+      const dist=Math.abs(d.offsetTop+20-centre);
+      if(dist<bestDist){ bestDist=dist; best=d.dataset.val; }
+    });
+    return best;
+  }
+
+  checkAge(){
+    if(this.$berr) this.$berr.textContent='';
+    const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const day=parseInt(this.getWheelVal(this.$bday)||'1',10);
+    const monStr=this.getWheelVal(this.$bmon)||'Jan';
+    const month=MONTHS.indexOf(monStr);
+    const year=parseInt(this.getWheelVal(this.$byr)||'1990',10);
+    if(isNaN(day)||isNaN(year)||month<0){
+      if(this.$berr) this.$berr.textContent='scroll to your date of birth and try again.';
+      return;
+    }
+    const dob=new Date(year, month, day);
+    const now=new Date();
+    const age=now.getFullYear()-dob.getFullYear()-(now<new Date(now.getFullYear(),dob.getMonth(),dob.getDate())?1:0);
+    if(age<18){
+      if(this.$berr) this.$berr.textContent='the room is for people 18 and over. come back in '+(18-age)+' year'+(18-age!==1?'s':'')+'.';
+      return;
+    }
+    this.next('step-alias');
+    setTimeout(()=>this.spinAlias(),300);
+  }
+
+  rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  spinAlias(){
+    const P=this.PARTS;
+    this.alias={ emotion:this.rand(P.emotions), nation:this.rand(P.nations), creature:this.rand(P.creatures) };
+    const animate=el=>{ if(!el) return; el.style.animation='none'; void el.offsetWidth; el.style.animation='slotIn .35s ease'; };
+    if(this.$emo){ this.$emo.textContent=this.alias.emotion; animate(this.$emo); }
+    if(this.$nat){ this.$nat.textContent=this.alias.nation; animate(this.$nat); }
+    if(this.$cre){ this.$cre.textContent=this.alias.creature.n; animate(this.$cre); }
+    if(this.$emoji){ this.$emoji.textContent=this.alias.creature.e; }
+  }
+
+  returnTo(){ try{ const u=sessionStorage.getItem('shutap_returnTo'); sessionStorage.removeItem('shutap_returnTo'); return u||null; }catch(e){ return null; } }
+
+  keepAlias(){
+    const name=this.alias.emotion+' '+this.alias.nation+' '+this.alias.creature.n;
+    try{ localStorage.setItem('shutap_alias', JSON.stringify({name, emoji: this.alias.creature.e})); }catch(e){}
+    const fullName=name+' '+this.alias.creature.e;
+    const companions=[
+      this.alias.emotion.toLowerCase()+' '+this.alias.nation.toLowerCase()+' '+this.alias.creature.n.toLowerCase()+'. the room knows you now.',
+      "something's been sitting with you. you showed up anyway. tell me — what happened?",
+      "the room doesn't need your real name. it just needs what you're carrying.",
+      "you're here. that's already something. the room is open whenever you're ready."
+    ];
+    if(this.$wname) this.$wname.textContent=fullName;
+    if(this.$wcomp) this.$wcomp.textContent=companions[Math.floor(Math.random()*companions.length)];
+    this.next('step-welcome');
+  }
+
+  next(id){ document.querySelectorAll('.step').forEach(s=>s.classList.remove('active')); const s=document.getElementById(id); if(s) s.classList.add('active'); }
+}
+
+</script>
+</body>
+</html>

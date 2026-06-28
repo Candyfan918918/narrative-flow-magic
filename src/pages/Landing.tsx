@@ -1,28 +1,19 @@
-/* Reactive Landing — replaces the iframe port. Real React with Spill + Scan
- * triggers, Mirror card, and recent public rooms preview. */
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+/* Pixel-perfect port of project/Landing.dc.html with agent bridge. */
+import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useServerFn } from '@tanstack/react-start'
-import { Header } from '@/components/Header'
-import { SpillSheet } from '@/components/spill/SpillSheet'
-import { ScanFlow } from '@/components/scan/ScanFlow'
-import { listMySituations, saveSituation } from '@/lib/situations.functions'
+import { runSpill } from '@/lib/agents/spill.functions'
+import { saveSituation, updateSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
-import { track } from '@/lib/behavioral'
-import { getAlias } from '@/lib/auth'
-
-const PINK = '#c1216b'
-const INDIGO = '#7F77DD'
 
 export function LandingPage() {
+  const iframeRef = useRef<HTMLIFrameElement>(null)
   const navigate = useNavigate()
-  const [spillOpen, setSpillOpen] = useState(false)
-  const [scanOpen, setScanOpen] = useState(false)
-  const callSave = useServerFn(saveSituation)
-  const callList = useServerFn(listMySituations)
+  const spill = useServerFn(runSpill)
+  const save = useServerFn(saveSituation)
+  const update = useServerFn(updateSituation)
 
-  // resume pending save after sign-in
+  // Resume a pending Spill save after the user returns from sign-in.
   useEffect(() => {
     let cancelled = false
     ;(async () => {
@@ -32,90 +23,81 @@ export function LandingPage() {
       if (!sess.session || cancelled) return
       try {
         const payload = JSON.parse(raw)
-        const res = await callSave({ data: payload as never })
+        const res = await save({ data: payload as never })
         sessionStorage.removeItem('shutap_pending_save')
-        if (payload.is_public && res.room_id) navigate(`/room?id=${res.id}`)
-        else navigate('/profile')
-      } catch { /* leave for retry */ }
+        if (res?.room_id) navigate(`/stream#room-${res.room_id}`)
+        else if (res?.id) navigate(`/profile`)
+      } catch {
+        // leave the payload so the user can retry
+      }
     })()
     return () => { cancelled = true }
-  }, [navigate, callSave])
+  }, [navigate, save])
 
-  const [authed, setAuthed] = useState(false)
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session))
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setAuthed(!!s))
-    return () => sub.subscription.unsubscribe()
-  }, [])
+    const onMsg = async (e: MessageEvent) => {
+      const d = e.data as
+        | { type?: string; plan?: string; raw?: string; pillar?: string; reqId?: string; is_public?: boolean; to?: string; hash?: string; payload?: Record<string, unknown>; id?: string; patch?: Record<string, unknown> }
+        | null
+      if (!d || !d.type) return
+      const post = (payload: unknown) =>
+        iframeRef.current?.contentWindow?.postMessage(payload, '*')
+      if (d.type === 'shutap-nav' && d.to) {
+        navigate(d.to + (d.hash || ''))
+        return
+      }
+      if (d.type === 'shutap-subscribe') {
+        const plan = d.plan === 'monthly' ? 'monthly' : 'annual'
+        navigate(`/subscribe?plan=${plan}`)
+      } else if (d.type === 'shutap-manage-sub') {
+        navigate('/profile')
+      } else if (d.type === 'shutap-spill' && d.raw) {
+        try {
+          const pillar = (d.pillar === 'marriage' || d.pillar === 'family' || d.pillar === 'career')
+            ? d.pillar : 'relationships'
+          const result = await spill({
+            data: { raw: d.raw, pillar, is_public: d.is_public ?? true },
+          })
+          post({ type: 'shutap-spill-result', reqId: d.reqId, ...result })
+        } catch (err) {
+          post({ type: 'shutap-spill-result', reqId: d.reqId, error: err instanceof Error ? err.message : 'spill failed' })
+        }
+      } else if (d.type === 'shutap-persist-situation' && d.payload) {
+        try {
+          const { data: sess } = await supabase.auth.getSession()
+          if (!sess.session) {
+            sessionStorage.setItem('shutap_pending_save', JSON.stringify(d.payload))
+            post({ type: 'shutap-persist-situation-result', reqId: d.reqId, error: 'auth_required' })
+            navigate('/welcome')
+            return
+          }
+          const res = await save({ data: d.payload as never })
+          post({ type: 'shutap-persist-situation-result', reqId: d.reqId, id: res.id, room_id: res.room_id })
+        } catch (err) {
+          post({ type: 'shutap-persist-situation-result', reqId: d.reqId, error: err instanceof Error ? err.message : 'save failed' })
+        }
+      } else if (d.type === 'shutap-update-situation' && d.id && d.patch) {
+        try {
+          const { data: sess } = await supabase.auth.getSession()
+          if (!sess.session) { navigate('/welcome'); return }
+          const res = await update({ data: { id: d.id, ...d.patch } as never })
+          post({ type: 'shutap-update-situation-result', reqId: d.reqId, id: res.id, room_id: res.room_id })
 
-  useEffect(() => { if (authed) track('session_start', { page: 'landing' }) }, [authed])
-
-  const alias = getAlias()
-  const { data: mine } = useQuery({
-    queryKey: ['my-situations-preview'],
-    queryFn: () => callList(),
-    enabled: authed && !!alias,
-    staleTime: 60000,
-  })
-  const myCount = mine?.length ?? 0
-  const mirrorReady = myCount >= 2
-
+        } catch (err) {
+          post({ type: 'shutap-update-situation-result', reqId: d.reqId, error: err instanceof Error ? err.message : 'update failed' })
+        }
+      }
+    }
+    window.addEventListener('message', onMsg)
+    return () => window.removeEventListener('message', onMsg)
+  }, [navigate, spill, save, update])
   return (
-    <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-      <Header />
-      <main style={{ maxWidth: 740, margin: '0 auto', padding: '34px 22px 80px' }}>
-        <h1 style={hero}>
-          relationships, marriage, family, work.<br />
-          <em>say what's actually happening.</em>
-        </h1>
-        <p style={subhero}>warm, anonymous, on your side. spill out loud or scan how loud it is in your head.</p>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 28 }}>
-          <button onClick={() => setSpillOpen(true)} style={{ ...cta, background: PINK }}>
-            <div style={ctaLabel}>SPILL ✦</div>
-            <div style={ctaCopy}>tell the spill what's up — i'll dig with you, then write it up in your voice.</div>
-          </button>
-          <button onClick={() => setScanOpen(true)} style={{ ...cta, background: INDIGO }}>
-            <div style={ctaLabel}>SCAN ✦</div>
-            <div style={ctaCopy}>9–12 quick cards. i'll read how loud it is right now and give you a real number.</div>
-          </button>
-        </div>
-
-        {/* mirror card — proactive surface (§9, §10) */}
-        <Link to="/mirror" onClick={() => track('mirror_card_open')} style={mirrorCard}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 12, letterSpacing: '.18em', color: INDIGO }}>THE MIRROR ✦</div>
-            <span style={{ color: INDIGO, fontSize: 12 }}>open →</span>
-          </div>
-          <p style={mirrorLine}>
-            {mirrorReady
-              ? 'a living portrait of you — drawn from what you have actually said.'
-              : 'still forming. spill once or twice and i will start to see you clearly.'}
-          </p>
-        </Link>
-
-        <div style={{ marginTop: 36 }}>
-          <Link to="/stream" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 12, letterSpacing: '.16em', color: '#9e7a8c' }}>
-              ROOMS · the public stream
-            </div>
-            <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 17, color: '#0b080f', marginTop: 6 }}>
-              wander what other people are pouring out today →
-            </p>
-          </Link>
-        </div>
-      </main>
-
-      <SpillSheet open={spillOpen} onClose={() => setSpillOpen(false)} />
-      <ScanFlow open={scanOpen} onClose={() => setScanOpen(false)} />
-    </div>
+    <iframe
+      ref={iframeRef}
+      src="/shutap/Shutap-Landing.dc.html"
+      title="Shutap — Landing"
+      style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, margin: 0, padding: 0, background: '#fdf0f5' }}
+    />
   )
 }
-
-const hero: React.CSSProperties = { fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 30, lineHeight: 1.18, margin: 0, color: '#0b080f' }
-const subhero: React.CSSProperties = { fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 17, color: '#4a3040', marginTop: 12 }
-const cta: React.CSSProperties = { display: 'block', textAlign: 'left', padding: '18px 20px', borderRadius: 18, border: 0, color: '#fff', cursor: 'pointer', minHeight: 130 }
-const ctaLabel: React.CSSProperties = { fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 14, letterSpacing: '.16em', marginBottom: 8 }
-const ctaCopy: React.CSSProperties = { fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15, lineHeight: 1.35, opacity: .94 }
-const mirrorCard: React.CSSProperties = { display: 'block', marginTop: 22, padding: '18px 20px', borderRadius: 18, background: 'linear-gradient(135deg, rgba(127,119,221,.10), rgba(193,33,107,.06))', border: '.5px solid rgba(127,119,221,.25)', textDecoration: 'none' }
-const mirrorLine: React.CSSProperties = { fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 16, color: '#0b080f', marginTop: 8 }

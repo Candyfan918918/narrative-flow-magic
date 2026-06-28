@@ -1,6 +1,5 @@
 // The Scan — intensity scoring (0-999) with LLM + deterministic fallback.
 import { createServerFn } from '@tanstack/react-start'
-import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { z } from 'zod'
 import { callAgent, tryParseJson } from './gateway'
 
@@ -56,7 +55,6 @@ const ScanInput = z.object({
 })
 
 export const scanIntensity = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => ScanInput.parse(data))
   .handler(async ({ data }): Promise<ScanResult> => {
     const llm = await callAgent({

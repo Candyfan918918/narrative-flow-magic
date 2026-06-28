@@ -138,24 +138,7 @@ function canFire(id: string, opts: ShareOpts) {
   return true
 }
 
-function escHtml(s: unknown): string {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
-function artifact(rawOpts: ShareOpts): string {
-  const opts: ShareOpts = {
-    ...rawOpts,
-    big: escHtml(rawOpts.big || ''),
-    headline: escHtml(rawOpts.headline || ''),
-    sub: rawOpts.sub ? escHtml(rawOpts.sub) : rawOpts.sub,
-    badge: rawOpts.badge ? escHtml(rawOpts.badge) : rawOpts.badge,
-    loopLabel: rawOpts.loopLabel ? escHtml(rawOpts.loopLabel) : rawOpts.loopLabel,
-    accent: /^#[0-9a-fA-F]{3,8}$/.test(rawOpts.accent || '') ? rawOpts.accent : '#e7548a',
-  }
+function artifact(opts: ShareOpts): string {
   const kind = opts.kind || 'generic'
   const accent = opts.accent || '#e7548a'
   let bg = 'linear-gradient(165deg,#2a0d18,#160810)'
@@ -352,7 +335,7 @@ function showSheet(id: string, opts: ShareOpts) {
     '<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:15px">' +
     EYE +
     '<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.5;color:#f7e8f0">' +
-    escHtml(opts.companion || 'want to share this?') +
+    (opts.companion || 'want to share this?') +
     '</div></div>'
   sheet.innerHTML = head + artifact(opts)
 
@@ -391,7 +374,7 @@ function showSheet(id: string, opts: ShareOpts) {
   foot.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px'
   foot.innerHTML =
     '<span style="font-family:Newsreader,serif;font-style:italic;font-size:12px;color:#9b8090">' +
-    escHtml(opts.privacy || 'only this card leaves — never your words or name.') +
+    (opts.privacy || 'only this card leaves — never your words or name.') +
     '</span>'
   const no = document.createElement('span')
   no.textContent = 'not now'
