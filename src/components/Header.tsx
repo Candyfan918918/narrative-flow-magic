@@ -153,6 +153,12 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                     <Link to="/halls" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
                       hall of fame
                     </Link>
+                    <Link to="/mirror" className="menu-item" style={{ ...menuItem, color: '#7F77DD' }} onClick={() => setMenuOpen(false)}>
+                      the mirror ✦
+                    </Link>
+                    <Link to="/profile" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
+                      your profile
+                    </Link>
                     <Link to="/room" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
                       open a room
                     </Link>

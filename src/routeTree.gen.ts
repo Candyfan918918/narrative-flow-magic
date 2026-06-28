@@ -31,6 +31,7 @@ import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
+import { Route as AuthenticatedMirrorRouteImport } from './routes/_authenticated/mirror'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
@@ -146,6 +147,11 @@ const ApiCompleteRoute = ApiCompleteRouteImport.update({
   path: '/api/complete',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMirrorRoute = AuthenticatedMirrorRouteImport.update({
+  id: '/mirror',
+  path: '/mirror',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiFeedbackEventsRoute = ApiFeedbackEventsRouteImport.update({
   id: '/api/feedback/events',
   path: '/api/feedback/events',
@@ -192,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/mirror': typeof AuthenticatedMirrorRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -220,6 +227,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/mirror': typeof AuthenticatedMirrorRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -250,6 +258,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/_authenticated/mirror': typeof AuthenticatedMirrorRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -280,6 +289,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/mirror'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/mirror'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -337,6 +348,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/_authenticated/mirror'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -533,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/mirror': {
+      id: '/_authenticated/mirror'
+      path: '/mirror'
+      fullPath: '/mirror'
+      preLoaderRoute: typeof AuthenticatedMirrorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/feedback/events': {
       id: '/api/feedback/events'
       path: '/api/feedback/events'
@@ -572,10 +591,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedMirrorRoute: typeof AuthenticatedMirrorRoute
   AuthenticatedCheckinIdRoute: typeof AuthenticatedCheckinIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedMirrorRoute: AuthenticatedMirrorRoute,
   AuthenticatedCheckinIdRoute: AuthenticatedCheckinIdRoute,
 }
 
@@ -613,13 +634,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

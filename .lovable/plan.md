@@ -1,71 +1,56 @@
-# Spill v2 + content ownership — exactly per Spill-Agent-Spec.md + Shutap-Updates-LOVABLE-PROMPT.md
+# Build everything in #2 — the 5 missing spec items
 
-Already done (last turn): schema delta (`kind`, `body`, `edited`, `deleted_at`, `status='deleted'`, `comments` table, security tightening), `saveSituation` / `updateSituation` / `deleteSituation` / `composePost` / `aiEditPost` / list/get / comments CRUD, `SituationEditor.tsx`, real `Profile.tsx`.
+The Spill v2 + content-ownership server layer is already in place (`saveSituation`, `updateSituation`, `composePost`, `aiEditPost`, comments CRUD, soft-delete). What's still not wired to real backend per the 0627 specs:
 
-This plan finishes the rest of both specs, no creative additions.
+## 1. Adaptive AI Scan (replaces the static multi-choice)
+**Server:** new `src/lib/agents/scan-turn.functions.ts` (`requireSupabaseAuth`).
+- Persona in server-only `scan-persona.server.ts` — warm/funny friend, digs one layer deeper each card (event → feeling → feeling-under → fear/need/grief), greets by alias.
+- One AI call per card via Lovable AI Gateway (`google/gemini-3-flash-preview`), strict JSON: either `{line, prompt, card:{type, ...}}` or terminal `{done:true, score:0-999, signature, read, factors[], pillar}`.
+- Input types: `choice` / `multi` / `rate` / `spectrum` / `rank` / `text`. Server enforces no repeat type two turns in a row, ~5–8 cards soft cap. PII scrub + Crisis Guardian on every text input.
+- Band logic 0-199 / 200-399 / 400-599 / 600-799 / 800-999.
 
-## 1. Drop in the refreshed prototypes (visual reference)
-Copy from `Shutap_0627_Spill2.zip → exports/`:
-- `Shutap-Landing.html` → `public/shutap/Shutap-0627.html` (the file the live Landing iframe loads)
-- `Shutap-Stream.html`, `Shutap-Profile.html`, `Shutap-Feedback-Admin.html` → `public/shutap/` (visual reference only; Profile is already a React page, Stream stays iframe)
+**Client:** new `src/components/ScanRunner.tsx` rendering the 6 input widgets with indigo (`#7F77DD`) identity, SCAN wordmark, filling gauge. Mounted in a slide-up on Landing (replaces the existing static SCAN_Q path in `Shutap-0627.html` via postMessage bridge: `shutap-scan-turn` → parent → server fn → reply).
 
-Re-inject `ai-bridge.js` and `auth-sheet.js` references into the new HTML so `window.claude.*` and the Supabase postMessage bridge keep working.
+**Close = preview → destination** (same pattern as Spill): score + band + pillar chip + signature + read, then "post as room" or "keep private" → `saveSituation({kind:'scan', visibility, initial_scan, scan_band, body:read, …})` → redirect into the new room or `/profile#journal`.
 
-## 2. Turn engine — `runSpillTurn` (replaces the old monolithic `runSpill`)
-New `src/lib/agents/spill-turn.functions.ts`, `requireSupabaseAuth`:
-- Persona + JSON contract from new server-only `src/lib/agents/spill-persona.server.ts` (full §10a system prompt + few-shot from Spill-Agent-Spec).
-- One AI call per turn via Lovable AI Gateway (`google/gemini-3-flash-preview`), strict JSON output (Spill-Spec §3 + Updates §1 schema, including `arc:{what_happened, frequency, feeling, why, talked_to_them, other_attempts, plan}`).
-- Inputs: `{ transcript, draft, arc, meta:{turn_index, max_turns:12}, alias }`.
-- Pre-call: PII Scrubber + Crisis Guardian on the latest user turn (reuse `src/lib/agents/scrubber.functions.ts` + `guard.functions.ts`). Guardian trip → return safety branch with `crisis_flag` and `decision:"ready"`.
-- Server-side post-call validation: enforce `say.length ≤ 3`, total ≤ ~30 words, ban phrases ("sit with that", "hold space", "that's valid", "i hear you", "thank you for sharing", "it sounds like", "that must be hard", "how did that make you feel") — strip/retry once if violated.
-- `decision:"ready"` only when arc's action + plan beats are covered OR `turn_index ≥ 12` OR explicit `named_and_landed && quiet user agreement`.
+## 2. Scan-as-room (public scan renders as a full room)
+- `src/pages/Room.tsx`: when `situation.kind === 'scan' && visibility === 'public'`, render the score-header block above the normal room body (band-colored big number, band label, signature, pillar chip, "the read" prose). Reactions/relate/comments unchanged; relate label becomes "same number".
+- Stream tile (in `Shutap-Stream.dc.html` injected `localStorage` merge): scans get a `SCAN` badge, pillar, band-colored score, signature. Extend the dynamic-tile injector to emit those fields.
 
-Also add `getMyAlias` server fn so the iframe can greet the user cheerfully by alias on opener.
+## 3. Mirror memory engine (real per-user data)
+- New `src/lib/mirror.functions.ts` (`requireSupabaseAuth`) `getMirrorPortrait()`: aggregates the caller's `situations` + `checkin_responses` into `{spill_count, scan_count, score_series:[{at,score}], trend:'easing'|'rising'|'steady', top_pillar, last_seen_at, first_seen_at, recent_themes[]}`. Trend = linear-regression slope over last 5 scan scores.
+- New `src/pages/Mirror.tsx` route at `/mirror` (under `_authenticated/`):
+  - "Still forming" empty state below 2 entries.
+  - Real arc chart from `score_series` (lightweight inline SVG, no new dep).
+  - Free preview vs paid full reading gated by existing `has_active_mirror` RPC; reuses Subscribe paywall.
+- **Proactive surfacing:** Landing's eye companion (and the Stream header eye) checks `getMirrorPortrait` on mount; if `spill_count + scan_count >= 2` and `localStorage.shutap_mirror_dismissed_at` is >6h old, show a Newsreader-italic offer ("you keep circling back to {top_pillar}…"). Dismiss writes the timestamp; never permanent.
+- **Always reachable:** "the mirror ✦" card on Landing under spill/scan, and a "the mirror ✦" item in the unified profile dropdown (built in §5).
 
-## 3. Landing iframe → real turn-by-turn loop + preview
-Replace the local `runSpill` orchestrator inside `public/shutap/Shutap-0627.html`:
-- On boot: `postMessage('shutap-get-alias')` → parent replies with `{display_name, emoji, pillar}` → render Spill opener with alias.
-- Each user turn: `postMessage('shutap-spill-turn', { transcript, arc, draft, turn_index })` → parent calls `runSpillTurn` server fn → posts result back. Render `say[]` as 1–3 Newsreader-italic bubbles, last bubble tinted when `has_question`.
-- On `decision:'ready'`: render land-it reflection (model `say` already covers it) → support-mode prompt → call `composePost({ transcript, arc })` (already exists) → show **preview screen** (alias header + editable title + editable body + tags + pillar, looks like a real room post).
-- Preview controls:
-  - Hand edit title/body directly.
-  - "edit with spill" text box → `aiEditPost({ id?, currentTitle, currentBody, instruction })`. Since the situation isn't saved yet, add a `composeEditPost` variant that takes `{transcript, currentTitle, currentBody, instruction}` and returns `{title, body, needs_info?}` (re-scrubbed, sticky to voice/facts, invents nothing).
-  - **Post to a room** → `saveSituation({ kind:null, visibility:'public', title, body, clean_text, pillar, tags })` → `postMessage('shutap-nav', { to: '/stream', hash: '#room-<id>' })` (route the user into their just-created room — Stream already deep-links via hash).
-  - **Keep as journal** → `saveSituation({ kind:null, visibility:'private', ... })` → `postMessage('shutap-nav', { to: '/profile', hash: '#journal' })`.
-- Scan path stays: `saveSituation({ kind:'scan', visibility:'private', initial_scan, scan_band })`.
+## 4. Comment ownership UI
+Server fns already exist (`createComment` / `updateComment` / `deleteComment`, scrubbed). Wire UI:
+- `src/components/RoomDetail.tsx`: comment list shows alias + relative time; signed-in users get a composer; the author of each comment gets inline ✎ edit / 🗑 delete that calls the existing server fns and invalidates `['comments', roomId]`. Non-authors see the existing report menu.
 
-Parent (`src/pages/Landing.tsx`) extends the existing `message` listener to handle `shutap-get-alias`, `shutap-spill-turn`, `shutap-compose-edit`, `shutap-save-situation`.
+## 5. Unified header + dropdown on every top-level page
+- The `Header` component in `src/components/Header.tsx` is already correct; the problem is the four iframe-ported pages (Landing, Stream, Profile, AdminFeedback) each have their own header inside the static HTML.
+- New `src/components/PageShell.tsx` that renders the React `Header` above the iframe (the iframe content gets a CSS rule injected via `?noheader=1` query that the existing HTMLs already honor via a tiny script we add: a `<style>` block that hides `.site-header, header.shutap-header` when `location.search.includes('noheader=1')`).
+- Wrap `Landing.tsx`, `Stream.tsx`, `Profile.tsx`, `AdminFeedback.tsx`, `HallOfFame.tsx` in `PageShell`. Dropdown items per spec: **your profile · settings · spill it · the mirror ✦ · (admin) · sign out** — extend the existing `Header.tsx` dropdown to add "the mirror ✦" → `/mirror` and "settings" → `/profile#settings`. Admin item only when `has_role('admin')`.
 
-## 4. Room owner controls — `src/pages/Room.tsx`
-- Fetch `situation.alias_id` + current user; when they match, the ⋯ menu becomes **edit with spill / move to private journal / delete**, opening `<SituationEditor />` (already built).
-- Non-owners keep the report menu.
+## Build order (parallelizable in sub-batches)
+1. Migration: ensure `situations.kind` allows `'scan'`, add `scan_signature`, `scan_read`, `scan_factors text[]` columns (additive, nullable).
+2. Sub-batch A (Scan): scan-turn server fn + persona + ScanRunner component + Landing postMessage wiring.
+3. Sub-batch B (Mirror): mirror server fn + `/mirror` route + proactive prompt + Header dropdown item.
+4. Sub-batch C (Scan-as-room + Stream tile): Room.tsx score header + Stream tile injector.
+5. Sub-batch D (Comments UI in RoomDetail).
+6. Sub-batch E (Unified header via PageShell + iframe `?noheader=1` CSS).
 
-## 5. Comments UI on Room (the addendum's "open item")
-- Below the room body: list `listComments({ room_id })` with alias header + relative time.
-- Signed-in: composer → `createComment` (server already PII-scrubs).
-- Author of a comment: inline edit / delete via `updateComment` / `deleteComment` (already built).
-
-## 6. Auto-redirect from Spill close
-Already covered by §3's `shutap-nav` postMessage → Landing.tsx → `navigate(to + hash)`. Stream and Profile scroll to `#room-<id>` / `#journal` anchors that already exist.
-
-## 7. Acceptance (lifted from both specs)
-- Spill named "spill", greets cheerfully by alias.
-- Turn = 1–3 short bubbles ≤ ~30 words, `has_question` flag, banned phrases blocked server-side.
-- Interview walks the full arc; lands only after action + plan beats (or 12-turn cap).
-- Close composes in user's voice/facts; preview shown before publish.
-- Preview editable by hand AND with AI (voice/facts locked, re-scrubbed, asks instead of inventing).
-- Post → lands in the new room URL; Save → lands on `/profile#journal`.
-- Rooms / journals / scans editable / movable / deletable from Room + Profile; flips reuse the same record (already wired in `updateSituation`).
-- Comments persisted + author-editable/deletable.
-- Crisis Guardian + Scrubber on every turn AND every save/edit.
-
-## Out of scope this pass (acknowledged in specs)
-- 7-day hard-purge cron job (`deleted_at` column + soft delete are in place; cron later).
-- MGM share-card injection at close (separate spec).
-- Mirror paywall changes.
+## Out of scope (acknowledged)
+- Real Resend email cadence for check-ins (scheduling RPC already exists; dispatcher is its own batch).
+- Web push.
+- Hard purge cron for soft-deleted situations after 7 days.
+- AI persona retraining beyond persona-prompt edits.
 
 ## Technical notes
-- All new server fns: `requireSupabaseAuth`, RLS scopes by `alias_id = auth.uid()`.
-- AI calls go through `/api/complete` (Lovable AI Gateway). Persona stays server-only.
-- Banned-phrase + brevity validators live in `spill-turn.functions.ts`, not in the client.
-- Optimistic UI on Profile via TanStack Query invalidation of `['situations','mine']` and `['room', id]` / `['comments', roomId]`.
+- All AI calls go through existing `/api/complete` Lovable AI Gateway route.
+- New server fns: `requireSupabaseAuth`, files end in `.functions.ts`, server-only persona/prompts in `.server.ts` and loaded inside `.handler()` only.
+- No new packages. Charts are inline SVG.
+- TanStack Query keys: `['mirror','me']`, `['comments', roomId]`, `['situation', id]`.
