@@ -79,6 +79,8 @@ export function RoomDetail({
 
   const n = Math.min(room.sitting, 16)
   const seatGlyphs = ['🌸', '✦', '○', '·', '◦']
+  const isScan = room.kind === 'scan' && typeof room.initial_scan === 'number'
+  const scanAccent = BAND_COLOR[(room.scan_band || 'sitting') as keyof typeof BAND_COLOR] || '#7F77DD'
 
   // ── companion-offered "not alone" share at the resonance peak (§22 T4) ──
   const offerShare = () => {
