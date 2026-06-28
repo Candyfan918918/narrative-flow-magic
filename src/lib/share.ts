@@ -352,7 +352,7 @@ function showSheet(id: string, opts: ShareOpts) {
     '<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:15px">' +
     EYE +
     '<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.5;color:#f7e8f0">' +
-    (opts.companion || 'want to share this?') +
+    escHtml(opts.companion || 'want to share this?') +
     '</div></div>'
   sheet.innerHTML = head + artifact(opts)
 
