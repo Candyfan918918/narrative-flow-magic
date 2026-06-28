@@ -89,6 +89,18 @@ export const saveSituation = createServerFn({ method: 'POST' })
       .single()
     if (error || !sit) throw new Error(error?.message ?? 'save failed')
 
+    // Embed for cosine matching (fail-soft, non-blocking semantics).
+    try {
+      const { embedText, toVectorLiteral } = await import('./agents/embeddings.server')
+      const vec = await embedText(insertRow.clean_text || insertRow.body || '')
+      if (vec) {
+        await context.supabase
+          .from('situations')
+          .update({ embedding: toVectorLiteral(vec) } as never)
+          .eq('id', sit.id)
+      }
+    } catch { /* non-blocking */ }
+
     let roomId: string | null = sit.room_id
     if (data.is_public && !roomId) {
       roomId = await upsertRoomForSituation(context.supabase, sit.id, {
@@ -313,6 +325,23 @@ export const createComment = createServerFn({ method: 'POST' })
       .select('id, alias_id, clean_text, edited, created_at')
       .single()
     if (error) throw new Error(error.message)
+
+    // SLA tracking: stamp human_response_at on the situation the first time
+    // a non-author leaves a comment. Drives the relate-queue and the
+    // time-to-first-human-response metric (§7.6).
+    try {
+      const { data: sit } = await context.supabase
+        .from('situations')
+        .select('id, alias_id, human_response_at')
+        .eq('room_id', data.roomId)
+        .maybeSingle()
+      if (sit && !sit.human_response_at && sit.alias_id !== context.userId) {
+        await context.supabase
+          .from('situations')
+          .update({ human_response_at: new Date().toISOString() } as never)
+          .eq('id', sit.id)
+      }
+    } catch { /* non-blocking */ }
     return row
   })
 

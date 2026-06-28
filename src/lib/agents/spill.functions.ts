@@ -27,6 +27,7 @@ export type SpillPayoff = {
   notice: string
   resonance_line: string
   matched_count: number
+  matched_display_count: number | null  // honest count for UI; null = don't show a number
   matched_stories: { id: string; excerpt: string }[]
   companion_message: string
   crisis: boolean
@@ -72,6 +73,7 @@ export const runSpill = createServerFn({ method: 'POST' })
         notice: scrub.notice,
         resonance_line: '',
         matched_count: 0,
+        matched_display_count: null,
         matched_stories: [],
         companion_message: CRISIS_COPY,
         crisis: true,
@@ -83,9 +85,9 @@ export const runSpill = createServerFn({ method: 'POST' })
       data: { clean_text: scrub.clean_text, pillar: data.pillar },
     })
 
-    // 4. Matcher
+    // 4. Matcher — pgvector cosine over real, public corpus; honest count
     const match = await findMatches({
-      data: { pillar: data.pillar, tags: [] },
+      data: { pillar: data.pillar, query_text: scrub.clean_text, tags: [] },
     })
 
     // 5. Persist situation (owner-scoped)
@@ -113,6 +115,20 @@ export const runSpill = createServerFn({ method: 'POST' })
           count: r.count,
         })),
       )
+    }
+
+    // 5a. Embed the situation for future cosine matching (fail-soft).
+    if (sit?.id) {
+      try {
+        const { embedText, toVectorLiteral } = await import('./embeddings.server')
+        const vec = await embedText(scrub.clean_text)
+        if (vec) {
+          await context.supabase
+            .from('situations')
+            .update({ embedding: toVectorLiteral(vec) } as never)
+            .eq('id', sit.id)
+        }
+      } catch { /* embedding is non-blocking */ }
     }
 
     // 5b. Schedule the day0..day14 check-in cadence
@@ -151,6 +167,7 @@ export const runSpill = createServerFn({ method: 'POST' })
       notice: scrub.notice,
       resonance_line: match.resonance_line,
       matched_count: match.count,
+      matched_display_count: match.display_count,
       matched_stories: match.stories.map((s) => ({ id: s.id, excerpt: s.excerpt })),
       companion_message: companion.text,
       crisis: false,

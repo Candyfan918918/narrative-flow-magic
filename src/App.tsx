@@ -8,6 +8,7 @@ import { RoomPage } from './pages/Room'
 import { ProfilePage } from './pages/Profile'
 import { AdminPage } from './pages/Admin'
 import { AdminFeedbackPage } from './pages/AdminFeedback'
+import { AdminRelateQueuePage } from './pages/AdminRelateQueue'
 import { SubscribePage, SubscribeReturnPage } from './pages/Subscribe'
 import { LegalPage } from './pages/Legal'
 
@@ -25,6 +26,7 @@ export function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/feedback" element={<AdminFeedbackPage />} />
+        <Route path="/admin/relate-queue" element={<AdminRelateQueuePage />} />
         <Route path="/subscribe" element={<SubscribePage />} />
         <Route path="/subscribe/return" element={<SubscribeReturnPage />} />
         <Route path="/legal" element={<LegalPage />} />
