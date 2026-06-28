@@ -90,11 +90,18 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Link
+            to="/stream"
+            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: pathname.startsWith('/stream') || pathname.startsWith('/room') ? '#0b080f' : '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}
+          >
+            rooms
+          </Link>
+          <Link
             to="/halls"
-            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}
+            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: pathname.startsWith('/halls') ? '#0b080f' : '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}
           >
             halls
           </Link>
+
           <div ref={areaRef} style={{ position: 'relative' }}>
             {alias ? (
               <>
