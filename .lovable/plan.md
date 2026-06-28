@@ -1,74 +1,71 @@
-# Spill v2 + Content Ownership — exactly per the attached specs
+# Spill v2 + content ownership — exactly per Spill-Agent-Spec.md + Shutap-Updates-LOVABLE-PROMPT.md
 
-You attached `Shutap-Launch-LOVABLE-PROMPT.md` + `Shutap-Updates-LOVABLE-PROMPT.md` and the refreshed `Shutap-Landing.html / Profile.html / Stream.html / Feedback-Admin.html`. The Updates prompt is the addendum that wins where it conflicts with launch. This plan implements both, no creative additions.
+Already done (last turn): schema delta (`kind`, `body`, `edited`, `deleted_at`, `status='deleted'`, `comments` table, security tightening), `saveSituation` / `updateSituation` / `deleteSituation` / `composePost` / `aiEditPost` / list/get / comments CRUD, `SituationEditor.tsx`, real `Profile.tsx`.
 
-## 0. Drop in the refreshed prototypes (visual reference)
-- Replace `public/shutap/Shutap-0627.html` with `Shutap-Landing.html` from the upload (and same for Profile / Stream / Feedback-Admin variants under `public/shutap/`). Iframes already point at these.
-- Re-inject `ai-bridge.js` so `window.claude.complete` keeps routing to `/api/complete`.
+This plan finishes the rest of both specs, no creative additions.
 
-## 1. Data model delta (one migration)
-Add to `public.situations`:
-- `kind text` (`null | 'scan'`)
-- `body text` (the composed in-voice post; distinct from `clean_text` raw transcript)
-- `edited boolean default false`
-- `deleted_at timestamptz`
-- `'deleted'` added to `situation_status` enum
+## 1. Drop in the refreshed prototypes (visual reference)
+Copy from `Shutap_0627_Spill2.zip → exports/`:
+- `Shutap-Landing.html` → `public/shutap/Shutap-0627.html` (the file the live Landing iframe loads)
+- `Shutap-Stream.html`, `Shutap-Profile.html`, `Shutap-Feedback-Admin.html` → `public/shutap/` (visual reference only; Profile is already a React page, Stream stays iframe)
 
-New table `public.comments` (room comments are not yet owned per the addendum's open item):
-`id, room_id (→ rooms.id), user_id (→ auth.users.id), alias_id, clean_text, edited bool, created_at, updated_at, deleted_at` + GRANTs + RLS (anyone signed-in can read non-deleted; only author can update/soft-delete).
+Re-inject `ai-bridge.js` and `auth-sheet.js` references into the new HTML so `window.claude.*` and the Supabase postMessage bridge keep working.
 
-New table `public.pii_scrub_log` already exists — reuse it; just make sure `comments` writes through the same scrubber.
+## 2. Turn engine — `runSpillTurn` (replaces the old monolithic `runSpill`)
+New `src/lib/agents/spill-turn.functions.ts`, `requireSupabaseAuth`:
+- Persona + JSON contract from new server-only `src/lib/agents/spill-persona.server.ts` (full §10a system prompt + few-shot from Spill-Agent-Spec).
+- One AI call per turn via Lovable AI Gateway (`google/gemini-3-flash-preview`), strict JSON output (Spill-Spec §3 + Updates §1 schema, including `arc:{what_happened, frequency, feeling, why, talked_to_them, other_attempts, plan}`).
+- Inputs: `{ transcript, draft, arc, meta:{turn_index, max_turns:12}, alias }`.
+- Pre-call: PII Scrubber + Crisis Guardian on the latest user turn (reuse `src/lib/agents/scrubber.functions.ts` + `guard.functions.ts`). Guardian trip → return safety branch with `crisis_flag` and `decision:"ready"`.
+- Server-side post-call validation: enforce `say.length ≤ 3`, total ≤ ~30 words, ban phrases ("sit with that", "hold space", "that's valid", "i hear you", "thank you for sharing", "it sounds like", "that must be hard", "how did that make you feel") — strip/retry once if violated.
+- `decision:"ready"` only when arc's action + plan beats are covered OR `turn_index ≥ 12` OR explicit `named_and_landed && quiet user agreement`.
 
-Fix the security findings flagged in the current scan in the same migration:
-- Tighten `aliases` SELECT policy: replace `USING (true)` with `auth.uid() = user_id`, and add a separate narrow policy exposing only `display_name, emoji, pillar` for community reads via a view `aliases_public` (`security_invoker=on`).
-- Revoke `EXECUTE` on `schedule_checkins` from `authenticated` (it's an internal scheduler — only `service_role` should call it).
-- Replace any remaining `USING (true)` write policies with scoped ones.
+Also add `getMyAlias` server fn so the iframe can greet the user cheerfully by alias on opener.
 
-## 2. Server functions — `src/lib/situations.functions.ts` (all `requireSupabaseAuth`)
-- `runSpillTurn({ transcript, arc, alias })` — one model call per turn, returns the strict JSON contract from §1 of the addendum (`say[], has_question, relief_lever, humor_ok, updated{...arc}, decision, why`). Persona + JSON contract enforced server-side via Lovable AI Gateway (`google/gemini-3-flash-preview`), system prompt loaded from `src/lib/spill-persona.server.ts`. Crisis Guardian + PII scrubber run on every turn.
-- `composePost({ transcript, arc })` — returns `{title, body, tags[]}`, re-scrubbed, traceable to transcript, invents nothing.
-- `aiEditPost({ situationId, instruction })` — sticky-to-voice rewrite, re-runs PII scrubber, refuses to invent missing facts (asks instead).
-- `saveSituation({ kind?, pillar, clean_text, body, title, tags, visibility })` — persists the record (room or journal or scan), returns `{id, visibility}`.
-- `listMySituations({ kind?, visibility? })` — drives Profile sections.
-- `getSituation({ id })` — load for owner editor.
-- `updateSituation({ id, body?, title?, pillar?, visibility?, status? })` — edit, flip visibility, soft-delete. Flips reuse the SAME record (no duplicate). On public→private, hide from Stream + cancel scheduled check-ins. On private→public, re-run resonance.
-- `deleteSituation({ id })` — soft delete (`status='deleted'`, `deleted_at=now()`); cancels pending check-ins; honored `DELETE_GRACE_DAYS=7` purge handled by a separate cron later (out of scope here).
-- `listMyComments` / `createComment` / `updateComment` / `deleteComment` — same pattern, per the addendum's "open item".
+## 3. Landing iframe → real turn-by-turn loop + preview
+Replace the local `runSpill` orchestrator inside `public/shutap/Shutap-0627.html`:
+- On boot: `postMessage('shutap-get-alias')` → parent replies with `{display_name, emoji, pillar}` → render Spill opener with alias.
+- Each user turn: `postMessage('shutap-spill-turn', { transcript, arc, draft, turn_index })` → parent calls `runSpillTurn` server fn → posts result back. Render `say[]` as 1–3 Newsreader-italic bubbles, last bubble tinted when `has_question`.
+- On `decision:'ready'`: render land-it reflection (model `say` already covers it) → support-mode prompt → call `composePost({ transcript, arc })` (already exists) → show **preview screen** (alias header + editable title + editable body + tags + pillar, looks like a real room post).
+- Preview controls:
+  - Hand edit title/body directly.
+  - "edit with spill" text box → `aiEditPost({ id?, currentTitle, currentBody, instruction })`. Since the situation isn't saved yet, add a `composeEditPost` variant that takes `{transcript, currentTitle, currentBody, instruction}` and returns `{title, body, needs_info?}` (re-scrubbed, sticky to voice/facts, invents nothing).
+  - **Post to a room** → `saveSituation({ kind:null, visibility:'public', title, body, clean_text, pillar, tags })` → `postMessage('shutap-nav', { to: '/stream', hash: '#room-<id>' })` (route the user into their just-created room — Stream already deep-links via hash).
+  - **Keep as journal** → `saveSituation({ kind:null, visibility:'private', ... })` → `postMessage('shutap-nav', { to: '/profile', hash: '#journal' })`.
+- Scan path stays: `saveSituation({ kind:'scan', visibility:'private', initial_scan, scan_band })`.
 
-## 3. Landing iframe — wire the spill turn engine + close
-In the dropped-in `Shutap-Landing.html`:
-- Replace the local `runSpill` orchestrator's per-turn AI call with `fetch('/api/complete'...)` → `runSpillTurn` server fn (via the `ai-bridge` shim). Same strict JSON contract.
-- Implement the close exactly: land-it reflection → support-mode prompt → Guardian check → `composePost` → **preview screen** (editable title/body + "edit with spill" instruction box + Post-to-room / Keep-as-journal buttons).
-- On "post to a room": `saveSituation({ visibility:'public' })` → postMessage `shutap-nav` to `/stream#room-<id>` (the actual room URL the parent SPA renders).
-- On "keep as journal": `saveSituation({ visibility:'private' })` → postMessage `shutap-nav` to `/profile#journal`.
-- Scan stays as `kind:'scan'` private situation.
-- Cheerful greeting calls user by alias (fetched from `getMyAlias` on iframe boot).
+Parent (`src/pages/Landing.tsx`) extends the existing `message` listener to handle `shutap-get-alias`, `shutap-spill-turn`, `shutap-compose-edit`, `shutap-save-situation`.
 
-## 4. Profile becomes a real React page
-Replace `src/pages/Profile.tsx`'s iframe shell with a React page styled with the prototype's CSS tokens (Sora UI, Newsreader italic, pink) — uses `Shutap-Profile.html` only as visual reference. Three real sections:
-- **your rooms** — public situations. Per card: edit-with-spill, move to private journal, delete. Empty-state nudges to spill.
-- **private journal** — private situations + scans, newest first, relative timestamps. Per card: post-to-room, edit-with-spill, delete.
-- **your scans** — `kind='scan'` rows with band + date + delete.
+## 4. Room owner controls — `src/pages/Room.tsx`
+- Fetch `situation.alias_id` + current user; when they match, the ⋯ menu becomes **edit with spill / move to private journal / delete**, opening `<SituationEditor />` (already built).
+- Non-owners keep the report menu.
 
-All actions hit the server fns from §2 via TanStack Query with optimistic UI and proper invalidation.
+## 5. Comments UI on Room (the addendum's "open item")
+- Below the room body: list `listComments({ room_id })` with alias header + relative time.
+- Signed-in: composer → `createComment` (server already PII-scrubs).
+- Author of a comment: inline edit / delete via `updateComment` / `deleteComment` (already built).
 
-## 5. Shared editor — `src/components/SituationEditor.tsx`
-The compose/preview surface, used by Profile and by Room owner controls. Matches the prototype: editable title + body, tags chip row, "edit with spill" instruction box → preview diff → save / discard. Buttons: Post-to-room / Keep-as-journal / Delete (with undo grace toast).
+## 6. Auto-redirect from Spill close
+Already covered by §3's `shutap-nav` postMessage → Landing.tsx → `navigate(to + hash)`. Stream and Profile scroll to `#room-<id>` / `#journal` anchors that already exist.
 
-## 6. Room owner controls
-In the room view (`src/pages/Room.tsx`), when the signed-in user owns the situation, the ⋯ menu shows **edit with spill / move to private journal / delete** instead of the report menu. Opens the same `SituationEditor` from §5. Non-owners see the normal public room + (later) comment box.
-
-## 7. Acceptance (copied from the addendum)
-- Spill named "spill", greets by alias, opens cheerfully.
-- Each turn = 1–3 short bubbles ≤~30 words, `has_question` flag, no paragraphs.
-- Interview walks the full arc; lands only after actions+plan beats or soft cap.
+## 7. Acceptance (lifted from both specs)
+- Spill named "spill", greets cheerfully by alias.
+- Turn = 1–3 short bubbles ≤ ~30 words, `has_question` flag, banned phrases blocked server-side.
+- Interview walks the full arc; lands only after action + plan beats (or 12-turn cap).
 - Close composes in user's voice/facts; preview shown before publish.
-- User can edit preview by hand AND with AI (voice/facts locked, re-scrubs).
-- Post → lands in their new room URL; Save → lands on the journal page.
-- Rooms / journals / scans are editable / movable / deletable from Room page and Profile; flips reuse the same record.
-- Comments persisted + editable/deletable by author.
+- Preview editable by hand AND with AI (voice/facts locked, re-scrubbed, asks instead of inventing).
+- Post → lands in the new room URL; Save → lands on `/profile#journal`.
+- Rooms / journals / scans editable / movable / deletable from Room + Profile; flips reuse the same record (already wired in `updateSituation`).
+- Comments persisted + author-editable/deletable.
+- Crisis Guardian + Scrubber on every turn AND every save/edit.
 
-## Out of scope this pass
-- 7-day hard-purge cron (table column + soft delete only).
-- Email/eye check-in scheduler (already exists; this plan just makes sure delete/flip cancels pending ones).
+## Out of scope this pass (acknowledged in specs)
+- 7-day hard-purge cron job (`deleted_at` column + soft delete are in place; cron later).
+- MGM share-card injection at close (separate spec).
 - Mirror paywall changes.
+
+## Technical notes
+- All new server fns: `requireSupabaseAuth`, RLS scopes by `alias_id = auth.uid()`.
+- AI calls go through `/api/complete` (Lovable AI Gateway). Persona stays server-only.
+- Banned-phrase + brevity validators live in `spill-turn.functions.ts`, not in the client.
+- Optimistic UI on Profile via TanStack Query invalidation of `['situations','mine']` and `['room', id]` / `['comments', roomId]`.
