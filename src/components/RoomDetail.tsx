@@ -102,13 +102,29 @@ export function RoomDetail({
 
   const shareRoom = () => {
     if (!window.ShutapShare) return
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shutap.com'
+    if (isScan) {
+      window.ShutapShare.manual({
+        trigger: 'manual_room_scan',
+        kind: 'scan',
+        accent: scanAccent,
+        big: String(room.initial_scan ?? ''),
+        headline: room.scan_signature || room.title,
+        companion: 'sharing this scan — de-identified. only the number and signature line travel, never the full story.',
+        caption: '“' + (room.scan_signature || room.title) + '” — i scanned ' + room.initial_scan + '/100. where are you? →',
+        url: origin + '/room?id=' + room.id,
+        loopLabel: 'scan yours →',
+        privacy: 'only the number + signature leave — never the full story or any name.',
+      })
+      return
+    }
     window.ShutapShare.manual({
       trigger: 'manual_room',
       kind: 'generic',
       headline: '“' + room.title + '”',
       companion: 'sharing this room — de-identified. only the headline and a link travel, never the full story.',
       caption: '“' + room.title + '” — a room on Shutap. someone in here has lived your exact thing →',
-      url: 'https://shutap.com/room/' + room.id,
+      url: origin + '/room?id=' + room.id,
       loopLabel: 'take yours →',
       privacy: 'only the headline + link leave — never the full story.',
     })
