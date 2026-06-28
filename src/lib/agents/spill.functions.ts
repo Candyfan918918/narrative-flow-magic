@@ -167,6 +167,7 @@ export const runSpill = createServerFn({ method: 'POST' })
       notice: scrub.notice,
       resonance_line: match.resonance_line,
       matched_count: match.count,
+      matched_display_count: match.display_count,
       matched_stories: match.stories.map((s) => ({ id: s.id, excerpt: s.excerpt })),
       companion_message: companion.text,
       crisis: false,
