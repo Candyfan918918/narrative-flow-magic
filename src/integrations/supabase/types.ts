@@ -444,6 +444,30 @@ export type Database = {
           },
         ]
       }
+      pillar_status: {
+        Row: {
+          opened_at: string | null
+          pillar: string
+          real_story_floor: number
+          sla_target_minutes: number
+          updated_at: string
+        }
+        Insert: {
+          opened_at?: string | null
+          pillar: string
+          real_story_floor?: number
+          sla_target_minutes?: number
+          updated_at?: string
+        }
+        Update: {
+          opened_at?: string | null
+          pillar?: string
+          real_story_floor?: number
+          sla_target_minutes?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       room_reactions: {
         Row: {
           created_at: string
@@ -550,9 +574,12 @@ export type Database = {
           crisis_flag: boolean
           deleted_at: string | null
           edited: boolean
+          embedding: string | null
+          human_response_at: string | null
           id: string
           initial_scan: number | null
           is_public: boolean
+          is_seed: boolean
           kind: string | null
           pillar: Database["public"]["Enums"]["situation_pillar"]
           reflection: string | null
@@ -575,9 +602,12 @@ export type Database = {
           crisis_flag?: boolean
           deleted_at?: string | null
           edited?: boolean
+          embedding?: string | null
+          human_response_at?: string | null
           id?: string
           initial_scan?: number | null
           is_public?: boolean
+          is_seed?: boolean
           kind?: string | null
           pillar: Database["public"]["Enums"]["situation_pillar"]
           reflection?: string | null
@@ -600,9 +630,12 @@ export type Database = {
           crisis_flag?: boolean
           deleted_at?: string | null
           edited?: boolean
+          embedding?: string | null
+          human_response_at?: string | null
           id?: string
           initial_scan?: number | null
           is_public?: boolean
+          is_seed?: boolean
           kind?: string | null
           pillar?: Database["public"]["Enums"]["situation_pillar"]
           reflection?: string | null
@@ -753,6 +786,21 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      match_situations: {
+        Args: {
+          match_count?: number
+          match_pillar?: string
+          query_embedding: string
+          similarity_floor?: number
+        }
+        Returns: {
+          clean_text: string
+          created_at: string
+          id: string
+          pillar: string
+          similarity: number
+        }[]
       }
       schedule_checkins: {
         Args: { p_alias_id: string; p_situation_id: string }
