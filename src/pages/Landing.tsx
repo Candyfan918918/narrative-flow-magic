@@ -42,6 +42,13 @@ export function LandingPage() {
         }
       } else if (d.type === 'shutap-persist-situation' && d.payload) {
         try {
+          const { data: sess } = await supabase.auth.getSession()
+          if (!sess.session) {
+            sessionStorage.setItem('shutap_pending_save', JSON.stringify(d.payload))
+            post({ type: 'shutap-persist-situation-result', reqId: d.reqId, error: 'auth_required' })
+            navigate('/welcome')
+            return
+          }
           const res = await save({ data: d.payload as never })
           post({ type: 'shutap-persist-situation-result', reqId: d.reqId, id: res.id, room_id: res.room_id })
         } catch (err) {
@@ -49,6 +56,8 @@ export function LandingPage() {
         }
       } else if (d.type === 'shutap-update-situation' && d.id && d.patch) {
         try {
+          const { data: sess } = await supabase.auth.getSession()
+          if (!sess.session) { navigate('/welcome'); return }
           const res = await update({ data: { id: d.id, ...d.patch } as never })
           post({ type: 'shutap-update-situation-result', reqId: d.reqId, id: res.id, room_id: res.room_id })
 
