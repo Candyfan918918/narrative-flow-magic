@@ -67,7 +67,9 @@ export const Route = createFileRoute('/api/public/checkins/run')({
           let err: string | null = null
 
           if (row.channel === 'email') {
-            if (!to) {
+            if (suppressed) {
+              ok = true // honor opt-out: mark sent without dispatch
+            } else if (!to) {
               ok = false; err = 'no email on file'
             } else {
               const r = await sendCheckinEmail({
@@ -79,6 +81,7 @@ export const Route = createFileRoute('/api/public/checkins/run')({
               ok = r.ok; err = r.error ?? null
             }
           } // else channel === 'eye' — in-app only; mark sent immediately
+
 
           if (ok) {
             await supabaseAdmin
