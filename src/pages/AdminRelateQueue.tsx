@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useServerFn } from '@tanstack/react-start'
 import { listRelateQueue, relateQueueStats, type RelateQueueRow } from '@/lib/relate-queue.functions'
+import { backfillEmbeddings } from '@/lib/embeddings-backfill.functions'
+
 
 const PILLARS = ['all', 'relationships', 'marriage', 'family', 'career'] as const
 type PillarFilter = (typeof PILLARS)[number]
@@ -48,11 +50,13 @@ export function AdminRelateQueuePage() {
               every public spill without a human reaction yet. oldest first. target: a real response within {sla} minutes — no astroturf, no fake "me too".
             </p>
           </div>
-          <nav style={{ display: 'flex', gap: 10, fontSize: 13 }}>
+          <nav style={{ display: 'flex', gap: 10, fontSize: 13, alignItems: 'center' }}>
             <Link to="/admin" style={navStyle}>admin</Link>
             <Link to="/admin/feedback" style={navStyle}>feedback</Link>
+            <BackfillButton />
           </nav>
         </div>
+
 
         {summary && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginTop: 22 }}>
@@ -123,6 +127,31 @@ function Badge({ children, color }: { children: React.ReactNode; color: string }
     <span style={{ background: color + '22', color, fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 999, textTransform: 'lowercase', letterSpacing: 0.3 }}>{children}</span>
   )
 }
+
+function BackfillButton() {
+  const run = useServerFn(backfillEmbeddings)
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+  return (
+    <button
+      onClick={async () => {
+        setBusy(true); setMsg(null)
+        try {
+          const r = await run({ data: { limit: 50 } })
+          setMsg(`+${r.embedded}/${r.scanned} · ${r.remaining} left`)
+        } catch (e) {
+          setMsg(e instanceof Error ? e.message : 'failed')
+        } finally { setBusy(false) }
+      }}
+      disabled={busy}
+      style={{ ...navStyle, cursor: 'pointer', fontWeight: 600, color: '#c1216b' }}
+      title="Backfill embeddings for situations missing a vector"
+    >
+      {busy ? 'embedding…' : msg ? `embed · ${msg}` : 'embed batch'}
+    </button>
+  )
+}
+
 
 const navStyle: React.CSSProperties = {
   color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px', borderRadius: 999,

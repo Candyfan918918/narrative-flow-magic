@@ -9,6 +9,8 @@ import { RoomDetail } from '../components/RoomDetail'
 import { useToast } from '../components/Toast'
 import { SHUTAP_SEED } from '../data/seed'
 import type { Room } from '../data/types'
+import { listPillars } from '../lib/pillars.functions'
+
 
 type Filter = 'all' | 'heard' | 'advice' | 'scan'
 
@@ -70,6 +72,7 @@ export function StreamPage() {
   const { toast: toastMsg, ToastHost } = useToast()
   const [open, setOpen] = useState<RoomTileData | null>(null)
   const [version, setVersion] = useState(0)
+  const [openedPillars, setOpenedPillars] = useState<string[] | null>(null)
 
   // Refresh when storage changes (publish from spill / scan)
   useEffect(() => {
@@ -80,6 +83,18 @@ export function StreamPage() {
     return () => window.removeEventListener('storage', onStorage)
   }, [])
 
+  // Phase 2c — load opened pillars once
+  useEffect(() => {
+    listPillars()
+      .then((rows) => {
+        const now = Date.now()
+        setOpenedPillars(
+          rows.filter((r) => r.opened_at && new Date(r.opened_at).getTime() <= now).map((r) => r.pillar),
+        )
+      })
+      .catch(() => setOpenedPillars(['relationships']))
+  }, [])
+
   const rooms = useMemo<RoomTileData[]>(() => {
     const seed = (SHUTAP_SEED.rooms || []) as RoomTileData[]
     const user = loadUserRooms()
@@ -88,10 +103,15 @@ export function StreamPage() {
   }, [version])
 
   const filtered = useMemo(() => {
-    if (filter === 'all') return rooms
-    if (filter === 'scan') return rooms.filter((r) => r.kind === 'scan')
-    return rooms.filter((r) => r.support === filter && r.kind !== 'scan')
-  }, [rooms, filter])
+    // Pillar gate: hide user rooms tagged with a closed pillar. Seed rooms
+    // (no pillar tag) and the currently-opened pillars are always allowed.
+    const opened = openedPillars ?? ['relationships']
+    const pillarGated = rooms.filter((r) => !r.pillar || opened.includes(r.pillar))
+    if (filter === 'all') return pillarGated
+    if (filter === 'scan') return pillarGated.filter((r) => r.kind === 'scan')
+    return pillarGated.filter((r) => r.support === filter && r.kind !== 'scan')
+  }, [rooms, filter, openedPillars])
+
 
   // Honor /stream#room-<id> deep links from the spill publish flow
   useEffect(() => {
