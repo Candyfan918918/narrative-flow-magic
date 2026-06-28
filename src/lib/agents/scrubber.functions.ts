@@ -3,6 +3,7 @@
 // then an LLM pass through the gateway for names + locations.
 // Output is the only thing ever stored; raw input is never persisted.
 import { createServerFn } from '@tanstack/react-start'
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { z } from 'zod'
 import { callAgent, tryParseJson } from './gateway'
 
@@ -51,6 +52,7 @@ function regexScrub(raw: string): { text: string; replacements: ScrubReplacement
 const ScrubInput = z.object({ raw: z.string().min(1).max(8000) })
 
 export const scrubText = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => ScrubInput.parse(data))
   .handler(async ({ data }): Promise<ScrubResult> => {
     // Step 1: regex pass
