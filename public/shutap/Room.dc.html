@@ -412,7 +412,7 @@ class Component extends DCLogic {
     const rsend=d.querySelector('[data-rsend]'); const rinput=d.querySelector('[data-rinput]');
     rinput.addEventListener('input',()=>{ rinput.style.height='auto'; rinput.style.height=rinput.scrollHeight+'px'; });
     rinput.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); rsend.click(); } });
-    rsend.addEventListener('click',()=>{ const v=rinput.value.trim(); if(!v) return; const a=this.getAlias()||{emoji:'🦉',name:'Anonymous'}; const reply=document.createElement('div'); reply.style.cssText='margin-top:9px;animation:fadeUp .3s ease'; reply.innerHTML='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#f060a0,#890041);display:grid;place-items:center;font-size:11px">'+a.emoji+'</span><span style="font-family:Newsreader,serif;font-style:italic;font-size:11.5px;color:#6b4a5c">'+a.name+'</span><span style="font-size:11px;color:#9e7a8c">just now</span></div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;line-height:1.5;color:#2e1a26">'+this.esc(v)+'</div>'; rbox.appendChild(reply); rinput.value=''; rinput.style.height='auto'; rbox.querySelector('div').remove(); this.toast('reply added.'); });
+    rsend.addEventListener('click',()=>{ const v=rinput.value.trim(); if(!v) return; const a=this.getAlias()||{emoji:'🦉',name:'you'}; const reply=document.createElement('div'); reply.style.cssText='margin-top:9px;animation:fadeUp .3s ease'; reply.innerHTML='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#f060a0,#890041);display:grid;place-items:center;font-size:11px">'+a.emoji+'</span><span style="font-family:Newsreader,serif;font-style:italic;font-size:11.5px;color:#6b4a5c">'+a.name+'</span><span style="font-size:11px;color:#9e7a8c">just now</span></div><div style="font-family:Newsreader,serif;font-style:italic;font-size:14px;line-height:1.5;color:#2e1a26">'+this.esc(v)+'</div>'; rbox.appendChild(reply); rinput.value=''; rinput.style.height='auto'; rbox.querySelector('div').remove(); this.toast('reply added.'); });
     return d;
   }
 
@@ -478,7 +478,7 @@ class Component extends DCLogic {
 
   submitComment(){
     const v=(this.$cinput&&this.$cinput.value||'').trim(); if(!v) return;
-    const a=this.getAlias()||{emoji:'🦉',name:'Anonymous'};
+    const a=this.getAlias()||{emoji:'🦉',name:'you'};
     const tile=this.commentTile(a.emoji, a.name, 'just now', this.esc(v), 0);
     tile.style.animation='fadeUp .35s ease';
     if(this.$clist) this.$clist.appendChild(tile);
