@@ -31,7 +31,7 @@ export const Route = createFileRoute('/api/complete')({
           const lovableKey = process.env.LOVABLE_API_KEY
           if (!lovableKey) return fallback('no AI key configured')
 
-          const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-3.1-pro-preview'
+          const modelId = process.env.LOVABLE_AI_MODEL || 'openai/gpt-5'
           const gateway = createLovableAiGatewayProvider(lovableKey)
           const model = gateway(modelId)
           const msgs = messages.map((m) => ({ role: m.role, content: m.content }))
