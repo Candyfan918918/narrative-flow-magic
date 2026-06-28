@@ -31,7 +31,8 @@ export const schedulerHealth = createServerFn({ method: 'POST' })
       supabaseAdmin.from('checkins').select('id', { count: 'exact', head: true })
         .eq('state', 'sent').gte('sent_at', since),
       supabaseAdmin.from('checkins').select('id', { count: 'exact', head: true })
-        .eq('state', 'failed').gte('updated_at', since),
+        .eq('state', 'failed').gte('scheduled_at', since),
+
       supabaseAdmin.from('checkins').select('id', { count: 'exact', head: true })
         .eq('state', 'scheduled').gt('attempts', 0),
       supabaseAdmin.from('checkins').select('scheduled_at')
