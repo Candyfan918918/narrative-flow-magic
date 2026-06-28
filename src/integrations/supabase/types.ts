@@ -823,6 +823,7 @@ export type Database = {
         | "suppressed"
         | "snoozed"
         | "muted"
+        | "failed"
       checkin_type:
         | "day0"
         | "day1"
@@ -978,6 +979,7 @@ export const Constants = {
         "suppressed",
         "snoozed",
         "muted",
+        "failed",
       ],
       checkin_type: [
         "day0",
