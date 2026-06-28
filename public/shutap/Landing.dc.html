@@ -1720,7 +1720,7 @@ class Component extends DCLogic {
     body.querySelector('[data-share]').addEventListener('click',()=>this.shareScanCard(score, sig, col));
     const mir=body.querySelector('[data-mirror]'); if(mir) mir.addEventListener('click',()=>{ this.closeScan(); this.openMirror(); });
     const heavy = score>=820;
-    setTimeout(()=>{ if(!window.ShutapShare) return; window.ShutapShare.offer('T1', { valence: heavy?'heavy':'positive', kind:'scan', big:String(score), headline:label, accent:col, companion:'this one is a keeper - want it as a card?', caption:'turns out i am a '+score+' . '+label+' - take yours ->', loopLabel:'what is your number? ->', url:'https://shutap.com', privacy:'just your score + signature - nothing private.' }); }, 1700);
+    setTimeout(()=>{ if(!window.ShutapShare) return; const _res=(this.scan&&this.scan._res)||{}; window.ShutapShare.offer('T1', { valence: heavy?'heavy':'positive', kind:'scan', big:String(score), headline:label, sub:sub, pillar:_res.pillar||null, accent:col, companion:'this one is a keeper - want it as a card?', caption:'turns out i am a '+score+' . '+label+' - take yours ->', loopLabel:'what is your number? ->', url:location.origin, privacy:'just your score + signature - nothing private.' }); }, 1700);
   }
 
   /* ═══════════ 20A.1 — Scan score card (the hero share unit) ═══════════ */
