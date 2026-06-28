@@ -80,6 +80,30 @@ export type Database = {
         }
         Relationships: []
       }
+      behavioral_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          payload: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          payload?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          payload?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       checkin_responses: {
         Row: {
           action: string | null
@@ -189,6 +213,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "checkins_situation_id_fkey"
+            columns: ["situation_id"]
+            isOneToOne: false
+            referencedRelation: "situations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comment_records: {
+        Row: {
+          author_id: string
+          clean_text: string
+          created_at: string
+          deleted_at: string | null
+          edited: boolean
+          id: string
+          situation_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          clean_text: string
+          created_at?: string
+          deleted_at?: string | null
+          edited?: boolean
+          id?: string
+          situation_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          clean_text?: string
+          created_at?: string
+          deleted_at?: string | null
+          edited?: boolean
+          id?: string
+          situation_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_records_situation_id_fkey"
             columns: ["situation_id"]
             isOneToOne: false
             referencedRelation: "situations"
@@ -368,6 +433,60 @@ export type Database = {
           updated_at?: string
           user_id?: string
           welcome_email_sent_at?: string | null
+        }
+        Relationships: []
+      }
+      mirror_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          turns: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          turns?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          turns?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mirror_shape: {
+        Row: {
+          at: string
+          history: Json
+          line: string
+          movement: string
+          shape: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          at?: string
+          history?: Json
+          line?: string
+          movement?: string
+          shape: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          at?: string
+          history?: Json
+          line?: string
+          movement?: string
+          shape?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -574,6 +693,7 @@ export type Database = {
       situations: {
         Row: {
           alias_id: string
+          arc: Json | null
           body: string | null
           clean_text: string
           created_at: string
@@ -581,6 +701,7 @@ export type Database = {
           deleted_at: string | null
           edited: boolean
           embedding: string | null
+          emotional_core: string | null
           human_response_at: string | null
           id: string
           initial_scan: number | null
@@ -596,12 +717,15 @@ export type Database = {
           scan_read: string | null
           scan_signature: string | null
           status: Database["public"]["Enums"]["situation_status"]
+          support_mode: string | null
           tags: string[]
+          the_real_thing: string | null
           title: string | null
           updated_at: string
         }
         Insert: {
           alias_id: string
+          arc?: Json | null
           body?: string | null
           clean_text: string
           created_at?: string
@@ -609,6 +733,7 @@ export type Database = {
           deleted_at?: string | null
           edited?: boolean
           embedding?: string | null
+          emotional_core?: string | null
           human_response_at?: string | null
           id?: string
           initial_scan?: number | null
@@ -624,12 +749,15 @@ export type Database = {
           scan_read?: string | null
           scan_signature?: string | null
           status?: Database["public"]["Enums"]["situation_status"]
+          support_mode?: string | null
           tags?: string[]
+          the_real_thing?: string | null
           title?: string | null
           updated_at?: string
         }
         Update: {
           alias_id?: string
+          arc?: Json | null
           body?: string | null
           clean_text?: string
           created_at?: string
@@ -637,6 +765,7 @@ export type Database = {
           deleted_at?: string | null
           edited?: boolean
           embedding?: string | null
+          emotional_core?: string | null
           human_response_at?: string | null
           id?: string
           initial_scan?: number | null
@@ -652,7 +781,9 @@ export type Database = {
           scan_read?: string | null
           scan_signature?: string | null
           status?: Database["public"]["Enums"]["situation_status"]
+          support_mode?: string | null
           tags?: string[]
+          the_real_thing?: string | null
           title?: string | null
           updated_at?: string
         }
