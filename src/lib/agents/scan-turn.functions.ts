@@ -29,11 +29,22 @@ const TurnInput = z.object({
   last_text: z.string().max(2000).optional(),
 })
 
+type ScanCard = {
+  type: z.infer<typeof CardType>
+  options?: string[]
+  max?: number
+  min_label?: string
+  max_label?: string
+  left?: string
+  right?: string
+  items?: string[]
+  placeholder?: string
+}
 type ContinueTurn = {
-  done?: false
+  done: false
   line: string
   prompt: string
-  card: { type: z.infer<typeof CardType>; [k: string]: unknown }
+  card: ScanCard
 }
 type DoneTurn = {
   done: true
@@ -42,8 +53,9 @@ type DoneTurn = {
   read: string
   factors: string[]
   pillar: string
+  crisis?: boolean
 }
-type TurnOut = (ContinueTurn | DoneTurn) & { crisis?: boolean }
+type TurnOut = ContinueTurn | DoneTurn
 
 export const scanTurn = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
