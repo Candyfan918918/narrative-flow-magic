@@ -147,9 +147,9 @@ class Component extends DCLogic {
           '<a href="Profile.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">your profile</a>'+
           '<a href="Profile.dc.html#settings" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">settings</a>'+
           '<div data-spill class="menu-item" role="button" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#c1216b;cursor:pointer">spill it \u2192</div>'+
-          '<a href="Landing.dc.html#mirror" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#a01a55;text-decoration:none">the mirror ✦</a>'+
-          '<div style="height:.5px;background:rgba(11,8,15,.08);margin:6px 0"></div>'+
-          (this.isAdmin()?'<a href="Admin.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;text-decoration:none">admin dashboard</a>':'')+
+          '<a href="Landing.dc.html#mirror" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#7F77DD;text-decoration:none">the mirror ✦</a>'+
+          (this.isAdmin()?'<a href="Admin.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#9e7a8c;text-decoration:none">admin dashboard</a>':'')+'<div style="height:.5px;background:rgba(11,8,15,.08);margin:6px 0"></div>'+
+          
           '<div data-signout class="menu-item" role="button" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#9e7a8c;cursor:pointer">sign out</div>'+
         '</div>';
       const t=this.$authArea.querySelector('[data-toggle]'),m=this.$authArea.querySelector('[data-menu]');
