@@ -14,7 +14,7 @@ export async function callAgent(opts: {
   const maxTokens = Math.min(Math.max(opts.maxTokens ?? 1500, 64), 4096)
   const lovableKey = process.env.LOVABLE_API_KEY
   if (!lovableKey) return { text: '', error: 'no AI key' }
-  const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-3.1-pro-preview'
+  const modelId = process.env.LOVABLE_AI_MODEL || 'openai/gpt-5'
   try {
     const gateway = createLovableAiGatewayProvider(lovableKey)
     const result = await generateText({
