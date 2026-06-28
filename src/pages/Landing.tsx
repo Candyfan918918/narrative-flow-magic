@@ -95,12 +95,127 @@ export function LandingPage() {
     window.addEventListener('message', onMsg)
     return () => window.removeEventListener('message', onMsg)
   }, [navigate, spill, save, update])
+
+
+
+  // Inject window.claude into the iframe so the bundled Spill/Scan/Mirror
+  // can call the same-origin /api/complete gateway. The bundler swaps
+  // documentElement at runtime but the contentWindow persists, so we
+  // re-assert the binding a few times to survive that swap.
+  const injectClaude = () => {
+    const iframe = iframeRef.current
+    if (!iframe) return
+    try {
+      const w = iframe.contentWindow as (Window & { claude?: unknown }) | null
+      if (!w) return
+      const existing = w.claude as { complete?: unknown; stream?: unknown } | undefined
+      if (existing && typeof existing.complete === 'function' && typeof existing.stream === 'function') return
+
+      const buildBody = (opts: Record<string, unknown>, stream: boolean) => {
+        const o = opts || {}
+        const messages = Array.isArray(o.messages)
+          ? o.messages
+          : [{ role: 'user', content: o.prompt != null ? String(o.prompt) : '' }]
+        const body: Record<string, unknown> = {
+          messages,
+          maxTokens: (o.maxTokens as number) || 1500,
+        }
+        if (o.system) body.system = o.system
+        if (stream) body.stream = true
+        return body
+      }
+
+      const complete = async (opts: Record<string, unknown>) => {
+        let res: Response
+        try {
+          res = await fetch('/api/complete', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(buildBody(opts, false)),
+            signal: opts?.signal as AbortSignal | undefined,
+          })
+        } catch (e) {
+          throw new Error('network: ' + ((e as Error)?.message || 'failed'))
+        }
+        let data: { text?: string; error?: string; fallback?: boolean } | null = null
+        try { data = await res.json() } catch { /* ignore */ }
+        if (!res.ok) throw new Error('ai ' + res.status + (data?.error ? ': ' + data.error : ''))
+        if (data?.fallback) throw new Error(data.error || 'ai unavailable')
+        return typeof data?.text === 'string' ? data.text : ''
+      }
+
+      const stream = async (opts: Record<string, unknown>) => {
+        const o = opts || {}
+        const onChunk = typeof o.onChunk === 'function' ? (o.onChunk as (c: string, acc: string) => void) : null
+        let res: Response
+        try {
+          res = await fetch('/api/complete', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(buildBody(o, true)),
+            signal: o.signal as AbortSignal | undefined,
+          })
+        } catch (e) {
+          throw new Error('network: ' + ((e as Error)?.message || 'failed'))
+        }
+        if (!res.ok) {
+          let errText = ''
+          try { errText = await res.text() } catch { /* ignore */ }
+          throw new Error('ai ' + res.status + (errText ? ': ' + errText.slice(0, 200) : ''))
+        }
+        const ct = (res.headers.get('content-type') || '').toLowerCase()
+        if (ct.includes('application/json')) {
+          const data = await res.json() as { text?: string; error?: string; fallback?: boolean }
+          if (data?.fallback) throw new Error(data.error || 'ai unavailable')
+          const text = typeof data?.text === 'string' ? data.text : ''
+          if (text && onChunk) onChunk(text, text)
+          return text
+        }
+        if (!res.body) {
+          const full = await res.text()
+          if (full && onChunk) onChunk(full, full)
+          return full
+        }
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let acc = ''
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const step = await reader.read()
+          if (step.done) break
+          const chunk = decoder.decode(step.value, { stream: true })
+          if (!chunk) continue
+          acc += chunk
+          if (onChunk) { try { onChunk(chunk, acc) } catch { /* ignore */ } }
+        }
+        const tail = decoder.decode()
+        if (tail) {
+          acc += tail
+          if (onChunk) { try { onChunk(tail, acc) } catch { /* ignore */ } }
+        }
+        return acc
+      }
+
+      ;(w as unknown as { claude: unknown }).claude = { complete, stream }
+    } catch {
+      // cross-origin or other edge case — leave the bundle's fallback in place
+    }
+  }
+
   return (
     <iframe
       ref={iframeRef}
       src="/shutap/Shutap-Landing.dc.html"
       title="Shutap — Landing"
+      onLoad={() => {
+        injectClaude()
+        // Re-assert after the bundler swaps documentElement at runtime.
+        setTimeout(injectClaude, 0)
+        setTimeout(injectClaude, 400)
+        setTimeout(injectClaude, 1200)
+      }}
       style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, margin: 0, padding: 0, background: '#fdf0f5' }}
     />
   )
 }
+
