@@ -67,7 +67,7 @@ export function StreamPage() {
   const navigate = useNavigate()
   const { hash } = useLocation()
   const [filter, setFilter] = useState<Filter>('all')
-  const [toast, setToast] = useState('')
+  const { toast: toastMsg, ToastHost } = useToast()
   const [open, setOpen] = useState<RoomTileData | null>(null)
   const [version, setVersion] = useState(0)
 
@@ -81,7 +81,7 @@ export function StreamPage() {
   }, [])
 
   const rooms = useMemo<RoomTileData[]>(() => {
-    const seed = getRooms() as RoomTileData[]
+    const seed = (SHUTAP_SEED.rooms || []) as RoomTileData[]
     const user = loadUserRooms()
     return [...user, ...seed]
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,10 +103,10 @@ export function StreamPage() {
     if (r) setOpen(r)
   }, [hash, rooms])
 
-  const toastMsg = (m: string) => {
-    setToast(m)
-    setTimeout(() => setToast(''), 2400)
-  }
+  return (
+    <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
+      <Header onToast={toastMsg} />
+
 
   return (
     <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
