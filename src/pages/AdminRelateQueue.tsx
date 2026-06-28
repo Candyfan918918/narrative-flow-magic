@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useServerFn } from '@tanstack/react-start'
 import { listRelateQueue, relateQueueStats, type RelateQueueRow } from '@/lib/relate-queue.functions'
+import { backfillEmbeddings } from '@/lib/embeddings-backfill.functions'
+
 
 const PILLARS = ['all', 'relationships', 'marriage', 'family', 'career'] as const
 type PillarFilter = (typeof PILLARS)[number]
