@@ -1,5 +1,12 @@
-// The Matcher — resonance retrieval. MVP: pillar + tag overlap on public, non-crisis situations.
-// Returns a truthful "N people lived a version of this" count and up to 2 matched stories.
+// The Matcher — resonance retrieval over the REAL public corpus.
+// Uses pgvector cosine similarity (via match_situations RPC) on embeddings
+// produced by openai/text-embedding-3-small. Honors the spec §7.3
+// "honest resonance number" rule:
+//   - numeric "N lived this" only when N >= NUMERIC_FLOOR
+//   - below the floor → story-based resonance line
+//   - N=0 → fall back to "you might be the first" (Companion + SLA carry)
+// Seed rows, crisis rows, private rows, and deleted rows are excluded by
+// the SQL function — we never match against them.
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { createClient } from '@supabase/supabase-js'
@@ -11,19 +18,27 @@ export type MatchedStory = {
   pillar: string
   excerpt: string
   scan: number | null
+  similarity?: number
 }
 
 export type MatcherResult = {
-  count: number
+  count: number              // # of matched stories above similarity floor (real)
+  display_count: number | null // numeric to show in UI; null when below NUMERIC_FLOOR
   stories: MatchedStory[]
   resonance_line: string
+  has_match: boolean
 }
 
 const MatcherInput = z.object({
   pillar: z.enum(['relationships', 'marriage', 'family', 'career']),
+  query_text: z.string().max(8000).default(''),
   tags: z.array(z.string()).default([]),
   exclude_id: z.string().uuid().optional(),
 })
+
+// Honesty thresholds — never lie about how many people lived this.
+const NUMERIC_FLOOR = 5     // need ≥5 matches before showing a number
+const SIMILARITY_FLOOR = 0.78
 
 function getServerClient() {
   return createClient<Database>(
@@ -37,43 +52,64 @@ export const findMatches = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => MatcherInput.parse(data))
   .handler(async ({ data }): Promise<MatcherResult> => {
     const supabase = getServerClient()
-    let query = supabase
-      .from('situations')
-      .select('id, alias_id, pillar, clean_text, initial_scan, tags')
-      .eq('pillar', data.pillar)
-      .eq('is_public', true)
-      .eq('crisis_flag', false)
-      .order('created_at', { ascending: false })
-      .limit(50)
-    if (data.exclude_id) query = query.neq('id', data.exclude_id)
 
-    const { data: rows, error } = await query
-    if (error || !rows) return { count: 0, stories: [], resonance_line: 'you might be the first to put this here — that takes guts.' }
+    // Try vector match first. Falls back to pillar+recency if no embedding
+    // (e.g. AI key missing or text empty).
+    let vectorMatches: Array<{ id: string; pillar: string; clean_text: string; similarity: number }> = []
+    if (data.query_text && data.query_text.trim().length > 0) {
+      const { embedText } = await import('./embeddings.server')
+      const vec = await embedText(data.query_text)
+      if (vec) {
+        const { data: rows } = await supabase.rpc('match_situations', {
+          query_embedding: vec as never,
+          match_pillar: data.pillar,
+          match_count: 25,
+          similarity_floor: SIMILARITY_FLOOR,
+        } as never)
+        if (Array.isArray(rows)) {
+          vectorMatches = rows
+            .map((r: { id: string; pillar: string; clean_text: string; similarity: number; created_at?: string }) => ({
+              id: r.id,
+              pillar: r.pillar,
+              clean_text: r.clean_text,
+              similarity: r.similarity,
+            }))
+            .filter((r) => !data.exclude_id || r.id !== data.exclude_id)
+        }
+      }
+    }
 
-    // Rank by tag overlap when available, else recency
-    const ranked = rows
-      .map((r) => {
-        const overlap = data.tags.length
-          ? (r.tags ?? []).filter((t: string) => data.tags.includes(t)).length
-          : 0
-        return { row: r, overlap }
-      })
-      .sort((a, b) => b.overlap - a.overlap)
-
-    const top = ranked.slice(0, 2).map(({ row }): MatchedStory => ({
-      id: row.id,
-      alias_id: row.alias_id,
-      pillar: row.pillar,
-      excerpt: (row.clean_text ?? '').slice(0, 220),
-      scan: row.initial_scan,
+    const count = vectorMatches.length
+    const top = vectorMatches.slice(0, 2).map((r): MatchedStory => ({
+      id: r.id,
+      alias_id: '',
+      pillar: r.pillar,
+      excerpt: (r.clean_text ?? '').slice(0, 220),
+      scan: null,
+      similarity: r.similarity,
     }))
 
-    const count = rows.length
-    const resonance_line =
-      count >= 50 ? `you're not the only one — ${count}+ people lived a version of this.`
-      : count >= 5 ? `you're not the only one — ${count} people lived a version of this.`
-      : count >= 1 ? `a few others have sat with something like this. you're not weird.`
-      : `you might be the first to put this here — that takes guts.`
+    // Honest resonance line (§7.3)
+    let resonance_line: string
+    let display_count: number | null = null
+    if (count >= 50) {
+      display_count = count
+      resonance_line = `you're not the only one — ${count}+ people lived a version of this.`
+    } else if (count >= NUMERIC_FLOOR) {
+      display_count = count
+      resonance_line = `you're not the only one — ${count} people lived a version of this.`
+    } else if (count >= 1) {
+      // Story-based resonance (no fabricated number)
+      resonance_line = `someone went through almost exactly this. you're not weird.`
+    } else {
+      resonance_line = `you might be the first to put this here — that takes guts. a real person will weigh in soon.`
+    }
 
-    return { count, stories: top, resonance_line }
+    return {
+      count,
+      display_count,
+      stories: top,
+      resonance_line,
+      has_match: count > 0,
+    }
   })
