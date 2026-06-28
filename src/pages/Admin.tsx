@@ -11,16 +11,17 @@ export function AdminPage() {
         title="Shutap — Admin"
         style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, background: '#fdf0f5' }}
       />
-      <Link
-        to="/admin/feedback"
-        style={{
-          position: 'fixed', top: 14, right: 14, zIndex: 10,
-          background: '#c1216b', color: '#fff', textDecoration: 'none',
-          padding: '8px 14px', borderRadius: 999, fontWeight: 600, fontSize: 13,
-          boxShadow: '0 6px 18px rgba(193,33,107,.35)',
-          fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
-        }}
-      >🫶 feedback</Link>
+      <div style={{ position: 'fixed', top: 14, right: 14, zIndex: 10, display: 'flex', gap: 8 }}>
+        <Link to="/admin/relate-queue" style={navBtn('#0b080f')}>🤝 relate queue</Link>
+        <Link to="/admin/feedback" style={navBtn('#c1216b')}>🫶 feedback</Link>
+      </div>
     </>
   )
 }
+
+const navBtn = (bg: string): React.CSSProperties => ({
+  background: bg, color: '#fff', textDecoration: 'none',
+  padding: '8px 14px', borderRadius: 999, fontWeight: 600, fontSize: 13,
+  boxShadow: '0 6px 18px rgba(11,8,15,.25)',
+  fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
+})
