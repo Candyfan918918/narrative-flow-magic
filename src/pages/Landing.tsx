@@ -41,13 +41,20 @@ export function LandingPage() {
     return () => { cancelled = true }
   }, [navigate, callSave])
 
-  useEffect(() => { track('session_start', { page: 'landing' }) }, [])
+  const [authed, setAuthed] = useState(false)
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session))
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setAuthed(!!s))
+    return () => sub.subscription.unsubscribe()
+  }, [])
+
+  useEffect(() => { if (authed) track('session_start', { page: 'landing' }) }, [authed])
 
   const alias = getAlias()
   const { data: mine } = useQuery({
     queryKey: ['my-situations-preview'],
     queryFn: () => callList(),
-    enabled: !!alias,
+    enabled: authed && !!alias,
     staleTime: 60000,
   })
   const myCount = mine?.length ?? 0
