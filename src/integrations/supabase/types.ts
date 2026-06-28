@@ -143,9 +143,11 @@ export type Database = {
       checkins: {
         Row: {
           alias_id: string
+          attempts: number
           channel: string
           created_at: string
           id: string
+          last_error: string | null
           opened_at: string | null
           responded_at: string | null
           scheduled_at: string
@@ -156,9 +158,11 @@ export type Database = {
         }
         Insert: {
           alias_id: string
+          attempts?: number
           channel?: string
           created_at?: string
           id?: string
+          last_error?: string | null
           opened_at?: string | null
           responded_at?: string | null
           scheduled_at: string
@@ -169,9 +173,11 @@ export type Database = {
         }
         Update: {
           alias_id?: string
+          attempts?: number
           channel?: string
           created_at?: string
           id?: string
+          last_error?: string | null
           opened_at?: string | null
           responded_at?: string | null
           scheduled_at?: string
