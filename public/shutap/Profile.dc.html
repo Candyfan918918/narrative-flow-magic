@@ -166,7 +166,7 @@ class Component extends DCLogic {
       this.$authArea.innerHTML=
         '<div data-toggle role="button" tabindex="0" style="display:flex;align-items:center;gap:7px;background:#fff;border:.5px solid rgba(11,8,15,.12);border-radius:999px;padding:5px 12px 5px 5px;cursor:pointer;transition:.18s">'+
           '<span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f060a0,#890041);display:grid;place-items:center;font-size:14px;flex:none">'+(alias.emoji||'\uD83E\uDD89')+'</span>'+
-          '<span style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#4a3040">'+(alias.name||'Anonymous')+'</span>'+
+          '<span style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#4a3040">'+(alias.name||'you')+'</span>'+
         '</div>'+
         '<div data-menu style="position:absolute;top:calc(100% + 9px);right:0;width:210px;background:#fff;border:.5px solid rgba(11,8,15,.10);border-radius:16px;box-shadow:0 24px 50px -24px rgba(60,10,30,.35);padding:7px;display:none;z-index:70;animation:pop .16s ease">'+
           '<a href="Profile.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">your profile</a>'+
@@ -271,8 +271,8 @@ class Component extends DCLogic {
     const a=this.getAlias();
     if(a){
       if(this.$avatar) this.$avatar.textContent=a.emoji||'🦉';
-      if(this.$alias) this.$alias.textContent=a.name||'Anonymous';
-      if(this.$handle) this.$handle.textContent='@'+(a.name||'anonymous').toLowerCase().replace(/\s+/g,'-')+' · joined this spring';
+      if(this.$alias) this.$alias.textContent=a.name||'you';
+      if(this.$handle) this.$handle.textContent='@'+(a.name||'you').toLowerCase().replace(/\s+/g,'-')+' · joined this spring';
     }
     this.$tabs=this.$tabs||{};
     this.show('rooms');

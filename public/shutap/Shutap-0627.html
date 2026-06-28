@@ -1164,7 +1164,7 @@ class Component extends DCLogic {
       this.$authArea.innerHTML=
         '<div data-toggle role="button" tabindex="0" style="display:flex;align-items:center;gap:7px;background:#fff;border:.5px solid rgba(11,8,15,.12);border-radius:999px;padding:5px 12px 5px 5px;cursor:pointer;transition:.18s">'+
           '<span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f060a0,#890041);display:grid;place-items:center;font-size:14px;flex:none">'+(alias.emoji||'🦉')+'</span>'+
-          '<span style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#4a3040">'+(alias.name||'Anonymous')+'</span>'+
+          '<span style="font-family:Newsreader,serif;font-style:italic;font-size:13px;color:#4a3040">'+(alias.name||'you')+'</span>'+
         '</div>'+
         '<div data-menu style="position:absolute;top:calc(100% + 9px);right:0;width:210px;background:#fff;border:.5px solid rgba(11,8,15,.10);border-radius:16px;box-shadow:0 24px 50px -24px rgba(60,10,30,.35);padding:7px;display:none;z-index:70;animation:pop .16s ease">'+
           '<a href="Profile.dc.html" class="menu-item" style="display:block;padding:9px 11px;border-radius:10px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#4a3040;text-decoration:none">your profile</a>'+
@@ -1778,7 +1778,7 @@ class Component extends DCLogic {
     if(!changes||!changes.length) return null;
     const phrase = changes.length===1 ? changes[0].label
       : changes.slice(0,-1).map(c=>c.label).join(', ')+' and '+changes[changes.length-1].label;
-    return 'heads up — i swapped out '+phrase+' so this stays anonymous. that\u2019s how shutap keeps you safe \uD83D\uDD12';
+    return 'heads up — i swapped out '+phrase+' so your real name never shows. that\u2019s how shutap keeps you safe \uD83D\uDD12';
   }
 
   /* ═══════════ §3 — THE CAPTURE SPINE (check-in state machine) ═══════════ */
@@ -1868,7 +1868,7 @@ class Component extends DCLogic {
       '</div>'+
       (beat.type==='day14'||beat.type==='adaptive'||meta.kind==='action' ? '<input data-cinote placeholder="add a line if you want — optional" style="width:100%;box-sizing:border-box;margin-top:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:12px 14px;color:#f0e6f0;font-family:Newsreader,serif;font-style:italic;font-size:14px;outline:none">' : '')+
       (askPermission ? '<div data-ciperm style="margin-top:16px;padding-top:15px;border-top:.5px solid rgba(255,255,255,.1)"><div style="font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#f3c6da;line-height:1.45;margin-bottom:11px">want me to check in on you over the next couple weeks? i\u2019ll keep it light.</div><div style="display:flex;gap:9px"><div data-perm="yes" role="button" style="flex:1;text-align:center;padding:11px;border-radius:13px;background:#e7548a;color:#fff;font-family:Sora,sans-serif;font-weight:700;font-size:13px;cursor:pointer">yes, check in 🤍</div><div data-perm="no" role="button" style="flex:1;text-align:center;padding:11px;border-radius:13px;background:rgba(255,255,255,.06);color:#c4a0b2;font-family:Sora,sans-serif;font-weight:600;font-size:13px;cursor:pointer">not now</div></div></div>' : '')+
-      '<div data-cifoot style="margin-top:14px;font-family:Sora,sans-serif;font-weight:500;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:#7c6471;text-align:center">one tap. never homework. 🔒 stays anonymous</div>';
+      '<div data-cifoot style="margin-top:14px;font-family:Sora,sans-serif;font-weight:500;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:#7c6471;text-align:center">one tap. never homework. 🔒 stays pseudonymous</div>';
 
     this.$ciRoot.style.display='flex';
     requestAnimationFrame(()=>{ this.$ciCard.style.transform='translateY(0)'; });
