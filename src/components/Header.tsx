@@ -157,22 +157,12 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                       animation: 'pop .16s ease',
                     }}
                   >
-                    <Link to="/" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
-                      home
-                    </Link>
-                    <Link to="/halls" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
-                      hall of fame
-                    </Link>
-                    <Link to="/mirror" className="menu-item" style={{ ...menuItem, color: '#7F77DD' }} onClick={() => setMenuOpen(false)}>
-                      the mirror ✦
-                    </Link>
                     <Link to="/profile" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
                       your profile
                     </Link>
-                    <Link to="/room" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
-                      open a room
+                    <Link to="/profile#settings" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
+                      settings
                     </Link>
-                    <div style={{ height: '.5px', background: 'rgba(11,8,15,.08)', margin: '6px 0' }} />
                     <div
                       className="menu-item"
                       role="button"
@@ -182,8 +172,17 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                         navigate('/#spill')
                       }}
                     >
-                      say something →
+                      spill it →
                     </div>
+                    <Link to="/mirror" className="menu-item" style={{ ...menuItem, color: '#7F77DD' }} onClick={() => setMenuOpen(false)}>
+                      the mirror ✦
+                    </Link>
+                    {admin && (
+                      <Link to="/admin" className="menu-item" style={menuItem} onClick={() => setMenuOpen(false)}>
+                        admin dashboard
+                      </Link>
+                    )}
+                    <div style={{ height: '.5px', background: 'rgba(11,8,15,.08)', margin: '6px 0' }} />
                     <div
                       className="menu-item"
                       role="button"
@@ -192,6 +191,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                     >
                       sign out
                     </div>
+
                   </div>
                 )}
               </>
