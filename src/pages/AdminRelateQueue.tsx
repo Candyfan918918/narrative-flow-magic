@@ -68,6 +68,9 @@ export function AdminRelateQueuePage() {
           </div>
         )}
 
+        <SchedulerHealthCard />
+
+
         <div style={{ display: 'flex', gap: 8, margin: '22px 0 12px', flexWrap: 'wrap' }}>
           {PILLARS.map((p) => (
             <button key={p} onClick={() => setPillar(p)} style={chipStyle(p === pillar)}>
