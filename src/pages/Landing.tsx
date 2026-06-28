@@ -94,6 +94,9 @@ export function LandingPage() {
     }
     window.addEventListener('message', onMsg)
     return () => window.removeEventListener('message', onMsg)
+  }, [navigate, spill, save, update])
+
+
 
   // Inject window.claude into the iframe so the bundled Spill/Scan/Mirror
   // can call the same-origin /api/complete gateway. The bundler swaps
