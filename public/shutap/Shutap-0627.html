@@ -1685,6 +1685,21 @@ class Component extends DCLogic {
     this.syncPreviewDOM();
     const sit=this.persistJournal();
     const c=this.spill.composed||{};
+    // bridge to parent for real Supabase persistence
+    try{
+      const reqId='j'+Date.now();
+      this.spill._pendingReq=reqId;
+      const payload={ kind:'spill', title:c.title||null, body:c.body||null,
+        clean_text:c.body||c.title||'', pillar:(c.pillar||'relationships'),
+        tags:(c.tags||[]).slice(0,12),
+        initial_scan:(this.spill.scan&&this.spill.scan.score)||null,
+        scan_band:(this.spill.scan&&this.spill.scan.band)||null,
+        is_public:false, emoji:'🌸', alias:'someone' };
+      const onAck=(e)=>{ const d=e&&e.data; if(!d||d.type!=='shutap-persist-situation-result'||d.reqId!==reqId) return;
+        window.removeEventListener('message',onAck); if(d.id&&sit){ sit._dbId=d.id; this.saveSituations(this.situations().map(x=>x.id===sit.id?sit:x)); } };
+      window.addEventListener('message',onAck);
+      window.parent && window.parent!==window && window.parent.postMessage({type:'shutap-persist-situation', reqId, payload}, '*');
+    }catch(e){}
     if(!this.$spillScreen) return;
     this.setEyeState&&this.setEyeState('calm-care');
     this.$spillScreen.innerHTML='';
@@ -1700,6 +1715,7 @@ class Component extends DCLogic {
     document.body.style.overflow='';
     setTimeout(()=>{ try{ window.parent && window.parent!==window && window.parent.postMessage({type:'shutap-nav',to:'/profile',hash:'#journal'},'*'); }catch(e){} window.location.href='/profile#journal'; }, 850);
   }
+
 
   postToRoom(){
     this.syncPreviewDOM();
@@ -2015,6 +2031,22 @@ class Component extends DCLogic {
     if(this.spill&&this.spill._journalId){ sit=this.promoteJournal(this.spill._journalId, mode) || this.scheduleCaptureSpine(cleanTitle, (this.spill&&this.spill.scan)||null, mode, {visibility:'public', body:c.body, tags:c.tags, pillar:c.pillar}); }
     else { sit=this.scheduleCaptureSpine(cleanTitle, (this.spill&&this.spill.scan)||null, mode, {visibility:'public', body:c.body, tags:c.tags, pillar:c.pillar}); }
     if(window.ShutapFeedback) ShutapFeedback.track('room_created',{visibility:'public',pillar:c.pillar||null});
+    // bridge to parent for real Supabase persistence
+    try{
+      const reqId='r'+Date.now();
+      const dbId = sit && sit._dbId;
+      const payload={ kind:'spill', title:cleanTitle||null, body:c.body||null,
+        clean_text:c.body||cleanTitle||'', pillar:(c.pillar||'relationships'),
+        tags:(c.tags||[]).slice(0,12),
+        initial_scan:(this.spill.scan&&this.spill.scan.score)||null,
+        scan_band:(this.spill.scan&&this.spill.scan.band)||null,
+        is_public:true, emoji:'🌸', alias:'someone' };
+      if(dbId){
+        window.parent && window.parent!==window && window.parent.postMessage({type:'shutap-update-situation', reqId, id:dbId, patch:{ title:payload.title, body:payload.body, clean_text:payload.clean_text, pillar:payload.pillar, tags:payload.tags, is_public:true }}, '*');
+      }else{
+        window.parent && window.parent!==window && window.parent.postMessage({type:'shutap-persist-situation', reqId, payload}, '*');
+      }
+    }catch(e){}
     // brief splash, then drop the user straight into the room they just created
     this.setEyeState&&this.setEyeState('celebrating');
     this.$spillScreen.innerHTML='';
@@ -2028,6 +2060,7 @@ class Component extends DCLogic {
     document.body.style.overflow='';
     setTimeout(()=>{ const h='#room-'+sit.id; try{ window.parent && window.parent!==window && window.parent.postMessage({type:'shutap-nav',to:'/stream',hash:h},'*'); }catch(e){} window.location.href='/stream'+h; }, 850);
   }
+
 
   /* ═══════════ SCAN ═══════════ */
   openScan(){
