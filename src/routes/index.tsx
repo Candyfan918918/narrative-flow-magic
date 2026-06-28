@@ -6,6 +6,7 @@ const HOME_DESCRIPTION =
   "Pseudonymous venting community. Spill what's actually going on with your relationship, marriage, family, or work — someone in here has lived your exact thing."
 
 export const Route = createFileRoute('/')({
+  ssr: false,
   head: () => ({
     meta: [
       { title: HOME_TITLE },
