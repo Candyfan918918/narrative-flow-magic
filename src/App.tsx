@@ -8,6 +8,7 @@ import { RoomPage } from './pages/Room'
 import { ProfilePage } from './pages/Profile'
 import { AdminPage } from './pages/Admin'
 import { AdminFeedbackPage } from './pages/AdminFeedback'
+import { AdminRelateQueuePage } from './pages/AdminRelateQueue'
 import { SubscribePage, SubscribeReturnPage } from './pages/Subscribe'
 import { LegalPage } from './pages/Legal'
 
