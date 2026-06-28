@@ -80,6 +80,7 @@ export const saveSituation = createServerFn({ method: 'POST' })
       initial_scan: data.initial_scan ?? null,
       scan_band: data.scan_band ?? null,
       is_public: data.is_public,
+      support_mode: data.support_mode ?? null,
       status: 'open' as const,
     }
 
