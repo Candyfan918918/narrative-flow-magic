@@ -27,6 +27,7 @@ export type SpillPayoff = {
   notice: string
   resonance_line: string
   matched_count: number
+  matched_display_count: number | null  // honest count for UI; null = don't show a number
   matched_stories: { id: string; excerpt: string }[]
   companion_message: string
   crisis: boolean
