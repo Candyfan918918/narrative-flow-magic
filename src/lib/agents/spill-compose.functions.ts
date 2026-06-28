@@ -3,7 +3,6 @@
 // on every output.
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { callAgent, tryParseJson } from './gateway'
 import { scrubText } from './scrubber.functions'
 
@@ -65,7 +64,6 @@ async function rescrub(out: ComposeOutput): Promise<ComposeOutput> {
 }
 
 export const spillCompose = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => ComposeInput.parse(d))
   .handler(async ({ data }): Promise<ComposeOutput> => {
     const t = data.transcript.map(m => `${m.role === 'user' ? 'them' : 'spill'}: ${m.content}`).join('\n')
@@ -87,7 +85,6 @@ export const spillCompose = createServerFn({ method: 'POST' })
   })
 
 export const spillEdit = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => EditInput.parse(d))
   .handler(async ({ data }): Promise<ComposeOutput> => {
     const t = data.transcript.map(m => `${m.role === 'user' ? 'them' : 'spill'}: ${m.content}`).join('\n')
