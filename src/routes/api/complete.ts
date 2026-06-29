@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { generateText, streamText } from 'ai'
 import { createLovableAiGatewayProvider } from '@/lib/ai-gateway.server'
+import { COMPANION_CONSTITUTION } from '@/lib/agents/constitution'
+
 
 interface CompleteBody {
   messages?: { role: 'user' | 'assistant'; content: string }[]
