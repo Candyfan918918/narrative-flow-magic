@@ -33,10 +33,17 @@ export const Route = createFileRoute('/api/complete')({
           const lovableKey = process.env.LOVABLE_API_KEY
           if (!lovableKey) return fallback('no AI key configured')
 
-          const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-2.5-pro'
+          const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-2.5-flash'
           const gateway = createLovableAiGatewayProvider(lovableKey)
           const model = gateway(modelId)
           const msgs = messages.map((m) => ({ role: m.role, content: m.content }))
+          // If the caller didn't bring their own system prompt, fall back to the
+          // Companion Constitution so spill/scan responses stay warm and in-voice
+          // instead of cold and clinical.
+          const system = body.system && body.system.trim().length > 0
+            ? body.system
+            : COMPANION_CONSTITUTION
+
 
           if (wantStream) {
             try {
