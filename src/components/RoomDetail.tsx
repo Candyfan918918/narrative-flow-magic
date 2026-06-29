@@ -5,6 +5,7 @@ import { complete, extractJSON } from '../lib/ai'
 import { eyeSVG } from './EyeDefs'
 import { track } from '../lib/feedback'
 import { CommentsThread } from './CommentsThread'
+import { ScanShareCard } from './ScanShareCard'
 
 const badgeStyle = (support: string): React.CSSProperties => ({
   display: 'inline-flex',
@@ -71,6 +72,7 @@ export function RoomDetail({
 }) {
   const [active, setActive] = useState<Set<string>>(new Set())
   const [related, setRelated] = useState(false)
+  const [scanShareOpen, setScanShareOpen] = useState(false)
   const [guide, setGuide] = useState<string | null>(null)
   const [chips, setChips] = useState<string[]>([])
   const [helpText, setHelpText] = useState('seen without your real name.')
@@ -101,23 +103,12 @@ export function RoomDetail({
   }
 
   const shareRoom = () => {
-    if (!window.ShutapShare) return
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shutap.com'
     if (isScan) {
-      window.ShutapShare.manual({
-        trigger: 'manual_room_scan',
-        kind: 'scan',
-        accent: scanAccent,
-        big: String(room.initial_scan ?? ''),
-        headline: room.scan_signature || room.title,
-        companion: 'sharing this scan — de-identified. only the number and signature line travel, never the full story.',
-        caption: '“' + (room.scan_signature || room.title) + '” — i scanned ' + room.initial_scan + '/100. where are you? →',
-        url: origin + '/room?id=' + room.id,
-        loopLabel: 'scan yours →',
-        privacy: 'only the number + signature leave — never the full story or any name.',
-      })
+      setScanShareOpen(true)
       return
     }
+    if (!window.ShutapShare) return
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shutap.com'
     window.ShutapShare.manual({
       trigger: 'manual_room',
       kind: 'generic',
