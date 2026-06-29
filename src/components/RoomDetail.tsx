@@ -542,6 +542,19 @@ export function RoomDetail({
           </div>
         </div>
       </div>
+      {scanShareOpen && isScan && (
+        <ScanShareCard
+          record={{
+            score: room.initial_scan as number,
+            signature: room.scan_signature ?? room.title,
+            read: room.reflection ?? null,
+            pillar: room.pillar ?? null,
+            url: (typeof window !== 'undefined' ? window.location.origin : 'https://shutap.com') + '/room?id=' + room.id,
+          }}
+          onClose={() => setScanShareOpen(false)}
+          toast={toast}
+        />
+      )}
     </div>
   )
 }
