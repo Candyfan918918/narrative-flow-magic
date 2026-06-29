@@ -244,6 +244,16 @@ export function LandingPage() {
             return
           }
           const res = await save({ data: d.payload as never })
+          // Stamp the shared synced map so the poll loop doesn't double-create
+          // this entry if the bundle also wrote it to shutap_situations.
+          try {
+            const p = d.payload as { id?: string; pillar?: string | null; title?: string | null; body?: string | null; clean_text?: string | null }
+            const synced = getSynced()
+            const h = hashKey({ pillar: p.pillar, title: p.title, body: p.body || p.clean_text })
+            synced['hash:' + h] = res?.id || '1'
+            if (p.id) synced['bundle:' + p.id] = res?.id || '1'
+            writeSynced(synced)
+          } catch { /* ignore */ }
           post({ type: 'shutap-persist-situation-result', reqId: d.reqId, id: res.id, room_id: res.room_id })
           // Drop the user straight into the destination.
           if (res?.room_id) navigate(`/stream#room-${res.room_id}`)
