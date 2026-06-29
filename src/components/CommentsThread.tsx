@@ -1,11 +1,11 @@
-// Auth-owned comments thread for a room. Renders existing comments, lets
-// signed-in users post, and lets the author of each comment edit / delete.
-import { useState } from 'react'
+// Auth-owned comments thread for a room. Renders the existing comments and
+// lets the author of each comment edit / delete their own. The composer
+// itself lives in RoomDetail (the rich AI-guided one is the single real one).
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import {
   listRoomComments,
-  createComment,
   updateComment,
   deleteComment,
 } from '@/lib/situations.functions'
@@ -24,18 +24,24 @@ function timeAgo(iso: string): string {
 export function CommentsThread({ roomId }: { roomId: string }) {
   const qc = useQueryClient()
   const [meId, setMeId] = useState<string | null>(null)
-  const [draft, setDraft] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editDraft, setEditDraft] = useState('')
 
-  // session
-  useState(() => {
-    supabase.auth.getUser().then(({ data }) => setMeId(data.user?.id ?? null))
-    return null
-  })
+  useEffect(() => {
+    let cancelled = false
+    supabase.auth.getUser().then(({ data }) => {
+      if (!cancelled) setMeId(data.user?.id ?? null)
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setMeId(session?.user?.id ?? null)
+    })
+    return () => {
+      cancelled = true
+      sub.subscription.unsubscribe()
+    }
+  }, [])
 
   const fetchComments = useServerFn(listRoomComments)
-  const create = useServerFn(createComment)
   const update = useServerFn(updateComment)
   const remove = useServerFn(deleteComment)
 
@@ -46,13 +52,6 @@ export function CommentsThread({ roomId }: { roomId: string }) {
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ['comments', roomId] })
 
-  const post = useMutation({
-    mutationFn: (text: string) => create({ data: { roomId, text } }),
-    onSuccess: () => {
-      setDraft('')
-      invalidate()
-    },
-  })
   const save = useMutation({
     mutationFn: ({ id, text }: { id: string; text: string }) =>
       update({ data: { id, text } }),
@@ -182,58 +181,6 @@ export function CommentsThread({ roomId }: { roomId: string }) {
           )
         })}
       </div>
-
-      {meId ? (
-        <div style={{ marginTop: 16 }}>
-          <textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="say what this stirred in you…"
-            rows={3}
-            style={{
-              width: '100%',
-              border: '.5px solid rgba(11,8,15,.18)',
-              borderRadius: 12,
-              padding: 12,
-              fontFamily: 'Inter, sans-serif',
-              fontSize: 14,
-              resize: 'vertical',
-            }}
-          />
-          <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
-            <button
-              disabled={post.isPending || draft.trim().length < 1}
-              onClick={() => post.mutate(draft.trim())}
-              style={{
-                background: '#e7548a',
-                color: '#fff',
-                border: 0,
-                borderRadius: 999,
-                padding: '9px 18px',
-                fontFamily: 'Sora, sans-serif',
-                fontWeight: 700,
-                fontSize: 13,
-                cursor: 'pointer',
-                opacity: draft.trim().length < 1 ? 0.5 : 1,
-              }}
-            >
-              post →
-            </button>
-          </div>
-        </div>
-      ) : (
-        <p
-          style={{
-            marginTop: 16,
-            fontFamily: 'Newsreader, serif',
-            fontStyle: 'italic',
-            color: '#6b4a5c',
-            fontSize: 14,
-          }}
-        >
-          sign in to reply.
-        </p>
-      )}
     </section>
   )
 }

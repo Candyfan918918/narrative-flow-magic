@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useServerFn } from '@tanstack/react-start'
 import type { Room } from '../data/types'
 import { REACTIONS } from '../data/constants'
 import { complete, extractJSON } from '../lib/ai'
@@ -6,6 +9,10 @@ import { eyeSVG } from './EyeDefs'
 import { track } from '../lib/feedback'
 import { CommentsThread } from './CommentsThread'
 import { ScanShareCard } from './ScanShareCard'
+import { createComment } from '@/lib/situations.functions'
+import { supabase } from '@/integrations/supabase/client'
+
+const PENDING_COMMENT_KEY = 'shutap_pending_comment'
 
 const badgeStyle = (support: string): React.CSSProperties => ({
   display: 'inline-flex',
@@ -205,18 +212,75 @@ export function RoomDetail({
     t.style.height = Math.min(160, t.scrollHeight) + 'px'
   }
 
-  const submitComment = () => {
+  const qc = useQueryClient()
+  const navigate = useNavigate()
+  const createCommentFn = useServerFn(createComment)
+  const post = useMutation({
+    mutationFn: (text: string) => createCommentFn({ data: { roomId: room.id, text } }),
+  })
+
+  const onPosted = (text: string) => {
+    track('comment_post', { target: `room:${room.id}`, text: text.slice(0, 200) })
+    setHelpText('offered. the room felt that.')
+    if (helpTimer.current) clearTimeout(helpTimer.current)
+    helpTimer.current = setTimeout(() => setHelpText('seen without your real name.'), 3200)
+    toast('🤍 offered to the room.')
+    qc.invalidateQueries({ queryKey: ['comments', room.id] })
+  }
+
+  const submitComment = async () => {
     const t = cmtRef.current
-    if (t && t.value.trim()) {
-      track('comment_post', { target: `room:${room.id}`, text: t.value.trim().slice(0, 200) })
-      setHelpText('offered. the room felt that.')
-      if (helpTimer.current) clearTimeout(helpTimer.current)
-      helpTimer.current = setTimeout(() => setHelpText('seen without your real name.'), 3200)
-      toast('🤍 offered to the room.')
+    if (!t) return
+    const text = t.value.trim()
+    if (!text) return
+
+    // Auth gate — anonymous-only users still have a session; only true sign-out triggers this.
+    const { data: sess } = await supabase.auth.getSession()
+    const isAnon = !sess.session || (sess.session.user as { is_anonymous?: boolean } | undefined)?.is_anonymous
+    if (isAnon) {
+      try {
+        sessionStorage.setItem(
+          PENDING_COMMENT_KEY,
+          JSON.stringify({ roomId: room.id, text }),
+        )
+      } catch { /* storage unavailable */ }
+      toast('sign in to offer this — your draft is saved.')
+      navigate('/welcome')
+      return
+    }
+
+    try {
+      await post.mutateAsync(text)
       t.value = ''
       t.style.height = 'auto'
+      onPosted(text)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'could not post'
+      toast('couldn’t offer that just yet — ' + msg)
     }
   }
+
+  // Resume a pending comment after sign-in (mirrors shutap_pending_save).
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const raw = sessionStorage.getItem(PENDING_COMMENT_KEY)
+        if (!raw) return
+        const parsed = JSON.parse(raw) as { roomId?: string; text?: string }
+        if (!parsed || parsed.roomId !== room.id || !parsed.text) return
+        const { data: sess } = await supabase.auth.getSession()
+        const user = sess.session?.user as { is_anonymous?: boolean } | undefined
+        if (!sess.session || user?.is_anonymous) return
+        sessionStorage.removeItem(PENDING_COMMENT_KEY)
+        if (cancelled) return
+        await post.mutateAsync(parsed.text)
+        if (!cancelled) onPosted(parsed.text)
+      } catch { /* ignore */ }
+    })()
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [room.id])
 
   const bars = REACTIONS.map((rx) => (
     <span key={rx.k} style={{ flex: room.reactions[rx.k], background: rx.color }} />
