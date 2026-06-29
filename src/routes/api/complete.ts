@@ -49,7 +49,8 @@ export const Route = createFileRoute('/api/complete')({
             try {
               const result = streamText({
                 model,
-                system: body.system,
+                system,
+
                 messages: msgs,
                 maxOutputTokens: maxTokens,
               })
