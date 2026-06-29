@@ -109,7 +109,14 @@ export function LandingPage() {
       const w = iframe.contentWindow as (Window & { claude?: unknown }) | null
       if (!w) return
       const existing = w.claude as { complete?: unknown; stream?: unknown } | undefined
-      if (existing && typeof existing.complete === 'function' && typeof existing.stream === 'function') return
+      if (existing && typeof existing.complete === 'function' && typeof existing.stream === 'function') {
+        console.log('[TEMP claude-inject] window.claude already present', {
+          hasClaude: true,
+          hasComplete: true,
+          hasStream: true,
+        })
+        return
+      }
 
       const buildBody = (opts: Record<string, unknown>, stream: boolean) => {
         const o = opts || {}
@@ -126,6 +133,7 @@ export function LandingPage() {
       }
 
       const complete = async (opts: Record<string, unknown>) => {
+        console.log('[TEMP claude] /api/complete hit', opts)
         let res: Response
         try {
           res = await fetch('/api/complete', {
@@ -197,7 +205,13 @@ export function LandingPage() {
       }
 
       ;(w as unknown as { claude: unknown }).claude = { complete, stream }
-    } catch {
+      console.log('[TEMP claude-inject] window.claude injected', {
+        hasClaude: !!(w as unknown as { claude?: unknown }).claude,
+        hasComplete: typeof ((w as unknown as { claude?: { complete?: unknown } }).claude?.complete) === 'function',
+        hasStream: typeof ((w as unknown as { claude?: { stream?: unknown } }).claude?.stream) === 'function',
+      })
+    } catch (err) {
+      console.error('[TEMP claude-inject] failed', err)
       // cross-origin or other edge case — leave the bundle's fallback in place
     }
   }
