@@ -173,8 +173,13 @@ function RootComponent() {
       const { data: sub } = supabase.auth.onAuthStateChange((event) => {
         if (!mounted) return;
         if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-        router.invalidate();
-        if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+        // Defer to avoid "setState during render" when Supabase fires the
+        // initial SIGNED_IN synchronously inside a router transition.
+        queueMicrotask(() => {
+          if (!mounted) return;
+          router.invalidate();
+          if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+        });
       });
       // store unsubscribe on the closure
       (RootComponent as unknown as { _unsub?: () => void })._unsub = () => sub.subscription.unsubscribe();
