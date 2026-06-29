@@ -6,6 +6,40 @@ import { runSpill } from '@/lib/agents/spill.functions'
 import { saveSituation, updateSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 
+// ── Shared sync helpers (used by the poll loop AND the postMessage bridge so
+// a spill is never persisted twice). Keyed by both the bundle entry id and a
+// content hash so either code path stamps it for the other to skip.
+const SYNCED_KEY = 'shutap_situations_synced'
+function getSynced(): Record<string, string> {
+  try {
+    const cur = sessionStorage.getItem(SYNCED_KEY)
+    if (cur) return JSON.parse(cur)
+    const legacy = sessionStorage.getItem('shutap_scan_synced')
+    if (legacy) { sessionStorage.setItem(SYNCED_KEY, legacy); return JSON.parse(legacy) }
+    return {}
+  } catch { return {} }
+}
+function writeSynced(m: Record<string, string>) {
+  try { sessionStorage.setItem(SYNCED_KEY, JSON.stringify(m)) } catch { /* ignore */ }
+}
+function pillarMap(p?: string | null): 'relationships' | 'marriage' | 'family' | 'career' {
+  if (p === 'family') return 'family'
+  if (p === 'marriage') return 'marriage'
+  if (p === 'career' || p === 'work') return 'career'
+  return 'relationships'
+}
+function deriveTitleLocal(text: string): string {
+  const first = (text || '').split(/[.\n!?]/)[0]?.trim() || ''
+  return first.length > 60 ? first.slice(0, 57) + '…' : first
+}
+function hashKey(input: { pillar?: string | null; title?: string | null; body?: string | null; clean_text?: string | null }): string {
+  const norm = (s: unknown) => String(s ?? '').trim().toLowerCase().replace(/\s+/g, ' ').slice(0, 240)
+  const raw = pillarMap(input.pillar) + '|' + norm(input.title) + '|' + norm(input.body || input.clean_text)
+  let h = 5381
+  for (let i = 0; i < raw.length; i++) h = ((h << 5) + h + raw.charCodeAt(i)) | 0
+  return (h >>> 0).toString(36)
+}
+
 export function LandingPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const navigate = useNavigate()
@@ -22,8 +56,15 @@ export function LandingPage() {
       const { data: sess } = await supabase.auth.getSession()
       if (!sess.session || cancelled) return
       try {
-        const payload = JSON.parse(raw)
+        const payload = JSON.parse(raw) as { id?: string; pillar?: string | null; title?: string | null; body?: string | null; clean_text?: string | null }
         const res = await save({ data: payload as never })
+        try {
+          const synced = getSynced()
+          const h = hashKey({ pillar: payload.pillar, title: payload.title, body: payload.body || payload.clean_text })
+          synced['hash:' + h] = res?.id || '1'
+          if (payload.id) synced['bundle:' + payload.id] = res?.id || '1'
+          writeSynced(synced)
+        } catch { /* ignore */ }
         sessionStorage.removeItem('shutap_pending_save')
         if (res?.room_id) navigate(`/stream#room-${res.room_id}`)
         else if (res?.id) navigate(`/profile`)
@@ -34,46 +75,33 @@ export function LandingPage() {
     return () => { cancelled = true }
   }, [navigate, save])
 
-  // ── Non-invasive scan sync ──
-  // The bundle's `persistScan()` writes scan results to `localStorage['shutap_situations']`
-  // only — it never calls our postMessage bridge. We poll the same-origin iframe's
-  // localStorage, and for each new `kind:'scan'` entry we (a) persist to Supabase
-  // via the existing `saveSituation` server fn and (b) mirror it into
-  // `shutap_user_situations` so the React Stream renders it as a score-card tile.
-  // No bundle edits.
+  // ── Non-invasive situation sync (scans + spills) ──
+  // The bundle writes scan & spill results into the iframe's
+  // localStorage['shutap_situations']. We poll same-origin, persist any new
+  // entry to Supabase via the existing saveSituation server fn, and mirror
+  // it into localStorage['shutap_user_situations'] so the React Stream /
+  // Profile pick it up without a reload. Deduped across this loop AND the
+  // shutap-persist-situation postMessage bridge via SYNCED_KEY (id + hash).
   useEffect(() => {
-    const SYNCED_KEY = 'shutap_scan_synced'
+    type ScanBand = 'settling' | 'sitting' | 'weighing' | 'heavy' | 'consuming'
     type Mirror = {
       id: string; alias: string; emoji: string; title: string; body: string;
       reflection: string; hall: 'healing' | 'brave' | 'relatable' | 'loving';
       support: 'heard' | 'advice'; hours: string; relates: number; sitting: number;
       reactions: { heard: number; same: number; strong: number; time: number; brave: number };
-      kind: 'scan'; initial_scan: number;
-      scan_band: 'settling' | 'sitting' | 'weighing' | 'heavy' | 'consuming';
-      scan_signature: string; pillar: string | null;
+      kind: 'scan' | 'spill'; initial_scan?: number;
+      scan_band?: ScanBand; scan_signature?: string; pillar?: string | null;
     }
     type BundleSit = {
       id?: string; kind?: string; scan?: number | string; read?: string;
-      title?: string; pillar?: string | null; visibility?: string; factors?: unknown
+      title?: string; body?: string | null; pillar?: string | null;
+      visibility?: string; tags?: unknown; mode?: string;
     }
 
-    const getSynced = (): Record<string, string> => {
-      try { return JSON.parse(sessionStorage.getItem(SYNCED_KEY) || '{}') } catch { return {} }
-    }
-    const writeSynced = (m: Record<string, string>) => {
-      try { sessionStorage.setItem(SYNCED_KEY, JSON.stringify(m)) } catch { /* ignore */ }
-    }
-    // Derive display band from score (matches RoomTile/RoomDetail palette).
-    const bandFromScore = (n: number): Mirror['scan_band'] =>
+    const bandFromScore = (n: number): ScanBand =>
       n < 200 ? 'settling' : n < 400 ? 'sitting' : n < 600 ? 'weighing' : n < 800 ? 'heavy' : 'consuming'
-    const dbBand: Record<Mirror['scan_band'], 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'> = {
+    const dbBand: Record<ScanBand, 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'> = {
       settling: 'quiet', sitting: 'real', weighing: 'hot', heavy: 'heavy', consuming: 'serious',
-    }
-    const pillarMap = (p?: string | null): 'relationships' | 'marriage' | 'family' | 'career' => {
-      if (p === 'family') return 'family'
-      if (p === 'marriage') return 'marriage'
-      if (p === 'career' || p === 'work') return 'career'
-      return 'relationships'
     }
 
     let busy = false
@@ -86,10 +114,16 @@ export function LandingPage() {
         const raw = (w as Window).localStorage?.getItem('shutap_situations') || '[]'
         arr = JSON.parse(raw)
       } catch { return /* cross-origin or parse error */ }
-      const scans = arr.filter((s) => s && s.kind === 'scan' && s.id)
-      if (!scans.length) return
+      // Pick up scans AND spills (spills typically have no `kind` field).
+      const entries = arr.filter((s) => s && s.id && s.kind !== 'deleted')
+      if (!entries.length) return
       const synced = getSynced()
-      const pending = scans.filter((s) => !synced[s.id!])
+      const pending = entries.filter((s) => {
+        if (synced['bundle:' + s.id!]) return false
+        const h = hashKey({ pillar: s.pillar, title: s.title, body: s.body || s.read })
+        if (synced['hash:' + h]) return false
+        return true
+      })
       if (!pending.length) return
 
       const { data: sess } = await supabase.auth.getSession()
@@ -102,48 +136,63 @@ export function LandingPage() {
       let mirrorChanged = false
 
       for (const s of pending) {
-        const score = Math.max(0, Math.min(999, Number(s.scan) || 0))
-        const band = bandFromScore(score)
-        const title = String(s.title || 'a scan')
-        const body = String(s.read || '')
+        const isScan = s.kind === 'scan'
         const isPublic = s.visibility === 'public'
+        const tags = Array.isArray(s.tags) ? (s.tags as unknown[]).map(String).slice(0, 12) : []
+        const support: 'heard' | 'advice' = s.mode === 'advice' ? 'advice' : 'heard'
+        const pillar = pillarMap(s.pillar)
+        const rawBody = String((s.body ?? s.read) || '').trim()
+        const rawTitle = String(s.title || '').trim()
+        const title = rawTitle || deriveTitleLocal(rawBody)
+        const cleanText = rawBody || title
+        const h = hashKey({ pillar: s.pillar, title, body: rawBody })
+
         try {
-          const res = await save({
-            data: {
-              kind: 'scan',
-              pillar: pillarMap(s.pillar),
-              clean_text: body || title,
-              title,
-              body: body || null,
-              initial_scan: score,
-              scan_band: dbBand[band],
-              is_public: isPublic,
-              support_mode: 'heard',
-            } as never,
-          })
-          synced[s.id!] = res?.id || '1'
-          if (!mirrorIds.has(s.id!)) {
-            mirror.unshift({
-              id: s.id!,
-              alias: 'you',
-              emoji: '✦',
-              title,
-              body,
-              reflection: body,
-              hall: 'healing',
-              support: 'heard',
-              hours: 'just now',
-              relates: 0,
-              sitting: 1,
-              reactions: { heard: 0, same: 0, strong: 0, time: 0, brave: 0 },
-              kind: 'scan',
-              initial_scan: score,
-              scan_band: band,
-              scan_signature: title,
-              pillar: s.pillar || null,
+          if (isScan) {
+            const score = Math.max(0, Math.min(999, Number(s.scan) || 0))
+            const band = bandFromScore(score)
+            await save({
+              data: {
+                kind: 'scan', pillar,
+                clean_text: cleanText, title: title || null, body: rawBody || null,
+                initial_scan: score, scan_band: dbBand[band],
+                is_public: isPublic, support_mode: 'heard', tags,
+              } as never,
             })
-            mirrorChanged = true
+            if (!mirrorIds.has(s.id!)) {
+              mirror.unshift({
+                id: s.id!, alias: 'you', emoji: '✦', title: title || '',
+                body: rawBody, reflection: rawBody, hall: 'healing',
+                support: 'heard', hours: 'just now', relates: 0, sitting: 1,
+                reactions: { heard: 0, same: 0, strong: 0, time: 0, brave: 0 },
+                kind: 'scan', initial_scan: score, scan_band: band,
+                scan_signature: title || '', pillar: s.pillar || null,
+              })
+              mirrorChanged = true
+            }
+          } else {
+            // Spill — no scan score/band fields, render as a normal spill card.
+            if (!cleanText) { synced['bundle:' + s.id!] = '1'; continue }
+            await save({
+              data: {
+                kind: 'spill', pillar,
+                clean_text: cleanText, title: title || null, body: rawBody || null,
+                is_public: isPublic, support_mode: support, tags,
+              } as never,
+            })
+            if (!mirrorIds.has(s.id!)) {
+              mirror.unshift({
+                id: s.id!, alias: 'you', emoji: '🌸', title: title || '',
+                body: rawBody, reflection: rawBody, hall: 'healing',
+                support, hours: 'just now', relates: 0, sitting: 1,
+                reactions: { heard: 0, same: 0, strong: 0, time: 0, brave: 0 },
+                kind: 'spill', pillar: s.pillar || null,
+              })
+              mirrorChanged = true
+            }
           }
+          synced['bundle:' + s.id!] = '1'
+          synced['hash:' + h] = '1'
         } catch {
           // leave unsynced for next tick
         }
@@ -152,7 +201,6 @@ export function LandingPage() {
       if (mirrorChanged) {
         try {
           localStorage.setItem('shutap_user_situations', JSON.stringify(mirror.slice(0, 50)))
-          // Same-tab listeners won't fire 'storage', so nudge with a custom event.
           window.dispatchEvent(new StorageEvent('storage', { key: 'shutap_user_situations' }))
         } catch { /* ignore */ }
       }
@@ -162,6 +210,7 @@ export function LandingPage() {
     const id = setInterval(tick, 1500)
     return () => clearInterval(id)
   }, [save])
+
 
 
   useEffect(() => {
@@ -202,6 +251,16 @@ export function LandingPage() {
             return
           }
           const res = await save({ data: d.payload as never })
+          // Stamp the shared synced map so the poll loop doesn't double-create
+          // this entry if the bundle also wrote it to shutap_situations.
+          try {
+            const p = d.payload as { id?: string; pillar?: string | null; title?: string | null; body?: string | null; clean_text?: string | null }
+            const synced = getSynced()
+            const h = hashKey({ pillar: p.pillar, title: p.title, body: p.body || p.clean_text })
+            synced['hash:' + h] = res?.id || '1'
+            if (p.id) synced['bundle:' + p.id] = res?.id || '1'
+            writeSynced(synced)
+          } catch { /* ignore */ }
           post({ type: 'shutap-persist-situation-result', reqId: d.reqId, id: res.id, room_id: res.room_id })
           // Drop the user straight into the destination.
           if (res?.room_id) navigate(`/stream#room-${res.room_id}`)
