@@ -110,12 +110,22 @@ export function LandingPage() {
       if (!w) return
       const existing = w.claude as { complete?: unknown; stream?: unknown } | undefined
       if (existing && typeof existing.complete === 'function' && typeof existing.stream === 'function') {
-        console.log('[TEMP claude-inject] window.claude already present', {
-          hasClaude: true,
-          hasComplete: true,
-          hasStream: true,
-        })
         return
+      }
+
+      const SPILL_SYSTEM = "You are the user's closest, most perceptive friend — warm, human, lowercase, texty, fully on their side. React briefly and specifically, then ALWAYS ask ONE concrete, practical question tied to the EXACT thing they just named. NEVER ask a generic question like 'how do you feel?', 'are you having trouble sleeping?', or 'how did that make you feel?'. Go one real layer deeper into their specific situation: ask about the concrete details, whether it's a one-off or recurring, what they've already tried, whether anyone — family, friends, or themselves — could help, and grounded next steps. Worked examples of the right instinct: if they say their period is 2 weeks early → do NOT say 'ugh bad timing'; instead ask things like: have you seen or called a doctor about it? is this a one-time thing or has your cycle been irregular lately? how are you feeling physically right now? If they say they're staying up all night → do NOT ask 'are you having trouble sleeping?'; instead ask: what's actually keeping you up at night? have you tried anything that helps? is there something your family, your friends, or you yourself could do to make it a little easier? Always be this specific and caring. Keep your reply in the EXACT same JSON format and short-bubble structure the rest of the instructions require — only the QUALITY and specificity of your words should change."
+
+      const isSpillTurn = (o: Record<string, unknown>): boolean => {
+        try {
+          const msgs = Array.isArray(o.messages) ? (o.messages as Array<{ content?: unknown }>) : []
+          for (const m of msgs) {
+            const c = typeof m?.content === 'string' ? m.content : ''
+            if (c.indexOf('THE SPILL on Shutap') !== -1) return true
+          }
+          const p = typeof o.prompt === 'string' ? o.prompt : ''
+          if (p.indexOf('THE SPILL on Shutap') !== -1) return true
+        } catch { /* ignore */ }
+        return false
       }
 
       const buildBody = (opts: Record<string, unknown>, stream: boolean) => {
@@ -128,13 +138,14 @@ export function LandingPage() {
           maxTokens: (o.maxTokens as number) || 1500,
         }
         if (o.system) body.system = o.system
+        else if (isSpillTurn(o)) body.system = SPILL_SYSTEM
         if (stream) body.stream = true
         return body
       }
 
       const complete = async (opts: Record<string, unknown>) => {
-        console.log('[TEMP claude] /api/complete hit', opts)
         let res: Response
+
         try {
           res = await fetch('/api/complete', {
             method: 'POST',
@@ -205,16 +216,11 @@ export function LandingPage() {
       }
 
       ;(w as unknown as { claude: unknown }).claude = { complete, stream }
-      console.log('[TEMP claude-inject] window.claude injected', {
-        hasClaude: !!(w as unknown as { claude?: unknown }).claude,
-        hasComplete: typeof ((w as unknown as { claude?: { complete?: unknown } }).claude?.complete) === 'function',
-        hasStream: typeof ((w as unknown as { claude?: { stream?: unknown } }).claude?.stream) === 'function',
-      })
-    } catch (err) {
-      console.error('[TEMP claude-inject] failed', err)
+    } catch {
       // cross-origin or other edge case — leave the bundle's fallback in place
     }
   }
+
 
   return (
     <iframe
