@@ -30,7 +30,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug'
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
-import { Route as DevShareCardRouteImport } from './routes/dev.share-card'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedMirrorRouteImport } from './routes/_authenticated/mirror'
@@ -144,11 +143,6 @@ const IsItNormalSlugRoute = IsItNormalSlugRouteImport.update({
   path: '/is-it-normal/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DevShareCardRoute = DevShareCardRouteImport.update({
-  id: '/dev/share-card',
-  path: '/dev/share-card',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiCompleteRoute = ApiCompleteRouteImport.update({
   id: '/api/complete',
   path: '/api/complete',
@@ -213,7 +207,6 @@ export interface FileRoutesByFullPath {
   '/mirror': typeof AuthenticatedMirrorRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
-  '/dev/share-card': typeof DevShareCardRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
@@ -244,7 +237,6 @@ export interface FileRoutesByTo {
   '/mirror': typeof AuthenticatedMirrorRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
-  '/dev/share-card': typeof DevShareCardRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
@@ -277,7 +269,6 @@ export interface FileRoutesById {
   '/_authenticated/mirror': typeof AuthenticatedMirrorRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
-  '/dev/share-card': typeof DevShareCardRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
@@ -310,7 +301,6 @@ export interface FileRouteTypes {
     | '/mirror'
     | '/profile'
     | '/api/complete'
-    | '/dev/share-card'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
@@ -341,7 +331,6 @@ export interface FileRouteTypes {
     | '/mirror'
     | '/profile'
     | '/api/complete'
-    | '/dev/share-card'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
@@ -373,7 +362,6 @@ export interface FileRouteTypes {
     | '/_authenticated/mirror'
     | '/_authenticated/profile'
     | '/api/complete'
-    | '/dev/share-card'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
@@ -404,7 +392,6 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
-  DevShareCardRoute: typeof DevShareCardRoute
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
   UPseudonymRoute: typeof UPseudonymRoute
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
@@ -563,13 +550,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IsItNormalSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dev/share-card': {
-      id: '/dev/share-card'
-      path: '/dev/share-card'
-      fullPath: '/dev/share-card'
-      preLoaderRoute: typeof DevShareCardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/complete': {
       id: '/api/complete'
       path: '/api/complete'
@@ -664,7 +644,6 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
   ApiCompleteRoute: ApiCompleteRoute,
-  DevShareCardRoute: DevShareCardRoute,
   IsItNormalSlugRoute: IsItNormalSlugRoute,
   UPseudonymRoute: UPseudonymRoute,
   WhatHappensSlugRoute: WhatHappensSlugRoute,
@@ -676,3 +655,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
