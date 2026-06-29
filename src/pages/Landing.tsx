@@ -56,8 +56,15 @@ export function LandingPage() {
       const { data: sess } = await supabase.auth.getSession()
       if (!sess.session || cancelled) return
       try {
-        const payload = JSON.parse(raw)
+        const payload = JSON.parse(raw) as { id?: string; pillar?: string | null; title?: string | null; body?: string | null; clean_text?: string | null }
         const res = await save({ data: payload as never })
+        try {
+          const synced = getSynced()
+          const h = hashKey({ pillar: payload.pillar, title: payload.title, body: payload.body || payload.clean_text })
+          synced['hash:' + h] = res?.id || '1'
+          if (payload.id) synced['bundle:' + payload.id] = res?.id || '1'
+          writeSynced(synced)
+        } catch { /* ignore */ }
         sessionStorage.removeItem('shutap_pending_save')
         if (res?.room_id) navigate(`/stream#room-${res.room_id}`)
         else if (res?.id) navigate(`/profile`)
