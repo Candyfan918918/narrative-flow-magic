@@ -154,13 +154,11 @@ function RootComponent() {
 
   useEffect(() => {
     let mounted = true;
-    (async () => {
+    const run = async () => {
       const { supabase } = await import("@/integrations/supabase/client");
       // Pseudonymous-first: every visitor must have a real Supabase session so
-      // `requireSupabaseAuth` server fns work. If there's no session, mint an
-      // anonymous one. The alias in localStorage is the display identity; the
-      // anonymous user is the auth identity. OAuth/email later upgrades this
-      // same user in place via linkIdentity/updateUser (see Welcome).
+      // `requireSupabaseAuth` server fns work. Deferred off the critical path
+      // so first paint isn't blocked by the auth round-trip on cold refresh.
       try {
         const { data } = await supabase.auth.getSession();
         if (!data.session) {
@@ -173,19 +171,22 @@ function RootComponent() {
       const { data: sub } = supabase.auth.onAuthStateChange((event) => {
         if (!mounted) return;
         if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-        // Defer to avoid "setState during render" when Supabase fires the
-        // initial SIGNED_IN synchronously inside a router transition.
         queueMicrotask(() => {
           if (!mounted) return;
           router.invalidate();
           if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
         });
       });
-      // store unsubscribe on the closure
       (RootComponent as unknown as { _unsub?: () => void })._unsub = () => sub.subscription.unsubscribe();
-    })();
+    };
+    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
+    const handle: number = ric
+      ? ric(() => { void run(); }, { timeout: 1500 })
+      : (window.setTimeout(() => { void run(); }, 0) as unknown as number);
     return () => {
       mounted = false;
+      const cic = (window as unknown as { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback;
+      if (ric && cic) cic(handle); else window.clearTimeout(handle);
       (RootComponent as unknown as { _unsub?: () => void })._unsub?.();
     };
   }, [router, queryClient]);
