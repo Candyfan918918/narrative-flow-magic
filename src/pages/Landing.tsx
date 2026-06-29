@@ -216,16 +216,11 @@ export function LandingPage() {
       }
 
       ;(w as unknown as { claude: unknown }).claude = { complete, stream }
-      console.log('[TEMP claude-inject] window.claude injected', {
-        hasClaude: !!(w as unknown as { claude?: unknown }).claude,
-        hasComplete: typeof ((w as unknown as { claude?: { complete?: unknown } }).claude?.complete) === 'function',
-        hasStream: typeof ((w as unknown as { claude?: { stream?: unknown } }).claude?.stream) === 'function',
-      })
-    } catch (err) {
-      console.error('[TEMP claude-inject] failed', err)
+    } catch {
       // cross-origin or other edge case — leave the bundle's fallback in place
     }
   }
+
 
   return (
     <iframe
