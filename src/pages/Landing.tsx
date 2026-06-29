@@ -6,6 +6,40 @@ import { runSpill } from '@/lib/agents/spill.functions'
 import { saveSituation, updateSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 
+// ── Shared sync helpers (used by the poll loop AND the postMessage bridge so
+// a spill is never persisted twice). Keyed by both the bundle entry id and a
+// content hash so either code path stamps it for the other to skip.
+const SYNCED_KEY = 'shutap_situations_synced'
+function getSynced(): Record<string, string> {
+  try {
+    const cur = sessionStorage.getItem(SYNCED_KEY)
+    if (cur) return JSON.parse(cur)
+    const legacy = sessionStorage.getItem('shutap_scan_synced')
+    if (legacy) { sessionStorage.setItem(SYNCED_KEY, legacy); return JSON.parse(legacy) }
+    return {}
+  } catch { return {} }
+}
+function writeSynced(m: Record<string, string>) {
+  try { sessionStorage.setItem(SYNCED_KEY, JSON.stringify(m)) } catch { /* ignore */ }
+}
+function pillarMap(p?: string | null): 'relationships' | 'marriage' | 'family' | 'career' {
+  if (p === 'family') return 'family'
+  if (p === 'marriage') return 'marriage'
+  if (p === 'career' || p === 'work') return 'career'
+  return 'relationships'
+}
+function deriveTitleLocal(text: string): string {
+  const first = (text || '').split(/[.\n!?]/)[0]?.trim() || ''
+  return first.length > 60 ? first.slice(0, 57) + '…' : first
+}
+function hashKey(input: { pillar?: string | null; title?: string | null; body?: string | null; clean_text?: string | null }): string {
+  const norm = (s: unknown) => String(s ?? '').trim().toLowerCase().replace(/\s+/g, ' ').slice(0, 240)
+  const raw = pillarMap(input.pillar) + '|' + norm(input.title) + '|' + norm(input.body || input.clean_text)
+  let h = 5381
+  for (let i = 0; i < raw.length; i++) h = ((h << 5) + h + raw.charCodeAt(i)) | 0
+  return (h >>> 0).toString(36)
+}
+
 export function LandingPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const navigate = useNavigate()
