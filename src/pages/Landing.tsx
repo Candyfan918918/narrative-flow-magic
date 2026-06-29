@@ -34,6 +34,135 @@ export function LandingPage() {
     return () => { cancelled = true }
   }, [navigate, save])
 
+  // ── Non-invasive scan sync ──
+  // The bundle's `persistScan()` writes scan results to `localStorage['shutap_situations']`
+  // only — it never calls our postMessage bridge. We poll the same-origin iframe's
+  // localStorage, and for each new `kind:'scan'` entry we (a) persist to Supabase
+  // via the existing `saveSituation` server fn and (b) mirror it into
+  // `shutap_user_situations` so the React Stream renders it as a score-card tile.
+  // No bundle edits.
+  useEffect(() => {
+    const SYNCED_KEY = 'shutap_scan_synced'
+    type Mirror = {
+      id: string; alias: string; emoji: string; title: string; body: string;
+      reflection: string; hall: 'healing' | 'brave' | 'relatable' | 'loving';
+      support: 'heard' | 'advice'; hours: string; relates: number; sitting: number;
+      reactions: { heard: number; same: number; strong: number; time: number; brave: number };
+      kind: 'scan'; initial_scan: number;
+      scan_band: 'settling' | 'sitting' | 'weighing' | 'heavy' | 'consuming';
+      scan_signature: string; pillar: string | null;
+    }
+    type BundleSit = {
+      id?: string; kind?: string; scan?: number | string; read?: string;
+      title?: string; pillar?: string | null; visibility?: string; factors?: unknown
+    }
+
+    const getSynced = (): Record<string, string> => {
+      try { return JSON.parse(sessionStorage.getItem(SYNCED_KEY) || '{}') } catch { return {} }
+    }
+    const writeSynced = (m: Record<string, string>) => {
+      try { sessionStorage.setItem(SYNCED_KEY, JSON.stringify(m)) } catch { /* ignore */ }
+    }
+    // Derive display band from score (matches RoomTile/RoomDetail palette).
+    const bandFromScore = (n: number): Mirror['scan_band'] =>
+      n < 200 ? 'settling' : n < 400 ? 'sitting' : n < 600 ? 'weighing' : n < 800 ? 'heavy' : 'consuming'
+    const dbBand: Record<Mirror['scan_band'], 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'> = {
+      settling: 'quiet', sitting: 'real', weighing: 'hot', heavy: 'heavy', consuming: 'serious',
+    }
+    const pillarMap = (p?: string | null): 'relationships' | 'marriage' | 'family' | 'career' => {
+      if (p === 'family') return 'family'
+      if (p === 'marriage') return 'marriage'
+      if (p === 'career' || p === 'work') return 'career'
+      return 'relationships'
+    }
+
+    let busy = false
+    const tick = async () => {
+      if (busy) return
+      const w = iframeRef.current?.contentWindow
+      if (!w) return
+      let arr: BundleSit[] = []
+      try {
+        const raw = (w as Window).localStorage?.getItem('shutap_situations') || '[]'
+        arr = JSON.parse(raw)
+      } catch { return /* cross-origin or parse error */ }
+      const scans = arr.filter((s) => s && s.kind === 'scan' && s.id)
+      if (!scans.length) return
+      const synced = getSynced()
+      const pending = scans.filter((s) => !synced[s.id!])
+      if (!pending.length) return
+
+      const { data: sess } = await supabase.auth.getSession()
+      if (!sess.session) return // wait — pseudo-session will appear once root bootstraps it
+
+      busy = true
+      let mirror: Mirror[] = []
+      try { mirror = JSON.parse(localStorage.getItem('shutap_user_situations') || '[]') } catch { /* ignore */ }
+      const mirrorIds = new Set(mirror.map((x) => x.id))
+      let mirrorChanged = false
+
+      for (const s of pending) {
+        const score = Math.max(0, Math.min(999, Number(s.scan) || 0))
+        const band = bandFromScore(score)
+        const title = String(s.title || 'a scan')
+        const body = String(s.read || '')
+        const isPublic = s.visibility === 'public'
+        try {
+          const res = await save({
+            data: {
+              kind: 'scan',
+              pillar: pillarMap(s.pillar),
+              clean_text: body || title,
+              title,
+              body: body || null,
+              initial_scan: score,
+              scan_band: dbBand[band],
+              is_public: isPublic,
+              support_mode: 'heard',
+            } as never,
+          })
+          synced[s.id!] = res?.id || '1'
+          if (!mirrorIds.has(s.id!)) {
+            mirror.unshift({
+              id: s.id!,
+              alias: 'you',
+              emoji: '✦',
+              title,
+              body,
+              reflection: body,
+              hall: 'healing',
+              support: 'heard',
+              hours: 'just now',
+              relates: 0,
+              sitting: 1,
+              reactions: { heard: 0, same: 0, strong: 0, time: 0, brave: 0 },
+              kind: 'scan',
+              initial_scan: score,
+              scan_band: band,
+              scan_signature: title,
+              pillar: s.pillar || null,
+            })
+            mirrorChanged = true
+          }
+        } catch {
+          // leave unsynced for next tick
+        }
+      }
+      writeSynced(synced)
+      if (mirrorChanged) {
+        try {
+          localStorage.setItem('shutap_user_situations', JSON.stringify(mirror.slice(0, 50)))
+          // Same-tab listeners won't fire 'storage', so nudge with a custom event.
+          window.dispatchEvent(new StorageEvent('storage', { key: 'shutap_user_situations' }))
+        } catch { /* ignore */ }
+      }
+      busy = false
+    }
+
+    const id = setInterval(tick, 1500)
+    return () => clearInterval(id)
+  }, [save])
+
 
   useEffect(() => {
     const onMsg = async (e: MessageEvent) => {
