@@ -9,25 +9,38 @@ export function WelcomePage() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {
+    const resume = () => {
+      try {
+        const pc = sessionStorage.getItem('shutap_pending_comment')
+        if (pc) {
+          const parsed = JSON.parse(pc) as { roomId?: string }
+          if (parsed?.roomId) {
+            window.location.replace('/room?id=' + encodeURIComponent(parsed.roomId))
+            return true
+          }
+        }
+        if (sessionStorage.getItem('shutap_pending_save')) {
+          window.location.replace('/')
+          return true
+        }
+      } catch { /* noop */ }
+      return false
+    }
+
     // If we just returned from an OAuth redirect, flag the iframe so it skips
     // straight to the age gate on mount, and stamp legal acceptance.
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
         try { sessionStorage.setItem('shutap_authed', '1') } catch {}
         recordLegalAcceptance({ data: {} }).catch(() => {})
-        if (sessionStorage.getItem('shutap_pending_save')) {
-          window.location.replace('/')
-        }
+        resume()
       }
     })
 
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN') {
         recordLegalAcceptance({ data: {} }).catch(() => {})
-        // Resume a pending Spill if the user was bounced here mid-publish.
-        if (sessionStorage.getItem('shutap_pending_save')) {
-          window.location.replace('/')
-        }
+        resume()
       }
     })
 
