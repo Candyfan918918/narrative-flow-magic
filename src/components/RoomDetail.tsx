@@ -458,7 +458,7 @@ export function RoomDetail({
             </span>
             <span
               role="button"
-              title="share this room"
+              title={isScan ? 'share your score' : 'share this room'}
               onClick={shareRoom}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, color: '#c1216b', cursor: 'pointer' }}
             >
@@ -468,7 +468,7 @@ export function RoomDetail({
                 <circle cx="18" cy="19" r="3" />
                 <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
               </svg>
-              share
+              {isScan ? 'share your score' : 'share'}
             </span>
           </div>
         </div>
