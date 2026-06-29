@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useServerFn } from '@tanstack/react-start'
 import type { Room } from '../data/types'
 import { REACTIONS } from '../data/constants'
 import { complete, extractJSON } from '../lib/ai'
@@ -6,6 +9,10 @@ import { eyeSVG } from './EyeDefs'
 import { track } from '../lib/feedback'
 import { CommentsThread } from './CommentsThread'
 import { ScanShareCard } from './ScanShareCard'
+import { createComment } from '@/lib/situations.functions'
+import { supabase } from '@/integrations/supabase/client'
+
+const PENDING_COMMENT_KEY = 'shutap_pending_comment'
 
 const badgeStyle = (support: string): React.CSSProperties => ({
   display: 'inline-flex',
