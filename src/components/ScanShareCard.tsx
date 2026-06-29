@@ -1,8 +1,11 @@
-/* Scan share card — polished 9:16 portrait modal opened from the Scan result
-   screen (and any persisted scan room). Makes ZERO model calls; renders
-   entirely from the persisted scan situation record (score, signature, read,
-   factors, pillar). Band word + colour + gauge fill + marker position are all
-   DERIVED from score — never hardcoded per-card. */
+/* Scan share card — 9:16 portrait modal opened from the Scan result screen
+   and any persisted scan room. Makes ZERO model calls; renders entirely from
+   the persisted scan situation record. All band word / colour / gauge /
+   marker position are DERIVED from `score` at runtime — nothing is hardcoded
+   per-card. Built to match the standalone preview reference: animated aura,
+   conic spin, film grain, sheen sweep, blinking eye mascot, ring fill +
+   count-up, animated spectrum marker. Honors prefers-reduced-motion (motion
+   stops at the final state). */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 
@@ -29,7 +32,7 @@ function deriveBand(score: number): Band {
   return { key: 'consuming', word: 'consuming', color: '#c1216b' }
 }
 
-const SPECTRUM = 'linear-gradient(90deg,#9e8f9c 0%,#7F77DD 30%,#c87c4a 55%,#e7548a 78%,#c1216b 100%)'
+const SPECTRUM = 'linear-gradient(90deg,#9e8f9c,#7F77DD,#c87c4a,#e7548a,#c1216b)'
 
 function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined' || !window.matchMedia) return false
@@ -71,35 +74,53 @@ export function ScanShareCard({
   const band = useMemo(() => deriveBand(record.score), [record.score])
   const reduced = useMemo(prefersReducedMotion, [])
   const cardRef = useRef<HTMLDivElement>(null)
-  const url = record.url || (typeof window !== 'undefined' ? window.location.origin + '/' : 'https://shutap.com/')
+  const ringRef = useRef<SVGCircleElement>(null)
+  const url =
+    record.url || (typeof window !== 'undefined' ? window.location.origin + '/' : 'https://shutap.com/')
 
-  // count-up
+  // gauge geometry — matches preview (R=120, stroke=10, viewBox 280)
+  const R = 120
+  const STROKE = 10
+  const CIRC = 2 * Math.PI * R
+  const pct = Math.max(0, Math.min(100, Math.round((record.score / 999) * 100)))
+
+  // count-up + ring fill — kicked off on each mount AND on "replay"
   const [shown, setShown] = useState(reduced ? record.score : 0)
+  const [runId, setRunId] = useState(0)
+
   useEffect(() => {
+    // ring fill
+    const ring = ringRef.current
+    if (ring) {
+      const target = (CIRC * (1 - pct / 100)).toFixed(1)
+      if (reduced) {
+        ring.style.transition = 'none'
+        ring.style.strokeDashoffset = target
+      } else {
+        ring.style.transition = 'none'
+        ring.style.strokeDashoffset = CIRC.toFixed(1)
+        // next frame -> animate
+        requestAnimationFrame(() => {
+          ring.style.transition = 'stroke-dashoffset 1.6s cubic-bezier(.2,.9,.25,1)'
+          ring.style.strokeDashoffset = target
+        })
+      }
+    }
     if (reduced) {
       setShown(record.score)
       return
     }
-    const start = performance.now()
-    const dur = 1100
-    let raf = 0
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / dur)
-      const eased = 1 - Math.pow(1 - p, 3)
-      setShown(Math.round(record.score * eased))
-      if (p < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [record.score, reduced])
-
-  // gauge geometry
-  const R = 118
-  const STROKE = 10
-  const CIRC = 2 * Math.PI * R
-  const pct = Math.max(0, Math.min(1, record.score / 999))
-  const dash = CIRC * pct
-  const markerPct = pct * 100
+    // count-up at ~30ms cadence
+    setShown(0)
+    let cur = 0
+    const step = Math.max(1, Math.ceil(record.score / 52))
+    const tk = window.setInterval(() => {
+      cur = Math.min(cur + step, record.score)
+      setShown(cur)
+      if (cur >= record.score) window.clearInterval(tk)
+    }, 30)
+    return () => window.clearInterval(tk)
+  }, [record.score, reduced, CIRC, pct, runId])
 
   const cap = caption(record)
   const enc = encodeURIComponent
@@ -161,6 +182,8 @@ export function ScanShareCard({
     ['download', 'save image'],
   ]
 
+  const col = band.color
+
   return (
     <div
       role="dialog"
@@ -169,7 +192,7 @@ export function ScanShareCard({
         position: 'fixed',
         inset: 0,
         zIndex: 200,
-        background: 'rgba(8,4,10,.72)',
+        background: 'rgba(8,4,10,.78)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         alignItems: 'center',
@@ -179,6 +202,23 @@ export function ScanShareCard({
       }}
       onClick={onClose}
     >
+      {/* shared SVG defs for eye mascot */}
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <defs>
+          <radialGradient id="scEyeG" cx="40%" cy="18%" r="75%">
+            <stop offset="0%" stopColor="#fff" />
+            <stop offset="18%" stopColor="#ffd0e8" />
+            <stop offset="48%" stopColor="#f060a0" />
+            <stop offset="78%" stopColor="#c0206a" />
+            <stop offset="100%" stopColor="#880040" />
+          </radialGradient>
+          <radialGradient id="scPupG" cx="50%" cy="55%" r="58%">
+            <stop offset="0%" stopColor="#3a1020" />
+            <stop offset="100%" stopColor="#060106" />
+          </radialGradient>
+        </defs>
+      </svg>
+
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -186,8 +226,8 @@ export function ScanShareCard({
           flexDirection: 'column',
           alignItems: 'center',
           gap: 16,
-          maxWidth: 420,
           width: '100%',
+          maxWidth: 360,
         }}
       >
         {/* THE CARD — 9:16 */}
@@ -197,273 +237,280 @@ export function ScanShareCard({
             position: 'relative',
             width: '100%',
             aspectRatio: '9 / 16',
-            borderRadius: 22,
+            borderRadius: 26,
             overflow: 'hidden',
-            background: 'radial-gradient(120% 90% at 50% 0%, #2a0d18 0%, #150810 55%, #0b050a 100%)',
-            border: '.5px solid rgba(255,255,255,.10)',
-            boxShadow: '0 30px 80px rgba(0,0,0,.55)',
+            background: 'radial-gradient(135% 78% at 50% 0%,#3a1022,#1a0a12 60%,#120710)',
+            border: '.5px solid rgba(255,255,255,.16)',
+            boxShadow: '0 36px 80px -26px rgba(0,0,0,.78)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            padding: '30px 26px',
             color: '#f7e8f0',
             fontFamily: 'Sora,sans-serif',
+            animation: reduced ? undefined : 'scPop .34s ease',
           }}
         >
-          {/* drifting radial aura */}
+          {/* aura pulse */}
+          <div
+            style={{
+              position: 'absolute',
+              width: 340,
+              height: 340,
+              left: '50%',
+              top: '33%',
+              transform: 'translate(-50%,-50%)',
+              background: `radial-gradient(circle, ${col}55, transparent 64%)`,
+              filter: 'blur(6px)',
+              animation: reduced ? undefined : 'scAura 6s ease-in-out infinite',
+              pointerEvents: 'none',
+            }}
+          />
+          {/* conic spin */}
+          <div
+            style={{
+              position: 'absolute',
+              width: 430,
+              height: 430,
+              left: '50%',
+              top: '35%',
+              transform: 'translate(-50%,-50%)',
+              background: `conic-gradient(from 0deg, ${col}00, ${col}3a, ${col}00 42%)`,
+              animation: reduced ? undefined : 'scSpin 15s linear infinite',
+              opacity: 0.45,
+              pointerEvents: 'none',
+            }}
+          />
+          {/* grain */}
           <div
             style={{
               position: 'absolute',
               inset: '-20%',
-              background: `radial-gradient(closest-side, ${band.color}66, transparent 70%)`,
-              filter: 'blur(40px)',
-              animation: reduced ? undefined : 'scanAuraDrift 9s ease-in-out infinite',
+              opacity: 0.06,
+              backgroundImage:
+                'radial-gradient(rgba(255,255,255,.8) .5px, transparent .5px)',
+              backgroundSize: '4px 4px',
+              animation: reduced ? undefined : 'scGrain 8s steps(8) infinite',
               pointerEvents: 'none',
-            }}
-          />
-          {/* conic glow */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '38%',
-              left: '50%',
-              width: 380,
-              height: 380,
-              marginLeft: -190,
-              marginTop: -190,
-              background: `conic-gradient(from 0deg, transparent, ${band.color}22, transparent, ${band.color}33, transparent)`,
-              borderRadius: '50%',
-              filter: 'blur(8px)',
-              animation: reduced ? undefined : 'scanConicSpin 14s linear infinite',
-              pointerEvents: 'none',
-              opacity: 0.85,
             }}
           />
           {/* sheen */}
           <div
             style={{
               position: 'absolute',
-              inset: 0,
-              background: 'linear-gradient(115deg, transparent 30%, rgba(255,255,255,.06) 48%, transparent 60%)',
-              animation: reduced ? undefined : 'scanSheen 6s ease-in-out infinite',
-              pointerEvents: 'none',
-            }}
-          />
-          {/* film grain */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              opacity: 0.06,
-              mixBlendMode: 'overlay',
-              backgroundImage:
-                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
+              top: 0,
+              left: 0,
+              width: '55%',
+              height: '100%',
+              background:
+                'linear-gradient(100deg, transparent, rgba(255,255,255,.10), transparent)',
+              animation: reduced ? undefined : 'scSheen 4.8s ease-in-out 1s infinite',
               pointerEvents: 'none',
             }}
           />
 
-          {/* content */}
+          {/* HEADER */}
           <div
             style={{
-              position: 'relative',
-              zIndex: 2,
-              padding: '22px 22px 26px',
-              height: '100%',
               display: 'flex',
-              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              position: 'relative',
             }}
           >
-            {/* HEADER */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg viewBox="0 0 56 56" style={{ width: 22, height: 22 }}>
-                  <defs>
-                    <linearGradient id="scEye" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#fdf0f5" />
-                      <stop offset="100%" stopColor="#f7b8d4" />
-                    </linearGradient>
-                  </defs>
-                  <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#scEye)" />
-                  <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#scEye)" />
-                  <ellipse cx="21" cy="29" rx="4" ry="5" fill="#1a0a12">
-                    {!reduced && (
-                      <animate attributeName="ry" values="5;0.6;5" dur="4s" repeatCount="indefinite" />
-                    )}
-                  </ellipse>
-                  <ellipse cx="35" cy="29" rx="4" ry="5" fill="#1a0a12">
-                    {!reduced && (
-                      <animate attributeName="ry" values="5;0.6;5" dur="4s" repeatCount="indefinite" />
-                    )}
-                  </ellipse>
-                </svg>
-                <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 14, letterSpacing: '-.02em', color: '#f7e8f0' }}>
-                  shut<span style={{ color: '#e7548a' }}>ap</span>
-                </span>
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg
+                viewBox="0 0 56 56"
+                fill="none"
+                className="sc-eye"
+                style={{ width: 22, height: 22 }}
+              >
+                <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#scEyeG)" />
+                <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#scEyeG)" />
+                <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#scPupG)" />
+                <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#scPupG)" />
+              </svg>
               <span
                 style={{
                   fontFamily: 'Sora,sans-serif',
                   fontWeight: 800,
-                  fontSize: 10,
-                  letterSpacing: '.22em',
-                  color: band.color,
+                  fontSize: 15,
+                  letterSpacing: '-.03em',
+                  color: '#f7e8f0',
                 }}
               >
-                SCAN
+                shut<span style={{ color: '#e7548a' }}>ap</span>
               </span>
             </div>
+            <span
+              style={{
+                fontFamily: 'Sora,sans-serif',
+                fontWeight: 800,
+                fontSize: 10,
+                letterSpacing: '.34em',
+                color: col,
+              }}
+            >
+              SCAN
+            </span>
+          </div>
 
-            {/* GAUGE */}
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-              <svg
-                viewBox={`0 0 ${(R + STROKE) * 2} ${(R + STROKE) * 2}`}
-                style={{ width: '78%', maxWidth: 280, transform: 'rotate(-90deg)' }}
-              >
-                <circle
-                  cx={R + STROKE}
-                  cy={R + STROKE}
-                  r={R}
-                  fill="none"
-                  stroke="rgba(255,255,255,.08)"
-                  strokeWidth={STROKE}
-                />
-                <circle
-                  cx={R + STROKE}
-                  cy={R + STROKE}
-                  r={R}
-                  fill="none"
-                  stroke={band.color}
-                  strokeWidth={STROKE}
-                  strokeLinecap="round"
-                  strokeDasharray={`${dash} ${CIRC - dash}`}
-                  style={{ transition: 'stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1)' }}
-                />
-              </svg>
+          {/* GAUGE */}
+          <div
+            style={{
+              position: 'relative',
+              display: 'grid',
+              placeItems: 'center',
+              margin: '2px 0',
+            }}
+          >
+            <svg
+              viewBox="0 0 280 280"
+              style={{ width: '80%', maxWidth: 244, transform: 'rotate(-90deg)' }}
+            >
+              <circle
+                cx="140"
+                cy="140"
+                r={R}
+                fill="none"
+                stroke="rgba(255,255,255,.08)"
+                strokeWidth={STROKE}
+              />
+              <circle
+                ref={ringRef}
+                cx="140"
+                cy="140"
+                r={R}
+                fill="none"
+                stroke={col}
+                strokeWidth={STROKE}
+                strokeLinecap="round"
+                strokeDasharray={CIRC.toFixed(1)}
+                strokeDashoffset={CIRC.toFixed(1)}
+                style={{ filter: `drop-shadow(0 0 8px ${col}88)` }}
+              />
+            </svg>
+            <div style={{ position: 'absolute', textAlign: 'center' }}>
               <div
                 style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textAlign: 'center',
+                  fontFamily: 'Sora,sans-serif',
+                  fontWeight: 800,
+                  fontSize: 76,
+                  lineHeight: 0.9,
+                  letterSpacing: '-.04em',
+                  color: col,
                 }}
               >
-                <div
-                  style={{
-                    fontFamily: 'Sora,sans-serif',
-                    fontWeight: 800,
-                    fontSize: 'clamp(58px,17vw,84px)',
-                    lineHeight: 1,
-                    letterSpacing: '-.04em',
-                    color: '#f7e8f0',
-                  }}
-                >
-                  {shown}
-                </div>
-                <div
-                  style={{
-                    marginTop: 8,
-                    fontFamily: 'Sora,sans-serif',
-                    fontWeight: 800,
-                    fontSize: 11,
-                    letterSpacing: '.22em',
-                    textTransform: 'uppercase',
-                    color: band.color,
-                  }}
-                >
-                  {band.word}
-                </div>
+                {shown}
+              </div>
+              <div
+                style={{
+                  fontFamily: 'Sora,sans-serif',
+                  fontWeight: 700,
+                  fontSize: 10,
+                  letterSpacing: '.2em',
+                  textTransform: 'uppercase',
+                  color: col,
+                  opacity: 0.85,
+                  marginTop: 5,
+                }}
+              >
+                {band.word}
               </div>
             </div>
+          </div>
 
-            {/* SIGNATURE BLOCK */}
-            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-              {record.signature && (
-                <div
-                  style={{
-                    fontFamily: 'Sora,sans-serif',
-                    fontWeight: 800,
-                    fontSize: 22,
-                    lineHeight: 1.2,
-                    letterSpacing: '-.02em',
-                    color: '#f7e8f0',
-                    maxWidth: '90%',
-                  }}
-                >
-                  {record.signature}
-                </div>
-              )}
-              {record.pillar && (
+          {/* SIGNATURE */}
+          <div style={{ textAlign: 'center', position: 'relative' }}>
+            {record.signature && (
+              <div
+                style={{
+                  fontFamily: 'Sora,sans-serif',
+                  fontWeight: 800,
+                  fontSize: 22,
+                  color: '#f7e8f0',
+                  lineHeight: 1.15,
+                }}
+              >
+                {record.signature}
+              </div>
+            )}
+            {record.pillar && (
+              <div style={{ marginTop: 9 }}>
                 <span
                   style={{
                     fontFamily: 'Sora,sans-serif',
                     fontWeight: 700,
-                    fontSize: 9.5,
-                    letterSpacing: '.16em',
+                    fontSize: 10,
+                    letterSpacing: '.1em',
                     textTransform: 'uppercase',
-                    color: band.color,
-                    background: band.color + '22',
-                    border: '.5px solid ' + band.color + '55',
-                    padding: '4px 10px',
+                    color: col,
+                    background: col + '22',
+                    border: '.5px solid ' + col + '55',
                     borderRadius: 999,
+                    padding: '4px 12px',
                   }}
                 >
                   {record.pillar}
                 </span>
-              )}
-              {record.read && (
-                <div
-                  style={{
-                    fontFamily: 'Newsreader,serif',
-                    fontStyle: 'italic',
-                    fontSize: 14.5,
-                    lineHeight: 1.45,
-                    color: '#e8d3df',
-                    maxWidth: '26ch',
-                  }}
-                >
-                  {record.read}
-                </div>
-              )}
-            </div>
-
-            {/* SPECTRUM BAR */}
-            <div style={{ marginTop: 18 }}>
-              <div
-                style={{
-                  position: 'relative',
-                  height: 6,
-                  borderRadius: 999,
-                  background: SPECTRUM,
-                  boxShadow: 'inset 0 0 0 .5px rgba(255,255,255,.18)',
-                }}
-              >
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: `${markerPct}%`,
-                    width: 14,
-                    height: 14,
-                    marginLeft: -7,
-                    marginTop: -7,
-                    borderRadius: '50%',
-                    background: '#fff',
-                    boxShadow: `0 0 0 2px ${band.color}, 0 4px 10px rgba(0,0,0,.35)`,
-                    transition: 'left 1.1s cubic-bezier(.2,.8,.2,1)',
-                  }}
-                />
               </div>
+            )}
+            {record.read && (
               <div
                 style={{
-                  marginTop: 10,
-                  textAlign: 'center',
+                  marginTop: 11,
                   fontFamily: 'Newsreader,serif',
                   fontStyle: 'italic',
-                  fontSize: 12,
-                  color: '#c9a3b6',
+                  fontSize: 14.5,
+                  color: '#d6b6c6',
+                  lineHeight: 1.5,
+                  maxWidth: '26ch',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
                 }}
               >
-                what's your number? · shutap.com
+                {record.read}
               </div>
+            )}
+          </div>
+
+          {/* SPECTRUM */}
+          <div style={{ position: 'relative' }}>
+            <div
+              style={{
+                height: 5,
+                borderRadius: 3,
+                background: SPECTRUM,
+                position: 'relative',
+                marginBottom: 13,
+              }}
+            >
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: pct + '%',
+                  transform: 'translate(-50%,-50%)',
+                  width: 13,
+                  height: 13,
+                  borderRadius: '50%',
+                  background: '#fff',
+                  border: `2.5px solid ${col}`,
+                  boxShadow: '0 2px 8px rgba(0,0,0,.55)',
+                  transition: reduced ? undefined : 'left 1.6s cubic-bezier(.2,.9,.25,1)',
+                }}
+              />
+            </div>
+            <div
+              style={{
+                textAlign: 'center',
+                fontFamily: 'Newsreader,serif',
+                fontStyle: 'italic',
+                fontSize: 13,
+                color: '#9b8090',
+              }}
+            >
+              what's your number? · shutap.com
             </div>
           </div>
         </div>
@@ -504,35 +551,51 @@ export function ScanShareCard({
           ))}
         </div>
 
-        <button
-          onClick={onClose}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#c9a3b6',
-            fontFamily: 'Newsreader,serif',
-            fontStyle: 'italic',
-            fontSize: 13.5,
-            cursor: 'pointer',
-          }}
-        >
-          close
-        </button>
+        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+          <button
+            onClick={() => setRunId((n) => n + 1)}
+            style={{
+              fontFamily: 'Sora,sans-serif',
+              fontWeight: 700,
+              fontSize: 12,
+              letterSpacing: '.04em',
+              color: '#f7e8f0',
+              background: 'rgba(255,255,255,.06)',
+              border: '.5px solid rgba(255,255,255,.16)',
+              borderRadius: 999,
+              padding: '9px 18px',
+              cursor: 'pointer',
+            }}
+          >
+            ↻ replay
+          </button>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#c9a3b6',
+              fontFamily: 'Newsreader,serif',
+              fontStyle: 'italic',
+              fontSize: 13.5,
+              cursor: 'pointer',
+            }}
+          >
+            close
+          </button>
+        </div>
       </div>
 
       <style>{`
-        @keyframes scanAuraDrift {
-          0%,100% { transform: translate(0,0) scale(1); }
-          50% { transform: translate(4%,-3%) scale(1.06); }
-        }
-        @keyframes scanConicSpin {
-          to { transform: rotate(360deg); }
-        }
-        @keyframes scanSheen {
-          0%,100% { transform: translateX(-30%); opacity: 0; }
-          45% { opacity: 1; }
-          55% { opacity: 1; }
-          100% { transform: translateX(60%); opacity: 0; }
+        @keyframes scPop { from { transform: scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+        @keyframes scSheen { 0% { transform: translateX(-130%) skewX(-16deg); } 55%,100% { transform: translateX(240%) skewX(-16deg); } }
+        @keyframes scSpin { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+        @keyframes scGrain { 0% { transform: translate(0,0); } 25% { transform: translate(-3%,2%); } 50% { transform: translate(2%,-3%); } 75% { transform: translate(-2%,-1%); } 100% { transform: translate(0,0); } }
+        @keyframes scAura { 0%,100% { opacity: .5; } 50% { opacity: .85; } }
+        @keyframes scEyeBlink { 0%,90%,100% { transform: scaleY(1); } 94% { transform: scaleY(.12); } 97% { transform: scaleY(1); } }
+        .sc-eye { transform-origin: center center; animation: scEyeBlink 4.5s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .sc-eye { animation: none; }
         }
       `}</style>
     </div>
