@@ -100,10 +100,10 @@ function timeAgo(iso: string): string {
 }
 
 function trendArrow(dir: string) {
-  if (dir === 'rising') return '↗'
-  if (dir === 'cooling') return '↘'
-  if (dir === 'dormant') return '·'
-  return '→'
+  if (dir === 'rising') return '🔥'
+  if (dir === 'cooling') return '🧊'
+  if (dir === 'dormant') return '💤'
+  return '😐'
 }
 function trendColor(dir: string) {
   if (dir === 'rising') return '#e7548a'
@@ -433,7 +433,7 @@ function TarotCard({
           ? `0 0 0 1px ${GOLD}55, 0 0 60px ${GOLD}33, 0 20px 60px rgba(0,0,0,.6)`
           : `0 24px 60px -10px rgba(0,0,0,.7), 0 0 40px ${color}22`,
         color: INK,
-        padding: '22px 22px 20px',
+        padding: '16px 18px 14px',
         filter: isRuin ? 'saturate(.55) grayscale(.25)' : undefined,
       }}
     >
@@ -470,26 +470,26 @@ function TarotCard({
 
       {/* name */}
       <h3 style={{
-        position: 'relative', margin: '14px 0 6px', textAlign: 'center',
+        position: 'relative', margin: '10px 0 4px', textAlign: 'center',
         fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontWeight: 500,
-        fontSize: 'clamp(26px, 5vw, 32px)', lineHeight: 1.12, color: INK,
+        fontSize: 'clamp(22px, 4.4vw, 26px)', lineHeight: 1.1, color: INK,
       }}>{p.name}</h3>
 
       {/* depth wheel */}
-      <div style={{ position: 'relative', display: 'grid', placeItems: 'center', margin: '14px 0 6px' }}>
+      <div style={{ position: 'relative', display: 'grid', placeItems: 'center', margin: '8px 0 4px' }}>
         <DepthWheel depth={p.depth} emoji={p.emoji || '✨'} dir={p.trend_dir} color={color} animate={animate} />
       </div>
-      <div style={{ textAlign: 'center', fontFamily: "'Sora',sans-serif", fontSize: 10, letterSpacing: '.22em', color: MUTED_2, marginBottom: 12 }}>
+      <div style={{ textAlign: 'center', fontFamily: "'Sora',sans-serif", fontSize: 10, letterSpacing: '.22em', color: MUTED_2, marginBottom: 8 }}>
         {isRuin ? 'GONE TO RUIN' : `DEPTH ${p.depth}/5`}
       </div>
 
       {/* trend chart */}
-      <div style={{ position: 'relative', margin: '4px 0 14px' }}>
+      <div style={{ position: 'relative', margin: '2px 0 10px' }}>
         <TrendChart trend={p.trend} color={color} animate={animate} />
       </div>
 
       {/* signal bar */}
-      <div style={{ position: 'relative', margin: '4px 0 14px' }}>
+      <div style={{ position: 'relative', margin: '2px 0 10px' }}>
         <SignalBar sources={p.sources ?? {}} animate={animate} />
       </div>
 
@@ -529,9 +529,9 @@ function TarotCard({
 
       {/* punch line */}
       <p style={{
-        position: 'relative', margin: '10px 0 8px', textAlign: 'center',
+        position: 'relative', margin: '8px 0 6px', textAlign: 'center',
         fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
-        fontSize: 23, lineHeight: 1.35, color: INK,
+        fontSize: 18, lineHeight: 1.3, color: INK,
       }}>
         &ldquo;{p.punch || p.insight || 'still forming.'}&rdquo;
       </p>
@@ -548,7 +548,7 @@ function TarotCard({
 
       {/* footer stamp */}
       <div style={{
-        position: 'relative', marginTop: 14, display: 'flex',
+        position: 'relative', marginTop: 10, display: 'flex',
         justifyContent: 'center', alignItems: 'center', gap: 8, opacity: .55,
       }}>
         <span style={{ width: 12, height: 9 }}>
@@ -863,7 +863,7 @@ function DetailOverlay({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 'min(380px, 100%, calc((100dvh - 160px) * 0.62))',
+          width: 'min(460px, 100%, calc((100dvh - 140px) * 0.78))',
           minWidth: 240,
           margin: '0 auto',
           position: 'relative',
@@ -1092,7 +1092,7 @@ export function MirrorPage() {
         {/* hero card */}
         {mostRecent && (
           <div style={{ display: 'grid', placeItems: 'center', marginTop: 8 }}>
-            <div style={{ width: 'min(392px, 100%, calc((100dvh - 280px) * 0.62))', minWidth: 240, position: 'relative' }} ref={heroRef}>
+            <div style={{ width: 'min(460px, 100%, calc((100dvh - 260px) * 0.78))', minWidth: 240, position: 'relative' }} ref={heroRef}>
               <TarotCard p={mostRecent} animate={animateHero} />
               {revealing && <DeckBack onDone={() => setRevealing(false)} />}
             </div>
