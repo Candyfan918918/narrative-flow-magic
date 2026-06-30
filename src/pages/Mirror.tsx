@@ -1212,20 +1212,17 @@ export function MirrorPage() {
                 } as React.CSSProperties} />
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 18, marginTop: 14 }}>
-              <button onClick={replay} style={{
-                background: 'transparent', border: 0, color: MUTED,
-                fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-              }}>↻ replay reveal</button>
-              <button onClick={() => setShareTarget({ p: mostRecent, source: 'hero' })} style={{
-                background: 'transparent', border: 0, color: GOLD,
-                fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-              }}>share this card →</button>
+            <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <ActionPill onClick={replay} ariaLabel="Replay reveal">
+                ↻ replay
+              </ActionPill>
+              <ActionPill tone="primary" onClick={() => setShareTarget({ p: mostRecent, source: 'hero' })} ariaLabel="Share this card">
+                ↗ share
+              </ActionPill>
               {list.length > 1 && (
-                <button onClick={() => setOpenCard(list[Math.floor(Math.random() * list.length)])} style={{
-                  background: 'transparent', border: 0, color: MUTED,
-                  fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-                }}>draw another →</button>
+                <ActionPill onClick={() => setOpenCard(list[Math.floor(Math.random() * list.length)])} ariaLabel="Draw another">
+                  🎴 draw another
+                </ActionPill>
               )}
             </div>
           </div>
