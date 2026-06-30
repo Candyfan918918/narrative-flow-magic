@@ -25,7 +25,11 @@ export function MirrorShareSheet({
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [caption, setCaption] = useState(defaultCaption)
   const [runId, setRunId] = useState(0)
+  const [scaledH, setScaledH] = useState<number>(420)
   const previewRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+  const SHARE_W = 380
+  const PREVIEW_SCALE = 0.78
 
   useEffect(() => { setCaption(defaultCaption) }, [defaultCaption])
 
