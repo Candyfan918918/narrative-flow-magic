@@ -953,9 +953,16 @@ export function MirrorPage() {
     queryKey: ['mirror-patterns', 'me'],
     queryFn: () => fetchMine(),
   })
+  const [userId, setUserId] = useState<string | null>(null)
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
+  }, [])
+  const isDemoAccount = !!userId && DEMO_PREVIEW_USER_IDS.has(userId)
+
   const { data: demo } = useQuery({
     queryKey: ['mirror-patterns', 'demo'],
     queryFn: () => fetchDemo(),
+    enabled: isDemoAccount,
     staleTime: 1000 * 60 * 30,
   })
 
@@ -963,9 +970,9 @@ export function MirrorPage() {
   const demoList = (demo ?? []) as unknown as MirrorPatternView[]
   const isForming = mineList.length < 2
   const [showDemo, setShowDemo] = useState(false)
-  // When the user has no real patterns yet, surface the demo cast automatically
-  // so the logged-in account sees the Claude-seeded demo data instead of an empty mirror.
-  const autoDemo = isForming && demoList.length > 0
+  // Only the designated demo account sees the seeded cast automatically.
+  // All other accounts see the real Forming state (empty cards + CTAs).
+  const autoDemo = isDemoAccount && isForming && demoList.length > 0
   const list = showDemo || autoDemo ? demoList : mineList
 
   // keyframes + fonts injection (idempotent)
