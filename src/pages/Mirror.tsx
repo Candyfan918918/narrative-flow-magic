@@ -980,11 +980,11 @@ export function MirrorPage() {
     queryKey: ['mirror-patterns', 'me'],
     queryFn: () => fetchMine(),
   })
-  const [userId, setUserId] = useState<string | null>(null)
+  const [, setUserId] = useState<string | null>(null)
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
   }, [])
-  void userId; void DEMO_PREVIEW_USER_IDS;
+
 
 
   const mineList = (mine ?? []) as unknown as MirrorPatternView[]
