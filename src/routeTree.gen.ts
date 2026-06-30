@@ -32,7 +32,6 @@ import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedMirrorRouteImport } from './routes/_authenticated/mirror'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
@@ -154,11 +153,6 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMirrorRoute = AuthenticatedMirrorRouteImport.update({
-  id: '/mirror',
-  path: '/mirror',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const ApiFeedbackEventsRoute = ApiFeedbackEventsRouteImport.update({
   id: '/api/feedback/events',
   path: '/api/feedback/events',
@@ -211,7 +205,6 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
-  '/mirror': typeof AuthenticatedMirrorRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
@@ -242,7 +235,6 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
-  '/mirror': typeof AuthenticatedMirrorRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
@@ -275,7 +267,6 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
-  '/_authenticated/mirror': typeof AuthenticatedMirrorRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
@@ -308,7 +299,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
-    | '/mirror'
     | '/profile'
     | '/api/complete'
     | '/is-it-normal/$slug'
@@ -339,7 +329,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
-    | '/mirror'
     | '/profile'
     | '/api/complete'
     | '/is-it-normal/$slug'
@@ -371,7 +360,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
-    | '/_authenticated/mirror'
     | '/_authenticated/profile'
     | '/api/complete'
     | '/is-it-normal/$slug'
@@ -578,13 +566,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/mirror': {
-      id: '/_authenticated/mirror'
-      path: '/mirror'
-      fullPath: '/mirror'
-      preLoaderRoute: typeof AuthenticatedMirrorRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/api/feedback/events': {
       id: '/api/feedback/events'
       path: '/api/feedback/events'
@@ -631,13 +612,11 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedMirrorRoute: typeof AuthenticatedMirrorRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedCheckinIdRoute: typeof AuthenticatedCheckinIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedMirrorRoute: AuthenticatedMirrorRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedCheckinIdRoute: AuthenticatedCheckinIdRoute,
 }
@@ -677,13 +656,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

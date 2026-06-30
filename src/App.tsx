@@ -8,6 +8,7 @@ import { RoomPage } from './pages/Room'
 import { ProfilePage } from './pages/Profile'
 import { AdminPage } from './pages/Admin'
 import { AdminFeedbackPage } from './pages/AdminFeedback'
+import { MirrorPage } from './pages/Mirror'
 import { AdminRelateQueuePage } from './pages/AdminRelateQueue'
 import { SubscribePage, SubscribeReturnPage } from './pages/Subscribe'
 import { LegalPage } from './pages/Legal'
@@ -30,6 +31,7 @@ export function App() {
         <Route path="/subscribe" element={<SubscribePage />} />
         <Route path="/subscribe/return" element={<SubscribeReturnPage />} />
         <Route path="/legal" element={<LegalPage />} />
+        <Route path="/mirror" element={<MirrorPage />} />
         <Route path="*" element={<Navigate to="/stream" replace />} />
       </Routes>
     </>
