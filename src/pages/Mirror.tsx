@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { toPng } from 'html-to-image'
+
 import {
   listMirrorPatterns,
   listDemoPatterns,
@@ -22,6 +22,7 @@ import {
 } from '@/lib/agents/mirror-guards'
 import { getAlias, rememberReturnTo, signOut as doSignOut, isAdmin as getIsAdmin } from '@/lib/auth'
 import { supabase } from '@/integrations/supabase/client'
+import { MirrorShareSheet } from '@/components/MirrorShareSheet'
 
 // Accounts allowed to preview the seeded demo cast in their own Mirror.
 // Everyone else sees the real (possibly empty) Forming state with CTAs.
@@ -893,28 +894,8 @@ function DetailOverlay({
 }
 
 /* ─────────────── share ─────────────── */
-async function shareCard(node: HTMLElement | null, p: MirrorPatternView) {
-  if (!node) return
-  try {
-    const dataUrl = await toPng(node, {
-      cacheBust: true, pixelRatio: 2, backgroundColor: '#100810',
-    })
-    const blob = await (await fetch(dataUrl)).blob()
-    const file = new File([blob], `mirror-${p.name.toLowerCase().replace(/\s+/g, '-')}.png`, { type: 'image/png' })
-    const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void>; canShare?: (d: ShareData) => boolean }
-    if (nav.share && nav.canShare?.({ files: [file] })) {
-      await nav.share({ files: [file], title: `${p.name} — shutap mirror`, text: `"${p.punch || p.insight}"` })
-      return
-    }
-    // fallback: download
-    const a = document.createElement('a')
-    a.href = dataUrl
-    a.download = file.name
-    a.click()
-  } catch (e) {
-    console.warn('[mirror share]', e)
-  }
-}
+// Share now flows through MirrorShareSheet (rendered at the page root) so
+// the channel pills match the Scan share card exactly.
 
 /* ─────────────── forming state ─────────────── */
 function Forming({ onSpill, onPreview, hasDemo, previewing }: {
@@ -1044,6 +1025,8 @@ export function MirrorPage() {
   const [openCard, setOpenCard] = useState<MirrorPatternView | null>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
+  // share sheet
+  const [shareTarget, setShareTarget] = useState<{ p: MirrorPatternView; source: 'hero' | 'overlay' } | null>(null)
 
   // group by district
   const grouped = useMemo(() => {
@@ -1117,7 +1100,7 @@ export function MirrorPage() {
                 background: 'transparent', border: 0, color: MUTED,
                 fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
               }}>↻ replay reveal</button>
-              <button onClick={() => shareCard(heroRef.current?.querySelector('article') as HTMLElement | null, mostRecent)} style={{
+              <button onClick={() => setShareTarget({ p: mostRecent, source: 'hero' })} style={{
                 background: 'transparent', border: 0, color: GOLD,
                 fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
               }}>share this card →</button>
@@ -1210,12 +1193,22 @@ export function MirrorPage() {
           <DetailOverlay
             p={openCard}
             onClose={() => setOpenCard(null)}
-            onShare={(p) => {
-              const node = overlayRef.current?.querySelector('article') as HTMLElement | null
-              shareCard(node, p)
-            }}
+            onShare={(p) => setShareTarget({ p, source: 'overlay' })}
           />
         </div>
+      )}
+
+      {shareTarget && (
+        <MirrorShareSheet
+          open
+          onClose={() => setShareTarget(null)}
+          getNode={() => {
+            const root = shareTarget.source === 'overlay' ? overlayRef.current : heroRef.current
+            return (root?.querySelector('article') as HTMLElement | null) ?? null
+          }}
+          caption={`"${shareTarget.p.punch || shareTarget.p.insight}" — ${shareTarget.p.name} · shutap mirror`}
+          fileName={`mirror-${shareTarget.p.name.toLowerCase().replace(/\s+/g, '-')}.png`}
+        />
       )}
     </div>
   )
