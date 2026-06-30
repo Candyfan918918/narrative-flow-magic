@@ -49,12 +49,12 @@ const DISTRICT_COLOR: Record<District, string> = {
 }
 
 const SOURCE_GLYPH: Record<string, string> = {
-  spill: '🗯',
-  scan: '📸',
-  comments: '💬',
-  likes: '♥',
-  follows: '✦',
-  browse: '👁',
+  spill: '🫧',
+  scan: '✨',
+  comments: '💌',
+  likes: '🫶',
+  follows: '🌟',
+  browse: '👀',
 }
 const SOURCE_COLOR: Record<string, string> = {
   spill: '#e7548a',
