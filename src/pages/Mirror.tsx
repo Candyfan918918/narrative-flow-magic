@@ -1260,8 +1260,40 @@ export function MirrorPage() {
         {/* the cast */}
         {list.length > 0 && (
           <section style={{ marginTop: 40 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, flexWrap: 'wrap' }}>
+              <h2 style={{
+                margin: 0, fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+                fontWeight: 500, fontSize: 24, color: INK,
+              }}>the cast</h2>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginLeft: 'auto' }}>
+                {(['all', ...DISTRICTS, 'ruins'] as const).map((k) => {
+                  const active = castFilter === k
+                  const isDistrict = (DISTRICTS as readonly string[]).includes(k as string)
+                  const c = isDistrict ? DISTRICT_COLOR[k as District] : k === 'ruins' ? RUIN_MOSS : '#e7548a'
+                  const label = k === 'all' ? 'all' : k === 'ruins' ? 'ruins' : DISTRICT_LABEL[k as District].toLowerCase()
+                  return (
+                    <button key={k} onClick={() => setCastFilter(k)} style={{
+                      cursor: 'pointer', borderRadius: 999,
+                      padding: '6px 12px',
+                      background: active ? `${c}33` : 'transparent',
+                      border: `.5px solid ${active ? `${c}aa` : 'rgba(255,255,255,.12)'}`,
+                      fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 10.5,
+                      letterSpacing: '.18em', textTransform: 'uppercase',
+                      color: active ? INK : MUTED,
+                    }}>
+                      {isDistrict && <span style={{ color: c, marginRight: 6 }}>{DISTRICT_SIGIL[k as District]}</span>}
+                      {label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
             {DISTRICTS.map((d) => {
-              const items = grouped[d]
+              const items = grouped[d].filter((p) => {
+                if (castFilter === 'all') return true
+                if (castFilter === 'ruins') return p.state === 'ruin'
+                return castFilter === d
+              })
               if (items.length === 0) return null
               const color = DISTRICT_COLOR[d]
               return (
