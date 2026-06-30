@@ -162,8 +162,7 @@ export function MirrorShareSheet({
         >
           <div
             ref={previewRef}
-            // @ts-expect-error zoom is non-standard but widely supported
-            style={{ zoom: 0.62, display: 'flex', justifyContent: 'center' }}
+            style={{ display: 'flex', justifyContent: 'center', zoom: 0.62 } as React.CSSProperties}
           >
             <MirrorCard p={pattern} />
           </div>
