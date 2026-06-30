@@ -155,14 +155,20 @@ export function MirrorShareSheet({
           letterSpacing: '.32em', color: '#9b8090', textTransform: 'uppercase',
         }}>preview & share</div>
 
-        {/* CARD PREVIEW — full card visible; outer sheet handles scroll */}
+        {/* CARD PREVIEW — exact render of the MirrorCard at share width (380px),
+            scaled to fit the sheet so the whole card is visible at once. */}
         <div
           key={runId}
           style={{ display: 'flex', justifyContent: 'center' }}
         >
           <div
             ref={previewRef}
-            style={{ display: 'flex', justifyContent: 'center', zoom: 0.62 } as React.CSSProperties}
+            style={{
+              width: 380,
+              transform: 'scale(0.78)',
+              transformOrigin: 'top center',
+              marginBottom: -90, // collapse the empty space scale() leaves behind
+            }}
           >
             <MirrorCard p={pattern} />
           </div>
