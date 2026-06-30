@@ -126,7 +126,8 @@ export function ScanShareCard({
   const cap = caption(record)
   const enc = encodeURIComponent
 
-  const onShare = async (kind: ChannelKey) => {
+  const onShare = async (kind: ShareChannelKey) => {
+    if (kind === 'share') { await onNativeShare(); return }
     const text = cap
     if (kind === 'sms') {
       window.open('sms:?&body=' + enc(text), '_blank')
