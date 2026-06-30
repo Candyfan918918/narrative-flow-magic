@@ -515,6 +515,15 @@ function TarotCard({
         position: 'absolute', inset: -20, pointerEvents: 'none',
         background: `radial-gradient(50% 40% at 50% 0%, ${color}26, transparent 65%)`,
       }} />
+      {/* cursor-follow glare (reacts to --glare-x/y/o set on the tilt wrapper) */}
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none',
+        mixBlendMode: 'screen',
+        background: 'radial-gradient(circle at var(--glare-x,50%) var(--glare-y,50%), rgba(255,255,255,.30), rgba(255,255,255,0) 45%)',
+        opacity: 'var(--glare-o,0)' as unknown as number,
+        transition: 'opacity .25s ease',
+      } as React.CSSProperties} />
+
 
       {/* chrome row */}
       <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -771,11 +780,24 @@ function WorldBand({
           <button
             key={d}
             onClick={() => onJump(d)}
+            className="mirror-world-tile"
             style={{
               cursor: 'pointer', textAlign: 'center',
               background: `radial-gradient(120% 80% at 50% 0%, ${color}1f, #150815 70%)`,
               border: `.5px solid ${color}33`, borderRadius: 14,
               padding: '12px 8px 10px', color: INK,
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget as HTMLButtonElement
+              el.style.transform = 'translateY(-3px)'
+              el.style.boxShadow = `0 0 22px -6px ${color}`
+              el.style.borderColor = color
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget as HTMLButtonElement
+              el.style.transform = 'translateY(0)'
+              el.style.boxShadow = 'none'
+              el.style.borderColor = `${color}33`
             }}
           >
             <div style={{
@@ -875,13 +897,14 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
           const h = 8 + (v / max) * 40
           const color = DISTRICT_COLOR[d]
           return (
-            <div key={d} style={{ textAlign: 'center' }}>
+            <div key={d} className="mirror-cross-bar-wrap" style={{ textAlign: 'center' }}>
               <div style={{ height: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-                <div style={{
+                <div className="mirror-cross-bar" style={{
                   width: 14, height: h, borderRadius: 3,
                   background: v > 0 ? `linear-gradient(180deg, ${color}, ${color}55)` : 'rgba(255,255,255,.06)',
                   boxShadow: v > 0 ? `0 0 10px ${color}88` : 'none',
-                }} />
+                  ['--bar-color' as string]: color,
+                } as React.CSSProperties} />
               </div>
               <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 9, color: MUTED_2, letterSpacing: '.16em', marginTop: 4 }}>
                 <span style={{ color }}>{DISTRICT_SIGIL[d]}</span> {v}
@@ -931,7 +954,7 @@ function DetailOverlay({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 'min(460px, 100%, calc((100dvh - 140px) * 0.78))',
+          width: 'min(440px, 92vw)',
           minWidth: 240,
           margin: '0 auto',
           position: 'relative',
@@ -1071,6 +1094,11 @@ export function MirrorPage() {
       .mirror-tile::after { top: 0; left: 0; width: 64%; height: 34%; background: radial-gradient(120% 130% at 12% 0%, rgba(255,255,255,.17), rgba(255,255,255,.04) 42%, transparent 66%); }
       .mirror-tile .mirror-tile-sheen { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent); opacity: 0; pointer-events: none; }
       .mirror-tile:hover .mirror-tile-sheen { animation: mirror-tile-sweep .9s ease-out 1; }
+      .mirror-tile:active { transform: scale(.97) !important; transition: transform .1s ease; }
+      .mirror-world-tile { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+      .mirror-cross-bar { transition: transform .2s ease, box-shadow .2s ease, filter .2s ease; transform-origin: bottom center; }
+      .mirror-cross-bar-wrap { cursor: pointer; }
+      .mirror-cross-bar-wrap:hover .mirror-cross-bar { transform: scaleY(1.08); filter: brightness(1.2); }
       @media (prefers-reduced-motion: reduce) {
         .mirror-tarot--open .mirror-scanbeam, .mirror-tarot:hover .mirror-scanbeam,
         .mirror-tile:hover .mirror-tile-sheen { animation: none !important; }
@@ -1289,23 +1317,17 @@ export function MirrorPage() {
             <div
               ref={heroTiltRef}
               style={{
-                width: 'min(460px, 100%, calc((100dvh - 260px) * 0.78))', minWidth: 240,
+                width: 'min(440px, 92vw)', margin: '0 auto',
                 position: 'relative', transformStyle: 'preserve-3d',
-                transition: 'transform 320ms cubic-bezier(.2,.7,.2,1)',
+                transition: 'transform .2s ease',
               } as React.CSSProperties}
             >
               <div ref={heroRef} style={{ position: 'relative' }}>
                 <TarotCard p={mostRecent} animate={animateHero} />
                 {revealing && <DeckBack onDone={() => setRevealing(false)} />}
-                {/* tracking glare */}
-                <div aria-hidden style={{
-                  position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none',
-                  background: 'radial-gradient(220px 220px at var(--glare-x,50%) var(--glare-y,30%), rgba(255,255,255,.22), transparent 60%)',
-                  opacity: 'var(--glare-o,0)' as unknown as number,
-                  mixBlendMode: 'screen', transition: 'opacity 200ms ease',
-                } as React.CSSProperties} />
               </div>
             </div>
+
             <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
               <ActionPill onClick={replay} ariaLabel="Replay reveal">
                 ↻ replay
