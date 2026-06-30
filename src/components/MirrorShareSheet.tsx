@@ -59,6 +59,7 @@ export function MirrorShareSheet({
   }
 
   const onPick = async (kind: ShareChannelKey) => {
+    if (kind === 'share') { await onNativeShare(); return }
     const text = caption
     if (kind === 'sms') { window.open('sms:?&body=' + enc(text + '\n' + shareUrl), '_blank'); return }
     if (kind === 'x') { window.open('https://twitter.com/intent/tweet?text=' + enc(text) + '&url=' + enc(shareUrl), '_blank'); return }
