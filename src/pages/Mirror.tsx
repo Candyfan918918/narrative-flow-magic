@@ -21,6 +21,13 @@ import {
   type Rarity,
 } from '@/lib/agents/mirror-guards'
 import { getAlias, rememberReturnTo, signOut as doSignOut, isAdmin as getIsAdmin } from '@/lib/auth'
+import { supabase } from '@/integrations/supabase/client'
+
+// Accounts allowed to preview the seeded demo cast in their own Mirror.
+// Everyone else sees the real (possibly empty) Forming state with CTAs.
+const DEMO_PREVIEW_USER_IDS = new Set<string>([
+  '28376810-e42d-4235-b70b-bba32bab6ecb',
+])
 import type { Alias } from '@/data/types'
 
 /* ─────────────── design tokens ─────────────── */
@@ -946,9 +953,16 @@ export function MirrorPage() {
     queryKey: ['mirror-patterns', 'me'],
     queryFn: () => fetchMine(),
   })
+  const [userId, setUserId] = useState<string | null>(null)
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
+  }, [])
+  const isDemoAccount = !!userId && DEMO_PREVIEW_USER_IDS.has(userId)
+
   const { data: demo } = useQuery({
     queryKey: ['mirror-patterns', 'demo'],
     queryFn: () => fetchDemo(),
+    enabled: isDemoAccount,
     staleTime: 1000 * 60 * 30,
   })
 
@@ -956,9 +970,9 @@ export function MirrorPage() {
   const demoList = (demo ?? []) as unknown as MirrorPatternView[]
   const isForming = mineList.length < 2
   const [showDemo, setShowDemo] = useState(false)
-  // When the user has no real patterns yet, surface the demo cast automatically
-  // so the logged-in account sees the Claude-seeded demo data instead of an empty mirror.
-  const autoDemo = isForming && demoList.length > 0
+  // Only the designated demo account sees the seeded cast automatically.
+  // All other accounts see the real Forming state (empty cards + CTAs).
+  const autoDemo = isDemoAccount && isForming && demoList.length > 0
   const list = showDemo || autoDemo ? demoList : mineList
 
   // keyframes + fonts injection (idempotent)
