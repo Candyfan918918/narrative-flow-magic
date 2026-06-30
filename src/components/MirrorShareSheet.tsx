@@ -124,11 +124,14 @@ export function MirrorShareSheet({
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        onWheelCapture={(e) => e.stopPropagation()}
         style={{
           width: '100%',
           maxWidth: 460,
           maxHeight: '94dvh',
           overflowY: 'auto',
+          overscrollBehavior: 'contain',
+          WebkitOverflowScrolling: 'touch',
           background: 'linear-gradient(180deg,#1a0e1c 0%, #120815 100%)',
           border: '.5px solid rgba(255,255,255,.12)',
           borderRadius: '22px 22px 0 0',
@@ -151,22 +154,29 @@ export function MirrorShareSheet({
           letterSpacing: '.32em', color: '#9b8090', textTransform: 'uppercase',
         }}>preview & share</div>
 
-        {/* CARD PREVIEW — scaled MirrorCard */}
+        {/* CARD PREVIEW — scaled MirrorCard, sized so subsequent content flows naturally */}
         <div
-          ref={previewRef}
           key={runId}
           style={{
             display: 'flex', justifyContent: 'center',
-            padding: '4px 0 2px',
-            transform: 'scale(.78)',
-            transformOrigin: 'top center',
-            height: 360,
-            marginBottom: -70,
-            pointerEvents: 'none',
+            overflow: 'hidden',
+            height: 300,
           }}
         >
-          <MirrorCard p={pattern} />
+          <div
+            ref={previewRef}
+            style={{
+              transform: 'scale(.62)',
+              transformOrigin: 'top center',
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            <MirrorCard p={pattern} />
+          </div>
         </div>
+
 
         {/* CAPTION BRIEF — editable */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
