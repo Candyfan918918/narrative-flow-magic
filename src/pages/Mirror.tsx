@@ -110,6 +110,48 @@ function trendColor(dir: string) {
   return '#c4a0b2'
 }
 
+/* ─────────────── built-in example cast (display-only) ─────────────── */
+const EX_TREND: Record<string, number[]> = {
+  rising: [1, 2, 2, 4, 5, 7, 10], cooling: [10, 9, 7, 6, 4, 3, 2],
+  dormant: [6, 4, 3, 1, 0, 0, 0], steady: [5, 6, 5, 7, 6, 7, 6],
+}
+const exDepth = (c: number) => (c < 10 ? 1 : c < 25 ? 2 : c < 60 ? 3 : c < 120 ? 4 : 5)
+const exDays = (last: string) => {
+  if (/today/.test(last)) return 0
+  const mo = last.match(/(\d+)\s*mo/); if (mo) return +mo[1] * 30
+  const w = last.match(/(\d+)\s*w/); if (w) return +w[1] * 7
+  const d = last.match(/(\d+)\s*d/); if (d) return +d[1]
+  return 1
+}
+const RAW_EXAMPLE = [
+  { id: 'avoid', name: 'Avoidant Texter', emoji: '📱', district: 'self', rarity: 'epic', state: 'active', dir: 'rising', last: 'today', insight: 'you read it, then make them wait.', punch: '192 reads, zero replies. not mysterious bestie, just scared with great wifi.', sources: { spill: 24, scan: 14, comments: 8, likes: 71, follows: 5, browse: 70 } },
+  { id: 'impostor', name: 'Impostor at the Table', emoji: '🎭', district: 'career', rarity: 'legendary', state: 'active', dir: 'steady', last: '5d', insight: 'you earned the seat, still bracing to be removed.', punch: '140 rooms you earned and you still sit like the bouncer is en route.', sources: { spill: 22, scan: 18, comments: 14, likes: 19, follows: 7, browse: 60 } },
+  { id: 'escape', name: 'Escape Hatch Builder', emoji: '🚪', district: 'social', rarity: 'epic', state: 'active', dir: 'rising', last: '4d', insight: 'you build the exit before you arrive.', punch: '95 plans, 95 exit routes. you RSVP yes and mean we will see.', sources: { spill: 12, scan: 6, comments: 9, likes: 18, follows: 8, browse: 42 } },
+  { id: 'yes', name: 'The Yes Machine', emoji: '✅', district: 'career', rarity: 'epic', state: 'active', dir: 'rising', last: '1d', insight: 'you say yes before your body finishes flinching.', punch: '96 yeses deep and your spine left on read, fr.', sources: { spill: 14, scan: 8, comments: 21, likes: 16, follows: 5, browse: 32 } },
+  { id: 'fixer', name: 'The Fixer', emoji: '🔧', district: 'love', rarity: 'epic', state: 'active', dir: 'steady', last: '6d', insight: 'you fix them to avoid sitting with you.', punch: '88 saves. you would rather fix their life than open your own tabs.', sources: { spill: 18, scan: 9, comments: 12, likes: 14, follows: 6, browse: 29 } },
+  { id: 'doom', name: 'Doom Scroller', emoji: '📜', district: 'self', rarity: 'rare', state: 'active', dir: 'rising', last: '2d', insight: 'you doomscroll the fear you outran.', punch: '57 nights doomscrolling the fear you swore you healed from. bestie.', sources: { spill: 3, scan: 1, comments: 2, likes: 9, follows: 2, browse: 40 } },
+  { id: 'heart', name: 'Heart on Read', emoji: '💌', district: 'love', rarity: 'rare', state: 'active', dir: 'rising', last: '2d', insight: 'you give the heart, never the words.', punch: '54 hearts dropped, zero texts back. you flirt like a hit-and-run.', sources: { spill: 6, scan: 3, comments: 4, likes: 31, follows: 4, browse: 6 } },
+  { id: 'spiral', name: '3am Spiral', emoji: '🌙', district: 'self', rarity: 'rare', state: 'active', dir: 'steady', last: '3d', insight: 'you reopen the wound to confirm it still bleeds.', punch: '47 nights reopening the wound like it owes you closure.', sources: { spill: 9, scan: 6, comments: 2, likes: 8, follows: 1, browse: 21 } },
+  { id: 'grudge', name: 'Grudge Archivist', emoji: '📦', district: 'family', rarity: 'rare', state: 'active', dir: 'cooling', last: '3w', insight: 'you file people under their worst day.', punch: '44 receipts saved. you lose your keys but never a single slight.', sources: { spill: 7, scan: 3, comments: 8, likes: 6, follows: 2, browse: 18 } },
+  { id: 'score', name: 'Keeper of the Score', emoji: '📊', district: 'love', rarity: 'rare', state: 'active', dir: 'steady', last: '1w', insight: 'you keep every receipt but your own.', punch: '41 tallies deep. you keep score like a sport you are losing.', sources: { spill: 8, scan: 4, comments: 6, likes: 7, follows: 2, browse: 14 } },
+  { id: 'apology', name: 'Apology Reflex', emoji: '🙇', district: 'self', rarity: 'uncommon', state: 'active', dir: 'cooling', last: '1w', insight: 'you apologize for taking up space.', punch: '23 sorrys for existing. you apologized to a door once, the audacity.', sources: { spill: 6, scan: 2, comments: 7, likes: 3, follows: 1, browse: 4 } },
+  { id: 'ghost', name: 'Ghost of Group Chats', emoji: '👻', district: 'social', rarity: 'uncommon', state: 'active', dir: 'dormant', last: '5w', insight: 'you read everything, answer nothing.', punch: '21 group chats read in full, then poof. casper behavior.', sources: { spill: 3, scan: 1, comments: 2, likes: 5, follows: 3, browse: 7 } },
+  { id: 'inbox', name: 'Inbox Martyr', emoji: '📥', district: 'career', rarity: 'uncommon', state: 'active', dir: 'cooling', last: '2w', insight: 'you answer at midnight nobody asked you to.', punch: '19 midnight replies nobody asked for. employed by guilt, unpaid.', sources: { spill: 4, scan: 1, comments: 6, likes: 2, follows: 1, browse: 5 } },
+  { id: 'peace', name: 'The Peacekeeper', emoji: '🕊', district: 'family', rarity: 'rare', state: 'ruin', dir: 'dormant', last: 'ruin · 6mo', insight: 'you swallowed the fight to keep the room calm — until you stopped.', punch: '62 fights swallowed whole, then you stopped. character development, fr.', sources: { spill: 15, scan: 7, comments: 9, likes: 11, follows: 4, browse: 16 } },
+  { id: 'fine', name: 'Fine, Fine, Fine', emoji: '🪨', district: 'self', rarity: 'rare', state: 'ruin', dir: 'dormant', last: 'ruin · 4mo', insight: 'you said fine until you meant it — then left.', punch: 'fine 31 times, then you dipped. growth looks good on you, ngl.', sources: { spill: 11, scan: 5, comments: 4, likes: 5, follows: 1, browse: 5 } },
+]
+const EXAMPLE_PATTERNS = RAW_EXAMPLE.map((p) => {
+  const count = Object.values(p.sources).reduce((a, b) => a + b, 0)
+  return {
+    id: p.id, name: p.name, emoji: p.emoji, district: p.district, rarity: p.rarity,
+    state: p.state, insight: p.insight, punch: p.punch, record: '',
+    count, depth: exDepth(count), trend: [...EX_TREND[p.dir]], trend_dir: p.dir,
+    sources: p.sources,
+    first_seen: new Date(Date.now() - 1000 * 60 * 60 * 24 * 180).toISOString(),
+    last_seen: new Date(Date.now() - 1000 * 60 * 60 * 24 * exDays(p.last)).toISOString(),
+  }
+}) as unknown as MirrorPatternView[]
+
 /* ─────────────── dark header (mirror-only) ─────────────── */
 function MirrorHeader() {
   const navigate = useNavigate()
@@ -994,7 +1036,8 @@ export function MirrorPage() {
     staleTime: 1000 * 60 * 30,
   })
 
-  const demoList = (demo ?? []) as unknown as MirrorPatternView[]
+  const dbDemo = (demo ?? []) as unknown as MirrorPatternView[]
+  const demoList = dbDemo.length ? dbDemo : EXAMPLE_PATTERNS
   const [showDemo, setShowDemo] = useState(false)
   // While forming, render the seeded cast as a clearly-labeled EXAMPLE so the
   // page reads as a full styled reading instead of an empty shell. Display
