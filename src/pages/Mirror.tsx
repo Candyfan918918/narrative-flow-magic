@@ -548,7 +548,7 @@ function TarotCard({
 
       {/* footer stamp */}
       <div style={{
-        position: 'relative', marginTop: 14, display: 'flex',
+        position: 'relative', marginTop: 10, display: 'flex',
         justifyContent: 'center', alignItems: 'center', gap: 8, opacity: .55,
       }}>
         <span style={{ width: 12, height: 9 }}>
