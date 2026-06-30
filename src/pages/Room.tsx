@@ -22,7 +22,7 @@ function loadUserRooms(): Room[] {
       (r): Room => ({
         id: r.id,
         alias: r.alias || 'someone',
-        emoji: r.emoji || '🌸',
+        emoji: r.emoji || '🩷',
         title: r.title || 'untitled',
         body: r.body || '',
         reflection: r.reflection || '',

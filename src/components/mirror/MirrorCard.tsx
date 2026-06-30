@@ -19,7 +19,7 @@ const DISTRICT_PALETTE: Record<District, { ink: string; glow: string }> = {
 }
 
 const SOURCE_GLYPH: Record<string, string> = {
-  spill: '🗯', scan: '📸', comments: '💬', likes: '♥', follows: '✦', browse: '👁',
+  spill: '🫧', scan: '✨', comments: '💌', likes: '🫶', follows: '🌟', browse: '👀',
 }
 
 export type MirrorPatternView = {
@@ -243,7 +243,7 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
         display: 'grid', gridTemplateColumns: '112px 1fr', gap: 18, marginTop: 18,
         alignItems: 'center', color: ink, position: 'relative',
       }}>
-        <DepthWheel depth={p.depth} emoji={p.emoji || '✦'} dir={p.trend_dir} />
+        <DepthWheel depth={p.depth} emoji={p.emoji || '✨'} dir={p.trend_dir} />
         <div>
           <TrendChart trend={p.trend} color={ink} />
           <div style={{

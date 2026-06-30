@@ -73,7 +73,7 @@ export const listRelateQueue = createServerFn({ method: 'POST' })
         r.id as string,
         {
           alias: (r.alias as string) ?? 'someone',
-          emoji: (r.emoji as string) ?? '🌸',
+          emoji: (r.emoji as string) ?? '🩷',
           support: ((r.support as string) === 'advice' ? 'advice' : 'heard'),
           hall: (r.hall as string) ?? 'healing',
           title: (r.title as string) ?? null,
@@ -95,7 +95,7 @@ export const listRelateQueue = createServerFn({ method: 'POST' })
         title: (s.title as string) ?? room?.title ?? null,
         body: ((s.body as string) || (s.clean_text as string) || room?.body || '').slice(0, 400),
         alias: room?.alias ?? 'someone',
-        emoji: room?.emoji ?? '🌸',
+        emoji: room?.emoji ?? '🩷',
         support: room?.support ?? 'heard',
         hall: room?.hall ?? 'healing',
         created_at: s.created_at as string,
