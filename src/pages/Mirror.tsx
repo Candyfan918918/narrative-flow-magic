@@ -420,33 +420,60 @@ function TarotCard({
   const isRuin = p.state === 'ruin'
   const bg = isRuin
     ? 'radial-gradient(125% 80% at 50% 0%, #2a2e22, #1a1c16 58%, #15140f)'
-    : `radial-gradient(125% 80% at 50% 0%, ${color}38, #1c0d16 58%, #140810)`
+    : `radial-gradient(125% 80% at 50% 0%, ${color}2e, #1c0d16 58%, #140810)`
   const border = isLegendary ? GOLD : `${color}66`
   return (
     <article
       ref={innerRef}
+      className={`mirror-tarot ${animate ? 'mirror-tarot--open' : ''}`}
       style={{
         position: 'relative', borderRadius: 22, overflow: 'hidden',
         background: bg,
         border: `1px solid ${border}`,
         boxShadow: isLegendary
-          ? `0 0 0 1px ${GOLD}55, 0 0 60px ${GOLD}33, 0 20px 60px rgba(0,0,0,.6)`
-          : `0 24px 60px -10px rgba(0,0,0,.7), 0 0 40px ${color}22`,
+          ? `0 0 0 1px ${GOLD}55, 0 0 38px -6px ${GOLD}55, 0 40px 90px -34px rgba(0,0,0,.85)`
+          : `0 40px 90px -34px rgba(0,0,0,.85), 0 0 40px ${color}1f`,
         color: INK,
         padding: '16px 18px 14px',
         filter: isRuin ? 'saturate(.55) grayscale(.25)' : undefined,
-      }}
+        ['--district' as never]: color,
+      } as React.CSSProperties}
     >
       {/* inner ornamental frame */}
       <div aria-hidden style={{
         position: 'absolute', inset: 6, borderRadius: 18, pointerEvents: 'none',
-        border: `.5px solid ${isLegendary ? `${GOLD}66` : 'rgba(255,255,255,.06)'}`,
+        border: `.5px solid ${isLegendary ? `${GOLD}66` : 'rgba(160,140,150,.18)'}`,
+      }} />
+      {/* GLASS — top gloss (full width, no diagonal streak) */}
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 22,
+        background: 'linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 18%, transparent 38%)',
+      }} />
+      {/* GLASS — top-LEFT corner sheen, confined */}
+      <div aria-hidden style={{
+        position: 'absolute', top: 0, left: 0, width: '64%', height: '34%',
+        pointerEvents: 'none',
+        background: 'radial-gradient(120% 130% at 12% 0%, rgba(255,255,255,.17), rgba(255,255,255,.04) 42%, transparent 66%)',
+      }} />
+      {/* SCI-FI — holographic top rim line */}
+      <div aria-hidden style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: 1.5,
+        background: 'linear-gradient(90deg, transparent, #7F77DD, #e7548a, #5B8A5E, transparent)',
+        backgroundSize: '200% 100%',
+        opacity: .4,
+        animation: 'mirror-holo 9s linear infinite',
+        pointerEvents: 'none',
+      }} />
+      {/* SCI-FI — scan beam (idle:0, sweeps on open/hover) */}
+      <div aria-hidden className="mirror-scanbeam" style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '24%',
+        background: `linear-gradient(180deg, ${color}00, ${color}28, ${color}00)`,
+        opacity: 0, pointerEvents: 'none',
       }} />
       {/* aura */}
       <div aria-hidden style={{
         position: 'absolute', inset: -20, pointerEvents: 'none',
-        background: `radial-gradient(50% 40% at 50% 0%, ${color}33, transparent 65%)`,
-        animation: 'mirror-aura 6s ease-in-out infinite',
+        background: `radial-gradient(50% 40% at 50% 0%, ${color}26, transparent 65%)`,
       }} />
 
       {/* chrome row */}
