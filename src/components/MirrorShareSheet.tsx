@@ -169,19 +169,28 @@ export function MirrorShareSheet({
           letterSpacing: '.32em', color: '#9b8090', textTransform: 'uppercase',
         }}>preview & share</div>
 
-        {/* CARD PREVIEW — exact render of the MirrorCard at share width (380px),
-            scaled to fit the sheet so the whole card is visible at once. */}
+        {/* CARD PREVIEW — exact render of the MirrorCard at the share width
+            (380px), uniformly scaled so the entire card fits in the sheet
+            and the preview box exactly contains it (no clipping, no gap). */}
         <div
+          ref={previewRef}
           key={runId}
-          style={{ display: 'flex', justifyContent: 'center' }}
+          style={{
+            position: 'relative',
+            width: SHARE_W * PREVIEW_SCALE,
+            height: scaledH,
+            margin: '0 auto',
+          }}
         >
           <div
-            ref={previewRef}
+            ref={innerRef}
             style={{
-              width: 380,
-              transform: 'scale(0.78)',
-              transformOrigin: 'top center',
-              marginBottom: -90, // collapse the empty space scale() leaves behind
+              width: SHARE_W,
+              transform: `scale(${PREVIEW_SCALE})`,
+              transformOrigin: 'top left',
+              position: 'absolute',
+              top: 0,
+              left: 0,
             }}
           >
             <MirrorCard p={pattern} />
