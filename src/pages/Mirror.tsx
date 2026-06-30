@@ -1036,7 +1036,8 @@ export function MirrorPage() {
     staleTime: 1000 * 60 * 30,
   })
 
-  const demoList = (demo ?? []) as unknown as MirrorPatternView[]
+  const dbDemo = (demo ?? []) as unknown as MirrorPatternView[]
+  const demoList = dbDemo.length ? dbDemo : EXAMPLE_PATTERNS
   const [showDemo, setShowDemo] = useState(false)
   // While forming, render the seeded cast as a clearly-labeled EXAMPLE so the
   // page reads as a full styled reading instead of an empty shell. Display
