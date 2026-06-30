@@ -984,7 +984,8 @@ export function MirrorPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
   }, [])
-  const isDemoAccount = !!userId && DEMO_PREVIEW_USER_IDS.has(userId)
+  void userId; void DEMO_PREVIEW_USER_IDS;
+
 
   const mineList = (mine ?? []) as unknown as MirrorPatternView[]
   const isForming = mineList.length < 2
