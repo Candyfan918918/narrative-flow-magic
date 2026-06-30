@@ -1,5 +1,5 @@
 /* Pixel-perfect port of project/Landing.dc.html with agent bridge. */
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useServerFn } from '@tanstack/react-start'
 import { runSpill } from '@/lib/agents/spill.functions'
@@ -46,6 +46,11 @@ export function LandingPage() {
   const spill = useServerFn(runSpill)
   const save = useServerFn(saveSituation)
   const update = useServerFn(updateSituation)
+
+  // Mask the landing feed when opening spill/scan/ask from an intent hash so
+  // the user sees a neutral screen and then the modal, not a flash of the feed.
+  const hasIntent = typeof window !== 'undefined' && /^#(spill|scan|ask)$/.test(window.location.hash)
+  const [coverUp, setCoverUp] = useState(hasIntent)
 
   // Resume a pending Spill save after the user returns from sign-in.
   useEffect(() => {
@@ -455,62 +460,95 @@ export function LandingPage() {
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
+  // Safety net: the intent cover must never stick forever.
+  useEffect(() => {
+    if (!coverUp) return
+    const id = setTimeout(() => setCoverUp(false), 3000)
+    return () => clearTimeout(id)
+  }, [coverUp])
+
 
   return (
-    <iframe
-      ref={iframeRef}
-      src="/shutap/Shutap-Landing.dc.html"
-      title="Shutap — Landing"
+    <>
+      {coverUp && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 60,
+            background: '#fdf0f5',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <span
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              background: 'rgba(46, 10, 26, 0.18)',
+            }}
+          />
+        </div>
+      )}
+      <iframe
+        ref={iframeRef}
+        src="/shutap/Shutap-Landing.dc.html"
+        title="Shutap — Landing"
 
-      onLoad={() => {
-        injectClaude()
-        // Re-assert after the bundler swaps documentElement at runtime.
-        setTimeout(injectClaude, 0)
-        setTimeout(injectClaude, 400)
-        setTimeout(injectClaude, 1200)
-        // Forward any pending parent hash (e.g. arrived via /#spill from the
-        // Mirror page) once the iframe document is ready.
-        setTimeout(syncHashToIframe, 400)
-        setTimeout(syncHashToIframe, 1200)
-        // Bridge: route ONLY explicit mirror CTAs to /mirror. Earlier this
-        // walked 6 ancestors and matched any parent textContent containing
-        // "the mirror" — which captured the spill/scan CTAs whenever the
-        // surrounding section mentioned the mirror in marketing copy.
-        const installMirrorBridge = () => {
-          try {
-            const doc = iframeRef.current?.contentDocument
-            const w = iframeRef.current?.contentWindow as (Window & { __shutapMirrorBridge?: boolean }) | null
-            if (!doc || !w || w.__shutapMirrorBridge) return
-            w.__shutapMirrorBridge = true
-            doc.addEventListener('click', (ev) => {
-              const target = ev.target as HTMLElement | null
-              if (!target) return
-              // Find the nearest interactive element the user actually clicked.
-              const hit = (target.closest?.(
-                '[data-action="mirror"], a[href="/mirror"], a[href$="#mirror"], [role="button"], button, a',
-              ) as HTMLElement | null) || target
-              const ownText = (hit.textContent || '').trim().toLowerCase()
-              const ds = (hit.dataset?.action || '').toLowerCase()
-              const href = hit.getAttribute?.('href') || ''
-              const isMirror =
-                ds === 'mirror' ||
-                href === '/mirror' ||
-                href.endsWith('#mirror') ||
-                // Only match when the clicked control's OWN text leads with
-                // "the mirror" — not just contains it somewhere deep.
-                /^the mirror(\s|$|✦|·|—|-)/.test(ownText)
-              if (!isMirror) return
-              ev.preventDefault(); ev.stopPropagation()
-              window.postMessage({ type: 'shutap-nav', to: '/mirror' }, '*')
-            }, true)
-          } catch { /* cross-origin or not ready */ }
-        }
-        installMirrorBridge()
-        setTimeout(installMirrorBridge, 600)
-        setTimeout(installMirrorBridge, 1500)
-      }}
-      style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, margin: 0, padding: 0, background: '#fdf0f5' }}
-    />
+        onLoad={() => {
+          injectClaude()
+          // Re-assert after the bundler swaps documentElement at runtime.
+          setTimeout(injectClaude, 0)
+          setTimeout(injectClaude, 400)
+          setTimeout(injectClaude, 1200)
+          // Open the intent modal as soon as the iframe document is ready, then
+          // drop the cover so the modal (not the landing feed) is visible.
+          syncHashToIframe()
+          setTimeout(syncHashToIframe, 400)
+          setTimeout(syncHashToIframe, 1200)
+          setTimeout(() => setCoverUp(false), 900)
+          // Bridge: route ONLY explicit mirror CTAs to /mirror. Earlier this
+          // walked 6 ancestors and matched any parent textContent containing
+          // "the mirror" — which captured the spill/scan CTAs whenever the
+          // surrounding section mentioned the mirror in marketing copy.
+          const installMirrorBridge = () => {
+            try {
+              const doc = iframeRef.current?.contentDocument
+              const w = iframeRef.current?.contentWindow as (Window & { __shutapMirrorBridge?: boolean }) | null
+              if (!doc || !w || w.__shutapMirrorBridge) return
+              w.__shutapMirrorBridge = true
+              doc.addEventListener('click', (ev) => {
+                const target = ev.target as HTMLElement | null
+                if (!target) return
+                // Find the nearest interactive element the user actually clicked.
+                const hit = (target.closest?.(
+                  '[data-action="mirror"], a[href="/mirror"], a[href$="#mirror"], [role="button"], button, a',
+                ) as HTMLElement | null) || target
+                const ownText = (hit.textContent || '').trim().toLowerCase()
+                const ds = (hit.dataset?.action || '').toLowerCase()
+                const href = hit.getAttribute?.('href') || ''
+                const isMirror =
+                  ds === 'mirror' ||
+                  href === '/mirror' ||
+                  href.endsWith('#mirror') ||
+                  // Only match when the clicked control's OWN text leads with
+                  // "the mirror" — not just contains it somewhere deep.
+                  /^the mirror(\s|$|✦|·|—|-)/.test(ownText)
+                if (!isMirror) return
+                ev.preventDefault(); ev.stopPropagation()
+                window.postMessage({ type: 'shutap-nav', to: '/mirror' }, '*')
+              }, true)
+            } catch { /* cross-origin or not ready */ }
+          }
+          installMirrorBridge()
+          setTimeout(installMirrorBridge, 600)
+          setTimeout(installMirrorBridge, 1500)
+        }}
+        style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, margin: 0, padding: 0, background: '#fdf0f5' }}
+      />
+    </>
   )
 }
 
