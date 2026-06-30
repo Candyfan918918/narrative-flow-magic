@@ -40,6 +40,16 @@ export function MirrorShareSheet({
     return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
+  useEffect(() => {
+    const el = innerRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => {
+      setScaledH(Math.ceil(el.getBoundingClientRect().height * PREVIEW_SCALE))
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [open, runId])
+
   const shareUrl = useMemo(
     () => url || (typeof window !== 'undefined' ? window.location.origin + '/mirror' : 'https://shutap.com/mirror'),
     [url],
