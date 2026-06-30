@@ -1132,10 +1132,28 @@ export function MirrorPage() {
 
   return (
     <div className="mirror-shell" style={{
+      position: 'relative',
       minHeight: '100vh',
       background: `radial-gradient(120% 80% at 50% -10%, #2a0d1c, #160810 55%, ${BG})`,
       color: INK,
     }}>
+      {/* fixed bg layer — drifting blurred tints */}
+      <div aria-hidden style={{
+        position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', top: '-10%', left: '8%', width: 420, height: 420, borderRadius: '50%',
+          background: '#e7548a33', filter: 'blur(64px)', animation: 'mirror-bg-a 22s ease-in-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', top: '30%', right: '4%', width: 460, height: 460, borderRadius: '50%',
+          background: '#7F77DD33', filter: 'blur(64px)', animation: 'mirror-bg-b 27s ease-in-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-8%', left: '32%', width: 380, height: 380, borderRadius: '50%',
+          background: '#c1216b2b', filter: 'blur(64px)', animation: 'mirror-bg-c 20s ease-in-out infinite',
+        }} />
+      </div>
       <MirrorHeader />
       <main style={{ maxWidth: 1080, margin: '0 auto', padding: '36px 22px 80px' }}>
         {/* hero zone */}
