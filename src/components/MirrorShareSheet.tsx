@@ -3,7 +3,7 @@
    [↻ re-read] [↗ share] [close] pill row that matches the Scan share card.
    The preview is a scaled-down copy of the MirrorCard rendered from the
    pattern data so the user sees exactly what will be exported. */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { MirrorCard, type MirrorPatternView } from './mirror/MirrorCard'
 import { ShareChannels, type ShareChannelKey } from './ShareChannels'
@@ -28,8 +28,8 @@ export function MirrorShareSheet({
   const [scaledH, setScaledH] = useState<number>(420)
   const previewRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
-  const SHARE_W = 380
-  const PREVIEW_SCALE = 0.78
+  const SHARE_W = 340
+  const PREVIEW_SCALE = 0.62
 
   useEffect(() => { setCaption(defaultCaption) }, [defaultCaption])
 
@@ -40,12 +40,13 @@ export function MirrorShareSheet({
     return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!open) return
     const el = innerRef.current
     if (!el) return
-    const ro = new ResizeObserver(() => {
-      setScaledH(Math.ceil(el.getBoundingClientRect().height * PREVIEW_SCALE))
-    })
+    const measure = () => setScaledH(Math.ceil(el.getBoundingClientRect().height * PREVIEW_SCALE))
+    measure()
+    const ro = new ResizeObserver(measure)
     ro.observe(el)
     return () => ro.disconnect()
   }, [open, runId])
@@ -174,9 +175,8 @@ export function MirrorShareSheet({
           <span>your mirror named this one. share the whole card — never the signals behind it.</span>
         </div>
 
-        {/* CARD PREVIEW — exact render of the MirrorCard at the share width
-            (380px), uniformly scaled so the entire card fits in the sheet
-            and the preview box exactly contains it (no clipping, no gap). */}
+        {/* CARD PREVIEW — full MirrorCard rendered at share width then
+            uniformly scaled, centered, and fully contained (no clipping). */}
         <div
           ref={previewRef}
           key={runId}
@@ -185,6 +185,7 @@ export function MirrorShareSheet({
             width: SHARE_W * PREVIEW_SCALE,
             height: scaledH,
             margin: '0 auto',
+            overflow: 'hidden',
           }}
         >
           <div
@@ -201,6 +202,7 @@ export function MirrorShareSheet({
             <MirrorCard p={pattern} />
           </div>
         </div>
+
 
 
         {/* CAPTION — editable */}
@@ -239,7 +241,7 @@ export function MirrorShareSheet({
         <div style={{
           textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic',
           fontSize: 12.5, color: '#9b7d8c', marginTop: -4,
-        }}>only the card leaves — never the signals behind it.</div>
+        }}>only the card leaves — never your signals, story, or status.</div>
 
         {toastMsg && (
           <div style={{
