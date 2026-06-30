@@ -470,26 +470,26 @@ function TarotCard({
 
       {/* name */}
       <h3 style={{
-        position: 'relative', margin: '14px 0 6px', textAlign: 'center',
+        position: 'relative', margin: '10px 0 4px', textAlign: 'center',
         fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontWeight: 500,
-        fontSize: 'clamp(26px, 5vw, 32px)', lineHeight: 1.12, color: INK,
+        fontSize: 'clamp(22px, 4.4vw, 26px)', lineHeight: 1.1, color: INK,
       }}>{p.name}</h3>
 
       {/* depth wheel */}
-      <div style={{ position: 'relative', display: 'grid', placeItems: 'center', margin: '14px 0 6px' }}>
+      <div style={{ position: 'relative', display: 'grid', placeItems: 'center', margin: '8px 0 4px' }}>
         <DepthWheel depth={p.depth} emoji={p.emoji || '✨'} dir={p.trend_dir} color={color} animate={animate} />
       </div>
-      <div style={{ textAlign: 'center', fontFamily: "'Sora',sans-serif", fontSize: 10, letterSpacing: '.22em', color: MUTED_2, marginBottom: 12 }}>
+      <div style={{ textAlign: 'center', fontFamily: "'Sora',sans-serif", fontSize: 10, letterSpacing: '.22em', color: MUTED_2, marginBottom: 8 }}>
         {isRuin ? 'GONE TO RUIN' : `DEPTH ${p.depth}/5`}
       </div>
 
       {/* trend chart */}
-      <div style={{ position: 'relative', margin: '4px 0 14px' }}>
+      <div style={{ position: 'relative', margin: '2px 0 10px' }}>
         <TrendChart trend={p.trend} color={color} animate={animate} />
       </div>
 
       {/* signal bar */}
-      <div style={{ position: 'relative', margin: '4px 0 14px' }}>
+      <div style={{ position: 'relative', margin: '2px 0 10px' }}>
         <SignalBar sources={p.sources ?? {}} animate={animate} />
       </div>
 
