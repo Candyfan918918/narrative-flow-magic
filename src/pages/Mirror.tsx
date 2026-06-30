@@ -49,20 +49,20 @@ const DISTRICT_COLOR: Record<District, string> = {
 }
 
 const SOURCE_GLYPH: Record<string, string> = {
-  spill: '🫧',
-  scan: '✨',
-  comments: '💌',
-  likes: '🫶',
-  follows: '🌟',
-  browse: '👀',
+  spill: '🗯',
+  scan: '📸',
+  comments: '💬',
+  likes: '♥',
+  follows: '✦',
+  browse: '👁',
 }
 const SOURCE_COLOR: Record<string, string> = {
   spill: '#e7548a',
-  scan: '#c87c4a',
-  comments: '#7F77DD',
+  scan: '#7F77DD',
+  comments: '#c87c4a',
   likes: '#c1216b',
   follows: '#5B8A5E',
-  browse: '#c4a0b2',
+  browse: '#9a7bd0',
 }
 
 const DISTRICTS: District[] = ['self', 'career', 'love', 'family', 'social']
