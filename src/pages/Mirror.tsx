@@ -1069,7 +1069,7 @@ export function MirrorPage() {
           }}>gathering your memory…</p>
         )}
 
-        {!isLoading && isForming && !showDemo && (
+        {!isLoading && isForming && !autoDemo && !showDemo && (
           <Forming
             onSpill={() => navigate('/')}
             onPreview={() => setShowDemo(true)}
