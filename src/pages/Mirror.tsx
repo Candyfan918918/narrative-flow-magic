@@ -25,11 +25,8 @@ import { supabase } from '@/integrations/supabase/client'
 import { MirrorShareSheet } from '@/components/MirrorShareSheet'
 import { ActionPill } from '@/components/ShareChannels'
 
-// Accounts allowed to preview the seeded demo cast in their own Mirror.
-// Everyone else sees the real (possibly empty) Forming state with CTAs.
-const DEMO_PREVIEW_USER_IDS = new Set<string>([
-  '28376810-e42d-4235-b70b-bba32bab6ecb',
-])
+// Demo cast is shown as an EXAMPLE to any forming account (display-only).
+
 import type { Alias } from '@/data/types'
 
 /* ─────────────── design tokens ─────────────── */
