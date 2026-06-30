@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { MirrorCard, type MirrorPatternView } from './mirror/MirrorCard'
-import { ShareChannels, ActionPill, type ShareChannelKey } from './ShareChannels'
+import { ShareChannels, type ShareChannelKey } from './ShareChannels'
 
 function copyToClipboard(text: string): Promise<void> {
   try { return navigator.clipboard.writeText(text) } catch { return Promise.resolve() }
