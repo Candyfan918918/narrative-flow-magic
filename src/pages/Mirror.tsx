@@ -1188,8 +1188,8 @@ export function MirrorPage() {
 
         {!isLoading && isForming && !autoDemo && !showDemo && (
           <Forming
-            onSpill={() => navigate({ to: '/', hash: 'spill' })}
-            onScan={() => navigate({ to: '/', hash: 'scan' })}
+            onSpill={() => navigate('/#spill')}
+            onScan={() => navigate('/#scan')}
             onPreview={() => setShowDemo(true)}
             hasDemo={demoList.length > 0}
             previewing={false}
