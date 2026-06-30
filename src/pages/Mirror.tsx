@@ -529,9 +529,9 @@ function TarotCard({
 
       {/* punch line */}
       <p style={{
-        position: 'relative', margin: '10px 0 8px', textAlign: 'center',
+        position: 'relative', margin: '8px 0 6px', textAlign: 'center',
         fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
-        fontSize: 23, lineHeight: 1.35, color: INK,
+        fontSize: 18, lineHeight: 1.3, color: INK,
       }}>
         &ldquo;{p.punch || p.insight || 'still forming.'}&rdquo;
       </p>
