@@ -908,7 +908,6 @@ body{margin:0;background:#fdf0f5;color:#0b080f;font-family:'Inter',system-ui,san
 <!-- COMPANION BUBBLE (draggable) -->
 <div onclick="{{ openComposer }}" ref="{{ composerPill }}" role="button" tabindex="0" aria-label="Ask the companion" style="position:fixed;left:calc(50% - 29px);bottom:24px;z-index:35;width:58px;height:58px;border-radius:50%;background:rgba(231,84,138,0.18);backdrop-filter:blur(4px);box-shadow:0 12px 30px -8px rgba(60,10,30,.35);cursor:grab;display:grid;place-items:center;animation:pulse 4s infinite;touch-action:none;user-select:none">
   <svg class="sc-eye" viewBox="0 0 56 56" fill="none" style="width:32px;height:32px;display:block;pointer-events:none"><rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)"></rect><ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse><ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)"></ellipse></svg>
-  <span aria-label="AI" title="you're talking to an AI companion" style="position:absolute;bottom:-3px;right:-3px;background:#0b080f;color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:7.5px;letter-spacing:.08em;padding:2px 4px;border-radius:999px;border:1.5px solid #fdf0f5;pointer-events:none">AI</span>
   <span ref="{{ composerPillLabel }}" style="display:none"></span>
 </div>
 
