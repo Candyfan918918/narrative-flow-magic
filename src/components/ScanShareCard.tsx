@@ -173,15 +173,25 @@ export function ScanShareCard({
     }
   }
 
-  const targets: [string, string][] = [
-    ['sms', 'Text'],
-    ['x', 'X'],
-    ['instagram', 'Instagram'],
-    ['tiktok', 'TikTok'],
-    ['whatsapp', 'WhatsApp'],
-    ['copy', 'copy'],
-    ['download', 'save image'],
-  ]
+  const onNativeShare = async () => {
+    const text = cap
+    const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean; share?: (d: ShareData) => Promise<void> }
+    try {
+      const node = cardRef.current
+      if (node && nav.canShare && nav.share) {
+        const png = await toPng(node, { pixelRatio: 2, cacheBust: true })
+        const blob = await (await fetch(png)).blob()
+        const file = new File([blob], `shutap-scan-${record.score}.png`, { type: 'image/png' })
+        if (nav.canShare({ files: [file], text, url })) {
+          await nav.share({ files: [file], text, url })
+          return
+        }
+      }
+      if (nav.share) { await nav.share({ text, url }); return }
+    } catch { /* fall through */ }
+    await copyToClipboard(text + '\n' + url)
+    toast('copied — paste anywhere')
+  }
 
   const col = band.color
 
