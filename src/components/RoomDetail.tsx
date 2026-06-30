@@ -87,7 +87,7 @@ export function RoomDetail({
   const helpTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const n = Math.min(room.sitting, 16)
-  const seatGlyphs = ['🌸', '✦', '○', '·', '◦']
+  const seatGlyphs = ['🩷', '✨', '🫧', '🌷', '🦋']
   const isScan = room.kind === 'scan' && typeof room.initial_scan === 'number'
   const scanAccent = BAND_COLOR[(room.scan_band || 'sitting') as keyof typeof BAND_COLOR] || '#7F77DD'
 
