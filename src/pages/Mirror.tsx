@@ -433,7 +433,7 @@ function TarotCard({
           ? `0 0 0 1px ${GOLD}55, 0 0 60px ${GOLD}33, 0 20px 60px rgba(0,0,0,.6)`
           : `0 24px 60px -10px rgba(0,0,0,.7), 0 0 40px ${color}22`,
         color: INK,
-        padding: '22px 22px 20px',
+        padding: '16px 18px 14px',
         filter: isRuin ? 'saturate(.55) grayscale(.25)' : undefined,
       }}
     >
