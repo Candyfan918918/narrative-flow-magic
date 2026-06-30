@@ -1080,6 +1080,11 @@ export function MirrorPage() {
       .mirror-tile::after { top: 0; left: 0; width: 64%; height: 34%; background: radial-gradient(120% 130% at 12% 0%, rgba(255,255,255,.17), rgba(255,255,255,.04) 42%, transparent 66%); }
       .mirror-tile .mirror-tile-sheen { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent); opacity: 0; pointer-events: none; }
       .mirror-tile:hover .mirror-tile-sheen { animation: mirror-tile-sweep .9s ease-out 1; }
+      .mirror-tile:active { transform: scale(.97) !important; transition: transform .1s ease; }
+      .mirror-world-tile { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+      .mirror-cross-bar { transition: transform .2s ease, box-shadow .2s ease, filter .2s ease; transform-origin: bottom center; }
+      .mirror-cross-bar-wrap { cursor: pointer; }
+      .mirror-cross-bar-wrap:hover .mirror-cross-bar { transform: scaleY(1.08); filter: brightness(1.2); }
       @media (prefers-reduced-motion: reduce) {
         .mirror-tarot--open .mirror-scanbeam, .mirror-tarot:hover .mirror-scanbeam,
         .mirror-tile:hover .mirror-tile-sheen { animation: none !important; }
