@@ -897,13 +897,14 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
           const h = 8 + (v / max) * 40
           const color = DISTRICT_COLOR[d]
           return (
-            <div key={d} style={{ textAlign: 'center' }}>
+            <div key={d} className="mirror-cross-bar-wrap" style={{ textAlign: 'center' }}>
               <div style={{ height: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-                <div style={{
+                <div className="mirror-cross-bar" style={{
                   width: 14, height: h, borderRadius: 3,
                   background: v > 0 ? `linear-gradient(180deg, ${color}, ${color}55)` : 'rgba(255,255,255,.06)',
                   boxShadow: v > 0 ? `0 0 10px ${color}88` : 'none',
-                }} />
+                  ['--bar-color' as string]: color,
+                } as React.CSSProperties} />
               </div>
               <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 9, color: MUTED_2, letterSpacing: '.16em', marginTop: 4 }}>
                 <span style={{ color }}>{DISTRICT_SIGIL[d]}</span> {v}
