@@ -442,7 +442,11 @@ export function LandingPage() {
       // clear it first to guarantee the iframe's hashchange handler runs.
       try { w.location.hash = '' } catch { /* ignore */ }
       try { w.location.hash = h } catch { /* ignore */ }
+      // Strip the intent hash from the parent URL so a reload of / won't
+      // silently re-open the modal. Only runs when an intent hash was handled.
+      try { history.replaceState(null, '', window.location.pathname + window.location.search) } catch {}
     } catch { /* cross-origin */ }
+
   }
 
   useEffect(() => {
