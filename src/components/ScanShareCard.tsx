@@ -8,7 +8,7 @@
    stops at the final state). */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
-import { ShareChannels, ActionPill, type ChannelKey } from './ShareChannels'
+import { ShareChannels, ActionPill, type ShareChannelKey } from './ShareChannels'
 
 export interface ScanRecord {
   score: number
