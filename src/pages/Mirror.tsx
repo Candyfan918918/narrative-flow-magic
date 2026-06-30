@@ -1,301 +1,251 @@
-import { useQuery } from '@tanstack/react-query'
+// The Mirror — reactive page. All values come from the user's mirror_patterns
+// rows (or the read-only demo cast for logged-out previews). Opens issue
+// zero model calls; the punch line is a DB field.
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { getMirrorPortrait, type MirrorPortrait } from '@/lib/mirror.functions'
 import { Header } from '@/components/Header'
+import { MirrorCard, type MirrorPatternView } from '@/components/mirror/MirrorCard'
+import {
+  listMirrorPatterns,
+  listDemoPatterns,
+} from '@/lib/mirror-pipeline.functions'
+import { runMirrorCrossRead } from '@/lib/agents/mirror.functions'
+import {
+  DISTRICT_LABEL,
+  DISTRICT_SIGIL,
+  type District,
+} from '@/lib/agents/mirror-guards'
 
-const ACCENT = '#7F77DD'
+const DISTRICTS: District[] = ['self', 'career', 'love', 'family', 'social']
 
-function ArcChart({ series }: { series: MirrorPortrait['score_series'] }) {
-  if (series.length < 2) return null
-  const w = 560
-  const h = 160
-  const pad = 16
-  const max = 999
-  const step = (w - pad * 2) / Math.max(1, series.length - 1)
-  const pts = series.map((p, i) => {
-    const x = pad + i * step
-    const y = pad + (1 - p.score / max) * (h - pad * 2)
-    return [x, y] as const
-  })
-  const d = pts
-    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p[0].toFixed(1)} ${p[1].toFixed(1)}`)
-    .join(' ')
+function WorldBand({ patterns }: { patterns: MirrorPatternView[] }) {
+  const totals = useMemo(() => {
+    const acc: Record<District, number> = { self: 0, career: 0, love: 0, family: 0, social: 0 }
+    for (const p of patterns) acc[p.district] = (acc[p.district] ?? 0) + p.count
+    return acc
+  }, [patterns])
+  const max = Math.max(1, ...Object.values(totals))
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
-      <defs>
-        <linearGradient id="mg" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor={ACCENT} stopOpacity=".5" />
-          <stop offset="100%" stopColor={ACCENT} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path
-        d={`${d} L ${pts[pts.length - 1][0]} ${h - pad} L ${pts[0][0]} ${h - pad} Z`}
-        fill="url(#mg)"
-      />
-      <path d={d} fill="none" stroke={ACCENT} strokeWidth="2.5" strokeLinejoin="round" />
-      {pts.map((p, i) => (
-        <circle key={i} cx={p[0]} cy={p[1]} r={3.5} fill={ACCENT} />
-      ))}
-    </svg>
+    <section style={{
+      display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 10, marginTop: 22,
+    }}>
+      {DISTRICTS.map((d) => {
+        const v = totals[d]
+        const h = 12 + (v / max) * 60
+        return (
+          <div key={d} style={{
+            background: 'rgba(255,255,255,.04)', borderRadius: 12, padding: '10px 8px',
+            border: '.5px solid rgba(255,255,255,.06)', textAlign: 'center', color: '#fff',
+          }}>
+            <div style={{
+              height: 72, display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+            }}>
+              <div style={{
+                width: 18, height: h, borderRadius: 4,
+                background: v > 0 ? 'linear-gradient(180deg,#9b8cff,#5947d6)' : 'rgba(255,255,255,.06)',
+              }} />
+            </div>
+            <div style={{
+              marginTop: 6, fontFamily: 'Sora, sans-serif', fontSize: 10, letterSpacing: '.14em',
+              color: 'rgba(255,255,255,.6)',
+            }}>
+              {DISTRICT_SIGIL[d]} {DISTRICT_LABEL[d].toUpperCase()}
+            </div>
+            <div style={{
+              fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 16, color: '#fff',
+            }}>
+              {v}
+            </div>
+          </div>
+        )
+      })}
+    </section>
+  )
+}
+
+function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
+  const cross = useServerFn(runMirrorCrossRead)
+  const { data } = useQuery({
+    queryKey: ['mirror-cross', patterns.map((p) => p.id).sort().join(',')],
+    enabled: patterns.length >= 2,
+    staleTime: 1000 * 60 * 60,
+    queryFn: () =>
+      cross({
+        data: {
+          patterns: patterns.slice(0, 12).map((p) => ({
+            name: p.name, district: p.district, count: p.count, depth: p.depth, trend_dir: p.trend_dir,
+          })),
+        },
+      }),
+  })
+  if (!data) return null
+  return (
+    <section style={{
+      marginTop: 28, padding: 22, borderRadius: 20, color: '#fff',
+      background: 'linear-gradient(135deg, rgba(127,119,221,.18), rgba(231,84,138,.10))',
+      border: '.5px solid rgba(127,119,221,.3)',
+    }}>
+      <div style={{
+        fontFamily: 'Sora, sans-serif', fontSize: 10, letterSpacing: '.22em',
+        color: '#C8B6FF', marginBottom: 8,
+      }}>
+        THE CROSS-READ
+      </div>
+      <p style={{
+        margin: '0 0 10px', fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 22,
+        lineHeight: 1.25,
+      }}>
+        {data.sees}
+      </p>
+      <p style={{
+        margin: 0, fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 17,
+        lineHeight: 1.35, color: 'rgba(255,255,255,.85)',
+      }}>
+        {data.throughline}
+      </p>
+      <div style={{
+        marginTop: 14, fontFamily: 'Sora, sans-serif', fontSize: 10, letterSpacing: '.22em',
+        color: 'rgba(255,255,255,.5)', textTransform: 'uppercase',
+      }}>
+        {data.record}
+      </div>
+    </section>
+  )
+}
+
+function Forming({ onSpill }: { onSpill: () => void }) {
+  return (
+    <section style={{
+      marginTop: 26, padding: 26, borderRadius: 20,
+      background: 'linear-gradient(160deg,#1a1825,#0c0a14)',
+      border: '.5px solid rgba(255,255,255,.08)', color: '#fff',
+    }}>
+      <div style={{
+        fontFamily: 'Sora, sans-serif', fontSize: 10, letterSpacing: '.22em',
+        color: '#C8B6FF', marginBottom: 8,
+      }}>
+        STILL FORMING
+      </div>
+      <p style={{
+        margin: '0 0 14px', fontFamily: 'Newsreader, serif', fontStyle: 'italic',
+        fontSize: 22, lineHeight: 1.25,
+      }}>
+        the mirror begins the moment you spill or scan. nothing here yet — and nothing fabricated.
+      </p>
+      <button onClick={onSpill} style={{
+        background: '#7F77DD', color: '#fff', border: 0, borderRadius: 999,
+        padding: '11px 20px', fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: 13,
+        cursor: 'pointer',
+      }}>
+        spill or scan →
+      </button>
+    </section>
   )
 }
 
 export function MirrorPage() {
   const navigate = useNavigate()
-  const fetchPortrait = useServerFn(getMirrorPortrait)
-  const { data, isLoading } = useQuery({
-    queryKey: ['mirror', 'me'],
-    queryFn: () => fetchPortrait(),
+  const fetchMine = useServerFn(listMirrorPatterns)
+  const fetchDemo = useServerFn(listDemoPatterns)
+  const { data: mine, isLoading } = useQuery({
+    queryKey: ['mirror-patterns', 'me'],
+    queryFn: () => fetchMine(),
   })
+  const { data: demo } = useQuery({
+    queryKey: ['mirror-patterns', 'demo-preview'],
+    queryFn: () => fetchDemo(),
+    enabled: !isLoading && (mine?.length ?? 0) < 2,
+    staleTime: 1000 * 60 * 30,
+  })
+  const [showDemo, setShowDemo] = useState(false)
+
+  // inject the orbit keyframe once
+  useEffect(() => {
+    if (document.getElementById('mirror-kf')) return
+    const s = document.createElement('style')
+    s.id = 'mirror-kf'
+    s.textContent = `@keyframes mirror-orbit { to { transform: rotate(360deg); } }`
+    document.head.appendChild(s)
+  }, [])
+
+  const mineList = (mine ?? []) as unknown as MirrorPatternView[]
+  const demoList = (demo ?? []) as unknown as MirrorPatternView[]
+  const isForming = mineList.length < 2
+  const list = showDemo ? demoList : mineList
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
+    <div style={{ minHeight: '100vh', background: '#07050d' }}>
       <Header />
-      <main style={{ maxWidth: 740, margin: '0 auto', padding: '36px 22px 80px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            marginBottom: 6,
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'Sora, sans-serif',
-              fontWeight: 800,
-              fontSize: 11,
-              letterSpacing: '.18em',
-              color: ACCENT,
-            }}
-          >
+      <main style={{ maxWidth: 880, margin: '0 auto', padding: '36px 22px 80px' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4,
+        }}>
+          <span style={{
+            fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: 11,
+            letterSpacing: '.22em', color: '#C8B6FF',
+          }}>
             THE MIRROR ✦
           </span>
         </div>
-        <h1
-          style={{
-            fontFamily: 'Newsreader, serif',
-            fontStyle: 'italic',
-            fontSize: 34,
-            lineHeight: 1.18,
-            margin: '0 0 10px',
-            color: '#0b080f',
-          }}
-        >
-          a living portrait of you, drawn from what you've actually said.
+        <h1 style={{
+          fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontWeight: 500,
+          fontSize: 34, lineHeight: 1.18, margin: '0 0 14px', color: '#fff',
+        }}>
+          a living portrait of you, drawn from what you've actually said and done.
         </h1>
 
         {isLoading && (
-          <p style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: '#6b4a5c' }}>
+          <p style={{
+            fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: 'rgba(255,255,255,.55)',
+          }}>
             gathering your memory…
           </p>
         )}
 
-        {data?.forming && (
-          <section
-            style={{
-              marginTop: 28,
-              padding: 22,
-              background: '#fff',
-              border: '.5px solid rgba(11,8,15,.08)',
-              borderRadius: 18,
-            }}
-          >
-            <p
-              style={{
-                fontFamily: 'Newsreader, serif',
-                fontStyle: 'italic',
-                fontSize: 17,
-                color: '#4a3040',
-                margin: 0,
-              }}
-            >
-              still forming. spill once or twice and i'll start to see you clearly.
-            </p>
-            <button
-              onClick={() => navigate('/')}
-              style={{
-                marginTop: 14,
-                background: ACCENT,
-                color: '#fff',
-                border: 0,
-                borderRadius: 999,
-                padding: '10px 18px',
-                fontFamily: 'Sora, sans-serif',
-                fontWeight: 700,
-                fontSize: 13,
-                cursor: 'pointer',
-              }}
-            >
-              spill or scan →
-            </button>
-          </section>
+        {!isLoading && isForming && (
+          <>
+            <Forming onSpill={() => navigate('/')} />
+            {demoList.length > 0 && (
+              <div style={{ marginTop: 26 }}>
+                <button
+                  onClick={() => setShowDemo((v) => !v)}
+                  style={{
+                    background: 'transparent', color: '#C8B6FF',
+                    border: '.5px solid rgba(200,182,255,.4)', borderRadius: 999,
+                    padding: '8px 16px', fontFamily: 'Sora, sans-serif', fontSize: 12,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {showDemo ? 'hide example mirror' : 'see what your mirror becomes →'}
+                </button>
+                {showDemo && (
+                  <div style={{
+                    marginTop: 14, padding: '10px 14px', borderRadius: 12,
+                    background: 'rgba(200,182,255,.08)', color: '#C8B6FF',
+                    fontFamily: 'Sora, sans-serif', fontSize: 11, letterSpacing: '.14em',
+                  }}>
+                    ILLUSTRATIVE — NOT YOUR DATA
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
 
-        {data && !data.forming && (
+        {(!isForming || (showDemo && demoList.length > 0)) && (
           <>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(4, 1fr)',
-                gap: 10,
-                marginTop: 28,
-              }}
-            >
-              {[
-                ['spills', data.spill_count],
-                ['scans', data.scan_count],
-                ['trend', data.trend],
-                ['pillar', data.top_pillar ?? '—'],
-              ].map(([k, v]) => (
-                <div
-                  key={String(k)}
-                  style={{
-                    background: '#fff',
-                    border: '.5px solid rgba(11,8,15,.08)',
-                    borderRadius: 14,
-                    padding: '14px 12px',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: 'Sora, sans-serif',
-                      fontWeight: 700,
-                      fontSize: 10,
-                      letterSpacing: '.14em',
-                      color: '#9e7a8c',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {String(k)}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: 'Newsreader, serif',
-                      fontStyle: 'italic',
-                      fontSize: 22,
-                      color: '#0b080f',
-                      marginTop: 4,
-                    }}
-                  >
-                    {String(v)}
-                  </div>
-                </div>
+            <WorldBand patterns={list} />
+            <div style={{
+              display: 'grid', gap: 18, marginTop: 22,
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            }}>
+              {list.map((p) => (
+                <MirrorCard key={p.id} p={p} />
               ))}
             </div>
-
-            {data.score_series.length >= 2 && (
-              <section
-                style={{
-                  marginTop: 22,
-                  background: '#fff',
-                  border: '.5px solid rgba(11,8,15,.08)',
-                  borderRadius: 18,
-                  padding: 18,
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: 'Sora, sans-serif',
-                    fontWeight: 700,
-                    fontSize: 11,
-                    letterSpacing: '.14em',
-                    color: ACCENT,
-                    marginBottom: 8,
-                  }}
-                >
-                  YOUR ARC
-                </div>
-                <ArcChart series={data.score_series} />
-                <p
-                  style={{
-                    fontFamily: 'Newsreader, serif',
-                    fontStyle: 'italic',
-                    color: '#4a3040',
-                    margin: '10px 0 0',
-                  }}
-                >
-                  {data.trend === 'easing' && 'something has been easing in you lately.'}
-                  {data.trend === 'rising' && "it's been getting louder. that's a real signal."}
-                  {data.trend === 'steady' && "you've been holding steady — same weight, same shape."}
-                  {data.trend === 'forming' && 'still forming.'}
-                </p>
-              </section>
-            )}
-
-            {data.recent_themes.length > 0 && (
-              <section style={{ marginTop: 22 }}>
-                <div
-                  style={{
-                    fontFamily: 'Sora, sans-serif',
-                    fontWeight: 700,
-                    fontSize: 11,
-                    letterSpacing: '.14em',
-                    color: '#9e7a8c',
-                    marginBottom: 8,
-                  }}
-                >
-                  WHAT KEEPS COMING UP
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {data.recent_themes.map((t) => (
-                    <span
-                      key={t}
-                      style={{
-                        background: '#fff',
-                        border: '.5px solid rgba(127,119,221,.3)',
-                        color: ACCENT,
-                        borderRadius: 999,
-                        padding: '6px 12px',
-                        fontFamily: 'Sora, sans-serif',
-                        fontSize: 12,
-                      }}
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            <section
-              style={{
-                marginTop: 28,
-                padding: 22,
-                background: 'linear-gradient(135deg, rgba(127,119,221,.10), rgba(231,84,138,.06))',
-                border: '.5px solid rgba(127,119,221,.25)',
-                borderRadius: 20,
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: 'Newsreader, serif',
-                  fontStyle: 'italic',
-                  fontSize: 17,
-                  color: '#0b080f',
-                  margin: '0 0 12px',
-                }}
-              >
-                want the full reading — the cross-situation pattern, the things you only see when you zoom out?
-              </p>
-              <button
-                onClick={() => navigate('/subscribe')}
-                style={{
-                  background: ACCENT,
-                  color: '#fff',
-                  border: 0,
-                  borderRadius: 999,
-                  padding: '11px 20px',
-                  fontFamily: 'Sora, sans-serif',
-                  fontWeight: 700,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                }}
-              >
-                open the full mirror →
-              </button>
-            </section>
+            {list.length >= 2 && <CrossReadPanel patterns={list} />}
           </>
         )}
       </main>
