@@ -21,6 +21,13 @@ import {
   type Rarity,
 } from '@/lib/agents/mirror-guards'
 import { getAlias, rememberReturnTo, signOut as doSignOut, isAdmin as getIsAdmin } from '@/lib/auth'
+import { supabase } from '@/integrations/supabase/client'
+
+// Accounts allowed to preview the seeded demo cast in their own Mirror.
+// Everyone else sees the real (possibly empty) Forming state with CTAs.
+const DEMO_PREVIEW_USER_IDS = new Set<string>([
+  '28376810-e42d-4235-b70b-bba32bab6ecb',
+])
 import type { Alias } from '@/data/types'
 
 /* ─────────────── design tokens ─────────────── */
