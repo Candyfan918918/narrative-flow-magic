@@ -23,6 +23,7 @@ import {
 import { getAlias, rememberReturnTo, signOut as doSignOut, isAdmin as getIsAdmin } from '@/lib/auth'
 import { supabase } from '@/integrations/supabase/client'
 import { MirrorShareSheet } from '@/components/MirrorShareSheet'
+import { ActionPill } from '@/components/ShareChannels'
 
 // Accounts allowed to preview the seeded demo cast in their own Mirror.
 // Everyone else sees the real (possibly empty) Forming state with CTAs.
