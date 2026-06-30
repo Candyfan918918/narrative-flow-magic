@@ -8,6 +8,7 @@
    stops at the final state). */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
+import { ShareChannels, ActionPill, type ChannelKey } from './ShareChannels'
 
 export interface ScanRecord {
   score: number
@@ -125,7 +126,7 @@ export function ScanShareCard({
   const cap = caption(record)
   const enc = encodeURIComponent
 
-  const onShare = async (kind: string) => {
+  const onShare = async (kind: ChannelKey) => {
     const text = cap
     if (kind === 'sms') {
       window.open('sms:?&body=' + enc(text), '_blank')
@@ -172,15 +173,25 @@ export function ScanShareCard({
     }
   }
 
-  const targets: [string, string][] = [
-    ['sms', 'Text'],
-    ['x', 'X'],
-    ['instagram', 'Instagram'],
-    ['tiktok', 'TikTok'],
-    ['whatsapp', 'WhatsApp'],
-    ['copy', 'copy'],
-    ['download', 'save image'],
-  ]
+  const onNativeShare = async () => {
+    const text = cap
+    const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean; share?: (d: ShareData) => Promise<void> }
+    try {
+      const node = cardRef.current
+      if (node && nav.canShare && nav.share) {
+        const png = await toPng(node, { pixelRatio: 2, cacheBust: true })
+        const blob = await (await fetch(png)).blob()
+        const file = new File([blob], `shutap-scan-${record.score}.png`, { type: 'image/png' })
+        if (nav.canShare({ files: [file], text, url })) {
+          await nav.share({ files: [file], text, url })
+          return
+        }
+      }
+      if (nav.share) { await nav.share({ text, url }); return }
+    } catch { /* fall through */ }
+    await copyToClipboard(text + '\n' + url)
+    toast('copied — paste anywhere')
+  }
 
   const col = band.color
 
@@ -515,74 +526,20 @@ export function ScanShareCard({
           </div>
         </div>
 
-        {/* SHARE TARGETS */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
-          {targets.map(([k, label]) => (
-            <button
-              key={k}
-              onClick={() => onShare(k)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 7,
-                padding: '9px 14px',
-                borderRadius: 999,
-                border: '.5px solid rgba(255,255,255,.18)',
-                background:
-                  k === 'instagram'
-                    ? 'linear-gradient(135deg,#feda75,#d62976 45%,#962fbf 75%,#4f5bd5)'
-                    : k === 'x' || k === 'tiktok'
-                      ? '#0b080f'
-                      : k === 'whatsapp'
-                        ? '#25D366'
-                        : k === 'sms'
-                          ? '#34C759'
-                          : 'rgba(255,255,255,.12)',
-                color: '#fff',
-                fontFamily: 'Sora,sans-serif',
-                fontWeight: 700,
-                fontSize: 12,
-                cursor: 'pointer',
-              }}
-            >
-              <span dangerouslySetInnerHTML={{ __html: LOGOS[k] || '' }} />
-              {label}
-            </button>
-          ))}
-        </div>
+        {/* SHARE CHANNELS — Gen-Z chip row, consistent with Mirror sheet */}
+        <ShareChannels onPick={(k) => onShare(k)} />
 
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-          <button
-            onClick={() => setRunId((n) => n + 1)}
-            style={{
-              fontFamily: 'Sora,sans-serif',
-              fontWeight: 700,
-              fontSize: 12,
-              letterSpacing: '.04em',
-              color: '#f7e8f0',
-              background: 'rgba(255,255,255,.06)',
-              border: '.5px solid rgba(255,255,255,.16)',
-              borderRadius: 999,
-              padding: '9px 18px',
-              cursor: 'pointer',
-            }}
-          >
-            ↻ replay
-          </button>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#c9a3b6',
-              fontFamily: 'Newsreader,serif',
-              fontStyle: 'italic',
-              fontSize: 13.5,
-              cursor: 'pointer',
-            }}
-          >
+        {/* ACTION PILLS — re-read / share / close, consistent with Mirror sheet */}
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', justifyContent: 'center' }}>
+          <ActionPill onClick={() => setRunId((n) => n + 1)} ariaLabel="Re-read card">
+            ↻ re-read
+          </ActionPill>
+          <ActionPill tone="primary" onClick={onNativeShare} ariaLabel="Share">
+            ↗ share
+          </ActionPill>
+          <ActionPill onClick={onClose} ariaLabel="Close">
             close
-          </button>
+          </ActionPill>
         </div>
       </div>
 
