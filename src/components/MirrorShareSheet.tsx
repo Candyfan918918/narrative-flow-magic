@@ -155,24 +155,14 @@ export function MirrorShareSheet({
           letterSpacing: '.32em', color: '#9b8090', textTransform: 'uppercase',
         }}>preview & share</div>
 
-        {/* CARD PREVIEW — scaled MirrorCard, sized so subsequent content flows naturally */}
+        {/* CARD PREVIEW — full card visible; outer sheet handles scroll */}
         <div
           key={runId}
-          style={{
-            display: 'flex', justifyContent: 'center',
-            overflow: 'hidden',
-            height: 300,
-          }}
+          style={{ display: 'flex', justifyContent: 'center' }}
         >
           <div
             ref={previewRef}
-            style={{
-              transform: 'scale(.62)',
-              transformOrigin: 'top center',
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-            }}
+            style={{ display: 'flex', justifyContent: 'center', zoom: 0.62 } as React.CSSProperties}
           >
             <MirrorCard p={pattern} />
           </div>
@@ -208,7 +198,10 @@ export function MirrorShareSheet({
         </div>
 
         {/* CHANNELS */}
-        <ShareChannels onPick={onPick} />
+        <ShareChannels
+          onPick={onPick}
+          channels={['sms', 'x', 'whatsapp', 'instagram', 'tiktok', 'copy']}
+        />
         <div style={{
           textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic',
           fontSize: 12.5, color: '#9b7d8c', marginTop: -4,
