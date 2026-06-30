@@ -198,6 +198,10 @@ export function MirrorShareSheet({
 
         {/* CHANNELS */}
         <ShareChannels onPick={onPick} />
+        <div style={{
+          textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic',
+          fontSize: 12.5, color: '#9b7d8c', marginTop: -4,
+        }}>only the card leaves — never the signals behind it.</div>
 
         {/* ACTION PILLS — consistent with Scan card */}
         <div style={{
