@@ -175,42 +175,36 @@ export function MirrorShareSheet({
           <span>your mirror named this one. share the whole card — never the signals behind it.</span>
         </div>
 
-        {/* CARD PREVIEW — full MirrorCard rendered at share width, scaled
-            down and vertically scrollable inside the box if it overflows.
-            Users can scroll to see the entire card; nothing is clipped. */}
+        {/* CARD PREVIEW — full MirrorCard rendered at share width and
+            uniformly scaled. Always shows the entire card at its full
+            scaled height; the surrounding sheet handles scrolling. */}
         <div
           ref={previewRef}
           key={runId}
           style={{
             position: 'relative',
             width: SHARE_W * PREVIEW_SCALE,
-            maxHeight: 'min(56dvh, 520px)',
-            height: Math.min(scaledH, 520),
+            height: scaledH,
             margin: '0 auto',
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            overscrollBehavior: 'contain',
-            WebkitOverflowScrolling: 'touch',
+            overflow: 'visible',
             borderRadius: 18,
-            border: '.5px solid rgba(255,255,255,.08)',
           }}
         >
-          <div style={{ width: SHARE_W * PREVIEW_SCALE, height: scaledH, position: 'relative' }}>
-            <div
-              ref={innerRef}
-              style={{
-                width: SHARE_W,
-                transform: `scale(${PREVIEW_SCALE})`,
-                transformOrigin: 'top left',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-              }}
-            >
-              <MirrorCard p={pattern} />
-            </div>
+          <div
+            ref={innerRef}
+            style={{
+              width: SHARE_W,
+              transform: `scale(${PREVIEW_SCALE})`,
+              transformOrigin: 'top left',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+            }}
+          >
+            <MirrorCard p={pattern} />
           </div>
         </div>
+
 
 
 
