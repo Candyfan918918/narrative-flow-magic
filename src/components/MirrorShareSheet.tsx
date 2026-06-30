@@ -241,7 +241,7 @@ export function MirrorShareSheet({
         <div style={{
           textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic',
           fontSize: 12.5, color: '#9b7d8c', marginTop: -4,
-        }}>only the card leaves — never the signals behind it.</div>
+        }}>only the card leaves — never your signals, story, or status.</div>
 
         {toastMsg && (
           <div style={{
