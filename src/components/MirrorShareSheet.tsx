@@ -175,31 +175,40 @@ export function MirrorShareSheet({
           <span>your mirror named this one. share the whole card — never the signals behind it.</span>
         </div>
 
-        {/* CARD PREVIEW — full MirrorCard rendered at share width then
-            uniformly scaled, centered, and fully contained (no clipping). */}
+        {/* CARD PREVIEW — full MirrorCard rendered at share width, scaled
+            down and vertically scrollable inside the box if it overflows.
+            Users can scroll to see the entire card; nothing is clipped. */}
         <div
           ref={previewRef}
           key={runId}
           style={{
             position: 'relative',
             width: SHARE_W * PREVIEW_SCALE,
-            height: scaledH,
+            maxHeight: 'min(56dvh, 520px)',
+            height: Math.min(scaledH, 520),
             margin: '0 auto',
-            overflow: 'hidden',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            overscrollBehavior: 'contain',
+            WebkitOverflowScrolling: 'touch',
+            borderRadius: 18,
+            border: '.5px solid rgba(255,255,255,.08)',
           }}
         >
-          <div
-            ref={innerRef}
-            style={{
-              width: SHARE_W,
-              transform: `scale(${PREVIEW_SCALE})`,
-              transformOrigin: 'top left',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-            }}
-          >
-            <MirrorCard p={pattern} />
+          <div style={{ width: SHARE_W * PREVIEW_SCALE, height: scaledH, position: 'relative' }}>
+            <div
+              ref={innerRef}
+              style={{
+                width: SHARE_W,
+                transform: `scale(${PREVIEW_SCALE})`,
+                transformOrigin: 'top left',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+              }}
+            >
+              <MirrorCard p={pattern} />
+            </div>
           </div>
         </div>
 
@@ -233,10 +242,10 @@ export function MirrorShareSheet({
           />
         </div>
 
-        {/* CHANNELS — share pill first, then platform pills */}
+        {/* CHANNELS — platform pills only (no redundant "share" pill) */}
         <ShareChannels
           onPick={onPick}
-          channels={['share', 'sms', 'x', 'whatsapp', 'instagram', 'tiktok', 'copy']}
+          channels={['sms', 'x', 'whatsapp', 'instagram', 'tiktok', 'copy', 'download']}
         />
         <div style={{
           textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic',
