@@ -1213,12 +1213,22 @@ export function MirrorPage() {
           <DetailOverlay
             p={openCard}
             onClose={() => setOpenCard(null)}
-            onShare={(p) => {
-              const node = overlayRef.current?.querySelector('article') as HTMLElement | null
-              shareCard(node, p)
-            }}
+            onShare={(p) => setShareTarget({ p, source: 'overlay' })}
           />
         </div>
+      )}
+
+      {shareTarget && (
+        <MirrorShareSheet
+          open
+          onClose={() => setShareTarget(null)}
+          getNode={() => {
+            const root = shareTarget.source === 'overlay' ? overlayRef.current : heroRef.current
+            return (root?.querySelector('article') as HTMLElement | null) ?? null
+          }}
+          caption={`"${shareTarget.p.punch || shareTarget.p.insight}" — ${shareTarget.p.name} · shutap mirror`}
+          fileName={`mirror-${shareTarget.p.name.toLowerCase().replace(/\s+/g, '-')}.png`}
+        />
       )}
     </div>
   )
