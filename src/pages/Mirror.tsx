@@ -780,11 +780,24 @@ function WorldBand({
           <button
             key={d}
             onClick={() => onJump(d)}
+            className="mirror-world-tile"
             style={{
               cursor: 'pointer', textAlign: 'center',
               background: `radial-gradient(120% 80% at 50% 0%, ${color}1f, #150815 70%)`,
               border: `.5px solid ${color}33`, borderRadius: 14,
               padding: '12px 8px 10px', color: INK,
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget as HTMLButtonElement
+              el.style.transform = 'translateY(-3px)'
+              el.style.boxShadow = `0 0 22px -6px ${color}`
+              el.style.borderColor = color
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget as HTMLButtonElement
+              el.style.transform = 'translateY(0)'
+              el.style.boxShadow = 'none'
+              el.style.borderColor = `${color}33`
             }}
           >
             <div style={{
