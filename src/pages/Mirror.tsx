@@ -515,6 +515,15 @@ function TarotCard({
         position: 'absolute', inset: -20, pointerEvents: 'none',
         background: `radial-gradient(50% 40% at 50% 0%, ${color}26, transparent 65%)`,
       }} />
+      {/* cursor-follow glare (reacts to --glare-x/y/o set on the tilt wrapper) */}
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none',
+        mixBlendMode: 'screen',
+        background: 'radial-gradient(circle at var(--glare-x,50%) var(--glare-y,50%), rgba(255,255,255,.30), rgba(255,255,255,0) 45%)',
+        opacity: 'var(--glare-o,0)' as unknown as number,
+        transition: 'opacity .25s ease',
+      } as React.CSSProperties} />
+
 
       {/* chrome row */}
       <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
