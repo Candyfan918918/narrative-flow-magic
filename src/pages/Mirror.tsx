@@ -903,20 +903,17 @@ function DetailOverlay({
         <TarotCard p={p} animate />
         <div style={{
           display: 'flex', justifyContent: 'center', flexWrap: 'wrap',
-          gap: 16, marginTop: 14, paddingBottom: 24,
+          gap: 10, marginTop: 14, paddingBottom: 24,
         }}>
-          <button onClick={() => setTick((t) => t + 1)} style={{
-            background: 'transparent', border: 0, color: MUTED,
-            fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-          }}>re-read this ↻</button>
-          <button onClick={() => onShare(p)} style={{
-            background: 'transparent', border: 0, color: GOLD,
-            fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-          }}>share card →</button>
-          <button onClick={onClose} style={{
-            background: 'transparent', border: 0, color: MUTED_2,
-            fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-          }}>close ✕</button>
+          <ActionPill onClick={() => setTick((t) => t + 1)} ariaLabel="Re-read this card">
+            ↻ re-read
+          </ActionPill>
+          <ActionPill tone="primary" onClick={() => onShare(p)} ariaLabel="Share card">
+            ↗ share
+          </ActionPill>
+          <ActionPill onClick={onClose} ariaLabel="Close">
+            ✕ close
+          </ActionPill>
         </div>
       </div>
     </div>
