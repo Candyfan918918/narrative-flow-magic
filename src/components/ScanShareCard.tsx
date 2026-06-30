@@ -8,7 +8,7 @@
    stops at the final state). */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
-import { ShareChannels, ActionPill, type ChannelKey } from './ShareChannels'
+import { ShareChannels, ActionPill, type ShareChannelKey } from './ShareChannels'
 
 export interface ScanRecord {
   score: number
@@ -126,7 +126,8 @@ export function ScanShareCard({
   const cap = caption(record)
   const enc = encodeURIComponent
 
-  const onShare = async (kind: ChannelKey) => {
+  const onShare = async (kind: ShareChannelKey) => {
+    if (kind === 'share') { await onNativeShare(); return }
     const text = cap
     if (kind === 'sms') {
       window.open('sms:?&body=' + enc(text), '_blank')

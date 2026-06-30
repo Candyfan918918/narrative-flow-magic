@@ -37,8 +37,49 @@ function bg(k: ChannelKey): string {
   return 'linear-gradient(135deg,#ffb1d8,#e7548a)'
 }
 
-const DEFAULT_CHANNELS: ChannelKey[] = [
-  'sms', 'x', 'instagram', 'tiktok', 'whatsapp', 'copy', 'download',
+export type ShareChannelKey = ChannelKey | 'share'
+
+const PILL_LABELS: Record<ShareChannelKey, string> = {
+  share: 'share',
+  sms: 'Messages',
+  x: 'X',
+  whatsapp: 'WhatsApp',
+  instagram: 'Instagram',
+  tiktok: 'TikTok',
+  copy: 'copy link',
+  download: 'save',
+}
+
+const SHARE_GLYPH = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>'
+
+function pillBg(k: ShareChannelKey): string {
+  if (k === 'share') return 'linear-gradient(135deg,#ff7ab0,#e7548a)'
+  if (k === 'sms') return '#25D366'
+  if (k === 'whatsapp') return '#25D366'
+  if (k === 'x') return '#0b080f'
+  if (k === 'tiktok') return '#0b080f'
+  if (k === 'instagram') return 'linear-gradient(135deg,#feda75 0%,#fa7e1e 25%,#d62976 55%,#962fbf 78%,#4f5bd5 100%)'
+  if (k === 'copy') return 'rgba(255,255,255,.06)'
+  return 'rgba(255,255,255,.06)'
+}
+
+function pillColor(k: ShareChannelKey): string {
+  if (k === 'copy' || k === 'download') return '#f1e4ec'
+  return '#fff'
+}
+
+function pillBorder(k: ShareChannelKey): string {
+  if (k === 'copy' || k === 'download') return '.5px solid rgba(255,255,255,.18)'
+  return 'none'
+}
+
+function pillGlyph(k: ShareChannelKey): string {
+  if (k === 'share') return SHARE_GLYPH
+  return LOGOS[k as ChannelKey]
+}
+
+const DEFAULT_CHANNELS: ShareChannelKey[] = [
+  'share', 'sms', 'x', 'whatsapp', 'instagram', 'tiktok', 'copy',
 ]
 
 export function ShareChannels({
@@ -46,16 +87,14 @@ export function ShareChannels({
   channels = DEFAULT_CHANNELS,
   style,
 }: {
-  onPick: (k: ChannelKey) => void
-  channels?: ChannelKey[]
+  onPick: (k: ShareChannelKey) => void
+  channels?: ShareChannelKey[]
   style?: CSSProperties
 }) {
   return (
     <div
       style={{
-        display: 'flex', gap: 14, padding: '4px 2px 8px',
-        overflowX: 'auto', overflowY: 'hidden',
-        scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch',
+        display: 'flex', flexWrap: 'wrap', gap: 10, padding: '4px 2px 8px',
         justifyContent: 'flex-start',
         ...style,
       }}
@@ -65,33 +104,37 @@ export function ShareChannels({
         <button
           key={k}
           onClick={() => onPick(k)}
-          aria-label={`Share to ${LABELS[k]}`}
+          aria-label={`Share to ${PILL_LABELS[k]}`}
           style={{
             flex: '0 0 auto',
-            display: 'inline-flex', flexDirection: 'column',
-            alignItems: 'center', gap: 6,
-            background: 'transparent', border: 0, padding: 0,
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: pillBg(k),
+            color: pillColor(k),
+            border: pillBorder(k),
+            borderRadius: 999,
+            padding: '10px 16px 10px 12px',
             cursor: 'pointer',
+            fontFamily: 'Sora,sans-serif',
+            fontWeight: 700,
+            fontSize: 13.5,
+            letterSpacing: '.01em',
+            boxShadow: k === 'copy' || k === 'download'
+              ? 'none'
+              : '0 6px 16px rgba(0,0,0,.32), inset 0 0 0 .5px rgba(255,255,255,.18)',
+            transition: 'transform .18s ease',
           }}
         >
           <span
             style={{
-              width: 50, height: 50, borderRadius: '50%',
-              background: bg(k),
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 6px 16px rgba(0,0,0,.35), inset 0 0 0 .5px rgba(255,255,255,.18)',
-              transition: 'transform .18s ease',
+              width: 22, height: 22,
             }}
-            dangerouslySetInnerHTML={{ __html: LOGOS[k] }}
+            dangerouslySetInnerHTML={{ __html: pillGlyph(k) }}
           />
-          <span style={{
-            fontFamily: 'Sora,sans-serif', fontSize: 10.5, fontWeight: 600,
-            color: '#c9a3b6', letterSpacing: '.02em',
-          }}>{LABELS[k]}</span>
+          <span>{PILL_LABELS[k]}</span>
         </button>
       ))}
-      <style>{`.shutap-share-row::-webkit-scrollbar{display:none}
-        .shutap-share-row button:active span:first-child{transform:scale(.93)}`}</style>
+      <style>{`.shutap-share-row button:active{transform:scale(.96)}`}</style>
     </div>
   )
 }
