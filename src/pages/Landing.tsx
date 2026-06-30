@@ -161,7 +161,7 @@ export function LandingPage() {
             })
             if (!mirrorIds.has(s.id!)) {
               mirror.unshift({
-                id: s.id!, alias: 'you', emoji: '✦', title: title || '',
+                id: s.id!, alias: 'you', emoji: '✨', title: title || '',
                 body: rawBody, reflection: rawBody, hall: 'healing',
                 support: 'heard', hours: 'just now', relates: 0, sitting: 1,
                 reactions: { heard: 0, same: 0, strong: 0, time: 0, brave: 0 },
@@ -182,7 +182,7 @@ export function LandingPage() {
             })
             if (!mirrorIds.has(s.id!)) {
               mirror.unshift({
-                id: s.id!, alias: 'you', emoji: '🌸', title: title || '',
+                id: s.id!, alias: 'you', emoji: '🩷', title: title || '',
                 body: rawBody, reflection: rawBody, hall: 'healing',
                 support, hours: 'just now', relates: 0, sitting: 1,
                 reactions: { heard: 0, same: 0, strong: 0, time: 0, brave: 0 },

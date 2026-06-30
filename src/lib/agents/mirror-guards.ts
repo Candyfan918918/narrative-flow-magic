@@ -12,7 +12,7 @@ export const DISTRICT_SIGIL: Record<District, string> = {
   career: '▲',
   love: '♥',
   family: '⌂',
-  social: '✦',
+  social: '✨',
 }
 
 export const DISTRICT_LABEL: Record<District, string> = {

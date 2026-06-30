@@ -97,7 +97,7 @@ district hint: ${district}`
         filed: fallbackRecord(),
         trait: {
           name: 'New Pattern',
-          emoji: '✦',
+          emoji: '✨',
           rarity: 'common',
           district,
           insight: 'observed once. watching.',

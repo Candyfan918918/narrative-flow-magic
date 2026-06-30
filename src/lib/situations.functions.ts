@@ -108,7 +108,7 @@ export const saveSituation = createServerFn({ method: 'POST' })
       roomId = await upsertRoomForSituation(context.supabase, sit.id, {
         author_id: context.userId,
         alias: data.alias ?? 'someone',
-        emoji: data.emoji ?? '🌸',
+        emoji: data.emoji ?? '🩷',
         title: data.title ?? deriveTitle(insertRow.body || insertRow.clean_text),
         body: insertRow.body || insertRow.clean_text,
         support: 'heard',
@@ -172,7 +172,7 @@ export const updateSituation = createServerFn({ method: 'POST' })
       roomId = await upsertRoomForSituation(context.supabase, data.id, {
         author_id: context.userId,
         alias: 'someone',
-        emoji: '🌸',
+        emoji: '🩷',
         title: (patch.title as string) ?? current.data.title ?? deriveTitle((patch.body as string) || current.data.body || current.data.clean_text),
         body: (patch.body as string) ?? current.data.body ?? current.data.clean_text,
         support: 'heard',

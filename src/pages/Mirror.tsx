@@ -201,7 +201,7 @@ function MirrorHeader() {
                     width: 26, height: 26, borderRadius: '50%',
                     background: 'linear-gradient(135deg,#f060a0,#890041)',
                     display: 'grid', placeItems: 'center', fontSize: 14, flex: 'none',
-                  }}>{alias.emoji || '🦉'}</span>
+                  }}>{alias.emoji || '🐣'}</span>
                   <span style={{
                     fontFamily: "'Newsreader',serif", fontStyle: 'italic',
                     fontSize: 13, color: INK,
@@ -477,7 +477,7 @@ function TarotCard({
 
       {/* depth wheel */}
       <div style={{ position: 'relative', display: 'grid', placeItems: 'center', margin: '14px 0 6px' }}>
-        <DepthWheel depth={p.depth} emoji={p.emoji || '✦'} dir={p.trend_dir} color={color} animate={animate} />
+        <DepthWheel depth={p.depth} emoji={p.emoji || '✨'} dir={p.trend_dir} color={color} animate={animate} />
       </div>
       <div style={{ textAlign: 'center', fontFamily: "'Sora',sans-serif", fontSize: 10, letterSpacing: '.22em', color: MUTED_2, marginBottom: 12 }}>
         {isRuin ? 'GONE TO RUIN' : `DEPTH ${p.depth}/5`}
@@ -643,7 +643,7 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
       <div style={{
         marginTop: 10, fontSize: 30, lineHeight: 1, textAlign: 'center',
         filter: `drop-shadow(0 0 12px ${color}99)`,
-      }}>{p.emoji || '✦'}</div>
+      }}>{p.emoji || '✨'}</div>
       <div style={{
         marginTop: 6, textAlign: 'center',
         fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',

@@ -135,7 +135,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                       flex: 'none',
                     }}
                   >
-                    {alias.emoji || '🦉'}
+                    {alias.emoji || '🐣'}
                   </span>
                   <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13, color: '#4a3040' }}>
                     {alias.name || ''}
