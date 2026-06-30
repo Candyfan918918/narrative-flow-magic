@@ -177,9 +177,9 @@ export function MirrorShareSheet({
           <span>your mirror named this one. share the whole card — never the signals behind it.</span>
         </div>
 
-        {/* CARD PREVIEW — full MirrorCard rendered at share width and
-            uniformly scaled. Always shows the entire card at its full
-            scaled height; the surrounding sheet handles scrolling. */}
+        {/* CARD PREVIEW — renders the EXACT same card shown on the page
+            (TarotCard when provided by Mirror, MirrorCard as fallback).
+            Scaled uniformly, full height visible; the sheet itself scrolls. */}
         <div
           ref={previewRef}
           key={runId}
@@ -188,8 +188,9 @@ export function MirrorShareSheet({
             width: SHARE_W * PREVIEW_SCALE,
             height: scaledH,
             margin: '0 auto',
-            overflow: 'visible',
+            overflow: 'hidden',
             borderRadius: 18,
+            flex: '0 0 auto',
           }}
         >
           <div
@@ -203,9 +204,10 @@ export function MirrorShareSheet({
               left: 0,
             }}
           >
-            <MirrorCard p={pattern} />
+            {renderCard ? renderCard() : <MirrorCard p={pattern} />}
           </div>
         </div>
+
 
 
 
