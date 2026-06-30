@@ -1,5 +1,5 @@
 /* Pixel-perfect port of project/Landing.dc.html with agent bridge. */
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useServerFn } from '@tanstack/react-start'
 import { runSpill } from '@/lib/agents/spill.functions'
@@ -46,6 +46,11 @@ export function LandingPage() {
   const spill = useServerFn(runSpill)
   const save = useServerFn(saveSituation)
   const update = useServerFn(updateSituation)
+
+  // Mask the landing feed when opening spill/scan/ask from an intent hash so
+  // the user sees a neutral screen and then the modal, not a flash of the feed.
+  const hasIntent = typeof window !== 'undefined' && /^#(spill|scan|ask)$/.test(window.location.hash)
+  const [coverUp, setCoverUp] = useState(hasIntent)
 
   // Resume a pending Spill save after the user returns from sign-in.
   useEffect(() => {
