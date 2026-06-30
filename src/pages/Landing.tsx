@@ -437,6 +437,31 @@ export function LandingPage() {
         setTimeout(injectClaude, 0)
         setTimeout(injectClaude, 400)
         setTimeout(injectClaude, 1200)
+        // Bridge: when anything inside the iframe whose text says "the mirror"
+        // (the CTA + the companion-eye pop) is clicked, navigate to /mirror.
+        const installMirrorBridge = () => {
+          try {
+            const doc = iframeRef.current?.contentDocument
+            const w = iframeRef.current?.contentWindow as (Window & { __shutapMirrorBridge?: boolean }) | null
+            if (!doc || !w || w.__shutapMirrorBridge) return
+            w.__shutapMirrorBridge = true
+            doc.addEventListener('click', (ev) => {
+              let node = ev.target as HTMLElement | null
+              for (let i = 0; node && i < 6; i++, node = node.parentElement) {
+                const txt = (node.textContent || '').trim().toLowerCase()
+                const ds = (node.dataset?.action || '').toLowerCase()
+                if (ds === 'mirror' || /\bthe mirror\b/.test(txt) || node.getAttribute?.('href') === '/mirror') {
+                  ev.preventDefault(); ev.stopPropagation()
+                  window.postMessage({ type: 'shutap-nav', to: '/mirror' }, '*')
+                  return
+                }
+              }
+            }, true)
+          } catch { /* cross-origin or not ready */ }
+        }
+        installMirrorBridge()
+        setTimeout(installMirrorBridge, 600)
+        setTimeout(installMirrorBridge, 1500)
       }}
       style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, margin: 0, padding: 0, background: '#fdf0f5' }}
     />
