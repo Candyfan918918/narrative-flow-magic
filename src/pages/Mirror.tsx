@@ -100,10 +100,10 @@ function timeAgo(iso: string): string {
 }
 
 function trendArrow(dir: string) {
-  if (dir === 'rising') return '↗'
-  if (dir === 'cooling') return '↘'
-  if (dir === 'dormant') return '·'
-  return '→'
+  if (dir === 'rising') return '🔥'
+  if (dir === 'cooling') return '🧊'
+  if (dir === 'dormant') return '💤'
+  return '😐'
 }
 function trendColor(dir: string) {
   if (dir === 'rising') return '#e7548a'
