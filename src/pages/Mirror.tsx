@@ -925,12 +925,18 @@ function DetailOverlay({
 // the channel pills match the Scan share card exactly.
 
 /* ─────────────── forming state ─────────────── */
-function Forming({ onSpill, onPreview, hasDemo, previewing }: {
+function Forming({ onSpill, onScan, onPreview, hasDemo, previewing }: {
   onSpill: () => void
+  onScan: () => void
   onPreview: () => void
   hasDemo: boolean
   previewing: boolean
 }) {
+  const pill = (bg: string, color: string) => ({
+    background: bg, color, border: 0, borderRadius: 999,
+    padding: '11px 22px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
+    fontSize: 13, cursor: 'pointer',
+  } as const)
   return (
     <section style={{
       marginTop: 28, padding: 28, borderRadius: 22, color: INK,
@@ -946,11 +952,10 @@ function Forming({ onSpill, onPreview, hasDemo, previewing }: {
         fontSize: 26, lineHeight: 1.2,
       }}>the mirror begins the moment you spill or scan.<br />nothing here yet — and nothing fabricated.</p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <button onClick={onSpill} style={{
-          background: '#e7548a', color: '#fff', border: 0, borderRadius: 999,
-          padding: '11px 22px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
-          fontSize: 13, cursor: 'pointer',
-        }}>spill or scan →</button>
+        <button onClick={onSpill} style={pill('#e7548a', '#fff')}>🫧 spill →</button>
+        <button onClick={onScan} style={pill('transparent', '#ffd479')}>
+          <span style={{ borderBottom: 'none' }}>✨ scan →</span>
+        </button>
         {hasDemo && (
           <button onClick={onPreview} style={{
             background: 'transparent', color: GOLD,
@@ -963,6 +968,7 @@ function Forming({ onSpill, onPreview, hasDemo, previewing }: {
     </section>
   )
 }
+
 
 /* ─────────────── page ─────────────── */
 export function MirrorPage() {
