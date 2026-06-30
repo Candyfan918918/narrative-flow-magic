@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { MirrorCard, type MirrorPatternView } from './mirror/MirrorCard'
-import { ShareChannels, ActionPill, type ChannelKey } from './ShareChannels'
+import { ShareChannels, ActionPill, type ShareChannelKey } from './ShareChannels'
 
 function copyToClipboard(text: string): Promise<void> {
   try { return navigator.clipboard.writeText(text) } catch { return Promise.resolve() }
@@ -58,7 +58,7 @@ export function MirrorShareSheet({
     } catch { return null }
   }
 
-  const onPick = async (kind: ChannelKey) => {
+  const onPick = async (kind: ShareChannelKey) => {
     const text = caption
     if (kind === 'sms') { window.open('sms:?&body=' + enc(text + '\n' + shareUrl), '_blank'); return }
     if (kind === 'x') { window.open('https://twitter.com/intent/tweet?text=' + enc(text) + '&url=' + enc(shareUrl), '_blank'); return }
