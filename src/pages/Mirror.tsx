@@ -49,20 +49,20 @@ const DISTRICT_COLOR: Record<District, string> = {
 }
 
 const SOURCE_GLYPH: Record<string, string> = {
-  spill: '🫧',
-  scan: '✨',
-  comments: '💌',
-  likes: '🫶',
-  follows: '🌟',
-  browse: '👀',
+  spill: '🗯',
+  scan: '📸',
+  comments: '💬',
+  likes: '♥',
+  follows: '✦',
+  browse: '👁',
 }
 const SOURCE_COLOR: Record<string, string> = {
   spill: '#e7548a',
-  scan: '#c87c4a',
-  comments: '#7F77DD',
+  scan: '#7F77DD',
+  comments: '#c87c4a',
   likes: '#c1216b',
   follows: '#5B8A5E',
-  browse: '#c4a0b2',
+  browse: '#9a7bd0',
 }
 
 const DISTRICTS: District[] = ['self', 'career', 'love', 'family', 'social']
@@ -420,33 +420,60 @@ function TarotCard({
   const isRuin = p.state === 'ruin'
   const bg = isRuin
     ? 'radial-gradient(125% 80% at 50% 0%, #2a2e22, #1a1c16 58%, #15140f)'
-    : `radial-gradient(125% 80% at 50% 0%, ${color}38, #1c0d16 58%, #140810)`
+    : `radial-gradient(125% 80% at 50% 0%, ${color}2e, #1c0d16 58%, #140810)`
   const border = isLegendary ? GOLD : `${color}66`
   return (
     <article
       ref={innerRef}
+      className={`mirror-tarot ${animate ? 'mirror-tarot--open' : ''}`}
       style={{
         position: 'relative', borderRadius: 22, overflow: 'hidden',
         background: bg,
         border: `1px solid ${border}`,
         boxShadow: isLegendary
-          ? `0 0 0 1px ${GOLD}55, 0 0 60px ${GOLD}33, 0 20px 60px rgba(0,0,0,.6)`
-          : `0 24px 60px -10px rgba(0,0,0,.7), 0 0 40px ${color}22`,
+          ? `0 0 0 1px ${GOLD}55, 0 0 38px -6px ${GOLD}55, 0 40px 90px -34px rgba(0,0,0,.85)`
+          : `0 40px 90px -34px rgba(0,0,0,.85), 0 0 40px ${color}1f`,
         color: INK,
         padding: '16px 18px 14px',
         filter: isRuin ? 'saturate(.55) grayscale(.25)' : undefined,
-      }}
+        ['--district' as never]: color,
+      } as React.CSSProperties}
     >
       {/* inner ornamental frame */}
       <div aria-hidden style={{
         position: 'absolute', inset: 6, borderRadius: 18, pointerEvents: 'none',
-        border: `.5px solid ${isLegendary ? `${GOLD}66` : 'rgba(255,255,255,.06)'}`,
+        border: `.5px solid ${isLegendary ? `${GOLD}66` : 'rgba(160,140,150,.18)'}`,
+      }} />
+      {/* GLASS — top gloss (full width, no diagonal streak) */}
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 22,
+        background: 'linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 18%, transparent 38%)',
+      }} />
+      {/* GLASS — top-LEFT corner sheen, confined */}
+      <div aria-hidden style={{
+        position: 'absolute', top: 0, left: 0, width: '64%', height: '34%',
+        pointerEvents: 'none',
+        background: 'radial-gradient(120% 130% at 12% 0%, rgba(255,255,255,.17), rgba(255,255,255,.04) 42%, transparent 66%)',
+      }} />
+      {/* SCI-FI — holographic top rim line */}
+      <div aria-hidden style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: 1.5,
+        background: 'linear-gradient(90deg, transparent, #7F77DD, #e7548a, #5B8A5E, transparent)',
+        backgroundSize: '200% 100%',
+        opacity: .4,
+        animation: 'mirror-holo 9s linear infinite',
+        pointerEvents: 'none',
+      }} />
+      {/* SCI-FI — scan beam (idle:0, sweeps on open/hover) */}
+      <div aria-hidden className="mirror-scanbeam" style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '24%',
+        background: `linear-gradient(180deg, ${color}00, ${color}28, ${color}00)`,
+        opacity: 0, pointerEvents: 'none',
       }} />
       {/* aura */}
       <div aria-hidden style={{
         position: 'absolute', inset: -20, pointerEvents: 'none',
-        background: `radial-gradient(50% 40% at 50% 0%, ${color}33, transparent 65%)`,
-        animation: 'mirror-aura 6s ease-in-out infinite',
+        background: `radial-gradient(50% 40% at 50% 0%, ${color}26, transparent 65%)`,
       }} />
 
       {/* chrome row */}
@@ -612,20 +639,22 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
   return (
     <button
       onClick={onOpen}
+      className="mirror-tile"
       style={{
-        textAlign: 'left', cursor: 'pointer', padding: 16, borderRadius: 18,
+        textAlign: 'left', cursor: 'pointer', padding: 16, borderRadius: 16,
         background: isRuin
-          ? 'radial-gradient(125% 80% at 50% 0%, #2a2e22, #15140f 65%)'
-          : `radial-gradient(125% 80% at 50% 0%, ${color}33, #170a14 62%)`,
-        border: `1px solid ${isLegendary ? GOLD : `${color}55`}`,
+          ? 'linear-gradient(160deg, #2a2e22, #1a1c16 70%)'
+          : `linear-gradient(160deg, ${color}22, #1a0c15 70%)`,
+        border: `1px solid ${isLegendary ? `${GOLD}c4` : isRuin ? 'rgba(160,170,130,.34)' : 'rgba(255,255,255,.09)'}`,
         color: INK, position: 'relative',
         boxShadow: isLegendary ? `0 0 26px ${GOLD}33` : `0 14px 30px -10px rgba(0,0,0,.5)`,
         transition: 'transform .25s ease, box-shadow .25s ease',
         filter: isRuin ? 'saturate(.5) grayscale(.3)' : undefined,
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)' }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)' }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 26px -8px ${color}88` }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = isLegendary ? `0 0 26px ${GOLD}33` : `0 14px 30px -10px rgba(0,0,0,.5)` }}
     >
+      <span className="mirror-tile-sheen" />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 5,
@@ -970,19 +999,35 @@ export function MirrorPage() {
   const autoDemo = isDemoAccount && isForming && demoList.length > 0
   const list = showDemo || autoDemo ? demoList : mineList
 
-  // keyframes + fonts injection (idempotent)
+  // keyframes injection (idempotent). Fonts come from <link> in __root.tsx.
   useEffect(() => {
     if (document.getElementById('mirror-kf')) return
     const s = document.createElement('style')
     s.id = 'mirror-kf'
     s.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap');
       @keyframes mirror-orbit { to { transform: rotate(360deg); } }
       @keyframes mirror-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-      @keyframes mirror-aura { 0%,100% { opacity:.7 } 50% { opacity:1 } }
       @keyframes mirror-fade { from { opacity: 0 } to { opacity: 1 } }
       @keyframes mirror-pulse-dot { 0%,100% { transform: scale(1); opacity:.9 } 50% { transform: scale(1.4); opacity:.5 } }
+      @keyframes mirror-holo { 0% { background-position: 0% 0 } 100% { background-position: 200% 0 } }
+      @keyframes mirror-scan { 0% { transform: translateY(-100%); opacity: 0 } 12% { opacity: 1 } 88% { opacity: 1 } 100% { transform: translateY(420%); opacity: 0 } }
+      @keyframes mirror-bg-a { 0%,100% { transform: translate(0,0) } 50% { transform: translate(40px,-30px) } }
+      @keyframes mirror-bg-b { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-50px,30px) } }
+      @keyframes mirror-bg-c { 0%,100% { transform: translate(0,0) } 50% { transform: translate(20px,40px) } }
+      @keyframes mirror-tile-sweep { 0% { transform: translateX(-120%) skewX(-18deg); opacity: 0 } 30% { opacity: .7 } 100% { transform: translateX(220%) skewX(-18deg); opacity: 0 } }
       .mirror-shell { color-scheme: dark }
+      .mirror-tarot--open .mirror-scanbeam { animation: mirror-scan 1.6s cubic-bezier(.2,.7,.2,1) 1; }
+      .mirror-tarot:hover .mirror-scanbeam { animation: mirror-scan 1.6s cubic-bezier(.2,.7,.2,1) 1; }
+      .mirror-tile { position: relative; overflow: hidden; }
+      .mirror-tile::before, .mirror-tile::after { content: ''; position: absolute; pointer-events: none; }
+      .mirror-tile::before { inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 18%, transparent 38%); }
+      .mirror-tile::after { top: 0; left: 0; width: 64%; height: 34%; background: radial-gradient(120% 130% at 12% 0%, rgba(255,255,255,.17), rgba(255,255,255,.04) 42%, transparent 66%); }
+      .mirror-tile .mirror-tile-sheen { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent); opacity: 0; pointer-events: none; }
+      .mirror-tile:hover .mirror-tile-sheen { animation: mirror-tile-sweep .9s ease-out 1; }
+      @media (prefers-reduced-motion: reduce) {
+        .mirror-tarot--open .mirror-scanbeam, .mirror-tarot:hover .mirror-scanbeam,
+        .mirror-tile:hover .mirror-tile-sheen { animation: none !important; }
+      }
     `
     document.head.appendChild(s)
   }, [])
@@ -1025,9 +1070,49 @@ export function MirrorPage() {
   // detail overlay
   const [openCard, setOpenCard] = useState<MirrorPatternView | null>(null)
   const heroRef = useRef<HTMLDivElement>(null)
+  const heroTiltRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
   // share sheet
   const [shareTarget, setShareTarget] = useState<{ p: MirrorPatternView; source: 'hero' | 'overlay' } | null>(null)
+  // cast filter
+  const [castFilter, setCastFilter] = useState<'all' | District | 'ruins'>('all')
+
+  // hero cursor tilt
+  useEffect(() => {
+    const el = heroTiltRef.current
+    if (!el) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) return
+    let raf = 0
+    const onMove = (e: MouseEvent) => {
+      const r = el.getBoundingClientRect()
+      const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2)
+      const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2)
+      const rx = Math.max(-1, Math.min(1, -dy)) * 9
+      const ry = Math.max(-1, Math.min(1, dx)) * 10
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        el.style.transform = `perspective(1100px) rotateX(${rx}deg) rotateY(${ry}deg)`
+        const gx = ((e.clientX - r.left) / r.width) * 100
+        const gy = ((e.clientY - r.top) / r.height) * 100
+        el.style.setProperty('--glare-x', `${gx}%`)
+        el.style.setProperty('--glare-y', `${gy}%`)
+        el.style.setProperty('--glare-o', '.35')
+      })
+    }
+    const onLeave = () => {
+      cancelAnimationFrame(raf)
+      el.style.transform = 'perspective(1100px) rotateX(0) rotateY(0)'
+      el.style.setProperty('--glare-o', '0')
+    }
+    el.addEventListener('mousemove', onMove)
+    el.addEventListener('mouseleave', onLeave)
+    return () => {
+      el.removeEventListener('mousemove', onMove)
+      el.removeEventListener('mouseleave', onLeave)
+      cancelAnimationFrame(raf)
+    }
+  }, [mostRecent?.id])
 
   // group by district
   const grouped = useMemo(() => {
@@ -1047,10 +1132,28 @@ export function MirrorPage() {
 
   return (
     <div className="mirror-shell" style={{
+      position: 'relative',
       minHeight: '100vh',
       background: `radial-gradient(120% 80% at 50% -10%, #2a0d1c, #160810 55%, ${BG})`,
       color: INK,
     }}>
+      {/* fixed bg layer — drifting blurred tints */}
+      <div aria-hidden style={{
+        position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', top: '-10%', left: '8%', width: 420, height: 420, borderRadius: '50%',
+          background: '#e7548a33', filter: 'blur(64px)', animation: 'mirror-bg-a 22s ease-in-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', top: '30%', right: '4%', width: 460, height: 460, borderRadius: '50%',
+          background: '#7F77DD33', filter: 'blur(64px)', animation: 'mirror-bg-b 27s ease-in-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-8%', left: '32%', width: 380, height: 380, borderRadius: '50%',
+          background: '#c1216b2b', filter: 'blur(64px)', animation: 'mirror-bg-c 20s ease-in-out infinite',
+        }} />
+      </div>
       <MirrorHeader />
       <main style={{ maxWidth: 1080, margin: '0 auto', padding: '36px 22px 80px' }}>
         {/* hero zone */}
@@ -1092,9 +1195,25 @@ export function MirrorPage() {
         {/* hero card */}
         {mostRecent && (
           <div style={{ display: 'grid', placeItems: 'center', marginTop: 8 }}>
-            <div style={{ width: 'min(460px, 100%, calc((100dvh - 260px) * 0.78))', minWidth: 240, position: 'relative' }} ref={heroRef}>
-              <TarotCard p={mostRecent} animate={animateHero} />
-              {revealing && <DeckBack onDone={() => setRevealing(false)} />}
+            <div
+              ref={heroTiltRef}
+              style={{
+                width: 'min(460px, 100%, calc((100dvh - 260px) * 0.78))', minWidth: 240,
+                position: 'relative', transformStyle: 'preserve-3d',
+                transition: 'transform 320ms cubic-bezier(.2,.7,.2,1)',
+              } as React.CSSProperties}
+            >
+              <div ref={heroRef} style={{ position: 'relative' }}>
+                <TarotCard p={mostRecent} animate={animateHero} />
+                {revealing && <DeckBack onDone={() => setRevealing(false)} />}
+                {/* tracking glare */}
+                <div aria-hidden style={{
+                  position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none',
+                  background: 'radial-gradient(220px 220px at var(--glare-x,50%) var(--glare-y,30%), rgba(255,255,255,.22), transparent 60%)',
+                  opacity: 'var(--glare-o,0)' as unknown as number,
+                  mixBlendMode: 'screen', transition: 'opacity 200ms ease',
+                } as React.CSSProperties} />
+              </div>
             </div>
             <div style={{ display: 'flex', gap: 18, marginTop: 14 }}>
               <button onClick={replay} style={{
@@ -1105,6 +1224,12 @@ export function MirrorPage() {
                 background: 'transparent', border: 0, color: GOLD,
                 fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
               }}>share this card →</button>
+              {list.length > 1 && (
+                <button onClick={() => setOpenCard(list[Math.floor(Math.random() * list.length)])} style={{
+                  background: 'transparent', border: 0, color: MUTED,
+                  fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
+                }}>draw another →</button>
+              )}
             </div>
           </div>
         )}
@@ -1135,8 +1260,40 @@ export function MirrorPage() {
         {/* the cast */}
         {list.length > 0 && (
           <section style={{ marginTop: 40 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, flexWrap: 'wrap' }}>
+              <h2 style={{
+                margin: 0, fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+                fontWeight: 500, fontSize: 24, color: INK,
+              }}>the cast</h2>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginLeft: 'auto' }}>
+                {(['all', ...DISTRICTS, 'ruins'] as const).map((k) => {
+                  const active = castFilter === k
+                  const isDistrict = (DISTRICTS as readonly string[]).includes(k as string)
+                  const c = isDistrict ? DISTRICT_COLOR[k as District] : k === 'ruins' ? RUIN_MOSS : '#e7548a'
+                  const label = k === 'all' ? 'all' : k === 'ruins' ? 'ruins' : DISTRICT_LABEL[k as District].toLowerCase()
+                  return (
+                    <button key={k} onClick={() => setCastFilter(k)} style={{
+                      cursor: 'pointer', borderRadius: 999,
+                      padding: '6px 12px',
+                      background: active ? `${c}33` : 'transparent',
+                      border: `.5px solid ${active ? `${c}aa` : 'rgba(255,255,255,.12)'}`,
+                      fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 10.5,
+                      letterSpacing: '.18em', textTransform: 'uppercase',
+                      color: active ? INK : MUTED,
+                    }}>
+                      {isDistrict && <span style={{ color: c, marginRight: 6 }}>{DISTRICT_SIGIL[k as District]}</span>}
+                      {label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
             {DISTRICTS.map((d) => {
-              const items = grouped[d]
+              const items = grouped[d].filter((p) => {
+                if (castFilter === 'all') return true
+                if (castFilter === 'ruins') return p.state === 'ruin'
+                return castFilter === d
+              })
               if (items.length === 0) return null
               const color = DISTRICT_COLOR[d]
               return (

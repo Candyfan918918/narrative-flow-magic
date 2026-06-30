@@ -19,7 +19,7 @@ const DISTRICT_PALETTE: Record<District, { ink: string; glow: string }> = {
 }
 
 const SOURCE_GLYPH: Record<string, string> = {
-  spill: '🫧', scan: '✨', comments: '💌', likes: '🫶', follows: '🌟', browse: '👀',
+  spill: '🗯', scan: '📸', comments: '💬', likes: '♥', follows: '✦', browse: '👁',
 }
 
 export type MirrorPatternView = {

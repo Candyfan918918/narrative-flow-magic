@@ -8,11 +8,11 @@ export const RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as c
 export type Rarity = (typeof RARITIES)[number]
 
 export const DISTRICT_SIGIL: Record<District, string> = {
-  self: '🫧',
-  career: '🚀',
-  love: '💘',
-  family: '🏡',
-  social: '🪩',
+  self: '✸',
+  career: '▲',
+  love: '♥',
+  family: '⌂',
+  social: '✦',
 }
 
 export const DISTRICT_LABEL: Record<District, string> = {
