@@ -957,7 +957,10 @@ export function MirrorPage() {
   const demoList = (demo ?? []) as unknown as MirrorPatternView[]
   const isForming = mineList.length < 2
   const [showDemo, setShowDemo] = useState(false)
-  const list = showDemo ? demoList : mineList
+  // When the user has no real patterns yet, surface the demo cast automatically
+  // so the logged-in account sees the Claude-seeded demo data instead of an empty mirror.
+  const autoDemo = isForming && demoList.length > 0
+  const list = showDemo || autoDemo ? demoList : mineList
 
   // keyframes + fonts injection (idempotent)
   useEffect(() => {
