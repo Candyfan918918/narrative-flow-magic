@@ -46,7 +46,7 @@ export function MirrorShareSheet({
     if (!open) return
     const el = innerRef.current
     if (!el) return
-    const measure = () => setScaledH(Math.ceil(el.getBoundingClientRect().height * PREVIEW_SCALE))
+    const measure = () => setScaledH(Math.ceil(el.offsetHeight * PREVIEW_SCALE))
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(el)
