@@ -824,10 +824,9 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
             letterSpacing: '.28em', color: GOLD,
           }}>WHAT YOUR MIRROR SEES</span>
         </div>
-        <button onClick={() => refetch()} disabled={isFetching} style={{
-          background: 'transparent', border: 0, color: MUTED,
-          fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, cursor: 'pointer',
-        }}>{isFetching ? 're-reading…' : 're-read ↻'}</button>
+        <ActionPill onClick={() => refetch()} ariaLabel="Re-read mirror">
+          {isFetching ? 're-reading…' : '↻ re-read'}
+        </ActionPill>
       </div>
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8, marginTop: 14,
