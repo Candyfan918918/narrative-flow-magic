@@ -940,7 +940,7 @@ function DetailOverlay({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 'min(460px, 100%, calc((100dvh - 140px) * 0.78))',
+          width: 'min(440px, 92vw)',
           minWidth: 240,
           margin: '0 auto',
           position: 'relative',
