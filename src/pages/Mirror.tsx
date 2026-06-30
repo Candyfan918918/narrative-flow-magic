@@ -1195,9 +1195,25 @@ export function MirrorPage() {
         {/* hero card */}
         {mostRecent && (
           <div style={{ display: 'grid', placeItems: 'center', marginTop: 8 }}>
-            <div style={{ width: 'min(460px, 100%, calc((100dvh - 260px) * 0.78))', minWidth: 240, position: 'relative' }} ref={heroRef}>
-              <TarotCard p={mostRecent} animate={animateHero} />
-              {revealing && <DeckBack onDone={() => setRevealing(false)} />}
+            <div
+              ref={heroTiltRef}
+              style={{
+                width: 'min(460px, 100%, calc((100dvh - 260px) * 0.78))', minWidth: 240,
+                position: 'relative', transformStyle: 'preserve-3d',
+                transition: 'transform 320ms cubic-bezier(.2,.7,.2,1)',
+              } as React.CSSProperties}
+            >
+              <div ref={heroRef} style={{ position: 'relative' }}>
+                <TarotCard p={mostRecent} animate={animateHero} />
+                {revealing && <DeckBack onDone={() => setRevealing(false)} />}
+                {/* tracking glare */}
+                <div aria-hidden style={{
+                  position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none',
+                  background: 'radial-gradient(220px 220px at var(--glare-x,50%) var(--glare-y,30%), rgba(255,255,255,.22), transparent 60%)',
+                  opacity: 'var(--glare-o,0)' as unknown as number,
+                  mixBlendMode: 'screen', transition: 'opacity 200ms ease',
+                } as React.CSSProperties} />
+              </div>
             </div>
             <div style={{ display: 'flex', gap: 18, marginTop: 14 }}>
               <button onClick={replay} style={{
@@ -1208,6 +1224,12 @@ export function MirrorPage() {
                 background: 'transparent', border: 0, color: GOLD,
                 fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
               }}>share this card →</button>
+              {list.length > 1 && (
+                <button onClick={() => setOpenCard(list[Math.floor(Math.random() * list.length)])} style={{
+                  background: 'transparent', border: 0, color: MUTED,
+                  fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
+                }}>draw another →</button>
+              )}
             </div>
           </div>
         )}
