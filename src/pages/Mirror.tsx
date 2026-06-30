@@ -639,20 +639,22 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
   return (
     <button
       onClick={onOpen}
+      className="mirror-tile"
       style={{
-        textAlign: 'left', cursor: 'pointer', padding: 16, borderRadius: 18,
+        textAlign: 'left', cursor: 'pointer', padding: 16, borderRadius: 16,
         background: isRuin
-          ? 'radial-gradient(125% 80% at 50% 0%, #2a2e22, #15140f 65%)'
-          : `radial-gradient(125% 80% at 50% 0%, ${color}33, #170a14 62%)`,
-        border: `1px solid ${isLegendary ? GOLD : `${color}55`}`,
+          ? 'linear-gradient(160deg, #2a2e22, #1a1c16 70%)'
+          : `linear-gradient(160deg, ${color}22, #1a0c15 70%)`,
+        border: `1px solid ${isLegendary ? `${GOLD}c4` : isRuin ? 'rgba(160,170,130,.34)' : 'rgba(255,255,255,.09)'}`,
         color: INK, position: 'relative',
         boxShadow: isLegendary ? `0 0 26px ${GOLD}33` : `0 14px 30px -10px rgba(0,0,0,.5)`,
         transition: 'transform .25s ease, box-shadow .25s ease',
         filter: isRuin ? 'saturate(.5) grayscale(.3)' : undefined,
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)' }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)' }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 26px -8px ${color}88` }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = isLegendary ? `0 0 26px ${GOLD}33` : `0 14px 30px -10px rgba(0,0,0,.5)` }}
     >
+      <span className="mirror-tile-sheen" />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 5,
