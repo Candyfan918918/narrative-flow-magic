@@ -855,12 +855,25 @@ function DetailOverlay({
     <div onClick={onClose} style={{
       position: 'fixed', inset: 0, zIndex: 80,
       background: 'rgba(8,4,10,.78)', backdropFilter: 'blur(10px)',
-      display: 'grid', placeItems: 'center', padding: 20,
+      overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+      padding: '24px 16px', boxSizing: 'border-box',
       animation: 'mirror-fade .2s ease',
     }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(420px, 100%)', position: 'relative' }} key={tick}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: 'min(380px, 100%)',
+          margin: '0 auto',
+          position: 'relative',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
+        key={tick}
+      >
         <TarotCard p={p} animate />
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 14 }}>
+        <div style={{
+          display: 'flex', justifyContent: 'center', flexWrap: 'wrap',
+          gap: 16, marginTop: 14, paddingBottom: 24,
+        }}>
           <button onClick={() => setTick((t) => t + 1)} style={{
             background: 'transparent', border: 0, color: MUTED,
             fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
