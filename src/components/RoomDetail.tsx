@@ -11,6 +11,7 @@ import { CommentsThread } from './CommentsThread'
 import { ScanShareCard } from './ScanShareCard'
 import { createComment } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
+import { ActionPill } from './ShareChannels'
 
 const PENDING_COMMENT_KEY = 'shutap_pending_comment'
 
@@ -484,56 +485,39 @@ export function RoomDetail({
             gap: 12,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
-            <button
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <ActionPill
+              surface="light"
+              tone={related ? 'accent' : 'ghost'}
+              ariaLabel="Relate to this"
               onClick={() => {
                 setRelated(true)
                 toast("added. the room knows you're there.")
                 track('relate', { target: `room:${room.id}` })
                 offerShare()
               }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 7,
-                padding: '10px 18px',
-                borderRadius: 999,
-                border: '1.5px solid ' + (related ? '#c1216b' : 'rgba(11,8,15,.12)'),
-                background: related ? '#fdf0f5' : '#fff',
-                cursor: 'pointer',
-                fontFamily: 'Newsreader,serif',
-                fontStyle: 'italic',
-                fontSize: 14.5,
-                color: '#4a3040',
-                transition: '.18s',
-              }}
             >
               🫂 omg same{' '}
-              <b style={{ fontStyle: 'normal', fontFamily: 'Inter', fontWeight: 600, color: '#c1216b' }}>{room.relates}</b>
-            </button>
+              <b style={{ fontFamily: 'Inter', fontWeight: 700, color: '#c1216b' }}>{room.relates}</b>
+            </ActionPill>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <span
-              role="button"
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <ActionPill
+              surface="light"
+              ariaLabel="Add your side"
               onClick={() => toast('add-your-side coming soon.')}
-              style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', cursor: 'pointer' }}
             >
-              add your side →
-            </span>
-            <span
-              role="button"
+              💬 add your side
+            </ActionPill>
+            <ActionPill
+              surface="light"
+              tone="primary"
+              ariaLabel={isScan ? 'share your score' : 'share this room'}
               title={isScan ? 'share your score' : 'share this room'}
               onClick={shareRoom}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, color: '#c1216b', cursor: 'pointer' }}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="#c1216b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}>
-                <circle cx="18" cy="5" r="3" />
-                <circle cx="6" cy="12" r="3" />
-                <circle cx="18" cy="19" r="3" />
-                <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
-              </svg>
-              {isScan ? 'share your score' : 'share'}
-            </span>
+              ↗ {isScan ? 'share score' : 'share'}
+            </ActionPill>
           </div>
         </div>
 

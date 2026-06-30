@@ -23,6 +23,7 @@ import {
 import { getAlias, rememberReturnTo, signOut as doSignOut, isAdmin as getIsAdmin } from '@/lib/auth'
 import { supabase } from '@/integrations/supabase/client'
 import { MirrorShareSheet } from '@/components/MirrorShareSheet'
+import { ActionPill } from '@/components/ShareChannels'
 
 // Accounts allowed to preview the seeded demo cast in their own Mirror.
 // Everyone else sees the real (possibly empty) Forming state with CTAs.
@@ -823,10 +824,9 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
             letterSpacing: '.28em', color: GOLD,
           }}>WHAT YOUR MIRROR SEES</span>
         </div>
-        <button onClick={() => refetch()} disabled={isFetching} style={{
-          background: 'transparent', border: 0, color: MUTED,
-          fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, cursor: 'pointer',
-        }}>{isFetching ? 're-reading…' : 're-read ↻'}</button>
+        <ActionPill onClick={() => refetch()} ariaLabel="Re-read mirror">
+          {isFetching ? 're-reading…' : '↻ re-read'}
+        </ActionPill>
       </div>
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8, marginTop: 14,
@@ -903,20 +903,17 @@ function DetailOverlay({
         <TarotCard p={p} animate />
         <div style={{
           display: 'flex', justifyContent: 'center', flexWrap: 'wrap',
-          gap: 16, marginTop: 14, paddingBottom: 24,
+          gap: 10, marginTop: 14, paddingBottom: 24,
         }}>
-          <button onClick={() => setTick((t) => t + 1)} style={{
-            background: 'transparent', border: 0, color: MUTED,
-            fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-          }}>re-read this ↻</button>
-          <button onClick={() => onShare(p)} style={{
-            background: 'transparent', border: 0, color: GOLD,
-            fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-          }}>share card →</button>
-          <button onClick={onClose} style={{
-            background: 'transparent', border: 0, color: MUTED_2,
-            fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-          }}>close ✕</button>
+          <ActionPill onClick={() => setTick((t) => t + 1)} ariaLabel="Re-read this card">
+            ↻ re-read
+          </ActionPill>
+          <ActionPill tone="primary" onClick={() => onShare(p)} ariaLabel="Share card">
+            ↗ share
+          </ActionPill>
+          <ActionPill onClick={onClose} ariaLabel="Close">
+            ✕ close
+          </ActionPill>
         </div>
       </div>
     </div>
@@ -1215,20 +1212,17 @@ export function MirrorPage() {
                 } as React.CSSProperties} />
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 18, marginTop: 14 }}>
-              <button onClick={replay} style={{
-                background: 'transparent', border: 0, color: MUTED,
-                fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-              }}>↻ replay reveal</button>
-              <button onClick={() => setShareTarget({ p: mostRecent, source: 'hero' })} style={{
-                background: 'transparent', border: 0, color: GOLD,
-                fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-              }}>share this card →</button>
+            <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <ActionPill onClick={replay} ariaLabel="Replay reveal">
+                ↻ replay
+              </ActionPill>
+              <ActionPill tone="primary" onClick={() => setShareTarget({ p: mostRecent, source: 'hero' })} ariaLabel="Share this card">
+                ↗ share
+              </ActionPill>
               {list.length > 1 && (
-                <button onClick={() => setOpenCard(list[Math.floor(Math.random() * list.length)])} style={{
-                  background: 'transparent', border: 0, color: MUTED,
-                  fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
-                }}>draw another →</button>
+                <ActionPill onClick={() => setOpenCard(list[Math.floor(Math.random() * list.length)])} ariaLabel="Draw another">
+                  🎴 draw another
+                </ActionPill>
               )}
             </div>
           </div>

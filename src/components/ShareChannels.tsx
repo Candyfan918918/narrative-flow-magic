@@ -97,32 +97,55 @@ export function ShareChannels({
 }
 
 export function ActionPill({
-  children, onClick, tone = 'ghost', ariaLabel,
+  children, onClick, tone = 'ghost', surface = 'dark', ariaLabel, title,
 }: {
   children: React.ReactNode
   onClick: () => void
-  tone?: 'ghost' | 'primary'
+  tone?: 'ghost' | 'primary' | 'accent'
+  surface?: 'dark' | 'light'
   ariaLabel?: string
+  title?: string
 }) {
   const isPrimary = tone === 'primary'
+  const isAccent = tone === 'accent'
+  const isLight = surface === 'light'
+  const bg = isPrimary
+    ? 'linear-gradient(135deg,#ffb1d8,#e7548a)'
+    : isLight
+      ? (isAccent ? '#fdf0f5' : '#fff')
+      : 'rgba(255,255,255,.06)'
+  const color = isPrimary
+    ? '#1a0814'
+    : isAccent
+      ? '#c1216b'
+      : isLight ? '#4a3040' : '#f7e8f0'
+  const border = isPrimary
+    ? 'none'
+    : isLight
+      ? `1.5px solid ${isAccent ? '#c1216b' : 'rgba(11,8,15,.12)'}`
+      : '.5px solid rgba(255,255,255,.16)'
   return (
     <button
       onClick={onClick}
       aria-label={ariaLabel}
+      title={title}
       style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 7,
         fontFamily: 'Sora,sans-serif',
         fontWeight: 700,
         fontSize: 12,
         letterSpacing: '.04em',
-        color: isPrimary ? '#1a0814' : '#f7e8f0',
-        background: isPrimary
-          ? 'linear-gradient(135deg,#ffb1d8,#e7548a)'
-          : 'rgba(255,255,255,.06)',
-        border: isPrimary ? 'none' : '.5px solid rgba(255,255,255,.16)',
+        color,
+        background: bg,
+        border,
         borderRadius: 999,
         padding: '10px 18px',
         cursor: 'pointer',
         boxShadow: isPrimary ? '0 6px 18px rgba(231,84,138,.35)' : 'none',
+        transition: '.18s',
+        whiteSpace: 'nowrap',
       }}
     >
       {children}
