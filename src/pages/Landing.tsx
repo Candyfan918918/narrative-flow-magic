@@ -459,8 +459,9 @@ export function LandingPage() {
   return (
     <iframe
       ref={iframeRef}
-      src="/shutap/Shutap-Landing.dc.html"
+      src="/shutap/Landing.dc.html"
       title="Shutap — Landing"
+
       onLoad={() => {
         injectClaude()
         // Re-assert after the bundler swaps documentElement at runtime.
