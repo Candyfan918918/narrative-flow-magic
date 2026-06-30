@@ -1,53 +1,33 @@
-/* Mirror share sheet — mirrors the Scan share card's channel pill UI so
-   external sharing (SMS / X / Instagram / TikTok / WhatsApp / copy / save
-   image) is consistent across surfaces. Renders the same logo SVGs, brand
-   colors, and onShare flow used by ScanShareCard. */
-import { useEffect, useState } from 'react'
+/* Mirror share sheet — shows a live pre-share preview of the Mirror card
+   plus an editable caption brief, then channel chips and a consistent
+   [↻ re-read] [↗ share] [close] pill row that matches the Scan share card.
+   The preview is a scaled-down copy of the MirrorCard rendered from the
+   pattern data so the user sees exactly what will be exported. */
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
-
-const LOGOS: Record<string, string> = {
-  sms: '<svg viewBox="0 0 24 24" fill="#fff" style="width:16px;height:16px"><path d="M12 2C6.5 2 2 5.8 2 10.5c0 2.5 1.3 4.7 3.3 6.2-.2 1.4-.9 2.8-1.9 3.9 1.7-.2 3.4-.8 4.8-1.7 1.2.3 2.5.5 3.8.5 5.5 0 10-3.8 10-8.5S17.5 2 12 2z"/></svg>',
-  x: '<svg viewBox="0 0 24 24" fill="#fff" style="width:14px;height:14px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
-  instagram: '<svg viewBox="0 0 24 24" fill="#fff" style="width:16px;height:16px"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.72 3.72 0 01-1.38-.9 3.72 3.72 0 01-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 3.68A6.16 6.16 0 1018.16 12 6.16 6.16 0 0012 5.84zm0 10.16A4 4 0 1116 12a4 4 0 01-4 4zm6.4-10.4a1.44 1.44 0 11-1.44-1.44 1.44 1.44 0 011.44 1.44z"/></svg>',
-  tiktok: '<svg viewBox="0 0 24 24" fill="#fff" style="width:15px;height:15px"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.04-.1z"/></svg>',
-  whatsapp: '<svg viewBox="0 0 24 24" fill="#fff" style="width:16px;height:16px"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648z"/></svg>',
-  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>',
-  download: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>',
-}
-
-const TARGETS: [string, string][] = [
-  ['sms', 'Text'],
-  ['x', 'X'],
-  ['instagram', 'Instagram'],
-  ['tiktok', 'TikTok'],
-  ['whatsapp', 'WhatsApp'],
-  ['copy', 'copy'],
-  ['download', 'save image'],
-]
-
-function bg(k: string): string {
-  if (k === 'instagram') return 'linear-gradient(135deg,#feda75,#d62976 45%,#962fbf 75%,#4f5bd5)'
-  if (k === 'x' || k === 'tiktok') return '#0b080f'
-  if (k === 'whatsapp') return '#25D366'
-  if (k === 'sms') return '#34C759'
-  return 'rgba(255,255,255,.12)'
-}
+import { MirrorCard, type MirrorPatternView } from './mirror/MirrorCard'
+import { ShareChannels, ActionPill, type ChannelKey } from './ShareChannels'
 
 function copyToClipboard(text: string): Promise<void> {
   try { return navigator.clipboard.writeText(text) } catch { return Promise.resolve() }
 }
 
 export function MirrorShareSheet({
-  open, onClose, getNode, caption, fileName, url,
+  open, onClose, pattern, defaultCaption, fileName, url,
 }: {
   open: boolean
   onClose: () => void
-  getNode: () => HTMLElement | null
-  caption: string
+  pattern: MirrorPatternView
+  defaultCaption: string
   fileName: string
   url?: string
 }) {
   const [toastMsg, setToastMsg] = useState<string | null>(null)
+  const [caption, setCaption] = useState(defaultCaption)
+  const [runId, setRunId] = useState(0)
+  const previewRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setCaption(defaultCaption) }, [defaultCaption])
 
   useEffect(() => {
     if (!open) return
@@ -56,6 +36,11 @@ export function MirrorShareSheet({
     return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
+  const shareUrl = useMemo(
+    () => url || (typeof window !== 'undefined' ? window.location.origin + '/mirror' : 'https://shutap.com/mirror'),
+    [url],
+  )
+
   if (!open) return null
 
   const toast = (m: string) => {
@@ -63,23 +48,30 @@ export function MirrorShareSheet({
     window.setTimeout(() => setToastMsg(null), 2200)
   }
 
-  const shareUrl = url || (typeof window !== 'undefined' ? window.location.origin + '/mirror' : 'https://shutap.com/mirror')
   const enc = encodeURIComponent
 
-  const onShare = async (kind: string) => {
+  const exportPng = async (): Promise<string | null> => {
+    const node = previewRef.current?.querySelector('article') as HTMLElement | null
+    if (!node) return null
+    try {
+      return await toPng(node, { pixelRatio: 2, cacheBust: true, backgroundColor: '#100810' })
+    } catch { return null }
+  }
+
+  const onPick = async (kind: ChannelKey) => {
     const text = caption
     if (kind === 'sms') { window.open('sms:?&body=' + enc(text + '\n' + shareUrl), '_blank'); return }
     if (kind === 'x') { window.open('https://twitter.com/intent/tweet?text=' + enc(text) + '&url=' + enc(shareUrl), '_blank'); return }
     if (kind === 'whatsapp') { window.open('https://wa.me/?text=' + enc(text + '\n' + shareUrl), '_blank'); return }
     if (kind === 'instagram') {
       await copyToClipboard(text + '\n' + shareUrl)
-      toast('caption copied — paste it on your story/post')
+      toast('caption copied — paste it on your story')
       window.open('https://instagram.com', '_blank')
       return
     }
     if (kind === 'tiktok') {
       await copyToClipboard(text + '\n' + shareUrl)
-      toast('caption copied — paste it on your story/post')
+      toast('caption copied — paste it on your story')
       window.open('https://tiktok.com', '_blank')
       return
     }
@@ -89,19 +81,33 @@ export function MirrorShareSheet({
       return
     }
     if (kind === 'download') {
-      const node = getNode()
-      if (!node) { toast('could not find card'); return }
-      try {
-        const png = await toPng(node, { pixelRatio: 2, cacheBust: true, backgroundColor: '#100810' })
-        const a = document.createElement('a')
-        a.href = png
-        a.download = fileName
-        a.click()
-        toast('image saved')
-      } catch {
-        toast('could not export image')
-      }
+      const png = await exportPng()
+      if (!png) { toast('could not export image'); return }
+      const a = document.createElement('a')
+      a.href = png
+      a.download = fileName
+      a.click()
+      toast('image saved')
     }
+  }
+
+  const onNativeShare = async () => {
+    const text = caption + '\n' + shareUrl
+    const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean; share?: (d: ShareData) => Promise<void> }
+    const png = await exportPng()
+    try {
+      if (png && nav.canShare && nav.share) {
+        const blob = await (await fetch(png)).blob()
+        const file = new File([blob], fileName, { type: 'image/png' })
+        if (nav.canShare({ files: [file], text, url: shareUrl })) {
+          await nav.share({ files: [file], text, url: shareUrl })
+          return
+        }
+      }
+      if (nav.share) { await nav.share({ text, url: shareUrl }); return }
+    } catch { /* fall through */ }
+    await copyToClipboard(text)
+    toast('copied — paste anywhere')
   }
 
   return (
@@ -111,59 +117,103 @@ export function MirrorShareSheet({
       aria-modal="true"
       style={{
         position: 'fixed', inset: 0, zIndex: 220,
-        background: 'rgba(8,4,10,.78)', backdropFilter: 'blur(10px)',
+        background: 'rgba(8,4,10,.82)', backdropFilter: 'blur(12px)',
         display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-        padding: 18, animation: 'mss-fade .2s ease',
+        padding: 0, animation: 'mss-fade .2s ease',
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 'min(420px, 100%)',
+          width: '100%',
+          maxWidth: 460,
+          maxHeight: '94dvh',
+          overflowY: 'auto',
           background: 'linear-gradient(180deg,#1a0e1c 0%, #120815 100%)',
           border: '.5px solid rgba(255,255,255,.12)',
-          borderRadius: 20,
-          padding: '18px 16px calc(18px + env(safe-area-inset-bottom,0px))',
-          boxShadow: '0 24px 60px rgba(0,0,0,.55)',
+          borderRadius: '22px 22px 0 0',
+          padding: '14px 16px calc(18px + env(safe-area-inset-bottom,0px))',
+          boxShadow: '0 -20px 60px rgba(0,0,0,.6)',
           display: 'flex', flexDirection: 'column', gap: 14,
           animation: 'mss-rise .26s cubic-bezier(.2,.9,.25,1)',
         }}
       >
+        {/* drag handle */}
+        <div aria-hidden style={{
+          width: 38, height: 4, borderRadius: 4,
+          background: 'rgba(255,255,255,.22)',
+          alignSelf: 'center', marginBottom: 2,
+        }} />
+
         <div style={{
           textAlign: 'center',
           fontFamily: "'Sora',sans-serif", fontSize: 10.5,
-          letterSpacing: '.28em', color: '#9b8090', textTransform: 'uppercase',
-        }}>share this card</div>
+          letterSpacing: '.32em', color: '#9b8090', textTransform: 'uppercase',
+        }}>preview & share</div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
-          {TARGETS.map(([k, label]) => (
-            <button
-              key={k}
-              onClick={() => onShare(k)}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 7,
-                padding: '9px 14px', borderRadius: 999,
-                border: '.5px solid rgba(255,255,255,.18)',
-                background: bg(k),
-                color: '#fff',
-                fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 12,
-                cursor: 'pointer',
-              }}
-            >
-              <span dangerouslySetInnerHTML={{ __html: LOGOS[k] || '' }} />
-              {label}
-            </button>
-          ))}
+        {/* CARD PREVIEW — scaled MirrorCard */}
+        <div
+          ref={previewRef}
+          key={runId}
+          style={{
+            display: 'flex', justifyContent: 'center',
+            padding: '4px 0 2px',
+            transform: 'scale(.78)',
+            transformOrigin: 'top center',
+            height: 360,
+            marginBottom: -70,
+            pointerEvents: 'none',
+          }}
+        >
+          <MirrorCard p={pattern} />
         </div>
 
-        <button
-          onClick={onClose}
-          style={{
-            background: 'none', border: 0,
-            color: '#c9a3b6', fontFamily: 'Newsreader,serif', fontStyle: 'italic',
-            fontSize: 13.5, cursor: 'pointer', alignSelf: 'center', padding: '4px 12px',
-          }}
-        >close</button>
+        {/* CAPTION BRIEF — editable */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{
+            fontFamily: 'Sora,sans-serif', fontSize: 9.5, fontWeight: 700,
+            letterSpacing: '.28em', color: '#7d6a76', textTransform: 'uppercase',
+          }}>sharing brief</div>
+          <textarea
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            rows={3}
+            spellCheck={false}
+            style={{
+              width: '100%',
+              background: 'rgba(255,255,255,.04)',
+              border: '.5px solid rgba(255,255,255,.12)',
+              borderRadius: 14,
+              padding: '11px 13px',
+              color: '#f7e8f0',
+              fontFamily: 'Newsreader,serif',
+              fontStyle: 'italic',
+              fontSize: 14.5,
+              lineHeight: 1.45,
+              resize: 'none',
+              outline: 'none',
+            }}
+          />
+        </div>
+
+        {/* CHANNELS */}
+        <ShareChannels onPick={onPick} />
+
+        {/* ACTION PILLS — consistent with Scan card */}
+        <div style={{
+          display: 'flex', gap: 10, alignItems: 'center', justifyContent: 'center',
+          paddingTop: 4,
+        }}>
+          <ActionPill onClick={() => setRunId((n) => n + 1)} ariaLabel="Re-read card">
+            ↻ re-read
+          </ActionPill>
+          <ActionPill tone="primary" onClick={onNativeShare} ariaLabel="Share">
+            ↗ share
+          </ActionPill>
+          <ActionPill onClick={onClose} ariaLabel="Close">
+            close
+          </ActionPill>
+        </div>
 
         {toastMsg && (
           <div style={{
@@ -178,7 +228,7 @@ export function MirrorShareSheet({
 
       <style>{`
         @keyframes mss-fade { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes mss-rise { from { transform: translateY(16px); opacity: 0 } to { transform: none; opacity: 1 } }
+        @keyframes mss-rise { from { transform: translateY(20px); opacity: 0 } to { transform: none; opacity: 1 } }
       `}</style>
     </div>
   )
