@@ -997,19 +997,35 @@ export function MirrorPage() {
   const autoDemo = isDemoAccount && isForming && demoList.length > 0
   const list = showDemo || autoDemo ? demoList : mineList
 
-  // keyframes + fonts injection (idempotent)
+  // keyframes injection (idempotent). Fonts come from <link> in __root.tsx.
   useEffect(() => {
     if (document.getElementById('mirror-kf')) return
     const s = document.createElement('style')
     s.id = 'mirror-kf'
     s.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap');
       @keyframes mirror-orbit { to { transform: rotate(360deg); } }
       @keyframes mirror-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-      @keyframes mirror-aura { 0%,100% { opacity:.7 } 50% { opacity:1 } }
       @keyframes mirror-fade { from { opacity: 0 } to { opacity: 1 } }
       @keyframes mirror-pulse-dot { 0%,100% { transform: scale(1); opacity:.9 } 50% { transform: scale(1.4); opacity:.5 } }
+      @keyframes mirror-holo { 0% { background-position: 0% 0 } 100% { background-position: 200% 0 } }
+      @keyframes mirror-scan { 0% { transform: translateY(-100%); opacity: 0 } 12% { opacity: 1 } 88% { opacity: 1 } 100% { transform: translateY(420%); opacity: 0 } }
+      @keyframes mirror-bg-a { 0%,100% { transform: translate(0,0) } 50% { transform: translate(40px,-30px) } }
+      @keyframes mirror-bg-b { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-50px,30px) } }
+      @keyframes mirror-bg-c { 0%,100% { transform: translate(0,0) } 50% { transform: translate(20px,40px) } }
+      @keyframes mirror-tile-sweep { 0% { transform: translateX(-120%) skewX(-18deg); opacity: 0 } 30% { opacity: .7 } 100% { transform: translateX(220%) skewX(-18deg); opacity: 0 } }
       .mirror-shell { color-scheme: dark }
+      .mirror-tarot--open .mirror-scanbeam { animation: mirror-scan 1.6s cubic-bezier(.2,.7,.2,1) 1; }
+      .mirror-tarot:hover .mirror-scanbeam { animation: mirror-scan 1.6s cubic-bezier(.2,.7,.2,1) 1; }
+      .mirror-tile { position: relative; overflow: hidden; }
+      .mirror-tile::before, .mirror-tile::after { content: ''; position: absolute; pointer-events: none; }
+      .mirror-tile::before { inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 18%, transparent 38%); }
+      .mirror-tile::after { top: 0; left: 0; width: 64%; height: 34%; background: radial-gradient(120% 130% at 12% 0%, rgba(255,255,255,.17), rgba(255,255,255,.04) 42%, transparent 66%); }
+      .mirror-tile .mirror-tile-sheen { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent); opacity: 0; pointer-events: none; }
+      .mirror-tile:hover .mirror-tile-sheen { animation: mirror-tile-sweep .9s ease-out 1; }
+      @media (prefers-reduced-motion: reduce) {
+        .mirror-tarot--open .mirror-scanbeam, .mirror-tarot:hover .mirror-scanbeam,
+        .mirror-tile:hover .mirror-tile-sheen { animation: none !important; }
+      }
     `
     document.head.appendChild(s)
   }, [])
