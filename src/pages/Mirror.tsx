@@ -1203,11 +1203,8 @@ export function MirrorPage() {
         <MirrorShareSheet
           open
           onClose={() => setShareTarget(null)}
-          getNode={() => {
-            const root = shareTarget.source === 'overlay' ? overlayRef.current : heroRef.current
-            return (root?.querySelector('article') as HTMLElement | null) ?? null
-          }}
-          caption={`"${shareTarget.p.punch || shareTarget.p.insight}" — ${shareTarget.p.name} · shutap mirror`}
+          pattern={shareTarget.p}
+          defaultCaption={`"${shareTarget.p.punch || shareTarget.p.insight}" — ${shareTarget.p.name} · shutap mirror`}
           fileName={`mirror-${shareTarget.p.name.toLowerCase().replace(/\s+/g, '-')}.png`}
         />
       )}
