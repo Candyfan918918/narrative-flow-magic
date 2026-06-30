@@ -528,7 +528,7 @@ export function ScanShareCard({
         </div>
 
         {/* SHARE CHANNELS — Gen-Z chip row, consistent with Mirror sheet */}
-        <ShareChannels onPick={(k) => onShare(k)} />
+        <ShareChannels onPick={(k) => onShare(k)} channels={['sms', 'x', 'whatsapp', 'instagram', 'tiktok', 'copy']} />
 
         {/* ACTION PILLS — re-read / share / close, consistent with Mirror sheet */}
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', justifyContent: 'center' }}>
