@@ -480,10 +480,12 @@ export function LandingPage() {
         setTimeout(injectClaude, 0)
         setTimeout(injectClaude, 400)
         setTimeout(injectClaude, 1200)
-        // Forward any pending parent hash (e.g. arrived via /#spill from the
-        // Mirror page) once the iframe document is ready.
+        // Open the intent modal as soon as the iframe document is ready, then
+        // drop the cover so the modal (not the landing feed) is visible.
+        syncHashToIframe()
         setTimeout(syncHashToIframe, 400)
         setTimeout(syncHashToIframe, 1200)
+        setTimeout(() => setCoverUp(false), 900)
         // Bridge: route ONLY explicit mirror CTAs to /mirror. Earlier this
         // walked 6 ancestors and matched any parent textContent containing
         // "the mirror" — which captured the spill/scan CTAs whenever the
