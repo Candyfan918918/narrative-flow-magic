@@ -1298,23 +1298,17 @@ export function MirrorPage() {
             <div
               ref={heroTiltRef}
               style={{
-                width: 'min(460px, 100%, calc((100dvh - 260px) * 0.78))', minWidth: 240,
+                width: 'min(440px, 92vw)', margin: '0 auto',
                 position: 'relative', transformStyle: 'preserve-3d',
-                transition: 'transform 320ms cubic-bezier(.2,.7,.2,1)',
+                transition: 'transform .2s ease',
               } as React.CSSProperties}
             >
               <div ref={heroRef} style={{ position: 'relative' }}>
                 <TarotCard p={mostRecent} animate={animateHero} />
                 {revealing && <DeckBack onDone={() => setRevealing(false)} />}
-                {/* tracking glare */}
-                <div aria-hidden style={{
-                  position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none',
-                  background: 'radial-gradient(220px 220px at var(--glare-x,50%) var(--glare-y,30%), rgba(255,255,255,.22), transparent 60%)',
-                  opacity: 'var(--glare-o,0)' as unknown as number,
-                  mixBlendMode: 'screen', transition: 'opacity 200ms ease',
-                } as React.CSSProperties} />
               </div>
             </div>
+
             <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
               <ActionPill onClick={replay} ariaLabel="Replay reveal">
                 ↻ replay
