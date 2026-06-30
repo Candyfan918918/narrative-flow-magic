@@ -949,7 +949,6 @@ export function MirrorPage() {
   const { data: demo } = useQuery({
     queryKey: ['mirror-patterns', 'demo'],
     queryFn: () => fetchDemo(),
-    enabled: !isLoading && (mine?.length ?? 0) < 2,
     staleTime: 1000 * 60 * 30,
   })
 
