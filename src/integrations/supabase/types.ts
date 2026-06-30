@@ -436,6 +436,81 @@ export type Database = {
         }
         Relationships: []
       }
+      mirror_patterns: {
+        Row: {
+          count: number
+          created_at: string
+          depth: number
+          district: string
+          embedding: string | null
+          emoji: string
+          first_seen: string
+          id: string
+          insight: string
+          is_demo: boolean
+          last_seen: string
+          name: string
+          position: Json | null
+          punch: string
+          rarity: string
+          record: string
+          sources: Json
+          state: string
+          trend: number[]
+          trend_dir: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          depth?: number
+          district?: string
+          embedding?: string | null
+          emoji?: string
+          first_seen?: string
+          id?: string
+          insight?: string
+          is_demo?: boolean
+          last_seen?: string
+          name?: string
+          position?: Json | null
+          punch?: string
+          rarity?: string
+          record?: string
+          sources?: Json
+          state?: string
+          trend?: number[]
+          trend_dir?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          depth?: number
+          district?: string
+          embedding?: string | null
+          emoji?: string
+          first_seen?: string
+          id?: string
+          insight?: string
+          is_demo?: boolean
+          last_seen?: string
+          name?: string
+          position?: Json | null
+          punch?: string
+          rarity?: string
+          record?: string
+          sources?: Json
+          state?: string
+          trend?: number[]
+          trend_dir?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       mirror_sessions: {
         Row: {
           created_at: string
@@ -489,6 +564,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      mirror_signals: {
+        Row: {
+          created_at: string
+          embedding: string | null
+          id: string
+          pattern_id: string | null
+          ref_id: string
+          source: string
+          text_scrubbed: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          pattern_id?: string | null
+          ref_id: string
+          source: string
+          text_scrubbed?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          pattern_id?: string | null
+          ref_id?: string
+          source?: string
+          text_scrubbed?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mirror_signals_pattern_id_fkey"
+            columns: ["pattern_id"]
+            isOneToOne: false
+            referencedRelation: "mirror_patterns"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       outcomes: {
         Row: {
@@ -947,6 +1063,25 @@ export type Database = {
           pillar: string
           similarity: number
         }[]
+      }
+      match_user_patterns: {
+        Args: {
+          match_count?: number
+          p_user: string
+          q: string
+          similarity_floor?: number
+        }
+        Returns: {
+          district: string
+          id: string
+          name: string
+          similarity: number
+        }[]
+      }
+      mirror_depth_for: { Args: { _count: number }; Returns: number }
+      recompute_mirror_evolution: {
+        Args: { _decay_days?: number }
+        Returns: undefined
       }
       schedule_checkins: {
         Args: { p_alias_id: string; p_situation_id: string }
