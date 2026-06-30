@@ -1070,9 +1070,49 @@ export function MirrorPage() {
   // detail overlay
   const [openCard, setOpenCard] = useState<MirrorPatternView | null>(null)
   const heroRef = useRef<HTMLDivElement>(null)
+  const heroTiltRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
   // share sheet
   const [shareTarget, setShareTarget] = useState<{ p: MirrorPatternView; source: 'hero' | 'overlay' } | null>(null)
+  // cast filter
+  const [castFilter, setCastFilter] = useState<'all' | District | 'ruins'>('all')
+
+  // hero cursor tilt
+  useEffect(() => {
+    const el = heroTiltRef.current
+    if (!el) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) return
+    let raf = 0
+    const onMove = (e: MouseEvent) => {
+      const r = el.getBoundingClientRect()
+      const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2)
+      const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2)
+      const rx = Math.max(-1, Math.min(1, -dy)) * 9
+      const ry = Math.max(-1, Math.min(1, dx)) * 10
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        el.style.transform = `perspective(1100px) rotateX(${rx}deg) rotateY(${ry}deg)`
+        const gx = ((e.clientX - r.left) / r.width) * 100
+        const gy = ((e.clientY - r.top) / r.height) * 100
+        el.style.setProperty('--glare-x', `${gx}%`)
+        el.style.setProperty('--glare-y', `${gy}%`)
+        el.style.setProperty('--glare-o', '.35')
+      })
+    }
+    const onLeave = () => {
+      cancelAnimationFrame(raf)
+      el.style.transform = 'perspective(1100px) rotateX(0) rotateY(0)'
+      el.style.setProperty('--glare-o', '0')
+    }
+    el.addEventListener('mousemove', onMove)
+    el.addEventListener('mouseleave', onLeave)
+    return () => {
+      el.removeEventListener('mousemove', onMove)
+      el.removeEventListener('mouseleave', onLeave)
+      cancelAnimationFrame(raf)
+    }
+  }, [mostRecent?.id])
 
   // group by district
   const grouped = useMemo(() => {
