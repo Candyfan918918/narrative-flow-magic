@@ -3,7 +3,7 @@
    [↻ re-read] [↗ share] [close] pill row that matches the Scan share card.
    The preview is a scaled-down copy of the MirrorCard rendered from the
    pattern data so the user sees exactly what will be exported. */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { MirrorCard, type MirrorPatternView } from './mirror/MirrorCard'
 import { ShareChannels, type ShareChannelKey } from './ShareChannels'
