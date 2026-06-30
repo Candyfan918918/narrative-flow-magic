@@ -1092,7 +1092,7 @@ export function MirrorPage() {
         {/* hero card */}
         {mostRecent && (
           <div style={{ display: 'grid', placeItems: 'center', marginTop: 8 }}>
-            <div style={{ width: 'min(392px, 100%)', position: 'relative' }} ref={heroRef}>
+            <div style={{ width: 'min(392px, 100%, calc((100dvh - 280px) * 0.62))', minWidth: 240, position: 'relative' }} ref={heroRef}>
               <TarotCard p={mostRecent} animate={animateHero} />
               {revealing && <DeckBack onDone={() => setRevealing(false)} />}
             </div>
