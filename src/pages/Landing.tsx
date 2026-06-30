@@ -460,6 +460,13 @@ export function LandingPage() {
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
+  // Safety net: the intent cover must never stick forever.
+  useEffect(() => {
+    if (!coverUp) return
+    const id = setTimeout(() => setCoverUp(false), 3000)
+    return () => clearTimeout(id)
+  }, [coverUp])
+
 
   return (
     <iframe
