@@ -1045,6 +1045,8 @@ export function MirrorPage() {
   const [openCard, setOpenCard] = useState<MirrorPatternView | null>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
+  // share sheet
+  const [shareTarget, setShareTarget] = useState<{ p: MirrorPatternView; source: 'hero' | 'overlay' } | null>(null)
 
   // group by district
   const grouped = useMemo(() => {
