@@ -1234,6 +1234,15 @@ export function MirrorPage() {
         {/* hero card */}
         {mostRecent && (
           <div style={{ display: 'grid', placeItems: 'center', marginTop: 8 }}>
+            {isExample && (
+              <div style={{
+                marginBottom: 10, padding: '4px 12px', borderRadius: 999,
+                border: `.5px solid ${GOLD}88`, color: GOLD,
+                background: `${GOLD}14`,
+                fontFamily: "'Sora',sans-serif", fontSize: 10, fontWeight: 700,
+                letterSpacing: '.28em',
+              }}>EXAMPLE</div>
+            )}
             <div
               ref={heroTiltRef}
               style={{
