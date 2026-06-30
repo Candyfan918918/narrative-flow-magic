@@ -1197,6 +1197,40 @@ export function MirrorPage() {
           />
         )}
 
+        {!isLoading && isExample && (
+          <section style={{
+            marginTop: 22, marginBottom: 6, padding: '14px 18px', borderRadius: 16,
+            background: 'radial-gradient(125% 80% at 50% 0%, #260e1e, #100810 65%)',
+            border: `.5px solid ${GOLD}44`, color: INK,
+            display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, justifyContent: 'space-between',
+          }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{
+                fontFamily: "'Sora',sans-serif", fontSize: 10, fontWeight: 700,
+                letterSpacing: '.28em', color: GOLD, marginBottom: 4,
+              }}>STILL FORMING</div>
+              <div style={{
+                fontFamily: "'Newsreader',serif", fontStyle: 'italic',
+                color: MUTED, fontSize: 14, lineHeight: 1.35,
+              }}>this is an example reading — yours fills in the moment you spill or scan.</div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button onClick={() => navigate('/#spill')} style={{
+                background: '#e7548a', color: '#fff', border: 0, borderRadius: 999,
+                padding: '9px 16px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
+                fontSize: 12, cursor: 'pointer',
+              }}>🫧 spill →</button>
+              <button onClick={() => navigate('/#scan')} style={{
+                background: 'transparent', color: GOLD,
+                border: `.5px solid ${GOLD}66`, borderRadius: 999,
+                padding: '9px 16px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
+                fontSize: 12, cursor: 'pointer',
+              }}>✨ scan →</button>
+            </div>
+          </section>
+        )}
+
+
         {/* hero card */}
         {mostRecent && (
           <div style={{ display: 'grid', placeItems: 'center', marginTop: 8 }}>
