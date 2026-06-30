@@ -3,7 +3,7 @@
    [↻ re-read] [↗ share] [close] pill row that matches the Scan share card.
    The preview is a scaled-down copy of the MirrorCard rendered from the
    pattern data so the user sees exactly what will be exported. */
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { toPng } from 'html-to-image'
 import { MirrorCard, type MirrorPatternView } from './mirror/MirrorCard'
 import { ShareChannels, type ShareChannelKey } from './ShareChannels'
@@ -13,7 +13,7 @@ function copyToClipboard(text: string): Promise<void> {
 }
 
 export function MirrorShareSheet({
-  open, onClose, pattern, defaultCaption, fileName, url,
+  open, onClose, pattern, defaultCaption, fileName, url, renderCard,
 }: {
   open: boolean
   onClose: () => void
@@ -21,6 +21,8 @@ export function MirrorShareSheet({
   defaultCaption: string
   fileName: string
   url?: string
+  /** Optional: render the exact card shown on the page (e.g. TarotCard). */
+  renderCard?: () => ReactNode
 }) {
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [caption, setCaption] = useState(defaultCaption)
