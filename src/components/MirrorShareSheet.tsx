@@ -174,9 +174,8 @@ export function MirrorShareSheet({
           <span>your mirror named this one. share the whole card — never the signals behind it.</span>
         </div>
 
-        {/* CARD PREVIEW — exact render of the MirrorCard at the share width
-            (380px), uniformly scaled so the entire card fits in the sheet
-            and the preview box exactly contains it (no clipping, no gap). */}
+        {/* CARD PREVIEW — full MirrorCard rendered at share width then
+            uniformly scaled, centered, and fully contained (no clipping). */}
         <div
           ref={previewRef}
           key={runId}
@@ -185,6 +184,7 @@ export function MirrorShareSheet({
             width: SHARE_W * PREVIEW_SCALE,
             height: scaledH,
             margin: '0 auto',
+            overflow: 'hidden',
           }}
         >
           <div
@@ -201,6 +201,7 @@ export function MirrorShareSheet({
             <MirrorCard p={pattern} />
           </div>
         </div>
+
 
 
         {/* CAPTION — editable */}
