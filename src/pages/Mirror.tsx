@@ -1364,6 +1364,7 @@ export function MirrorPage() {
           pattern={shareTarget.p}
           defaultCaption={`"${shareTarget.p.punch || shareTarget.p.insight}" — ${shareTarget.p.name} · shutap mirror`}
           fileName={`mirror-${shareTarget.p.name.toLowerCase().replace(/\s+/g, '-')}.png`}
+          renderCard={() => <TarotCard p={shareTarget.p} animate={false} />}
         />
       )}
     </div>
