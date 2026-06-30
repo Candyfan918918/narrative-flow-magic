@@ -1120,7 +1120,7 @@ export function MirrorPage() {
                 background: 'transparent', border: 0, color: MUTED,
                 fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
               }}>↻ replay reveal</button>
-              <button onClick={() => shareCard(heroRef.current?.querySelector('article') as HTMLElement | null, mostRecent)} style={{
+              <button onClick={() => setShareTarget({ p: mostRecent, source: 'hero' })} style={{
                 background: 'transparent', border: 0, color: GOLD,
                 fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, cursor: 'pointer',
               }}>share this card →</button>
