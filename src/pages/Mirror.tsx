@@ -894,28 +894,8 @@ function DetailOverlay({
 }
 
 /* ─────────────── share ─────────────── */
-async function shareCard(node: HTMLElement | null, p: MirrorPatternView) {
-  if (!node) return
-  try {
-    const dataUrl = await toPng(node, {
-      cacheBust: true, pixelRatio: 2, backgroundColor: '#100810',
-    })
-    const blob = await (await fetch(dataUrl)).blob()
-    const file = new File([blob], `mirror-${p.name.toLowerCase().replace(/\s+/g, '-')}.png`, { type: 'image/png' })
-    const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void>; canShare?: (d: ShareData) => boolean }
-    if (nav.share && nav.canShare?.({ files: [file] })) {
-      await nav.share({ files: [file], title: `${p.name} — shutap mirror`, text: `"${p.punch || p.insight}"` })
-      return
-    }
-    // fallback: download
-    const a = document.createElement('a')
-    a.href = dataUrl
-    a.download = file.name
-    a.click()
-  } catch (e) {
-    console.warn('[mirror share]', e)
-  }
-}
+// Share now flows through MirrorShareSheet (rendered at the page root) so
+// the channel pills match the Scan share card exactly.
 
 /* ─────────────── forming state ─────────────── */
 function Forming({ onSpill, onPreview, hasDemo, previewing }: {
