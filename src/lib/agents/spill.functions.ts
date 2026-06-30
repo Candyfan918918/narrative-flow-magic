@@ -140,6 +140,24 @@ export const runSpill = createServerFn({ method: 'POST' })
       })
     }
 
+    // 5c. Mirror ingest — fire-and-forget; never blocks the spill payoff.
+    if (sit?.id) {
+      try {
+        const { ingestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
+        void ingestMirrorEvent({
+          data: {
+            source: 'spill',
+            ref_id: sit.id,
+            raw_text: scrub.clean_text,
+            district_hint: data.pillar === 'career' ? 'career'
+              : data.pillar === 'family' ? 'family'
+              : data.pillar === 'marriage' ? 'love'
+              : 'love',
+          },
+        })
+      } catch { /* never block the user flow */ }
+    }
+
     // 6. Companion — active felt-heard
     const companion = await runCompanion({
       data: {

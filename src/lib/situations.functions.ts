@@ -344,6 +344,21 @@ export const createComment = createServerFn({ method: 'POST' })
           .eq('id', sit.id)
       }
     } catch { /* non-blocking */ }
+
+    // Mirror ingest — a comment IS a behavior signal.
+    try {
+      if (row?.id) {
+        const { ingestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
+        void ingestMirrorEvent({
+          data: {
+            source: 'comments',
+            ref_id: row.id as string,
+            raw_text: (row as { clean_text: string }).clean_text ?? '',
+            district_hint: 'social',
+          },
+        })
+      }
+    } catch { /* non-blocking */ }
     return row
   })
 

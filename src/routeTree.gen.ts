@@ -37,6 +37,7 @@ import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/eve
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicHooksMirrorEvolutionRouteImport } from './routes/api/public/hooks/mirror-evolution'
 import { Route as ApiPublicHooksDispatchCheckinsRouteImport } from './routes/api/public/hooks/dispatch-checkins'
 
 const TrustRoute = TrustRouteImport.update({
@@ -179,6 +180,12 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksMirrorEvolutionRoute =
+  ApiPublicHooksMirrorEvolutionRouteImport.update({
+    id: '/api/public/hooks/mirror-evolution',
+    path: '/api/public/hooks/mirror-evolution',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksDispatchCheckinsRoute =
   ApiPublicHooksDispatchCheckinsRouteImport.update({
     id: '/api/public/hooks/dispatch-checkins',
@@ -213,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
+  '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -243,6 +251,7 @@ export interface FileRoutesByTo {
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
+  '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -275,6 +284,7 @@ export interface FileRoutesById {
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
+  '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -307,6 +317,7 @@ export interface FileRouteTypes {
     | '/checkin/$id'
     | '/api/feedback/events'
     | '/api/public/hooks/dispatch-checkins'
+    | '/api/public/hooks/mirror-evolution'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesByTo: FileRoutesByTo
@@ -337,6 +348,7 @@ export interface FileRouteTypes {
     | '/checkin/$id'
     | '/api/feedback/events'
     | '/api/public/hooks/dispatch-checkins'
+    | '/api/public/hooks/mirror-evolution'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   id:
@@ -368,6 +380,7 @@ export interface FileRouteTypes {
     | '/_authenticated/checkin/$id'
     | '/api/feedback/events'
     | '/api/public/hooks/dispatch-checkins'
+    | '/api/public/hooks/mirror-evolution'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesById: FileRoutesById
@@ -397,6 +410,7 @@ export interface RootRouteChildren {
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
+  ApiPublicHooksMirrorEvolutionRoute: typeof ApiPublicHooksMirrorEvolutionRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
 }
@@ -599,6 +613,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/mirror-evolution': {
+      id: '/api/public/hooks/mirror-evolution'
+      path: '/api/public/hooks/mirror-evolution'
+      fullPath: '/api/public/hooks/mirror-evolution'
+      preLoaderRoute: typeof ApiPublicHooksMirrorEvolutionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/dispatch-checkins': {
       id: '/api/public/hooks/dispatch-checkins'
       path: '/api/public/hooks/dispatch-checkins'
@@ -649,19 +670,10 @@ const rootRouteChildren: RootRouteChildren = {
   WhatHappensSlugRoute: WhatHappensSlugRoute,
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
+  ApiPublicHooksMirrorEvolutionRoute: ApiPublicHooksMirrorEvolutionRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   HallsHallRegionWindowRoute: HallsHallRegionWindowRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
