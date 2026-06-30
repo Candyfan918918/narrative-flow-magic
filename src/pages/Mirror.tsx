@@ -986,21 +986,24 @@ export function MirrorPage() {
   }, [])
   const isDemoAccount = !!userId && DEMO_PREVIEW_USER_IDS.has(userId)
 
+  const mineList = (mine ?? []) as unknown as MirrorPatternView[]
+  const isForming = mineList.length < 2
+
   const { data: demo } = useQuery({
     queryKey: ['mirror-patterns', 'demo'],
     queryFn: () => fetchDemo(),
-    enabled: isDemoAccount,
+    enabled: isForming,
     staleTime: 1000 * 60 * 30,
   })
 
-  const mineList = (mine ?? []) as unknown as MirrorPatternView[]
   const demoList = (demo ?? []) as unknown as MirrorPatternView[]
-  const isForming = mineList.length < 2
   const [showDemo, setShowDemo] = useState(false)
-  // Only the designated demo account sees the seeded cast automatically.
-  // All other accounts see the real Forming state (empty cards + CTAs).
-  const autoDemo = isDemoAccount && isForming && demoList.length > 0
+  // While forming, render the seeded cast as a clearly-labeled EXAMPLE so the
+  // page reads as a full styled reading instead of an empty shell. Display
+  // only — never persisted as the user's own data.
+  const autoDemo = isForming && demoList.length > 0
   const list = showDemo || autoDemo ? demoList : mineList
+  const isExample = autoDemo || showDemo
 
   // keyframes injection (idempotent). Fonts come from <link> in __root.tsx.
   useEffect(() => {
