@@ -494,7 +494,7 @@ export function LandingPage() {
       )}
       <iframe
         ref={iframeRef}
-        src="/shutap/Shutap-Landing.dc.html"
+        src="/shutap/Landing.dc.html"
         title="Shutap — Landing"
 
         onLoad={() => {
