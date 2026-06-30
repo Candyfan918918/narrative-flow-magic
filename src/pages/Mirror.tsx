@@ -863,7 +863,8 @@ function DetailOverlay({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 'min(380px, 100%)',
+          width: 'min(380px, 100%, calc((100dvh - 160px) * 0.62))',
+          minWidth: 240,
           margin: '0 auto',
           position: 'relative',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -1091,7 +1092,7 @@ export function MirrorPage() {
         {/* hero card */}
         {mostRecent && (
           <div style={{ display: 'grid', placeItems: 'center', marginTop: 8 }}>
-            <div style={{ width: 'min(392px, 100%)', position: 'relative' }} ref={heroRef}>
+            <div style={{ width: 'min(392px, 100%, calc((100dvh - 280px) * 0.62))', minWidth: 240, position: 'relative' }} ref={heroRef}>
               <TarotCard p={mostRecent} animate={animateHero} />
               {revealing && <DeckBack onDone={() => setRevealing(false)} />}
             </div>
