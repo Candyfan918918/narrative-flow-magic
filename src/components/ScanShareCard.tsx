@@ -515,74 +515,20 @@ export function ScanShareCard({
           </div>
         </div>
 
-        {/* SHARE TARGETS */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
-          {targets.map(([k, label]) => (
-            <button
-              key={k}
-              onClick={() => onShare(k)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 7,
-                padding: '9px 14px',
-                borderRadius: 999,
-                border: '.5px solid rgba(255,255,255,.18)',
-                background:
-                  k === 'instagram'
-                    ? 'linear-gradient(135deg,#feda75,#d62976 45%,#962fbf 75%,#4f5bd5)'
-                    : k === 'x' || k === 'tiktok'
-                      ? '#0b080f'
-                      : k === 'whatsapp'
-                        ? '#25D366'
-                        : k === 'sms'
-                          ? '#34C759'
-                          : 'rgba(255,255,255,.12)',
-                color: '#fff',
-                fontFamily: 'Sora,sans-serif',
-                fontWeight: 700,
-                fontSize: 12,
-                cursor: 'pointer',
-              }}
-            >
-              <span dangerouslySetInnerHTML={{ __html: LOGOS[k] || '' }} />
-              {label}
-            </button>
-          ))}
-        </div>
+        {/* SHARE CHANNELS — Gen-Z chip row, consistent with Mirror sheet */}
+        <ShareChannels onPick={(k) => onShare(k)} />
 
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-          <button
-            onClick={() => setRunId((n) => n + 1)}
-            style={{
-              fontFamily: 'Sora,sans-serif',
-              fontWeight: 700,
-              fontSize: 12,
-              letterSpacing: '.04em',
-              color: '#f7e8f0',
-              background: 'rgba(255,255,255,.06)',
-              border: '.5px solid rgba(255,255,255,.16)',
-              borderRadius: 999,
-              padding: '9px 18px',
-              cursor: 'pointer',
-            }}
-          >
-            ↻ replay
-          </button>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#c9a3b6',
-              fontFamily: 'Newsreader,serif',
-              fontStyle: 'italic',
-              fontSize: 13.5,
-              cursor: 'pointer',
-            }}
-          >
+        {/* ACTION PILLS — re-read / share / close, consistent with Mirror sheet */}
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', justifyContent: 'center' }}>
+          <ActionPill onClick={() => setRunId((n) => n + 1)} ariaLabel="Re-read card">
+            ↻ re-read
+          </ActionPill>
+          <ActionPill tone="primary" onClick={onNativeShare} ariaLabel="Share">
+            ↗ share
+          </ActionPill>
+          <ActionPill onClick={onClose} ariaLabel="Close">
             close
-          </button>
+          </ActionPill>
         </div>
       </div>
 
