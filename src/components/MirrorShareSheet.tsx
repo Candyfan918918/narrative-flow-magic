@@ -25,7 +25,11 @@ export function MirrorShareSheet({
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [caption, setCaption] = useState(defaultCaption)
   const [runId, setRunId] = useState(0)
+  const [scaledH, setScaledH] = useState<number>(420)
   const previewRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+  const SHARE_W = 380
+  const PREVIEW_SCALE = 0.78
 
   useEffect(() => { setCaption(defaultCaption) }, [defaultCaption])
 
@@ -35,6 +39,16 @@ export function MirrorShareSheet({
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
+
+  useEffect(() => {
+    const el = innerRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => {
+      setScaledH(Math.ceil(el.getBoundingClientRect().height * PREVIEW_SCALE))
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [open, runId])
 
   const shareUrl = useMemo(
     () => url || (typeof window !== 'undefined' ? window.location.origin + '/mirror' : 'https://shutap.com/mirror'),
@@ -155,14 +169,29 @@ export function MirrorShareSheet({
           letterSpacing: '.32em', color: '#9b8090', textTransform: 'uppercase',
         }}>preview & share</div>
 
-        {/* CARD PREVIEW — full card visible; outer sheet handles scroll */}
+        {/* CARD PREVIEW — exact render of the MirrorCard at the share width
+            (380px), uniformly scaled so the entire card fits in the sheet
+            and the preview box exactly contains it (no clipping, no gap). */}
         <div
+          ref={previewRef}
           key={runId}
-          style={{ display: 'flex', justifyContent: 'center' }}
+          style={{
+            position: 'relative',
+            width: SHARE_W * PREVIEW_SCALE,
+            height: scaledH,
+            margin: '0 auto',
+          }}
         >
           <div
-            ref={previewRef}
-            style={{ display: 'flex', justifyContent: 'center', zoom: 0.62 } as React.CSSProperties}
+            ref={innerRef}
+            style={{
+              width: SHARE_W,
+              transform: `scale(${PREVIEW_SCALE})`,
+              transformOrigin: 'top left',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+            }}
           >
             <MirrorCard p={pattern} />
           </div>
