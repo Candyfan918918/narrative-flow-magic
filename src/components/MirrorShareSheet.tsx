@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { MirrorCard, type MirrorPatternView } from './mirror/MirrorCard'
-import { ShareChannels, ActionPill, type ShareChannelKey } from './ShareChannels'
+import { ShareChannels, type ShareChannelKey } from './ShareChannels'
 
 function copyToClipboard(text: string): Promise<void> {
   try { return navigator.clipboard.writeText(text) } catch { return Promise.resolve() }
@@ -24,7 +24,7 @@ export function MirrorShareSheet({
 }) {
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [caption, setCaption] = useState(defaultCaption)
-  const [runId, setRunId] = useState(0)
+  const [runId] = useState(0)
   const [scaledH, setScaledH] = useState<number>(420)
   const previewRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
@@ -163,11 +163,16 @@ export function MirrorShareSheet({
           alignSelf: 'center', marginBottom: 2,
         }} />
 
+        {/* PREAMBLE — sparkle line at top */}
         <div style={{
-          textAlign: 'center',
-          fontFamily: "'Sora',sans-serif", fontSize: 10.5,
-          letterSpacing: '.32em', color: '#9b8090', textTransform: 'uppercase',
-        }}>preview & share</div>
+          display: 'flex', alignItems: 'flex-start', gap: 8,
+          fontFamily: "'Newsreader',serif", fontStyle: 'italic',
+          fontSize: 13, lineHeight: 1.45, color: '#b89bac',
+          padding: '0 4px',
+        }}>
+          <span aria-hidden style={{ color: '#e7548a', fontSize: 11, letterSpacing: '-.1em', flex: '0 0 auto', lineHeight: 1.6 }}>✦✦</span>
+          <span>your mirror named this one. share the whole card — never the signals behind it.</span>
+        </div>
 
         {/* CARD PREVIEW — exact render of the MirrorCard at the share width
             (380px), uniformly scaled so the entire card fits in the sheet
@@ -198,12 +203,12 @@ export function MirrorShareSheet({
         </div>
 
 
-        {/* CAPTION BRIEF — editable */}
+        {/* CAPTION — editable */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <div style={{
             fontFamily: 'Sora,sans-serif', fontSize: 9.5, fontWeight: 700,
             letterSpacing: '.28em', color: '#7d6a76', textTransform: 'uppercase',
-          }}>sharing brief</div>
+          }}>your caption · edit freely</div>
           <textarea
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
@@ -226,31 +231,15 @@ export function MirrorShareSheet({
           />
         </div>
 
-        {/* CHANNELS */}
+        {/* CHANNELS — share pill first, then platform pills */}
         <ShareChannels
           onPick={onPick}
-          channels={['sms', 'x', 'whatsapp', 'instagram', 'tiktok', 'copy']}
+          channels={['share', 'sms', 'x', 'whatsapp', 'instagram', 'tiktok', 'copy']}
         />
         <div style={{
           textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic',
           fontSize: 12.5, color: '#9b7d8c', marginTop: -4,
         }}>only the card leaves — never the signals behind it.</div>
-
-        {/* ACTION PILLS — consistent with Scan card */}
-        <div style={{
-          display: 'flex', gap: 10, alignItems: 'center', justifyContent: 'center',
-          paddingTop: 4,
-        }}>
-          <ActionPill onClick={() => setRunId((n) => n + 1)} ariaLabel="Re-read card">
-            ↻ re-read
-          </ActionPill>
-          <ActionPill tone="primary" onClick={onNativeShare} ariaLabel="Share">
-            ↗ share
-          </ActionPill>
-          <ActionPill onClick={onClose} ariaLabel="Close">
-            close
-          </ActionPill>
-        </div>
 
         {toastMsg && (
           <div style={{
