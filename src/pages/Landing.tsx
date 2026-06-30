@@ -426,6 +426,32 @@ export function LandingPage() {
   }
 
 
+  // Forward the parent URL hash into the iframe so /#spill, /#scan, /#mirror,
+  // /#ask open the right modal. The iframe page reads location.hash on init
+  // and listens to hashchange, but its own URL never carries our hash, so we
+  // poke it directly.
+  const syncHashToIframe = () => {
+    const iframe = iframeRef.current
+    if (!iframe) return
+    const h = window.location.hash || ''
+    if (!/^#(spill|scan|mirror|ask)$/.test(h)) return
+    try {
+      const w = iframe.contentWindow as (Window & { location: Location }) | null
+      if (!w) return
+      // Setting hash to the same value is a no-op + no hashchange fires, so
+      // clear it first to guarantee the iframe's hashchange handler runs.
+      try { w.location.hash = '' } catch { /* ignore */ }
+      try { w.location.hash = h } catch { /* ignore */ }
+    } catch { /* cross-origin */ }
+  }
+
+  useEffect(() => {
+    const onHash = () => syncHashToIframe()
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+
   return (
     <iframe
       ref={iframeRef}
@@ -437,8 +463,14 @@ export function LandingPage() {
         setTimeout(injectClaude, 0)
         setTimeout(injectClaude, 400)
         setTimeout(injectClaude, 1200)
-        // Bridge: when anything inside the iframe whose text says "the mirror"
-        // (the CTA + the companion-eye pop) is clicked, navigate to /mirror.
+        // Forward any pending parent hash (e.g. arrived via /#spill from the
+        // Mirror page) once the iframe document is ready.
+        setTimeout(syncHashToIframe, 400)
+        setTimeout(syncHashToIframe, 1200)
+        // Bridge: route ONLY explicit mirror CTAs to /mirror. Earlier this
+        // walked 6 ancestors and matched any parent textContent containing
+        // "the mirror" — which captured the spill/scan CTAs whenever the
+        // surrounding section mentioned the mirror in marketing copy.
         const installMirrorBridge = () => {
           try {
             const doc = iframeRef.current?.contentDocument
@@ -446,16 +478,25 @@ export function LandingPage() {
             if (!doc || !w || w.__shutapMirrorBridge) return
             w.__shutapMirrorBridge = true
             doc.addEventListener('click', (ev) => {
-              let node = ev.target as HTMLElement | null
-              for (let i = 0; node && i < 6; i++, node = node.parentElement) {
-                const txt = (node.textContent || '').trim().toLowerCase()
-                const ds = (node.dataset?.action || '').toLowerCase()
-                if (ds === 'mirror' || /\bthe mirror\b/.test(txt) || node.getAttribute?.('href') === '/mirror') {
-                  ev.preventDefault(); ev.stopPropagation()
-                  window.postMessage({ type: 'shutap-nav', to: '/mirror' }, '*')
-                  return
-                }
-              }
+              const target = ev.target as HTMLElement | null
+              if (!target) return
+              // Find the nearest interactive element the user actually clicked.
+              const hit = (target.closest?.(
+                '[data-action="mirror"], a[href="/mirror"], a[href$="#mirror"], [role="button"], button, a',
+              ) as HTMLElement | null) || target
+              const ownText = (hit.textContent || '').trim().toLowerCase()
+              const ds = (hit.dataset?.action || '').toLowerCase()
+              const href = hit.getAttribute?.('href') || ''
+              const isMirror =
+                ds === 'mirror' ||
+                href === '/mirror' ||
+                href.endsWith('#mirror') ||
+                // Only match when the clicked control's OWN text leads with
+                // "the mirror" — not just contains it somewhere deep.
+                /^the mirror(\s|$|✦|·|—|-)/.test(ownText)
+              if (!isMirror) return
+              ev.preventDefault(); ev.stopPropagation()
+              window.postMessage({ type: 'shutap-nav', to: '/mirror' }, '*')
             }, true)
           } catch { /* cross-origin or not ready */ }
         }
