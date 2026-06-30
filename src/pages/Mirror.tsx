@@ -25,11 +25,8 @@ import { supabase } from '@/integrations/supabase/client'
 import { MirrorShareSheet } from '@/components/MirrorShareSheet'
 import { ActionPill } from '@/components/ShareChannels'
 
-// Accounts allowed to preview the seeded demo cast in their own Mirror.
-// Everyone else sees the real (possibly empty) Forming state with CTAs.
-const DEMO_PREVIEW_USER_IDS = new Set<string>([
-  '28376810-e42d-4235-b70b-bba32bab6ecb',
-])
+// Demo cast is shown as an EXAMPLE to any forming account (display-only).
+
 import type { Alias } from '@/data/types'
 
 /* ─────────────── design tokens ─────────────── */
@@ -980,27 +977,31 @@ export function MirrorPage() {
     queryKey: ['mirror-patterns', 'me'],
     queryFn: () => fetchMine(),
   })
-  const [userId, setUserId] = useState<string | null>(null)
+  const [, setUserId] = useState<string | null>(null)
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
   }, [])
-  const isDemoAccount = !!userId && DEMO_PREVIEW_USER_IDS.has(userId)
+
+
+
+  const mineList = (mine ?? []) as unknown as MirrorPatternView[]
+  const isForming = mineList.length < 2
 
   const { data: demo } = useQuery({
     queryKey: ['mirror-patterns', 'demo'],
     queryFn: () => fetchDemo(),
-    enabled: isDemoAccount,
+    enabled: isForming,
     staleTime: 1000 * 60 * 30,
   })
 
-  const mineList = (mine ?? []) as unknown as MirrorPatternView[]
   const demoList = (demo ?? []) as unknown as MirrorPatternView[]
-  const isForming = mineList.length < 2
   const [showDemo, setShowDemo] = useState(false)
-  // Only the designated demo account sees the seeded cast automatically.
-  // All other accounts see the real Forming state (empty cards + CTAs).
-  const autoDemo = isDemoAccount && isForming && demoList.length > 0
+  // While forming, render the seeded cast as a clearly-labeled EXAMPLE so the
+  // page reads as a full styled reading instead of an empty shell. Display
+  // only — never persisted as the user's own data.
+  const autoDemo = isForming && demoList.length > 0
   const list = showDemo || autoDemo ? demoList : mineList
+  const isExample = autoDemo || showDemo
 
   // keyframes injection (idempotent). Fonts come from <link> in __root.tsx.
   useEffect(() => {
@@ -1196,9 +1197,52 @@ export function MirrorPage() {
           />
         )}
 
+        {!isLoading && isExample && (
+          <section style={{
+            marginTop: 22, marginBottom: 6, padding: '14px 18px', borderRadius: 16,
+            background: 'radial-gradient(125% 80% at 50% 0%, #260e1e, #100810 65%)',
+            border: `.5px solid ${GOLD}44`, color: INK,
+            display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, justifyContent: 'space-between',
+          }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{
+                fontFamily: "'Sora',sans-serif", fontSize: 10, fontWeight: 700,
+                letterSpacing: '.28em', color: GOLD, marginBottom: 4,
+              }}>STILL FORMING</div>
+              <div style={{
+                fontFamily: "'Newsreader',serif", fontStyle: 'italic',
+                color: MUTED, fontSize: 14, lineHeight: 1.35,
+              }}>this is an example reading — yours fills in the moment you spill or scan.</div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button onClick={() => navigate('/#spill')} style={{
+                background: '#e7548a', color: '#fff', border: 0, borderRadius: 999,
+                padding: '9px 16px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
+                fontSize: 12, cursor: 'pointer',
+              }}>🫧 spill →</button>
+              <button onClick={() => navigate('/#scan')} style={{
+                background: 'transparent', color: GOLD,
+                border: `.5px solid ${GOLD}66`, borderRadius: 999,
+                padding: '9px 16px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
+                fontSize: 12, cursor: 'pointer',
+              }}>✨ scan →</button>
+            </div>
+          </section>
+        )}
+
+
         {/* hero card */}
         {mostRecent && (
           <div style={{ display: 'grid', placeItems: 'center', marginTop: 8 }}>
+            {isExample && (
+              <div style={{
+                marginBottom: 10, padding: '4px 12px', borderRadius: 999,
+                border: `.5px solid ${GOLD}88`, color: GOLD,
+                background: `${GOLD}14`,
+                fontFamily: "'Sora',sans-serif", fontSize: 10, fontWeight: 700,
+                letterSpacing: '.28em',
+              }}>EXAMPLE</div>
+            )}
             <div
               ref={heroTiltRef}
               style={{
