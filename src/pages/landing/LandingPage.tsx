@@ -4,9 +4,29 @@
    Not wired as the default route yet — see src/pages/Landing.tsx (`?native=1` opt-in). */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useServerFn } from '@tanstack/react-start'
 import { ONBOARDING_FRAMES } from './data/onboarding'
 import { FALLBACK_ROOMS, type LandingRoom } from './data/rooms'
+import { SpillModal } from './modals/SpillModal'
+import { saveSituation } from '@/lib/situations.functions'
+import { supabase } from '@/integrations/supabase/client'
 import './landing.native.css'
+
+// Shared sync key (kept identical to iframe bridge in src/pages/Landing.tsx).
+const SYNCED_KEY = 'shutap_situations_synced'
+function pillarMap(p?: string | null): 'relationships' | 'marriage' | 'family' | 'career' {
+  if (p === 'family') return 'family'
+  if (p === 'marriage') return 'marriage'
+  if (p === 'career' || p === 'work') return 'career'
+  return 'relationships'
+}
+function hashKey(input: { pillar?: string | null; title?: string | null; body?: string | null; clean_text?: string | null }): string {
+  const norm = (s: unknown) => String(s ?? '').trim().toLowerCase().replace(/\s+/g, ' ').slice(0, 240)
+  const raw = pillarMap(input.pillar) + '|' + norm(input.title) + '|' + norm(input.body || input.clean_text)
+  let h = 5381
+  for (let i = 0; i < raw.length; i++) h = ((h << 5) + h + raw.charCodeAt(i)) | 0
+  return (h >>> 0).toString(36)
+}
 
 // Ordered identically to the iframe's REACTIONS (getter in Landing.dc.html line 427).
 const REACTIONS: Array<{ k: keyof LandingRoom['reactions']; color: string }> = [
