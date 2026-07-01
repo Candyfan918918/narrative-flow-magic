@@ -158,15 +158,13 @@ export function LandingNativePage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <a href="/stream" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}>rooms</a>
             <a href="/halls" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}>halls</a>
-            <div ref={undefined as never} style={{ position: 'relative' }}>
-              <button
-                type="button"
-                onClick={() => navigate('/welcome')}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#e7548a', color: '#fff', borderRadius: 999, padding: '9px 18px', cursor: 'pointer', fontFamily: SORA, fontWeight: 700, fontSize: 13, transition: '.18s', border: 'none' }}
-              >
-                join →
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/welcome')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#e7548a', color: '#fff', borderRadius: 999, padding: '9px 18px', cursor: 'pointer', fontFamily: SORA, fontWeight: 700, fontSize: 13, transition: '.18s', border: 'none' }}
+            >
+              join →
+            </button>
           </div>
         </div>
       </header>
