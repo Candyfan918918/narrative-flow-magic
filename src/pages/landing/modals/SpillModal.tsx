@@ -212,6 +212,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     setTurn(0); setThinking(false); setPhase('chat')
     setReflectSummary(null); setSupportMode('heard'); setComposed(null); setEditNote(null)
     setInput(''); setEditInstruction(''); setAiEditing(false)
+    usedFBRef.current = []
   }, [open, initialMsg])
 
   // Auto-scroll chat body on new bubbles / thinking dots.
