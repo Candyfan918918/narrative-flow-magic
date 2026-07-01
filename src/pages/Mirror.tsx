@@ -622,21 +622,21 @@ function TarotCard({
         {p.count}× · {p.trend_dir}{p.record ? ` · ${p.record}` : ''}
       </div>
 
-      {/* footer stamp */}
+      {/* footer stamp — full-brightness shared brand mark */}
       <div style={{
-        position: 'relative', marginTop: 10, display: 'flex',
-        justifyContent: 'center', alignItems: 'center', gap: 8, opacity: .55,
+        position: 'relative', marginTop: 16, display: 'flex',
+        justifyContent: 'center', alignItems: 'center', gap: 7,
       }}>
-        <span style={{ width: 12, height: 9 }}>
-          <svg viewBox="0 0 140 96" fill="none" style={{ width: '100%', height: '100%' }}>
-            <rect x="16" y="6" width="56" height="84" rx="28" fill={color} opacity=".8" />
-            <rect x="84" y="6" width="56" height="84" rx="28" fill={color} opacity=".8" />
-          </svg>
-        </span>
+        <EyeMark w={24} />
+        <ShutapWordmark size={13} ink={INK} accent="#e7548a" letterSpacing="-.02em" />
         <span style={{
-          fontFamily: "'Sora',sans-serif", fontSize: 9, letterSpacing: '.32em',
-          color: MUTED_2, textTransform: 'uppercase',
-        }}>shutap · the mirror</span>
+          width: 3, height: 3, borderRadius: '50%', background: '#7a5f6c',
+          display: 'inline-block',
+        }} />
+        <span style={{
+          fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 8.5,
+          letterSpacing: '.24em', textTransform: 'uppercase', color: '#8a6c7a',
+        }}>THE MIRROR</span>
       </div>
     </article>
   )
