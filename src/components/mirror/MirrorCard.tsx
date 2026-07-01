@@ -9,6 +9,7 @@ import {
   type District,
   type Rarity,
 } from '@/lib/agents/mirror-guards'
+import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
 
 const DISTRICT_PALETTE: Record<District, { ink: string; glow: string }> = {
   self: { ink: '#C8B6FF', glow: 'rgba(200,182,255,.22)' },
@@ -285,9 +286,25 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
             marginTop: 14, fontFamily: 'Sora, sans-serif', fontSize: 10, letterSpacing: '.22em',
             color: 'rgba(255,255,255,.4)', textTransform: 'uppercase',
           }}>
-            {p.record} · SHUTAP · THE MIRROR
+            {p.record}
           </div>
         )}
+        {/* footer stamp — full-brightness brand mark */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: 7, marginTop: 16,
+        }}>
+          <EyeMark w={24} />
+          <ShutapWordmark size={13} ink="#f7e8f0" accent="#e7548a" letterSpacing="-.02em" />
+          <span style={{
+            width: 3, height: 3, borderRadius: '50%', background: '#7a5f6c',
+            display: 'inline-block',
+          }} />
+          <span style={{
+            fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: 8.5,
+            letterSpacing: '.24em', textTransform: 'uppercase', color: '#8a6c7a',
+          }}>THE MIRROR</span>
+        </div>
       </div>
     </article>
   )
