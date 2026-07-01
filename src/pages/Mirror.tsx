@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
+import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
 
 import {
   listMirrorPatterns,
