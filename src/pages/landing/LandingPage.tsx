@@ -306,6 +306,7 @@ export function LandingNativePage() {
       )}
 
       <SpillModal open={spillOpen} onClose={closeSpill} />
+      <ScanModal open={scanOpen} onClose={closeScan} />
     </div>
   )
 }
