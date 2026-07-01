@@ -255,3 +255,43 @@ function FaqRow({ q, a, last }: { q: string; a: string; last?: boolean }) {
     </details>
   )
 }
+
+/* Pixel-parity port of DCLogic.roomTile() from Landing.dc.html (lines 721–745). */
+function RoomTile({ room: r, navigate }: { room: LandingRoom; navigate: (to: string) => void }) {
+  const heardTint = {
+    bg: r.support === 'heard' ? 'rgba(231,84,138,.08)' : 'rgba(91,138,94,.10)',
+    fg: r.support === 'heard' ? '#c1216b' : '#3a6b3c',
+    br: r.support === 'heard' ? 'rgba(193,33,107,.18)' : 'rgba(91,138,94,.22)',
+  }
+  const label = r.support === 'heard' ? 'looking to be heard' : 'open to advice'
+  return (
+    <div className="rtile" onClick={() => navigate(`/stream#room-${r.id}`)}>
+      <div style={{ padding: '15px 16px 14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: heardTint.bg, color: heardTint.fg, border: `.5px solid ${heardTint.br}`, borderRadius: 999, padding: '4px 10px', fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.06em' }}>{label}</span>
+          <span style={{ fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', marginLeft: 'auto' }}>{r.hours}</span>
+        </div>
+        <h4 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 15, lineHeight: 1.28, margin: '0 0 10px', color: '#0b080f' }}>{r.title}</h4>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
+          <span style={{ width: 20, height: 20, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 12, flex: 'none', animation: 'bob 2.8s ease-in-out infinite' }}>{r.emoji}</span>
+          <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#6b4a5c', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.alias}</span>
+        </div>
+        <div style={{ marginBottom: 9 }}>
+          <div style={{ height: 6, borderRadius: 3, overflow: 'hidden', display: 'flex', gap: 1 }}>
+            {REACTIONS.map(rx => (
+              <span key={rx.k} style={{ flex: r.reactions[rx.k], background: rx.color, height: '100%' }} />
+            ))}
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c' }}>
+          <span><b style={{ color: '#c1216b', fontStyle: 'normal' }}>{r.relates}</b> said 'omg same'</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }} />
+            {r.sitting} in
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
