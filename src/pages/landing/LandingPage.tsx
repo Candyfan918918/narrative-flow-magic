@@ -283,52 +283,57 @@ export function LandingNativePage() {
               </div>
               <a href="/stream" className="prose-link" style={{ fontSize: 13 }}>see all rooms →</a>
             </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => navigate('/stream#room-featured')}
-              className="featured-tile"
-              style={{ background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 22, overflow: 'hidden', cursor: 'pointer', transition: 'transform .18s, box-shadow .2s' }}
-            >
-              <div style={{ padding: '24px 26px 20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(231,84,138,.18)', color: '#f7b8d4', border: '.5px solid rgba(231,84,138,.28)', borderRadius: 999, padding: '4px 11px', fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.06em' }}>looking to be heard</span>
-                  <span style={{ fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>3h ago</span>
-                  <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }} />
-                    31 sitting in
-                  </span>
-                </div>
-                <h2 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(19px,3.5vw,24px)', lineHeight: 1.22, color: '#fff', margin: '0 0 14px', letterSpacing: '-.01em' }}>
-                  My sister told me she's been scared of me since we were kids. I had no idea.
-                </h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-                  <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(231,84,138,.2)', display: 'grid', placeItems: 'center', fontSize: 15, flex: 'none' }}>🦋</span>
-                  <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>Wistful Ethiopian Butterfly</span>
-                </div>
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 7 }}>how the room is holding this</div>
-                  <div style={{ height: 8, borderRadius: 4, overflow: 'hidden', display: 'flex', gap: 1 }}>
-                    <span style={{ flex: 42, background: '#e7548a', borderRadius: '3px 0 0 3px' }} />
-                    <span style={{ flex: 31, background: '#c87c4a' }} />
-                    <span style={{ flex: 14, background: '#5B8A5E' }} />
-                    <span style={{ flex: 8, background: '#7F77DD' }} />
-                    <span style={{ flex: 5, background: '#c1a02b', borderRadius: '0 3px 3px 0' }} />
+            {featured && (() => {
+              const total = Object.values(featured.reactions).reduce((a, b) => a + b, 0) || 1
+              const pct = (n: number) => Math.round((n / total) * 100)
+              const label = featured.support === 'heard' ? 'looking to be heard' : 'open to advice'
+              return (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(`/stream#room-${featured.id}`)}
+                  className="featured-tile"
+                  style={{ background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 22, overflow: 'hidden', cursor: 'pointer', transition: 'transform .18s, box-shadow .2s' }}
+                >
+                  <div style={{ padding: '24px 26px 20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(231,84,138,.18)', color: '#f7b8d4', border: '.5px solid rgba(231,84,138,.28)', borderRadius: 999, padding: '4px 11px', fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.06em' }}>{label}</span>
+                      <span style={{ fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>{featured.hours} ago</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }} />
+                        {featured.sitting} sitting in
+                      </span>
+                    </div>
+                    <h2 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(19px,3.5vw,24px)', lineHeight: 1.22, color: '#fff', margin: '0 0 14px', letterSpacing: '-.01em' }}>
+                      {featured.title}
+                    </h2>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                      <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(231,84,138,.2)', display: 'grid', placeItems: 'center', fontSize: 15, flex: 'none' }}>{featured.emoji}</span>
+                      <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>{featured.alias}</span>
+                    </div>
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 7 }}>how the room is holding this</div>
+                      <div style={{ height: 8, borderRadius: 4, overflow: 'hidden', display: 'flex', gap: 1 }}>
+                        {REACTIONS.map((rx, i) => (
+                          <span key={rx.k} style={{ flex: featured.reactions[rx.k], background: rx.color, borderRadius: i === 0 ? '3px 0 0 3px' : i === REACTIONS.length - 1 ? '0 3px 3px 0' : undefined }} />
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', gap: 14, marginTop: 7, fontSize: 11.5, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', flexWrap: 'wrap' }}>
+                        <span>🤍 i hear you <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>{pct(featured.reactions.heard)}%</b></span>
+                        <span>🫂 omg same <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>{pct(featured.reactions.same)}%</b></span>
+                        <span>💪 you've got this <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>{pct(featured.reactions.strong)}%</b></span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+                      <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>
+                        <b style={{ color: '#f7b8d4', fontStyle: 'normal' }}>{featured.relates}</b> said 'omg same'
+                      </span>
+                      <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#e7548a' }}>enter the room →</span>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 14, marginTop: 7, fontSize: 11.5, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', flexWrap: 'wrap' }}>
-                    <span>🤍 i hear you <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>42%</b></span>
-                    <span>🫂 omg same <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>31%</b></span>
-                    <span>💪 you've got this <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>14%</b></span>
-                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
-                  <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>
-                    <b style={{ color: '#f7b8d4', fontStyle: 'normal' }}>89</b> said 'omg same'
-                  </span>
-                  <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#e7548a' }}>enter the room →</span>
-                </div>
-              </div>
-            </div>
+              )
+            })()}
           </div>
         </section>
 
