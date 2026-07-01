@@ -19,6 +19,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { ScanShareCard, type ScanRecord } from '@/components/ScanShareCard'
+import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
 
 const SORA = "'Sora', system-ui, sans-serif"
 const NEWSREADER = "'Newsreader', Georgia, serif"
@@ -483,6 +484,14 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
 
       {phase === 'result' && result && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '32px 22px 36px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 22 }}>
+          {/* branded lockup — shared EyeMark + accent wordmark + SCAN eyebrow */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <EyeMark w={34} />
+              <ShutapWordmark size={15} ink="#f7e8f0" accent="#e7548a" letterSpacing="-.03em" />
+            </div>
+            <span style={{ fontFamily: SORA, fontWeight: 800, fontSize: 10, letterSpacing: '.34em', color: col }}>SCAN</span>
+          </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(72px,16vw,108px)', letterSpacing: '-.04em', lineHeight: 1, color: col }}>{displayScore}</div>
             <div style={{ marginTop: 8, fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: col }}>intensity · {band}</div>
