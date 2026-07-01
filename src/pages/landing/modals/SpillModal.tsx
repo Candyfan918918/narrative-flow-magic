@@ -195,6 +195,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const titleElRef = useRef<HTMLDivElement | null>(null)
   const bodyElRef = useRef<HTMLDivElement | null>(null)
+  const usedFBRef = useRef<string[]>([])
 
   // Lock body scroll when open + reset when closing.
   useEffect(() => {
