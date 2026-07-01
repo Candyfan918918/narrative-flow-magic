@@ -20,7 +20,7 @@ export const Route = createFileRoute('/')({
       { rel: "canonical", href: "/" },
       // Start the landing iframe document downloading in parallel with the
       // SPA JS bundle so the inner page is warm by the time React mounts it.
-      { rel: "preload", as: "document", href: "/shutap/Shutap-Landing.dc.html" },
+      { rel: "preload", as: "document", href: "/shutap/Landing.dc.html" },
     ],
     scripts: [
       {
