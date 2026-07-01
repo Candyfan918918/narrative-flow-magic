@@ -132,8 +132,30 @@ export function LandingNativePage() {
           </div>
         </section>
 
+        {/* STREAM PREVIEW — pixel-parity port of Landing.dc.html §STREAM PREVIEW + buildFeed()/roomTile() */}
+        <section style={{ padding: '8px 0 32px' }}>
+          <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#e7548a' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', boxShadow: '0 0 0 3px rgba(231,84,138,.18)', display: 'block' }} />
+                rooms open
+              </div>
+              <a href="/stream" className="prose-link" style={{ fontSize: 13 }}>all rooms →</a>
+            </div>
+            <div style={{ display: 'flex', gap: 13, alignItems: 'flex-start' }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13, minWidth: 0 }}>
+                {[0, 2].map(i => FALLBACK_ROOMS[i] && <RoomTile key={FALLBACK_ROOMS[i].id} room={FALLBACK_ROOMS[i]} navigate={navigate} />)}
+              </div>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13, minWidth: 0 }}>
+                {[1, 3].map(i => FALLBACK_ROOMS[i] && <RoomTile key={FALLBACK_ROOMS[i].id} room={FALLBACK_ROOMS[i]} navigate={navigate} />)}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* WHAT IS SHUTAP + FAQ */}
         <section style={{ padding: '32px 0 24px' }}>
+
           <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
             <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 14 }}>what is shutap</div>
             <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.65, color: '#2e1a26', margin: '0 0 10px', maxWidth: '52ch' }}>
