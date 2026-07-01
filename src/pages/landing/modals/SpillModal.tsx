@@ -252,9 +252,14 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       setThinking(false)
       if (ready) { setPhase('reflect'); void runReflect(after, merged) }
     } catch {
-      // fallback — a single warm nudge, no crash.
-      setMsgs([...nextMsgs, { role: 'companion', say: ["ok — that's a lot. want to keep going, or is this the shape of it?"], hasQ: true }])
+      // Scripted fallback — verbatim behavior from spillFallbackTurn() in iframe.
+      const fb = spillFallbackTurn(scrubbed.clean, draft, nextTurn, usedFBRef.current)
+      const merged = mergeDraft(draft, fb.updated as Draft)
+      setDraft(merged)
+      const after: Msg[] = [...nextMsgs, { role: 'companion', say: fb.say, hasQ: fb.hasQ }]
+      setMsgs(after)
       setThinking(false)
+      if (fb.ready) { setPhase('reflect'); void runReflect(after, merged) }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [msgs, turn, draft])
