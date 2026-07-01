@@ -349,10 +349,10 @@ export function LandingNativePage() {
             </div>
             <div style={{ display: 'flex', gap: 13, alignItems: 'flex-start' }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13, minWidth: 0 }}>
-                {[0, 2].map(i => FALLBACK_ROOMS[i] && <RoomTile key={FALLBACK_ROOMS[i].id} room={FALLBACK_ROOMS[i]} navigate={navigate} />)}
+                {[0, 2].map(i => gridRooms[i] && <RoomTile key={gridRooms[i].id} room={gridRooms[i]} navigate={navigate} />)}
               </div>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13, minWidth: 0 }}>
-                {[1, 3].map(i => FALLBACK_ROOMS[i] && <RoomTile key={FALLBACK_ROOMS[i].id} room={FALLBACK_ROOMS[i]} navigate={navigate} />)}
+                {[1, 3].map(i => gridRooms[i] && <RoomTile key={gridRooms[i].id} room={gridRooms[i]} navigate={navigate} />)}
               </div>
             </div>
           </div>
