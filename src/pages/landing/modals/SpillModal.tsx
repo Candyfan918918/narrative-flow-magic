@@ -78,6 +78,52 @@ function mergeDraft(d: Draft, u: Partial<Draft> & { arc?: Arc } | undefined): Dr
   return base
 }
 
+// Rule-based fallback — verbatim port of spillFallbackTurn() from
+// Landing.dc.html line 928. Mutates `usedFB` (like iframe's spill._usedFB).
+type FallbackResult = { say: string[]; hasQ: boolean; updated: Partial<Draft> & { arc?: Arc }; ready: boolean }
+function spillFallbackTurn(lastAnswer: string, draft: Draft, turnQ: number, usedFB: string[]): FallbackResult {
+  const a = (lastAnswer || '').toLowerCase()
+  let pillar: Pillar = draft?.pillar || null
+  if (!pillar) {
+    if (/\b(partner|boyfriend|girlfriend|husband|wife|ex|dating)\b/.test(a)) pillar = 'relationships'
+    else if (/\b(mom|dad|mother|father|sister|brother|family|parent)\b/.test(a)) pillar = 'family'
+    else if (/\b(boss|work|job|manager|coworker|office)\b/.test(a)) pillar = 'career'
+    else if (/\b(married|marriage|spouse)\b/.test(a)) pillar = 'marriage'
+  }
+  const heavy = /\b(died|death|passed|hit me|hurt me|abuse|hopeless)\b/.test(a)
+  const reacts = ["ok, that's genuinely not okay.", 'oh, that would get to anyone.', "no — you're not wrong to be upset about that.", "yeah, i'd be rattled too."]
+  const names = ["you're not crazy for sitting with this.", 'anyone in your shoes would feel exactly this.', "and you've clearly been carrying it a while."]
+  const reaction = reacts.filter(r => usedFB.indexOf(r) < 0)[0] || reacts[0]
+  usedFB.push(reaction)
+  const name = names[Math.min(turnQ, names.length - 1)]
+  const arcQs = [
+    'what actually happened — walk me through it?',
+    'is this a one-off, or does it keep happening? when?',
+    'what does it leave you feeling, mostly?',
+    'and why do you think it lands that hard for you?',
+    'have you said any of this to them yet?',
+    'how\u2019d that go — what did they do?',
+    'what else have you tried with this?',
+    'so what are you thinking you\u2019ll do now?',
+  ]
+  const ready = turnQ >= arcQs.length
+  const q = arcQs[Math.min(turnQ - 1, arcQs.length - 1)]
+  const say = ready ? [reaction, name] : [reaction, q]
+  return {
+    say,
+    hasQ: !ready,
+    updated: {
+      pillar: pillar || null,
+      tags: [],
+      anchor: null,
+      emotional_core: null,
+      the_real_thing: ready ? 'this has been building for a while' : null,
+      named_and_landed: ready,
+    },
+    ready,
+  }
+}
+
 // Minimal PII scrubber — mirrors DCLogic.scrubPII (Landing.dc.html §1c).
 function scrubPII(text: string): { clean: string; changes: Array<{ type: string; label: string; count: number }> } {
   let t = text || ''
@@ -149,6 +195,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const titleElRef = useRef<HTMLDivElement | null>(null)
   const bodyElRef = useRef<HTMLDivElement | null>(null)
+  const usedFBRef = useRef<string[]>([])
 
   // Lock body scroll when open + reset when closing.
   useEffect(() => {
@@ -165,6 +212,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     setTurn(0); setThinking(false); setPhase('chat')
     setReflectSummary(null); setSupportMode('heard'); setComposed(null); setEditNote(null)
     setInput(''); setEditInstruction(''); setAiEditing(false)
+    usedFBRef.current = []
   }, [open, initialMsg])
 
   // Auto-scroll chat body on new bubbles / thinking dots.
@@ -204,9 +252,14 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       setThinking(false)
       if (ready) { setPhase('reflect'); void runReflect(after, merged) }
     } catch {
-      // fallback — a single warm nudge, no crash.
-      setMsgs([...nextMsgs, { role: 'companion', say: ["ok — that's a lot. want to keep going, or is this the shape of it?"], hasQ: true }])
+      // Scripted fallback — verbatim behavior from spillFallbackTurn() in iframe.
+      const fb = spillFallbackTurn(scrubbed.clean, draft, nextTurn, usedFBRef.current)
+      const merged = mergeDraft(draft, fb.updated as Draft)
+      setDraft(merged)
+      const after: Msg[] = [...nextMsgs, { role: 'companion', say: fb.say, hasQ: fb.hasQ }]
+      setMsgs(after)
       setThinking(false)
+      if (fb.ready) { setPhase('reflect'); void runReflect(after, merged) }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [msgs, turn, draft])
