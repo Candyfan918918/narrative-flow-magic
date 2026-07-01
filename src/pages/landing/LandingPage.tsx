@@ -12,6 +12,8 @@ import { ScanModal } from './modals/ScanModal'
 import { MirrorTeaser } from './sections/MirrorTeaser'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
+import { SHUTAP_SEED } from '@/data/seed'
+import type { Room } from '@/data/types'
 import './landing.native.css'
 
 // Shared sync key (kept identical to iframe bridge in src/pages/Landing.tsx).
@@ -50,6 +52,59 @@ const HOF_CARDS: Array<{ href: string; label: string; quote: string; credit: str
   { href: '/halls#healing',   label: '🌿 Most Healing',   quote: '"I\'ve been going to therapy for two years and I finally cried today."',                   credit: '🕊 Patient Indian Dove · 611 resonance' },
 ]
 
+// ── Live-rooms loader ─────────────────────────────────────────────────
+// Mirrors the iframe's ROOMS source (window.SHUTAP_SEED.rooms) plus the
+// user-published rooms in localStorage['shutap_user_situations'] used by
+// the React Stream page. Falls back to FALLBACK_ROOMS only when nothing
+// live is available (e.g. seed import failed).
+function toLandingRoom(r: Partial<Room> & { id: string }): LandingRoom {
+  const rx = r.reactions || { heard: 0, same: 0, strong: 0, time: 0, brave: 0 }
+  return {
+    id: r.id,
+    alias: r.alias || 'someone',
+    emoji: r.emoji || '🩷',
+    title: r.title || 'untitled',
+    support: (r.support as 'heard' | 'advice') || 'heard',
+    relates: r.relates ?? 0,
+    sitting: r.sitting ?? 1,
+    hours: r.hours || 'just now',
+    reactions: {
+      heard: rx.heard ?? 0,
+      same: rx.same ?? 0,
+      strong: rx.strong ?? 0,
+      time: rx.time ?? 0,
+      brave: rx.brave ?? 0,
+    },
+    body: r.body || '',
+  }
+}
+function loadUserRoomsLive(): LandingRoom[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem('shutap_user_situations')
+    if (!raw) return []
+    const arr = JSON.parse(raw) as Array<Partial<Room> & { id: string }>
+    return arr.filter(r => r && r.id).map(toLandingRoom)
+  } catch { return [] }
+}
+function useLiveRooms(): LandingRoom[] {
+  const [version, setVersion] = useState(0)
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'shutap_user_situations') setVersion(v => v + 1)
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+  return useMemo(() => {
+    const seed = (SHUTAP_SEED.rooms || []).map(r => toLandingRoom(r as Room))
+    const user = loadUserRoomsLive()
+    const live = [...user, ...seed]
+    return live.length ? live : FALLBACK_ROOMS
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version])
+}
+
 export function LandingNativePage() {
   const navigate = useNavigate()
   const save = useServerFn(saveSituation)
@@ -60,6 +115,9 @@ export function LandingNativePage() {
   const [onbIdx, setOnbIdx] = useState(0)
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
+  const liveRooms = useLiveRooms()
+  const featured = liveRooms[0]
+  const gridRooms = liveRooms.slice(0, 4)
 
   const openSpill = useCallback(() => { setSpillOpen(true) }, [])
   const closeSpill = useCallback(() => { setSpillOpen(false) }, [])
@@ -225,52 +283,57 @@ export function LandingNativePage() {
               </div>
               <a href="/stream" className="prose-link" style={{ fontSize: 13 }}>see all rooms →</a>
             </div>
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => navigate('/stream#room-featured')}
-              className="featured-tile"
-              style={{ background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 22, overflow: 'hidden', cursor: 'pointer', transition: 'transform .18s, box-shadow .2s' }}
-            >
-              <div style={{ padding: '24px 26px 20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(231,84,138,.18)', color: '#f7b8d4', border: '.5px solid rgba(231,84,138,.28)', borderRadius: 999, padding: '4px 11px', fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.06em' }}>looking to be heard</span>
-                  <span style={{ fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>3h ago</span>
-                  <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }} />
-                    31 sitting in
-                  </span>
-                </div>
-                <h2 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(19px,3.5vw,24px)', lineHeight: 1.22, color: '#fff', margin: '0 0 14px', letterSpacing: '-.01em' }}>
-                  My sister told me she's been scared of me since we were kids. I had no idea.
-                </h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-                  <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(231,84,138,.2)', display: 'grid', placeItems: 'center', fontSize: 15, flex: 'none' }}>🦋</span>
-                  <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>Wistful Ethiopian Butterfly</span>
-                </div>
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 7 }}>how the room is holding this</div>
-                  <div style={{ height: 8, borderRadius: 4, overflow: 'hidden', display: 'flex', gap: 1 }}>
-                    <span style={{ flex: 42, background: '#e7548a', borderRadius: '3px 0 0 3px' }} />
-                    <span style={{ flex: 31, background: '#c87c4a' }} />
-                    <span style={{ flex: 14, background: '#5B8A5E' }} />
-                    <span style={{ flex: 8, background: '#7F77DD' }} />
-                    <span style={{ flex: 5, background: '#c1a02b', borderRadius: '0 3px 3px 0' }} />
+            {featured && (() => {
+              const total = Object.values(featured.reactions).reduce((a, b) => a + b, 0) || 1
+              const pct = (n: number) => Math.round((n / total) * 100)
+              const label = featured.support === 'heard' ? 'looking to be heard' : 'open to advice'
+              return (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(`/stream#room-${featured.id}`)}
+                  className="featured-tile"
+                  style={{ background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 22, overflow: 'hidden', cursor: 'pointer', transition: 'transform .18s, box-shadow .2s' }}
+                >
+                  <div style={{ padding: '24px 26px 20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(231,84,138,.18)', color: '#f7b8d4', border: '.5px solid rgba(231,84,138,.28)', borderRadius: 999, padding: '4px 11px', fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.06em' }}>{label}</span>
+                      <span style={{ fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>{featured.hours} ago</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }} />
+                        {featured.sitting} sitting in
+                      </span>
+                    </div>
+                    <h2 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(19px,3.5vw,24px)', lineHeight: 1.22, color: '#fff', margin: '0 0 14px', letterSpacing: '-.01em' }}>
+                      {featured.title}
+                    </h2>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                      <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(231,84,138,.2)', display: 'grid', placeItems: 'center', fontSize: 15, flex: 'none' }}>{featured.emoji}</span>
+                      <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>{featured.alias}</span>
+                    </div>
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 7 }}>how the room is holding this</div>
+                      <div style={{ height: 8, borderRadius: 4, overflow: 'hidden', display: 'flex', gap: 1 }}>
+                        {REACTIONS.map((rx, i) => (
+                          <span key={rx.k} style={{ flex: featured.reactions[rx.k], background: rx.color, borderRadius: i === 0 ? '3px 0 0 3px' : i === REACTIONS.length - 1 ? '0 3px 3px 0' : undefined }} />
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', gap: 14, marginTop: 7, fontSize: 11.5, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', flexWrap: 'wrap' }}>
+                        <span>🤍 i hear you <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>{pct(featured.reactions.heard)}%</b></span>
+                        <span>🫂 omg same <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>{pct(featured.reactions.same)}%</b></span>
+                        <span>💪 you've got this <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>{pct(featured.reactions.strong)}%</b></span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+                      <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>
+                        <b style={{ color: '#f7b8d4', fontStyle: 'normal' }}>{featured.relates}</b> said 'omg same'
+                      </span>
+                      <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#e7548a' }}>enter the room →</span>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 14, marginTop: 7, fontSize: 11.5, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', flexWrap: 'wrap' }}>
-                    <span>🤍 i hear you <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>42%</b></span>
-                    <span>🫂 omg same <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>31%</b></span>
-                    <span>💪 you've got this <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>14%</b></span>
-                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
-                  <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>
-                    <b style={{ color: '#f7b8d4', fontStyle: 'normal' }}>89</b> said 'omg same'
-                  </span>
-                  <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#e7548a' }}>enter the room →</span>
-                </div>
-              </div>
-            </div>
+              )
+            })()}
           </div>
         </section>
 
@@ -286,10 +349,10 @@ export function LandingNativePage() {
             </div>
             <div style={{ display: 'flex', gap: 13, alignItems: 'flex-start' }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13, minWidth: 0 }}>
-                {[0, 2].map(i => FALLBACK_ROOMS[i] && <RoomTile key={FALLBACK_ROOMS[i].id} room={FALLBACK_ROOMS[i]} navigate={navigate} />)}
+                {[0, 2].map(i => gridRooms[i] && <RoomTile key={gridRooms[i].id} room={gridRooms[i]} navigate={navigate} />)}
               </div>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13, minWidth: 0 }}>
-                {[1, 3].map(i => FALLBACK_ROOMS[i] && <RoomTile key={FALLBACK_ROOMS[i].id} room={FALLBACK_ROOMS[i]} navigate={navigate} />)}
+                {[1, 3].map(i => gridRooms[i] && <RoomTile key={gridRooms[i].id} room={gridRooms[i]} navigate={navigate} />)}
               </div>
             </div>
           </div>
