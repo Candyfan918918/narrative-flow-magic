@@ -42,6 +42,14 @@ const REACTIONS: Array<{ k: keyof LandingRoom['reactions']; color: string }> = [
 const SORA = "'Sora', system-ui, sans-serif"
 const NEWSREADER = "'Newsreader', Georgia, serif"
 
+// Hall of Fame preview cards — pixel-parity port of Landing.dc.html §HOF PREVIEW (lines 273–292).
+const HOF_CARDS: Array<{ href: string; label: string; quote: string; credit: string }> = [
+  { href: '/halls#loving',    label: '🤍 Most Loving',    quote: '"I called my dad for the first time in eight years. he picked up."',                        credit: '🕊 Older Korean Crane · 847 resonance' },
+  { href: '/halls#relatable', label: '🫂 Most Relatable', quote: '"I cried in the work bathroom and a stranger passed me toilet paper under the stall."',    credit: '🦌 Tender Mexican Fawn · 1.2k resonance' },
+  { href: '/halls#brave',     label: '💪 Bravest',        quote: '"I walked out of my own wedding. it was the right thing to do."',                          credit: '🦁 Defiant Kenyan Lion · 932 resonance' },
+  { href: '/halls#healing',   label: '🌿 Most Healing',   quote: '"I\'ve been going to therapy for two years and I finally cried today."',                   credit: '🕊 Patient Indian Dove · 611 resonance' },
+]
+
 export function LandingNativePage() {
   const navigate = useNavigate()
   const save = useServerFn(saveSituation)
@@ -188,6 +196,65 @@ export function LandingNativePage() {
           </div>
         </section>
 
+        {/* FEATURED ROOM — pixel-parity port of Landing.dc.html §FEATURED ROOM (lines 210–252) */}
+        <section style={{ padding: '12px 0 32px' }}>
+          <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#e7548a' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'pulse 3s infinite', display: 'block' }} />
+                a room right now
+              </div>
+              <a href="/stream" className="prose-link" style={{ fontSize: 13 }}>see all rooms →</a>
+            </div>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate('/stream#room-featured')}
+              className="featured-tile"
+              style={{ background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 22, overflow: 'hidden', cursor: 'pointer', transition: 'transform .18s, box-shadow .2s' }}
+            >
+              <div style={{ padding: '24px 26px 20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(231,84,138,.18)', color: '#f7b8d4', border: '.5px solid rgba(231,84,138,.28)', borderRadius: 999, padding: '4px 11px', fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.06em' }}>looking to be heard</span>
+                  <span style={{ fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>3h ago</span>
+                  <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }} />
+                    31 sitting in
+                  </span>
+                </div>
+                <h2 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(19px,3.5vw,24px)', lineHeight: 1.22, color: '#fff', margin: '0 0 14px', letterSpacing: '-.01em' }}>
+                  My sister told me she's been scared of me since we were kids. I had no idea.
+                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                  <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(231,84,138,.2)', display: 'grid', placeItems: 'center', fontSize: 15, flex: 'none' }}>🦋</span>
+                  <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>Wistful Ethiopian Butterfly</span>
+                </div>
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 7 }}>how the room is holding this</div>
+                  <div style={{ height: 8, borderRadius: 4, overflow: 'hidden', display: 'flex', gap: 1 }}>
+                    <span style={{ flex: 42, background: '#e7548a', borderRadius: '3px 0 0 3px' }} />
+                    <span style={{ flex: 31, background: '#c87c4a' }} />
+                    <span style={{ flex: 14, background: '#5B8A5E' }} />
+                    <span style={{ flex: 8, background: '#7F77DD' }} />
+                    <span style={{ flex: 5, background: '#c1a02b', borderRadius: '0 3px 3px 0' }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: 14, marginTop: 7, fontSize: 11.5, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', flexWrap: 'wrap' }}>
+                    <span>🤍 i hear you <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>42%</b></span>
+                    <span>🫂 omg same <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>31%</b></span>
+                    <span>💪 you've got this <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>14%</b></span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+                  <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>
+                    <b style={{ color: '#f7b8d4', fontStyle: 'normal' }}>89</b> said 'omg same'
+                  </span>
+                  <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#e7548a' }}>enter the room →</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* STREAM PREVIEW — pixel-parity port of Landing.dc.html §STREAM PREVIEW + buildFeed()/roomTile() */}
         <section style={{ padding: '8px 0 32px' }}>
           <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
@@ -208,6 +275,29 @@ export function LandingNativePage() {
             </div>
           </div>
         </section>
+
+        {/* HALL OF FAME PREVIEW — pixel-parity port of Landing.dc.html §HOF PREVIEW (lines 265–295) */}
+        <section style={{ padding: '8px 0 36px' }}>
+          <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#e7548a' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', boxShadow: '0 0 0 3px rgba(231,84,138,.18)', display: 'block' }} />
+                Hall of Fame
+              </div>
+              <a href="/halls" className="prose-link" style={{ fontSize: 13 }}>all halls →</a>
+            </div>
+            <div style={{ display: 'flex', gap: 11, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
+              {HOF_CARDS.map(c => (
+                <a key={c.href} href={c.href} className="hof-card" style={{ display: 'block', textDecoration: 'none', flex: 'none', width: 230, background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 16, padding: 16, transition: 'transform .18s, border-color .18s' }}>
+                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 10 }}>{c.label}</div>
+                  <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.4, color: '#0b080f', margin: '0 0 10px' }}>{c.quote}</p>
+                  <div style={{ fontSize: 11.5, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>{c.credit}</div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
 
         {/* WHAT IS SHUTAP + FAQ */}
         <section style={{ padding: '32px 0 24px' }}>
