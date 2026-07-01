@@ -52,6 +52,59 @@ const HOF_CARDS: Array<{ href: string; label: string; quote: string; credit: str
   { href: '/halls#healing',   label: '🌿 Most Healing',   quote: '"I\'ve been going to therapy for two years and I finally cried today."',                   credit: '🕊 Patient Indian Dove · 611 resonance' },
 ]
 
+// ── Live-rooms loader ─────────────────────────────────────────────────
+// Mirrors the iframe's ROOMS source (window.SHUTAP_SEED.rooms) plus the
+// user-published rooms in localStorage['shutap_user_situations'] used by
+// the React Stream page. Falls back to FALLBACK_ROOMS only when nothing
+// live is available (e.g. seed import failed).
+function toLandingRoom(r: Partial<Room> & { id: string }): LandingRoom {
+  const rx = r.reactions || { heard: 0, same: 0, strong: 0, time: 0, brave: 0 }
+  return {
+    id: r.id,
+    alias: r.alias || 'someone',
+    emoji: r.emoji || '🩷',
+    title: r.title || 'untitled',
+    support: (r.support as 'heard' | 'advice') || 'heard',
+    relates: r.relates ?? 0,
+    sitting: r.sitting ?? 1,
+    hours: r.hours || 'just now',
+    reactions: {
+      heard: rx.heard ?? 0,
+      same: rx.same ?? 0,
+      strong: rx.strong ?? 0,
+      time: rx.time ?? 0,
+      brave: rx.brave ?? 0,
+    },
+    body: r.body || '',
+  }
+}
+function loadUserRoomsLive(): LandingRoom[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem('shutap_user_situations')
+    if (!raw) return []
+    const arr = JSON.parse(raw) as Array<Partial<Room> & { id: string }>
+    return arr.filter(r => r && r.id).map(toLandingRoom)
+  } catch { return [] }
+}
+function useLiveRooms(): LandingRoom[] {
+  const [version, setVersion] = useState(0)
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'shutap_user_situations') setVersion(v => v + 1)
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+  return useMemo(() => {
+    const seed = (SHUTAP_SEED.rooms || []).map(r => toLandingRoom(r as Room))
+    const user = loadUserRoomsLive()
+    const live = [...user, ...seed]
+    return live.length ? live : FALLBACK_ROOMS
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version])
+}
+
 export function LandingNativePage() {
   const navigate = useNavigate()
   const save = useServerFn(saveSituation)
