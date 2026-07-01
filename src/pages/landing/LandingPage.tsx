@@ -297,6 +297,8 @@ export function LandingNativePage() {
           </div>
         </div>
       )}
+
+      <SpillModal open={spillOpen} onClose={closeSpill} />
     </div>
   )
 }
