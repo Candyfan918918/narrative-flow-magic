@@ -9,6 +9,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { ShareChannels, ActionPill, type ShareChannelKey } from './ShareChannels'
+import { EyeMark, ShutapWordmark } from './EyeMark'
 
 export interface ScanRecord {
   score: number
@@ -331,28 +332,8 @@ export function ScanShareCard({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <svg
-                viewBox="0 0 56 56"
-                fill="none"
-                className="sc-eye"
-                style={{ width: 22, height: 22 }}
-              >
-                <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#scEyeG)" />
-                <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#scEyeG)" />
-                <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#scPupG)" />
-                <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#scPupG)" />
-              </svg>
-              <span
-                style={{
-                  fontFamily: 'Sora,sans-serif',
-                  fontWeight: 800,
-                  fontSize: 15,
-                  letterSpacing: '-.03em',
-                  color: '#f7e8f0',
-                }}
-              >
-                shut<span style={{ color: '#e7548a' }}>ap</span>
-              </span>
+              <EyeMark w={34} />
+              <ShutapWordmark size={15} ink="#f7e8f0" accent="#e7548a" />
             </div>
             <span
               style={{
