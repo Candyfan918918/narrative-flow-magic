@@ -158,6 +158,13 @@ export function LandingNativePage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <a href="/stream" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}>rooms</a>
             <a href="/halls" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}>halls</a>
+            <button
+              type="button"
+              onClick={() => navigate('/welcome')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#e7548a', color: '#fff', borderRadius: 999, padding: '9px 18px', cursor: 'pointer', fontFamily: SORA, fontWeight: 700, fontSize: 13, transition: '.18s', border: 'none' }}
+            >
+              join →
+            </button>
           </div>
         </div>
       </header>
@@ -192,6 +199,18 @@ export function LandingNativePage() {
               </div>
               <MirrorTeaser onOpen={openMirror} />
 
+            </div>
+            {/* Pseudonym / trust paragraph — pixel-parity port of Landing.dc.html heroAlias (line 206 + buildHeroAlias signed-out branch lines 592–597). */}
+            <div style={{ marginTop: 18, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c' }}>
+              everyone here — teller and room alike — sits under a pseudonym. your real name, email, and identity stay permanently outside. that protection is what makes it possible to be frank.{' '}
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate('/welcome')}
+                style={{ cursor: 'pointer', color: '#c1216b', borderBottom: '1px solid rgba(193,33,107,.3)' }}
+              >
+                get your alias →
+              </span>
             </div>
           </div>
         </section>
