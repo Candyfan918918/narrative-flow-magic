@@ -42,6 +42,14 @@ const REACTIONS: Array<{ k: keyof LandingRoom['reactions']; color: string }> = [
 const SORA = "'Sora', system-ui, sans-serif"
 const NEWSREADER = "'Newsreader', Georgia, serif"
 
+// Hall of Fame preview cards — pixel-parity port of Landing.dc.html §HOF PREVIEW (lines 273–292).
+const HOF_CARDS: Array<{ href: string; label: string; quote: string; credit: string }> = [
+  { href: '/halls#loving',    label: '🤍 Most Loving',    quote: '"I called my dad for the first time in eight years. he picked up."',                        credit: '🕊 Older Korean Crane · 847 resonance' },
+  { href: '/halls#relatable', label: '🫂 Most Relatable', quote: '"I cried in the work bathroom and a stranger passed me toilet paper under the stall."',    credit: '🦌 Tender Mexican Fawn · 1.2k resonance' },
+  { href: '/halls#brave',     label: '💪 Bravest',        quote: '"I walked out of my own wedding. it was the right thing to do."',                          credit: '🦁 Defiant Kenyan Lion · 932 resonance' },
+  { href: '/halls#healing',   label: '🌿 Most Healing',   quote: '"I\'ve been going to therapy for two years and I finally cried today."',                   credit: '🕊 Patient Indian Dove · 611 resonance' },
+]
+
 export function LandingNativePage() {
   const navigate = useNavigate()
   const save = useServerFn(saveSituation)
