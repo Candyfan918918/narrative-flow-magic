@@ -382,8 +382,8 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   }, [])
 
   useEffect(() => {
-    if (open && phase === 'loading' && !result) void fetchNext()
-  }, [open, phase, result, fetchNext])
+    if (open && phase === 'loading' && !current && !result) void fetchNext()
+  }, [open, phase, current, result, fetchNext])
 
   const submitAnswer = useCallback((answer: string) => {
     if (!current) return
@@ -391,11 +391,6 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
     setCurrent(null)
     setPhase('loading')
   }, [current])
-
-  // Re-run fetch after qa updates when phase is loading and no current card
-  useEffect(() => {
-    if (open && phase === 'loading' && !current && !result) void fetchNext()
-  }, [qa, open, phase, current, result, fetchNext])
 
   // ─────────── persist ───────────
   const doPersist = useCallback(async (isPublic: boolean) => {
