@@ -1,0 +1,225 @@
+/* Native React landing (pixel-parity target for public/shutap/Landing.dc.html).
+   This is the Step-1 scaffold from .lovable/plan.md: hero + FAQ + footer + onboarding modal + companion pill.
+   Spill / Scan / Mirror CTAs and the feed preview will be ported in follow-up turns.
+   Not wired as the default route yet — see src/pages/Landing.tsx (`?native=1` opt-in). */
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ONBOARDING_FRAMES } from './data/onboarding'
+import './landing.native.css'
+
+const SORA = "'Sora', system-ui, sans-serif"
+const NEWSREADER = "'Newsreader', Georgia, serif"
+
+export function LandingNativePage() {
+  const navigate = useNavigate()
+  const [onbOpen, setOnbOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    try { return !localStorage.getItem('shutap_onb_seen') } catch { return true }
+  })
+  const [onbIdx, setOnbIdx] = useState(0)
+
+  // Intent hash handling — bounce spill/scan/mirror to the legacy iframe overlay
+  // (native modals land in Step 4/5), or forward `#mirror` to the React /mirror route.
+  useEffect(() => {
+    const h = window.location.hash
+    if (!h) return
+    if (h === '#mirror') { history.replaceState(null, '', window.location.pathname); navigate('/mirror'); return }
+    if (h === '#spill' || h === '#scan' || h === '#ask') {
+      // Native modals not built yet — hand off to legacy iframe with the intent hash intact.
+      window.location.replace('/?legacy=1' + h)
+    }
+  }, [navigate])
+
+  const dismissOnb = useCallback(() => {
+    try { localStorage.setItem('shutap_onb_seen', '1') } catch { /* ignore */ }
+    setOnbOpen(false)
+  }, [])
+  const advanceOnb = useCallback(() => {
+    if (onbIdx >= ONBOARDING_FRAMES.length - 1) { dismissOnb(); return }
+    setOnbIdx(i => i + 1)
+  }, [onbIdx, dismissOnb])
+
+  const openSpill = useCallback(() => { window.location.href = '/?legacy=1#spill' }, [])
+  const openScan = useCallback(() => { window.location.href = '/?legacy=1#scan' }, [])
+  const openMirror = useCallback(() => { navigate('/mirror') }, [navigate])
+
+  const frame = useMemo(() => ONBOARDING_FRAMES[onbIdx], [onbIdx])
+
+  return (
+    <div style={{ background: '#fdf0f5', color: '#0b080f', minHeight: '100vh', fontFamily: "'Inter',system-ui,sans-serif" }}>
+      {/* shared eye gradients — same defs the iframe used */}
+      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
+        <defs>
+          <linearGradient id="eyeG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#e7548a" />
+            <stop offset="100%" stopColor="#a01a55" />
+          </linearGradient>
+          <linearGradient id="pupG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#2e0d1a" />
+            <stop offset="100%" stopColor="#100608" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      {/* HEADER */}
+      <header style={{ position: 'sticky', top: 0, zIndex: 40, background: 'rgba(253,240,245,.88)', backdropFilter: 'blur(18px)', borderBottom: '.5px solid rgba(11,8,15,.07)' }}>
+        <div style={{ maxWidth: 740, margin: '0 auto', padding: '11px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}>
+            <span style={{ width: 32, height: 23, display: 'block', animation: 'eblink 3.4s infinite', transformOrigin: 'center' }}>
+              <svg viewBox="0 0 140 96" fill="none" style={{ display: 'block', width: '100%', height: '100%' }}>
+                <rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
+                <rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
+                <ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)" />
+                <ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)" />
+              </svg>
+            </span>
+            <span style={{ fontFamily: SORA, fontWeight: 800, fontSize: 19, letterSpacing: '-.04em', color: '#0b080f' }}>shut<span style={{ color: '#e7548a' }}>ap</span></span>
+          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <a href="/stream" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}>rooms</a>
+            <a href="/halls" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}>halls</a>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        {/* HERO */}
+        <section style={{ position: 'relative', overflow: 'hidden', padding: '64px 0 36px' }}>
+          <div style={{ position: 'absolute', inset: '-20% 0 auto 10%', height: '70vh', background: 'radial-gradient(ellipse at center,rgba(231,84,138,.13),transparent 62%)', pointerEvents: 'none', animation: 'drift 22s ease-in-out infinite' }} />
+          <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px', position: 'relative' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 600, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 22 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'shimmer 3s ease-in-out infinite', display: 'block' }} />
+              <span>rooms open now</span>
+            </div>
+            <h1 style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(30px,6vw,50px)', lineHeight: 1.15, letterSpacing: '-.015em', margin: '0 0 20px', color: '#0b080f', maxWidth: '14ch' }}>
+              finally, somewhere to <em style={{ fontStyle: 'normal', background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>not shut up.</em>
+            </h1>
+            <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 18, lineHeight: 1.6, color: '#4a3040', maxWidth: '46ch', margin: '0 0 30px' }}>
+              venting is free therapy — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, maxWidth: 480 }}>
+                <button type="button" onClick={openSpill} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8, background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', padding: '18px 18px 16px', borderRadius: 18, cursor: 'pointer', transition: '.18s', border: 'none', boxShadow: '0 12px 28px -12px rgba(193,33,107,.55)' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 16, letterSpacing: '-.01em' }}>spill it</div>
+                  <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: 'rgba(255,255,255,.85)', lineHeight: 1.4 }}>tell your story — opens a room the world can sit in.</div>
+                </button>
+                <button type="button" onClick={openScan} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8, background: '#fff', color: '#0b080f', padding: '18px 18px 16px', borderRadius: 18, cursor: 'pointer', transition: '.18s', border: '1.5px solid rgba(231,84,138,.28)' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#e7548a" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M12 3a9 9 0 1 0 9 9" /><path d="M12 12l5-5" /><circle cx={12} cy={12} r={1.6} fill="#e7548a" stroke="none" /></svg>
+                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 16, letterSpacing: '-.01em', color: '#c1216b' }}>scan it</div>
+                  <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#6b4a5c', lineHeight: 1.4 }}>60-second read — get a private intensity score.</div>
+                </button>
+              </div>
+              <button type="button" onClick={openMirror} style={{ textAlign: 'left', marginTop: 12, width: '100%', maxWidth: 480, display: 'flex', alignItems: 'center', gap: 12, background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '.5px solid rgba(231,84,138,.32)', borderRadius: 16, padding: '13px 15px', cursor: 'pointer' }}>
+                <span style={{ width: 30, height: 21, display: 'block', flex: 'none' }}><svg viewBox="0 0 140 96" fill="none" style={{ display: 'block', width: '100%', height: '100%' }}><rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" /><rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" /><ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)" /><ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)" /></svg></span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 14, color: '#f7e8f0' }}>the mirror <span style={{ color: '#e9c06a' }}>✦</span></div>
+                  <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#caaebb', marginTop: 2, lineHeight: 1.4 }}>your patterns &amp; your arc — drawn from everything you've poured in.</div>
+                </div>
+                <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12.5, color: '#f7b8d4', flex: 'none' }}>open →</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* WHAT IS SHUTAP + FAQ */}
+        <section style={{ padding: '32px 0 24px' }}>
+          <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
+            <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 14 }}>what is shutap</div>
+            <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.65, color: '#2e1a26', margin: '0 0 10px', maxWidth: '52ch' }}>
+              a pseudonymous place to vent about relationships, marriage, family, and work — and see what actually happened next for people who lived your exact thing.
+            </p>
+            <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.65, color: '#6b4a5c', margin: '0 0 24px', maxWidth: '52ch' }}>
+              <span onClick={openSpill} className="prose-link">spill it</span> — one question at a time, the companion helps you find the words. or{' '}
+              <span onClick={openScan} className="prose-link">scan it</span> — sixty seconds of questions, a private read saved just for you.
+            </p>
+            <FaqRow q="is this anonymous?" a="pseudonymous. you get a persistent alias — something like 🦉 Quiet Indonesian Owl — generated the first time you sit down. your real name is never attached to anything, anywhere, including us." />
+            <FaqRow q="what happens when i vent?" a="you open a room. people who've lived your exact situation respond, relate, and share what actually happened next for them. your story, your rules — you stay in control of what's shown." />
+            <FaqRow q="what does the companion do?" a="it helps you put words to it. asks one question at a time, reflects back what it heard, and helps you decide whether you want the room to hear it — or whether you just needed to say it to yourself first." />
+            <FaqRow q="what happens after I share?" a="your story opens a room. people can sit in it, relate to it, react to it. when the room goes quiet for 72 hours — it rests. if it's carried enough resonance, it finds its way into the hall of fame." last />
+          </div>
+        </section>
+
+        {/* FOOTER */}
+        <footer style={{ padding: '28px 22px 90px', color: '#9e7a8c', fontSize: 12, textAlign: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', lineHeight: 1.6 }}>
+          <div>shutap — a room for what you're carrying</div>
+          <div style={{ marginTop: 3 }}>18+ · pseudonymous · your real name never shows · your story, your rules 🤍</div>
+          <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: '7px 16px', justifyContent: 'center', fontStyle: 'normal' }}>
+            <a href="/terms" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Terms</a>
+            <a href="/privacy" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Privacy</a>
+            <a href="/guidelines" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Guidelines</a>
+            <a href="/safety" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Safety</a>
+            <a href="mailto:hello@shutap.com" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Contact</a>
+          </div>
+          <div style={{ marginTop: 9, fontSize: 11.5, color: '#b09aa6', maxWidth: '42ch', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.5 }}>
+            shutap is your group chat, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
+          </div>
+          <div style={{ marginTop: 12, fontFamily: SORA, fontStyle: 'normal', fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#6b4a5c' }}>you don't have to shut up here</div>
+        </footer>
+      </main>
+
+      {/* Companion pill */}
+      <button type="button" aria-label="Ask the companion" onClick={openSpill} style={{ position: 'fixed', left: 'calc(50% - 29px)', bottom: 24, zIndex: 35, width: 58, height: 58, borderRadius: '50%', background: 'rgba(231,84,138,0.18)', backdropFilter: 'blur(4px)', boxShadow: '0 12px 30px -8px rgba(60,10,30,.35)', cursor: 'pointer', display: 'grid', placeItems: 'center', animation: 'pulse 4s infinite', border: 'none' }}>
+        <svg className="sc-eye" viewBox="0 0 56 56" fill="none" style={{ width: 32, height: 32, display: 'block', pointerEvents: 'none' }}>
+          <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
+          <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
+          <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)" />
+          <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)" />
+        </svg>
+      </button>
+
+      {/* Onboarding modal (shown once) */}
+      {onbOpen && frame && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 95, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div onClick={dismissOnb} style={{ position: 'absolute', inset: 0, background: 'rgba(10,5,14,.72)', backdropFilter: 'blur(8px)' }} />
+          <div role="dialog" style={{ position: 'relative', width: '100%', maxWidth: 420, background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '.5px solid rgba(255,255,255,.14)', borderRadius: 24, padding: '26px 28px 28px', textAlign: 'center', animation: 'pop .35s ease' }}>
+            <div onClick={dismissOnb} role="button" style={{ position: 'absolute', top: 16, right: 18, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#9e7a8c', cursor: 'pointer' }}>skip</div>
+            <div style={{ marginBottom: 16 }}>
+              {frame.eye ? (
+                <span style={{ display: 'inline-block', width: 46, height: 46 }}>
+                  <svg viewBox="0 0 56 56" fill="none" style={{ display: 'block', width: '100%', height: '100%' }}>
+                    <circle cx={28} cy={28} r={27} fill="rgba(231,84,138,.12)" />
+                    <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
+                    <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
+                    <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)" />
+                    <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)" />
+                  </svg>
+                </span>
+              ) : (
+                <span style={{ fontSize: 42, lineHeight: 1 }}>{frame.emoji}</span>
+              )}
+            </div>
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 22, lineHeight: 1.3, color: '#fff', marginBottom: 18 }}>{frame.big}</div>
+            <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+              {frame.rows.map(([icon, text], i) => (
+                <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 20, lineHeight: '24px', flex: 'none' }}>{icon}</span>
+                  <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, lineHeight: 1.5, color: '#f3c6da' }}>{text}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 7, justifyContent: 'center', margin: '4px 0 18px' }}>
+              {ONBOARDING_FRAMES.map((_, i) => (
+                <span key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: i === onbIdx ? '#e7548a' : 'rgba(255,255,255,.18)' }} />
+              ))}
+            </div>
+            <div onClick={advanceOnb} role="button" style={{ background: '#e7548a', color: '#fff', borderRadius: 14, padding: 14, fontFamily: SORA, fontWeight: 700, fontSize: 14.5, cursor: 'pointer' }}>
+              {onbIdx >= ONBOARDING_FRAMES.length - 1 ? "let's go →" : 'next →'}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function FaqRow({ q, a, last }: { q: string; a: string; last?: boolean }) {
+  return (
+    <details style={{ borderTop: '.5px solid rgba(11,8,15,.08)', borderBottom: last ? '.5px solid rgba(11,8,15,.08)' : undefined, padding: '15px 0' }}>
+      <summary style={{ fontFamily: SORA, fontWeight: 600, fontSize: 14, cursor: 'pointer', color: '#0b080f', display: 'flex', justifyContent: 'space-between', alignItems: 'center', listStyle: 'none' }}>
+        {q}<span style={{ color: '#e7548a', fontSize: 20, fontWeight: 300 }}>+</span>
+      </summary>
+      <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#6b4a5c', lineHeight: 1.6, margin: '10px 0 0', maxWidth: '52ch' }}>{a}</p>
+    </details>
+  )
+}
