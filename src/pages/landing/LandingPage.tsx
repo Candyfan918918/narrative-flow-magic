@@ -202,6 +202,18 @@ export function LandingNativePage() {
               <MirrorTeaser onOpen={openMirror} />
 
             </div>
+            {/* Pseudonym / trust paragraph — pixel-parity port of Landing.dc.html heroAlias (line 206 + buildHeroAlias signed-out branch lines 592–597). */}
+            <div style={{ marginTop: 18, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c' }}>
+              everyone here — teller and room alike — sits under a pseudonym. your real name, email, and identity stay permanently outside. that protection is what makes it possible to be frank.{' '}
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate('/welcome')}
+                style={{ cursor: 'pointer', color: '#c1216b', borderBottom: '1px solid rgba(193,33,107,.3)' }}
+              >
+                get your alias →
+              </span>
+            </div>
           </div>
         </section>
 
