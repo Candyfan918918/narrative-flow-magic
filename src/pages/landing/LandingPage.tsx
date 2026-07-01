@@ -5,7 +5,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ONBOARDING_FRAMES } from './data/onboarding'
+import { FALLBACK_ROOMS, type LandingRoom } from './data/rooms'
 import './landing.native.css'
+
+// Ordered identically to the iframe's REACTIONS (getter in Landing.dc.html line 427).
+const REACTIONS: Array<{ k: keyof LandingRoom['reactions']; color: string }> = [
+  { k: 'heard',  color: '#e7548a' },
+  { k: 'same',   color: '#c87c4a' },
+  { k: 'strong', color: '#5B8A5E' },
+  { k: 'time',   color: '#7F77DD' },
+  { k: 'brave',  color: '#c1a02b' },
+]
 
 const SORA = "'Sora', system-ui, sans-serif"
 const NEWSREADER = "'Newsreader', Georgia, serif"
