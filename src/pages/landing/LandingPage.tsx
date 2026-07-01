@@ -42,36 +42,63 @@ const NEWSREADER = "'Newsreader', Georgia, serif"
 
 export function LandingNativePage() {
   const navigate = useNavigate()
+  const save = useServerFn(saveSituation)
   const [onbOpen, setOnbOpen] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
     try { return !localStorage.getItem('shutap_onb_seen') } catch { return true }
   })
   const [onbIdx, setOnbIdx] = useState(0)
+  const [spillOpen, setSpillOpen] = useState(false)
 
-  // Intent hash handling — bounce spill/scan/mirror to the legacy iframe overlay
-  // (native modals land in Step 4/5), or forward `#mirror` to the React /mirror route.
+  const openSpill = useCallback(() => { setSpillOpen(true) }, [])
+  const closeSpill = useCallback(() => { setSpillOpen(false) }, [])
+  const openScan = useCallback(() => { window.location.href = '/?legacy=1#scan' }, [])
+  const openMirror = useCallback(() => { navigate('/mirror') }, [navigate])
+
+  // Intent hash handling — /#spill opens the native modal directly; /#scan/#ask
+  // still bounce to the legacy iframe until those modals are ported. /#mirror
+  // routes to the React /mirror page.
   useEffect(() => {
     const h = window.location.hash
     if (!h) return
-    if (h === '#mirror') { history.replaceState(null, '', window.location.pathname); navigate('/mirror'); return }
-    if (h === '#spill' || h === '#scan' || h === '#ask') {
-      // Native modals not built yet — hand off to legacy iframe with the intent hash intact.
+    if (h === '#spill') {
+      history.replaceState(null, '', window.location.pathname + window.location.search)
+      setSpillOpen(true)
+      return
+    }
+    if (h === '#mirror') { history.replaceState(null, '', window.location.pathname + window.location.search); navigate('/mirror'); return }
+    if (h === '#scan' || h === '#ask') {
       window.location.replace('/?legacy=1' + h)
     }
   }, [navigate])
 
-  const dismissOnb = useCallback(() => {
-    try { localStorage.setItem('shutap_onb_seen', '1') } catch { /* ignore */ }
-    setOnbOpen(false)
-  }, [])
-  const advanceOnb = useCallback(() => {
-    if (onbIdx >= ONBOARDING_FRAMES.length - 1) { dismissOnb(); return }
-    setOnbIdx(i => i + 1)
-  }, [onbIdx, dismissOnb])
-
-  const openSpill = useCallback(() => { window.location.href = '/?legacy=1#spill' }, [])
-  const openScan = useCallback(() => { window.location.href = '/?legacy=1#scan' }, [])
-  const openMirror = useCallback(() => { navigate('/mirror') }, [navigate])
+  // Resume a pending Spill save after the user returns from sign-in. Mirrors
+  // the iframe bridge's resume logic in src/pages/Landing.tsx.
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const raw = sessionStorage.getItem('shutap_pending_save')
+      if (!raw) return
+      const { data: sess } = await supabase.auth.getSession()
+      if (!sess.session || cancelled) return
+      try {
+        const payload = JSON.parse(raw) as { id?: string; pillar?: string | null; title?: string | null; body?: string | null; clean_text?: string | null }
+        const res = await save({ data: payload as never })
+        try {
+          const cur = sessionStorage.getItem(SYNCED_KEY)
+          const synced = cur ? JSON.parse(cur) as Record<string, string> : {}
+          const h = hashKey({ pillar: payload.pillar, title: payload.title, body: payload.body || payload.clean_text })
+          synced['hash:' + h] = res?.id || '1'
+          if (payload.id) synced['bundle:' + payload.id] = res?.id || '1'
+          sessionStorage.setItem(SYNCED_KEY, JSON.stringify(synced))
+        } catch { /* ignore */ }
+        sessionStorage.removeItem('shutap_pending_save')
+        if (res?.room_id) navigate(`/stream#room-${res.room_id}`)
+        else if (res?.id) navigate('/profile')
+      } catch { /* leave payload for retry */ }
+    })()
+    return () => { cancelled = true }
+  }, [navigate, save])
 
   const frame = useMemo(() => ONBOARDING_FRAMES[onbIdx], [onbIdx])
 
