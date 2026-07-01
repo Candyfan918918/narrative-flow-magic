@@ -59,12 +59,13 @@ export function LandingNativePage() {
   const closeScan = useCallback(() => { setScanOpen(false) }, [])
   const openMirror = useCallback(() => { navigate('/mirror') }, [navigate])
 
-  // Intent hash handling — /#spill and /#scan open the native modals directly;
-  // /#mirror routes to the React /mirror page; /#ask still bounces to legacy.
+  // Intent hash handling — /#spill, /#scan, /#ask open native modals directly
+  // (#ask maps to spill, same as the iframe's openComposer → spill fallthrough);
+  // /#mirror routes to the React /mirror page.
   useEffect(() => {
     const h = window.location.hash
     if (!h) return
-    if (h === '#spill') {
+    if (h === '#spill' || h === '#ask') {
       history.replaceState(null, '', window.location.pathname + window.location.search)
       setSpillOpen(true)
       return
@@ -75,9 +76,6 @@ export function LandingNativePage() {
       return
     }
     if (h === '#mirror') { history.replaceState(null, '', window.location.pathname + window.location.search); navigate('/mirror'); return }
-    if (h === '#ask') {
-      window.location.replace('/?legacy=1' + h)
-    }
   }, [navigate])
 
   // Resume a pending Spill save after the user returns from sign-in. Mirrors
