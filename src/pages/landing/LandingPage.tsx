@@ -10,6 +10,8 @@ import { FALLBACK_ROOMS, type LandingRoom } from './data/rooms'
 import { SpillModal } from './modals/SpillModal'
 import { ScanModal } from './modals/ScanModal'
 import { MirrorTeaser } from './sections/MirrorTeaser'
+import { CompanionBubble } from '@/components/CompanionBubble'
+import { CompanionComposer } from '@/components/CompanionComposer'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
@@ -115,6 +117,7 @@ export function LandingNativePage() {
   const [onbIdx, setOnbIdx] = useState(0)
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
+  const [composerOpen, setComposerOpen] = useState(false)
   const liveRooms = useLiveRooms()
   const featured = liveRooms[0]
   const gridRooms = liveRooms.slice(0, 4)
@@ -418,15 +421,14 @@ export function LandingNativePage() {
         </footer>
       </main>
 
-      {/* Companion pill */}
-      <button type="button" aria-label="Ask the companion" onClick={openSpill} style={{ position: 'fixed', left: 'calc(50% - 29px)', bottom: 24, zIndex: 35, width: 58, height: 58, borderRadius: '50%', background: 'rgba(231,84,138,0.18)', backdropFilter: 'blur(4px)', boxShadow: '0 12px 30px -8px rgba(60,10,30,.35)', cursor: 'pointer', display: 'grid', placeItems: 'center', animation: 'pulse 4s infinite', border: 'none' }}>
-        <svg className="sc-eye" viewBox="0 0 56 56" fill="none" style={{ width: 32, height: 32, display: 'block', pointerEvents: 'none' }}>
-          <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-          <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-          <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-          <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-        </svg>
-      </button>
+      {/* Companion pill — draggable (position persisted); tap opens the companion composer (NOT Spill) */}
+      <CompanionBubble onOpen={() => setComposerOpen(true)} />
+      <CompanionComposer
+        open={composerOpen}
+        onClose={() => setComposerOpen(false)}
+        onSpill={openSpill}
+        onScan={openScan}
+      />
 
       {/* Onboarding modal (shown once) */}
       {onbOpen && frame && (
