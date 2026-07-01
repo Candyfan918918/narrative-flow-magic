@@ -1451,9 +1451,16 @@ export function MirrorPage() {
             fontSize: 15, color: MUTED, maxWidth: 540, marginLeft: 'auto', marginRight: 'auto',
           }}>the mirror records, observes, and analyzes. it does not diagnose or advise.</p>
           <div style={{
-            marginTop: 16, fontFamily: "'Sora',sans-serif", fontSize: 10,
-            letterSpacing: '.32em', color: MUTED_3,
-          }}>SHUTAP · THE MIRROR</div>
+            marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+          }}>
+            <EyeMark w={22} />
+            <ShutapWordmark size={12} ink={INK} accent="#e7548a" letterSpacing="-.02em" />
+            <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#7a5f6c', display: 'inline-block' }} />
+            <span style={{
+              fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 9,
+              letterSpacing: '.28em', textTransform: 'uppercase', color: MUTED_3,
+            }}>THE MIRROR</span>
+          </div>
         </footer>
       </main>
 
