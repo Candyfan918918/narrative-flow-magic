@@ -115,6 +115,9 @@ export function LandingNativePage() {
   const [onbIdx, setOnbIdx] = useState(0)
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
+  const liveRooms = useLiveRooms()
+  const featured = liveRooms[0]
+  const gridRooms = liveRooms.slice(0, 4)
 
   const openSpill = useCallback(() => { setSpillOpen(true) }, [])
   const closeSpill = useCallback(() => { setSpillOpen(false) }, [])
