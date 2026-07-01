@@ -12,6 +12,8 @@ import { ScanModal } from './modals/ScanModal'
 import { MirrorTeaser } from './sections/MirrorTeaser'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
+import { SHUTAP_SEED } from '@/data/seed'
+import type { Room } from '@/data/types'
 import './landing.native.css'
 
 // Shared sync key (kept identical to iframe bridge in src/pages/Landing.tsx).
