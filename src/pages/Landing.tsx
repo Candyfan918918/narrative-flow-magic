@@ -40,7 +40,18 @@ function hashKey(input: { pillar?: string | null; title?: string | null; body?: 
   return (h >>> 0).toString(36)
 }
 
+// Step-1 scaffold: opt-in native React landing via `?native=1`. Default remains
+// the working iframe until Spill/Scan/Feed/Share modals are ported (see .lovable/plan.md).
+import { LandingNativePage } from './landing/LandingPage'
+
 export function LandingPage() {
+  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('native') === '1') {
+    return <LandingNativePage />
+  }
+  return <IframeLandingPage />
+}
+
+function IframeLandingPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const navigate = useNavigate()
   const spill = useServerFn(runSpill)
