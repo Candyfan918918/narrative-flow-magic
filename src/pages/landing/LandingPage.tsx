@@ -8,6 +8,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { ONBOARDING_FRAMES } from './data/onboarding'
 import { FALLBACK_ROOMS, type LandingRoom } from './data/rooms'
 import { SpillModal } from './modals/SpillModal'
+import { ScanModal } from './modals/ScanModal'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import './landing.native.css'
@@ -49,15 +50,16 @@ export function LandingNativePage() {
   })
   const [onbIdx, setOnbIdx] = useState(0)
   const [spillOpen, setSpillOpen] = useState(false)
+  const [scanOpen, setScanOpen] = useState(false)
 
   const openSpill = useCallback(() => { setSpillOpen(true) }, [])
   const closeSpill = useCallback(() => { setSpillOpen(false) }, [])
-  const openScan = useCallback(() => { window.location.href = '/?legacy=1#scan' }, [])
+  const openScan = useCallback(() => { setScanOpen(true) }, [])
+  const closeScan = useCallback(() => { setScanOpen(false) }, [])
   const openMirror = useCallback(() => { navigate('/mirror') }, [navigate])
 
-  // Intent hash handling — /#spill opens the native modal directly; /#scan/#ask
-  // still bounce to the legacy iframe until those modals are ported. /#mirror
-  // routes to the React /mirror page.
+  // Intent hash handling — /#spill and /#scan open the native modals directly;
+  // /#mirror routes to the React /mirror page; /#ask still bounces to legacy.
   useEffect(() => {
     const h = window.location.hash
     if (!h) return
@@ -66,8 +68,13 @@ export function LandingNativePage() {
       setSpillOpen(true)
       return
     }
+    if (h === '#scan') {
+      history.replaceState(null, '', window.location.pathname + window.location.search)
+      setScanOpen(true)
+      return
+    }
     if (h === '#mirror') { history.replaceState(null, '', window.location.pathname + window.location.search); navigate('/mirror'); return }
-    if (h === '#scan' || h === '#ask') {
+    if (h === '#ask') {
       window.location.replace('/?legacy=1' + h)
     }
   }, [navigate])
@@ -299,6 +306,7 @@ export function LandingNativePage() {
       )}
 
       <SpillModal open={spillOpen} onClose={closeSpill} />
+      <ScanModal open={scanOpen} onClose={closeScan} />
     </div>
   )
 }
