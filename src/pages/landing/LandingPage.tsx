@@ -100,6 +100,15 @@ export function LandingNativePage() {
     return () => { cancelled = true }
   }, [navigate, save])
 
+  const dismissOnb = useCallback(() => {
+    try { localStorage.setItem('shutap_onb_seen', '1') } catch { /* ignore */ }
+    setOnbOpen(false)
+  }, [])
+  const advanceOnb = useCallback(() => {
+    if (onbIdx >= ONBOARDING_FRAMES.length - 1) { dismissOnb(); return }
+    setOnbIdx(i => i + 1)
+  }, [onbIdx, dismissOnb])
+
   const frame = useMemo(() => ONBOARDING_FRAMES[onbIdx], [onbIdx])
 
   return (
