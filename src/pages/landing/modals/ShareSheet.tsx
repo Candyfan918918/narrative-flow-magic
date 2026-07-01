@@ -21,7 +21,7 @@ type Channel = 'Text' | 'X' | 'Instagram' | 'TikTok' | 'WhatsApp' | 'copy'
 
 const I = '#f3d9e4' // calm cream-blush glyph, on-brand
 
-const CHANNELS: Array<{ key: Channel; label: string; svg: JSX.Element }> = [
+const CHANNELS: Array<{ key: Channel; label: string; svg: React.ReactNode }> = [
   {
     key: 'Text',
     label: 'Text',
