@@ -15,6 +15,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StreamRouteImport } from './routes/stream'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SafetyRouteImport } from './routes/safety'
+import { Route as RoomRouteImport } from './routes/room'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as RelationshipsRouteImport } from './routes/relationships'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -73,6 +74,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SafetyRoute = SafetyRouteImport.update({
   id: '/safety',
   path: '/safety',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoomRoute = RoomRouteImport.update({
+  id: '/room',
+  path: '/room',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportRoute = ReportRouteImport.update({
@@ -241,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
+  '/room': typeof RoomRoute
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stream': typeof StreamRoute
@@ -277,6 +284,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
+  '/room': typeof RoomRoute
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stream': typeof StreamRoute
@@ -315,6 +323,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
+  '/room': typeof RoomRoute
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stream': typeof StreamRoute
@@ -353,6 +362,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/relationships'
     | '/report'
+    | '/room'
     | '/safety'
     | '/sitemap.xml'
     | '/stream'
@@ -389,6 +399,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/relationships'
     | '/report'
+    | '/room'
     | '/safety'
     | '/sitemap.xml'
     | '/stream'
@@ -426,6 +437,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/relationships'
     | '/report'
+    | '/room'
     | '/safety'
     | '/sitemap.xml'
     | '/stream'
@@ -464,6 +476,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RelationshipsRoute: typeof RelationshipsRoute
   ReportRoute: typeof ReportRoute
+  RoomRoute: typeof RoomRoute
   SafetyRoute: typeof SafetyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StreamRoute: typeof StreamRoute
@@ -523,6 +536,13 @@ declare module '@tanstack/react-router' {
       path: '/safety'
       fullPath: '/safety'
       preLoaderRoute: typeof SafetyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/room': {
+      id: '/room'
+      path: '/room'
+      fullPath: '/room'
+      preLoaderRoute: typeof RoomRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/report': {
@@ -763,6 +783,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RelationshipsRoute: RelationshipsRoute,
   ReportRoute: ReportRoute,
+  RoomRoute: RoomRoute,
   SafetyRoute: SafetyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StreamRoute: StreamRoute,
