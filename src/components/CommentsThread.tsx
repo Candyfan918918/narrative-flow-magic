@@ -1,7 +1,6 @@
-// Auth-owned comments thread for a room. Renders the existing comments and
-// lets the author of each comment edit / delete their own. The composer
-// itself lives in RoomDetail (the rich AI-guided one is the single real one).
-import { useEffect, useState } from 'react'
+// Auth-owned comments thread for a room. Renders comments with each
+// commenter's CURRENT alias resolved from public.aliases (not stale text).
+import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import {
@@ -9,6 +8,7 @@ import {
   updateComment,
   deleteComment,
 } from '@/lib/situations.functions'
+import { resolveAliases } from '@/lib/alias.functions'
 import { supabase } from '@/integrations/supabase/client'
 
 function timeAgo(iso: string): string {
