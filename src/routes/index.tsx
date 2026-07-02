@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { SpaShell } from '@/components/SpaShell'
+import { LandingNativePage } from '@/pages/landing/LandingPage'
 import { SITE_URL } from '@/lib/site'
 
 const HOME_TITLE = "Shutap — finally, somewhere to not shut up."
@@ -8,7 +8,6 @@ const HOME_DESCRIPTION =
 const HOME_URL = `${SITE_URL}/`
 
 export const Route = createFileRoute('/')({
-  ssr: false,
   head: () => ({
     meta: [
       { title: HOME_TITLE },
@@ -20,9 +19,6 @@ export const Route = createFileRoute('/')({
     ],
     links: [
       { rel: "canonical", href: HOME_URL },
-      // Start the landing iframe document downloading in parallel with the
-      // SPA JS bundle so the inner page is warm by the time React mounts it.
-      { rel: "preload", as: "document", href: "/shutap/Landing.dc.html" },
     ],
     scripts: [
       {
@@ -38,5 +34,5 @@ export const Route = createFileRoute('/')({
       },
     ],
   }),
-  component: SpaShell,
+  component: LandingNativePage,
 })
