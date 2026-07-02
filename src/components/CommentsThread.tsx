@@ -44,10 +44,23 @@ export function CommentsThread({ roomId }: { roomId: string }) {
   const fetchComments = useServerFn(listRoomComments)
   const update = useServerFn(updateComment)
   const remove = useServerFn(deleteComment)
+  const resolve = useServerFn(resolveAliases)
 
   const { data: comments = [] } = useQuery({
     queryKey: ['comments', roomId],
     queryFn: () => fetchComments({ data: { roomId } }),
+  })
+
+  const commenterIds = useMemo(() => {
+    const s = new Set<string>()
+    for (const c of comments) if (c.alias_id) s.add(c.alias_id)
+    return Array.from(s)
+  }, [comments])
+
+  const { data: aliasMap = {} } = useQuery({
+    queryKey: ['alias-map', commenterIds.slice().sort().join(',')],
+    queryFn: () => resolve({ data: { userIds: commenterIds } }) as Promise<Record<string, { display_name: string; emoji: string }>>,
+    enabled: commenterIds.length > 0,
   })
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ['comments', roomId] })
