@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -43,6 +44,11 @@ import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/publi
 import { Route as ApiPublicHooksMirrorEvolutionRouteImport } from './routes/api/public/hooks/mirror-evolution'
 import { Route as ApiPublicHooksDispatchCheckinsRouteImport } from './routes/api/public/hooks/dispatch-checkins'
 
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrustRoute = TrustRouteImport.update({
   id: '/trust',
   path: '/trust',
@@ -233,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/welcome': typeof WelcomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/welcome': typeof WelcomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
@@ -303,6 +311,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/welcome': typeof WelcomeRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
@@ -339,6 +348,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/welcome'
     | '/profile'
     | '/api/complete'
     | '/is-it-normal/$slug'
@@ -373,6 +383,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/welcome'
     | '/profile'
     | '/api/complete'
     | '/is-it-normal/$slug'
@@ -408,6 +419,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/welcome'
     | '/_authenticated/profile'
     | '/api/complete'
     | '/is-it-normal/$slug'
@@ -444,6 +456,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
+  WelcomeRoute: typeof WelcomeRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
   UPseudonymRoute: typeof UPseudonymRoute
@@ -457,6 +470,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trust': {
       id: '/trust'
       path: '/trust'
@@ -727,6 +747,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
+  WelcomeRoute: WelcomeRoute,
   ApiCompleteRoute: ApiCompleteRoute,
   IsItNormalSlugRoute: IsItNormalSlugRoute,
   UPseudonymRoute: UPseudonymRoute,
