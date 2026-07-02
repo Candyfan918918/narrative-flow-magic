@@ -30,6 +30,7 @@ import { Route as FamilyRouteImport } from './routes/family'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as AiDisclosureRouteImport } from './routes/ai-disclosure'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -151,6 +152,11 @@ const AiDisclosureRoute = AiDisclosureRouteImport.update({
   path: '/ai-disclosure',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -233,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
@@ -309,6 +317,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
@@ -348,6 +357,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/about'
+    | '/admin'
     | '/ai-disclosure'
     | '/career'
     | '/contact'
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/about'
+    | '/admin'
     | '/ai-disclosure'
     | '/career'
     | '/contact'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/$'
     | '/about'
+    | '/admin'
     | '/ai-disclosure'
     | '/career'
     | '/contact'
@@ -462,6 +474,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   AiDisclosureRoute: typeof AiDisclosureRoute
   CareerRoute: typeof CareerRoute
   ContactRoute: typeof ContactRoute
@@ -643,6 +656,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiDisclosureRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -769,6 +789,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   AiDisclosureRoute: AiDisclosureRoute,
   CareerRoute: CareerRoute,
   ContactRoute: ContactRoute,
