@@ -103,6 +103,9 @@ export function CommentsThread({ roomId }: { roomId: string }) {
         {comments.map((c) => {
           const mine = meId && c.alias_id === meId
           const editing = editingId === c.id
+          const chip = aliasMap[c.alias_id]
+          const who = mine ? 'you' : (chip?.display_name || 'someone')
+          const emoji = chip?.emoji || (mine ? '🩷' : '🙂')
           return (
             <div
               key={c.id}
@@ -124,7 +127,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
                   color: '#9e7a8c',
                 }}
               >
-                <span>{mine ? 'you' : 'someone'}{c.edited ? ' · edited' : ''} · {timeAgo(c.created_at)}</span>
+                <span><span aria-hidden style={{ marginRight: 6 }}>{emoji}</span>{who}{c.edited ? ' · edited' : ''} · {timeAgo(c.created_at)}</span>
                 {mine && !editing && (
                   <span style={{ display: 'flex', gap: 8 }}>
                     <button
