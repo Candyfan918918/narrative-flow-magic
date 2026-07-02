@@ -39,6 +39,7 @@ import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
+import { Route as AdminRelateQueueRouteImport } from './routes/admin.relate-queue'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
@@ -197,6 +198,11 @@ const ApiCompleteRoute = ApiCompleteRouteImport.update({
   path: '/api/complete',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRelateQueueRoute = AdminRelateQueueRouteImport.update({
+  id: '/relate-queue',
+  path: '/relate-queue',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
   id: '/feedback',
   path: '/feedback',
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/admin/feedback': typeof AdminFeedbackRoute
+  '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -308,6 +315,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/admin/feedback': typeof AdminFeedbackRoute
+  '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -349,6 +357,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/admin/feedback': typeof AdminFeedbackRoute
+  '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -390,6 +399,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/profile'
     | '/admin/feedback'
+    | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/profile'
     | '/admin/feedback'
+    | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -469,6 +480,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/_authenticated/profile'
     | '/admin/feedback'
+    | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -731,6 +743,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/relate-queue': {
+      id: '/admin/relate-queue'
+      path: '/relate-queue'
+      fullPath: '/admin/relate-queue'
+      preLoaderRoute: typeof AdminRelateQueueRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/feedback': {
       id: '/admin/feedback'
       path: '/feedback'
@@ -805,10 +824,12 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface AdminRouteChildren {
   AdminFeedbackRoute: typeof AdminFeedbackRoute
+  AdminRelateQueueRoute: typeof AdminRelateQueueRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminFeedbackRoute: AdminFeedbackRoute,
+  AdminRelateQueueRoute: AdminRelateQueueRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
