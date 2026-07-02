@@ -120,6 +120,41 @@ function ContactPage() {
         18+, pseudonymous, not a medical or legal service. please don&apos;t send anything that
         could identify you or someone else unless it&apos;s necessary.
       </p>
+      <style>{`
+        .shutap-contact-card {
+          display: block;
+          background: #fff;
+          border: .5px solid rgba(11,8,15,.08);
+          border-radius: 14px;
+          padding: 15px 17px;
+          text-decoration: none;
+          transition: transform .15s, border-color .15s, box-shadow .15s;
+        }
+        .shutap-contact-card:hover {
+          transform: translateY(-1px);
+          border-color: rgba(231,84,138,.5);
+          box-shadow: 0 12px 26px -20px rgba(80,10,45,.3);
+        }
+        .shutap-contact-card:focus-visible {
+          outline: 2px solid #e7548a;
+          outline-offset: 2px;
+          border-radius: 14px;
+        }
+        .shutap-contact-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: nowrap;
+        }
+        @media (max-width: 420px) {
+          .shutap-contact-row {
+            flex-wrap: wrap;
+            gap: 4px 12px;
+          }
+        }
+      `}</style>
     </DocLayout>
   )
 }
+
