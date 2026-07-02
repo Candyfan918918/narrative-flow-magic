@@ -110,10 +110,11 @@ function useLiveRooms(): LandingRoom[] {
 export function LandingNativePage() {
   const navigate = useNavigate()
   const save = useServerFn(saveSituation)
-  const [onbOpen, setOnbOpen] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false
-    try { return !localStorage.getItem('shutap_onb_seen') } catch { return true }
-  })
+  const [onbOpen, setOnbOpen] = useState<boolean>(false)
+  useEffect(() => {
+    // Read localStorage only after hydration to avoid a server/client mismatch.
+    try { if (!localStorage.getItem('shutap_onb_seen')) setOnbOpen(true) } catch { /* noop */ }
+  }, [])
   const [onbIdx, setOnbIdx] = useState(0)
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
