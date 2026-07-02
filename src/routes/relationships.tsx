@@ -1,11 +1,37 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
-import { SeoPage } from "@/components/seo/SeoPage";
-import { HUBS_BY_PILLAR } from "@/lib/seo/hubs";
 
-const TITLE = "Relationships — vent about dating, partners, breakups";
+const PATH = "/relationships";
+const TITLE =
+  "Relationships — vent and read real stories about dating, partners & breakups | Shutap";
 const DESCRIPTION =
-  "Real stories from real people about dating, partners, situationships, and breakups. Pseudonymous, no upvotes, no judgment-as-a-feature.";
+  "Read and share real, pseudonymous stories about relationships — dating, partners, situationships, breakups — and see what happened next. Someone here has lived your exact thing.";
+const H1 = "relationships";
+const CAPSULE =
+  "Dating, partners, situationships, breakups, and the gray area in between. This is where people vent about what's happening in their relationships — pseudonymously, honestly — and come back to share what actually happened next. Whatever you're sitting with, someone here has lived a version of it.";
+const WHAT =
+  "Relationships is where the messy middle goes: the text you're overthinking, the fight that keeps repeating, the situationship with no name, the breakup you're not sure about. Spill it under a pseudonym, hear from people who've been exactly here, and — later — find out what they did next and how it turned out.";
+const INVITE =
+  "You don't have to have the words yet. Start with what's on your mind; the room takes it from there.";
+const FAQ = [
+  {
+    q: "Is it normal to feel this way about my relationship?",
+    a: "Almost certainly. The most common thing people discover on Shutap is that the exact situation they thought was theirs alone is one hundreds of others are living too. Reading real stories from people in the same spot is often the first relief.",
+  },
+  {
+    q: "Can I post about my relationship anonymously?",
+    a: "You post under a consistent pseudonym, never your real name, and personal identifiers are removed before anything is stored. Your voice is yours; your identity stays protected.",
+  },
+  {
+    q: "What makes Shutap different from asking Reddit?",
+    a: "You come back. On Shutap, people return to share what actually happened after the moment passed — so over time you can see how situations like yours tend to resolve, not just what strangers think you should do.",
+  },
+];
+const PILLAR = "Relationships";
+const OTHERS = [
+  { href: "/marriage", label: "Marriage" },
+  { href: "/family", label: "Family" },
+  { href: "/career", label: "Career" },
+];
 
 export const Route = createFileRoute("/relationships")({
   head: () => ({
@@ -15,46 +41,58 @@ export const Route = createFileRoute("/relationships")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/relationships" },
+      { property: "og:url", content: PATH },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: "/relationships" }],
+    links: [{ rel: "canonical", href: PATH }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: PILLAR,
+          description: DESCRIPTION,
+          url: PATH,
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "/" },
+            { "@type": "ListItem", position: 2, name: PILLAR, item: PATH },
+          ],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      },
+    ],
   }),
-  component: RelationshipsPillar,
+  component: () => (
+    <PillarPage
+      h1={H1}
+      capsule={CAPSULE}
+      what={WHAT}
+      invite={INVITE}
+      faq={FAQ}
+      others={OTHERS}
+    />
+  ),
 });
 
-function RelationshipsPillar() {
-  return (
-    <SeoPage>
-      <article className="space-y-8">
-        <header className="space-y-3">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            Pillar
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight">Relationships</h1>
-          <p className="text-lg leading-relaxed text-muted-foreground">
-            Dating, partners, situationships, breakups, the gray area in between.
-            Spill what's actually going on — someone in here has lived your exact
-            thing.
-          </p>
-        </header>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Common questions people bring here</h2>
-          <ul className="space-y-2">
-            {HUBS_BY_PILLAR.relationships.map((h) => (
-              <li key={h.slug}>
-                <Link
-                  to="/is-it-normal/$slug"
-                  params={{ slug: h.slug }}
-                  className="underline-offset-4 hover:underline"
-                >
-                  {h.question}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </article>
-    </SeoPage>
-  );
-}
+import { PillarPage } from "@/components/seo/PillarPage";
