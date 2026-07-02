@@ -62,35 +62,9 @@ function ContactPage() {
           <a
             key={c.email}
             href={`mailto:${c.email}`}
-            style={{
-              display: 'block',
-              background: '#fff',
-              border: '.5px solid rgba(11,8,15,.08)',
-              borderRadius: 14,
-              padding: '15px 17px',
-              textDecoration: 'none',
-              transition: 'transform .15s, border-color .15s, box-shadow .15s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-1px)'
-              e.currentTarget.style.borderColor = 'rgba(231,84,138,.5)'
-              e.currentTarget.style.boxShadow = '0 12px 26px -20px rgba(80,10,45,.3)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.borderColor = 'rgba(11,8,15,.08)'
-              e.currentTarget.style.boxShadow = 'none'
-            }}
+            className="shutap-contact-card"
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 12,
-                flexWrap: 'nowrap',
-              }}
-            >
+            <div className="shutap-contact-row">
               <span
                 style={{
                   fontFamily: 'Sora,sans-serif',
@@ -111,7 +85,7 @@ function ContactPage() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {c.email}
+                {c.email} <span aria-hidden style={{ marginLeft: 2 }}>→</span>
               </span>
             </div>
             <div
