@@ -5,6 +5,8 @@
  * "setState during render" warning. */
 import { useEffect } from 'react'
 import { BrowserRouter } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
+
 import { App } from '@/App'
 import { installShareEngine } from '@/lib/share'
 import { installFeedback } from '@/lib/feedback'
