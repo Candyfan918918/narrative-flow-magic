@@ -5,10 +5,9 @@ import { SiteHeader } from '@/components/site/SiteHeader'
 import { SiteFooter } from '@/components/site/SiteFooter'
 
 const HALLS = [
-  { slug: 'relationships', label: 'Relationships' },
-  { slug: 'marriage', label: 'Marriage' },
-  { slug: 'family', label: 'Family' },
-  { slug: 'career', label: 'Work & Career' },
+  { slug: 'most-related', label: 'Most Related' },
+  { slug: 'longest-thread', label: 'Longest Thread' },
+  { slug: 'best-outcomes', label: 'Best Outcomes' },
 ]
 
 export function HallOfFamePageNative() {
