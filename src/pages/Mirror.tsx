@@ -203,20 +203,8 @@ function MirrorHeader() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
       }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: INK }}>
-          <span style={{ width: 30, height: 22, display: 'block' }}>
-            <svg viewBox="0 0 140 96" fill="none" style={{ width: '100%', height: '100%', display: 'block' }}>
-              <rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
-              <rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
-              <ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)" />
-              <ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)" />
-            </svg>
-          </span>
-          <span style={{
-            fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 19,
-            letterSpacing: '-.04em', color: INK,
-          }}>
-            shut<span style={{ color: '#e7548a' }}>ap</span>
-          </span>
+          <EyeMark size={30} />
+          <ShutapWordmark size={19} ink={INK} letterSpacing="-.04em" />
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Link to="/stream" style={{
