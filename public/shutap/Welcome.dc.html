@@ -195,9 +195,17 @@ class Component extends DCLogic {
       bdayMonth: el=>{ this.$bmon=el; this.buildWheel(el,'month'); },
       bdayYear:  el=>{ this.$byr=el;  this.buildWheel(el,'year'); },
       bdayError: el=>{ this.$berr=el; },
-      authGoogle:  ()=>this.next('step-age'),
-      authApple:   ()=>this.next('step-age'),
-      authEmail:   ()=>this.next('step-age'),
+      authGoogle:  ()=>{ try{ parent.postMessage({type:'shutap-auth',method:'google'},'*'); }catch(e){} },
+      authApple:   ()=>{ try{ parent.postMessage({type:'shutap-auth',method:'apple'},'*'); }catch(e){} },
+      authEmail:   ()=>{
+        const inp=document.querySelector('#step-auth input[type=email]');
+        const v=(inp&&inp.value||'').trim();
+        if(!v||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){
+          try{ parent.postMessage({type:'shutap-auth-error',msg:'enter a valid email'},'*'); }catch(e){}
+          return;
+        }
+        try{ parent.postMessage({type:'shutap-auth',method:'email',email:v},'*'); }catch(e){}
+      },
       confirmAge:  ()=>this.checkAge(),
       spinAlias:   ()=>this.spinAlias(),
       keepAlias:   ()=>this.keepAlias()
