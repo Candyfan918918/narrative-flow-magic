@@ -1,68 +1,69 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SeoPage } from "@/components/seo/SeoPage";
-import { BRAND } from "@/lib/seo/brand";
+import { ContentPage } from "@/components/seo/ContentPage";
+
+const PATH = "/about";
+const TITLE =
+  "About Shutap — a pseudonymous community for venting, with AI-guided support";
+const DESCRIPTION =
+  "What Shutap is, who it's for, and how it differs from anonymous venting on Reddit or AITA. Pseudonymous, private by design, built around what actually happened next.";
+const CAPSULE =
+  "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space. You post under a consistent alias — never your real name — about relationships, marriage, family, and work, and come back to share what actually happened next.";
+const SECTIONS = [
+  {
+    heading: "why we exist",
+    body: "Everyone has things they can't say out loud — to friends who'd judge, to family who's involved, to a boss who'd hear. Shutap is the place to say them. Vent freely, feel less alone, and see how people in your exact situation moved through it.",
+  },
+  {
+    heading: "who it's for",
+    body: "Adults navigating the hard, ordinary moments of relationships, marriage, family, and work. If you've ever needed to get something off your chest without exposing yourself, this is built for you.",
+  },
+  {
+    heading: "how it's different",
+    body: "Anonymous feeds give you opinions from strangers who never come back. Shutap gives you a consistent pseudonymous voice with a track record — and confirmed outcomes. People return to record what actually happened, so you see how situations like yours tend to resolve, not just what people think.",
+  },
+  {
+    heading: "what it isn't",
+    body: "Shutap is a peer-support and journaling community, not a healthcare, medical, mental-health, crisis, or legal service. It's for support and reflection — not a substitute for professional care.",
+  },
+];
+const OTHERS = [
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/trust", label: "Trust & privacy" },
+];
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Shutap — pseudonymous venting community" },
-      { name: "description", content: BRAND.entitySentence },
-      { property: "og:title", content: "About Shutap" },
-      { property: "og:description", content: BRAND.entitySentence },
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/about" },
+      { property: "og:url", content: PATH },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: "/about" }],
+    links: [{ rel: "canonical", href: PATH }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: "About Shutap",
+          description: DESCRIPTION,
+          url: PATH,
+        }),
+      },
+    ],
   }),
-  component: AboutPage,
+  component: () => (
+    <ContentPage
+      h1="about Shutap"
+      capsule={CAPSULE}
+      sections={SECTIONS}
+      others={OTHERS}
+    />
+  ),
 });
-
-function AboutPage() {
-  return (
-    <SeoPage>
-      <article className="space-y-6">
-        <h1 className="text-3xl font-semibold tracking-tight">About Shutap</h1>
-        <p className="text-lg leading-relaxed text-muted-foreground">
-          {BRAND.entitySentence}
-        </p>
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">why it exists</h2>
-          <p className="leading-relaxed">
-            Most places make you perform — for a feed, for a verdict, for strangers
-            grading your situation. Shutap is the opposite. You spill what's
-            actually going on under a pseudonym, and people who've lived your exact
-            thing tap "omg same" and tell you what happened next for them. No
-            algorithm. No upvotes. No courtroom.
-          </p>
-        </section>
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">how it's different</h2>
-          <ul className="list-disc space-y-2 pl-5">
-            <li>
-              <strong>Pseudonymous, not anonymous.</strong> You keep a consistent
-              voice across stories — your real name never shows.
-            </li>
-            <li>
-              <strong>Relate, don't rank.</strong> "omg same" replaces upvotes; the
-              loudest voice doesn't win.
-            </li>
-            <li>
-              <strong>Outcomes, not opinions.</strong> When people share what
-              actually happened next, that becomes the answer to the next person
-              asking the same question at 1am.
-            </li>
-          </ul>
-        </section>
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">a note on "free therapy"</h2>
-          <p className="leading-relaxed">
-            Venting helps. That's a vibe, not a clinical claim. Shutap is not
-            therapy, and the in-app companion is not a therapist or a lawyer. See{" "}
-            <a href="/methodology" className="underline">our methodology</a> for
-            how we route around the heavy stuff and where to get real help.
-          </p>
-        </section>
-      </article>
-    </SeoPage>
-  );
-}

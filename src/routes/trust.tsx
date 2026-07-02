@@ -1,94 +1,73 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SeoPage } from "@/components/seo/SeoPage";
+import { ContentPage } from "@/components/seo/ContentPage";
+
+const PATH = "/trust";
+const TITLE =
+  "Trust & privacy at Shutap — pseudonymous by design, PII scrubbed before storage";
+const DESCRIPTION =
+  "How Shutap protects you: pseudonymity, automatic removal of personal identifiers before storage, what is and isn't public, and a fast takedown path.";
+const CAPSULE =
+  "Shutap is pseudonymous by design. You post under an alias, and an automatic scrubber removes personal identifiers before anything is stored — only the scrubbed version is kept. Crisis messages are never public. Your real name is never shown.";
+const SECTIONS = [
+  {
+    heading: "pseudonymous, not exposed",
+    body: "You choose a consistent alias. Your real name never appears to other users. Pseudonymity is stronger than anonymity — your voice builds a history without revealing who you are.",
+  },
+  {
+    heading: "the scrubber",
+    body: "Before storage, an automatic pass removes names, addresses, specific locations, phone numbers, and emails from what you write. We keep the de-identified version, not the raw text.",
+  },
+  {
+    heading: "what is and isn't public",
+    body: "Only content you choose to make public appears to the community, always de-identified. Private entries and crisis-flagged messages are never shown publicly and are never sold.",
+  },
+  {
+    heading: "your rights",
+    body: "You can edit or delete any story, export your data, and delete your account at any time.",
+  },
+  {
+    heading: "takedown",
+    body: "If a story is about you, there's a fast path to request its removal. Contact privacy@shutap.com.",
+  },
+];
+const OTHERS = [
+  { href: "/about", label: "About" },
+  { href: "/how-it-works", label: "How it works" },
+];
 
 export const Route = createFileRoute("/trust")({
   head: () => ({
     meta: [
-      { title: "Trust & privacy — Shutap" },
-      {
-        name: "description",
-        content:
-          "How Shutap protects your identity, what's public, and what stays private.",
-      },
-      { property: "og:title", content: "Trust & privacy — Shutap" },
-      {
-        property: "og:description",
-        content:
-          "How Shutap protects your identity, what's public, and what stays private.",
-      },
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/trust" },
+      { property: "og:url", content: PATH },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: "/trust" }],
+    links: [{ rel: "canonical", href: PATH }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: "Trust & privacy at Shutap",
+          description: DESCRIPTION,
+          url: PATH,
+        }),
+      },
+    ],
   }),
-  component: TrustPage,
+  component: () => (
+    <ContentPage
+      h1="trust & privacy"
+      capsule={CAPSULE}
+      sections={SECTIONS}
+      others={OTHERS}
+    />
+  ),
 });
-
-function TrustPage() {
-  return (
-    <SeoPage>
-      <article className="space-y-8">
-        <header className="space-y-3">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Trust &amp; privacy
-          </h1>
-          <p className="text-muted-foreground">
-            This page is maintained by Shutap to answer common privacy and
-            safety questions about how the community works.
-          </p>
-        </header>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Your real name never shows</h2>
-          <p className="leading-relaxed">
-            You sign up with an email so we can recover your account. Inside
-            Shutap, only your pseudonym is visible to other members. Your real
-            name is never shown publicly and is not indexed.
-          </p>
-        </section>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">What gets indexed by search engines</h2>
-          <ul className="list-disc space-y-2 pl-5">
-            <li>Pillar pages (relationships, marriage, family, career).</li>
-            <li>Situation hubs ("is it normal to feel lonely in your marriage?").</li>
-            <li>Outcome pages (aggregate, de-identified numbers).</li>
-            <li>Pseudonym profiles (track record, not real identity).</li>
-            <li>Selected rooms (only after the privacy shield runs).</li>
-          </ul>
-        </section>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">What does not get indexed</h2>
-          <ul className="list-disc space-y-2 pl-5">
-            <li>Rooms that name third parties before de-identification.</li>
-            <li>Thin or near-duplicate rooms (canonicalized).</li>
-            <li>Anything tying a pseudonym to a real identity.</li>
-            <li>Account, settings, and signed-in surfaces.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Sensitive topics</h2>
-          <p className="leading-relaxed">
-            On rooms about abuse, self-harm, or legal jeopardy, Shutap surfaces
-            free professional resources alongside the community. The companion
-            never poses as a therapist or lawyer.
-          </p>
-        </section>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Reporting and takedown</h2>
-          <p className="leading-relaxed">
-            Email{" "}
-            <a href="mailto:trust@shutap.app" className="underline">
-              trust@shutap.app
-            </a>{" "}
-            to report a story that names you or violates the rules. We act on
-            named-third-party reports fast.
-          </p>
-        </section>
-      </article>
-    </SeoPage>
-  );
-}
