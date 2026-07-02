@@ -39,6 +39,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug'
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
+import { Route as SubscribeReturnRouteImport } from './routes/subscribe.return'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
 import { Route as AdminRelateQueueRouteImport } from './routes/admin.relate-queue'
@@ -200,6 +201,11 @@ const UPseudonymRoute = UPseudonymRouteImport.update({
   path: '/u/$pseudonym',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubscribeReturnRoute = SubscribeReturnRouteImport.update({
+  id: '/return',
+  path: '/return',
+  getParentRoute: () => SubscribeRoute,
+} as any)
 const IsItNormalSlugRoute = IsItNormalSlugRouteImport.update({
   id: '/is-it-normal/$slug',
   path: '/is-it-normal/$slug',
@@ -283,7 +289,7 @@ export interface FileRoutesByFullPath {
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stream': typeof StreamRoute
-  '/subscribe': typeof SubscribeRoute
+  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
@@ -292,6 +298,7 @@ export interface FileRoutesByFullPath {
   '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -325,7 +332,7 @@ export interface FileRoutesByTo {
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stream': typeof StreamRoute
-  '/subscribe': typeof SubscribeRoute
+  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
@@ -334,6 +341,7 @@ export interface FileRoutesByTo {
   '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -369,7 +377,7 @@ export interface FileRoutesById {
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stream': typeof StreamRoute
-  '/subscribe': typeof SubscribeRoute
+  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
@@ -378,6 +386,7 @@ export interface FileRoutesById {
   '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -422,6 +431,7 @@ export interface FileRouteTypes {
     | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
     | '/checkin/$id'
@@ -464,6 +474,7 @@ export interface FileRouteTypes {
     | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
     | '/checkin/$id'
@@ -507,6 +518,7 @@ export interface FileRouteTypes {
     | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
     | '/_authenticated/checkin/$id'
@@ -542,7 +554,7 @@ export interface RootRouteChildren {
   SafetyRoute: typeof SafetyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StreamRoute: typeof StreamRoute
-  SubscribeRoute: typeof SubscribeRoute
+  SubscribeRoute: typeof SubscribeRouteWithChildren
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -769,6 +781,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UPseudonymRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subscribe/return': {
+      id: '/subscribe/return'
+      path: '/return'
+      fullPath: '/subscribe/return'
+      preLoaderRoute: typeof SubscribeReturnRouteImport
+      parentRoute: typeof SubscribeRoute
+    }
     '/is-it-normal/$slug': {
       id: '/is-it-normal/$slug'
       path: '/is-it-normal/$slug'
@@ -874,6 +893,18 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface SubscribeRouteChildren {
+  SubscribeReturnRoute: typeof SubscribeReturnRoute
+}
+
+const SubscribeRouteChildren: SubscribeRouteChildren = {
+  SubscribeReturnRoute: SubscribeReturnRoute,
+}
+
+const SubscribeRouteWithChildren = SubscribeRoute._addFileChildren(
+  SubscribeRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -899,7 +930,7 @@ const rootRouteChildren: RootRouteChildren = {
   SafetyRoute: SafetyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StreamRoute: StreamRoute,
-  SubscribeRoute: SubscribeRoute,
+  SubscribeRoute: SubscribeRouteWithChildren,
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
   WelcomeRoute: WelcomeRoute,
