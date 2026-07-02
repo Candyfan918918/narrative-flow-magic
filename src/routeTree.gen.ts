@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as StreamRouteImport } from './routes/stream'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SafetyRouteImport } from './routes/safety'
 import { Route as ReportRouteImport } from './routes/report'
@@ -57,6 +58,11 @@ const TrustRoute = TrustRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StreamRoute = StreamRouteImport.update({
+  id: '/stream',
+  path: '/stream',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -237,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/report': typeof ReportRoute
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/stream': typeof StreamRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
@@ -272,6 +279,7 @@ export interface FileRoutesByTo {
   '/report': typeof ReportRoute
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/stream': typeof StreamRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
@@ -309,6 +317,7 @@ export interface FileRoutesById {
   '/report': typeof ReportRoute
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/stream': typeof StreamRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
@@ -346,6 +355,7 @@ export interface FileRouteTypes {
     | '/report'
     | '/safety'
     | '/sitemap.xml'
+    | '/stream'
     | '/terms'
     | '/trust'
     | '/welcome'
@@ -381,6 +391,7 @@ export interface FileRouteTypes {
     | '/report'
     | '/safety'
     | '/sitemap.xml'
+    | '/stream'
     | '/terms'
     | '/trust'
     | '/welcome'
@@ -417,6 +428,7 @@ export interface FileRouteTypes {
     | '/report'
     | '/safety'
     | '/sitemap.xml'
+    | '/stream'
     | '/terms'
     | '/trust'
     | '/welcome'
@@ -454,6 +466,7 @@ export interface RootRouteChildren {
   ReportRoute: typeof ReportRoute
   SafetyRoute: typeof SafetyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StreamRoute: typeof StreamRoute
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -489,6 +502,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stream': {
+      id: '/stream'
+      path: '/stream'
+      fullPath: '/stream'
+      preLoaderRoute: typeof StreamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -745,6 +765,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReportRoute: ReportRoute,
   SafetyRoute: SafetyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StreamRoute: StreamRoute,
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
   WelcomeRoute: WelcomeRoute,
