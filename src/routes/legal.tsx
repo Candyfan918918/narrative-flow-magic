@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/seo/ContentPage";
+import { SITE_URL } from "@/lib/site";
 
-const URL = "https://narrative-flow-magic.lovable.app/legal";
+const URL = `${SITE_URL}/legal`;
 const TITLE = "Legal & policies — Shutap";
 const DESCRIPTION =
   "Hub for Shutap's legal and policy documents: terms of service, privacy policy, community guidelines, safety, AI disclosure, and FAQ.";

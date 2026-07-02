@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/seo/ContentPage";
+import { SITE_URL } from "@/lib/site";
 
 const PATH = "/trust";
 const TITLE =
@@ -48,7 +49,7 @@ export const Route = createFileRoute("/trust")({
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: PATH }],
+    links: [{ rel: "canonical", href: `${SITE_URL}${PATH}` }],
     scripts: [
       {
         type: "application/ld+json",
@@ -57,7 +58,7 @@ export const Route = createFileRoute("/trust")({
           "@type": "WebPage",
           name: "Trust & privacy at Shutap",
           description: DESCRIPTION,
-          url: PATH,
+          url: `${SITE_URL}${PATH}`,
         }),
       },
     ],

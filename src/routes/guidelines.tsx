@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/seo/ContentPage";
+import { SITE_URL } from "@/lib/site";
 
-const URL = "https://narrative-flow-magic.lovable.app/guidelines";
+const URL = `${SITE_URL}/guidelines`;
 const TITLE = "Community Guidelines — Shutap";
 const DESCRIPTION =
   "How to keep Shutap a safe place to be honest: protect privacy, aim any sharpness at situations not people, and never post anything that harms someone.";

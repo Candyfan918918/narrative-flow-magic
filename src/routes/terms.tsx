@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/seo/ContentPage";
+import { SITE_URL } from "@/lib/site";
 
 const PATH = "/terms";
-const URL = "https://narrative-flow-magic.lovable.app/terms";
+const URL = `${SITE_URL}/terms`;
 const TITLE = "Terms of Service — Shutap";
 const DESCRIPTION =
   "The terms for using Shutap, a pseudonymous peer-support community with AI-guided support. What Shutap is and isn't, your content, AI use, and your rights.";

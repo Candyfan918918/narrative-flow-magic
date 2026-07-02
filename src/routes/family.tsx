@@ -47,7 +47,7 @@ export const Route = createFileRoute("/family")({
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: PATH }],
+    links: [{ rel: "canonical", href: `${SITE_URL}${PATH}` }],
     scripts: [
       {
         type: "application/ld+json",
@@ -56,7 +56,7 @@ export const Route = createFileRoute("/family")({
           "@type": "CollectionPage",
           name: PILLAR,
           description: DESCRIPTION,
-          url: PATH,
+          url: `${SITE_URL}${PATH}`,
         }),
       },
       {

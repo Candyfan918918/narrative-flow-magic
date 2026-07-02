@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/seo/ContentPage";
+import { SITE_URL } from "@/lib/site";
 
-const URL = "https://narrative-flow-magic.lovable.app/ai-disclosure";
+const URL = `${SITE_URL}/ai-disclosure`;
 const TITLE = "AI at Shutap — what the AI does, and what it doesn't";
 const DESCRIPTION =
   "Shutap uses AI to help you express yourself and power the companion and Mirror. What the AI does, what it isn't, that it can be wrong, and which models we use.";
