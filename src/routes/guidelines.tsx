@@ -1,65 +1,86 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ContentPage } from "@/components/seo/ContentPage";
-import { SITE_URL } from "@/lib/site";
+import { createFileRoute } from '@tanstack/react-router'
+import { DocLayout } from '@/components/site/DocLayout'
+import { SITE_URL } from '@/lib/site'
 
-const URL = `${SITE_URL}/guidelines`;
-const TITLE = "Community Guidelines — Shutap";
+const URL = `${SITE_URL}/guidelines`
+const TITLE = 'Community Guidelines — Shutap'
 const DESCRIPTION =
-  "How to keep Shutap a safe place to be honest: protect privacy, aim any sharpness at situations not people, and never post anything that harms someone.";
-const CAPSULE =
-  "Shutap works because people can be honest without being exposed or attacked. In short: protect each other's privacy, aim any sharpness at situations not people, and never post anything that harms someone.";
+  'How to keep shutap a safe place to be honest: protect privacy, aim any sharpness at situations not people, and never post anything that harms someone.'
 
-const SECTIONS = [
-  { heading: "Protect privacy — yours and others'", body: "Post under your alias, and never share information that could identify you or anyone else. Don't name real people or post private details about them." },
-  { heading: "Be honest, not cruel", body: "Vent freely and react honestly, but aim any edge at the situation, not the person who shared. Support over pile-ons." },
-  { heading: "No harmful content", body: "No harassment, threats, hate, or content that promotes self-harm or violence. Absolutely no sexual content involving minors." },
-  { heading: "It's support, not advice", body: "Share your own experience and what happened to you. Don't present yourself as a professional or give medical, legal, or financial instructions to others." },
-  { heading: "Keep it real", body: "Post about your own real experiences. Don't impersonate others or post fabricated stories as if they were real." },
-  { heading: "Reporting", body: "If you see something that breaks these guidelines, use the report tools. We review reports and remove violating content." },
-];
-
-const OTHERS = [
-  { href: "/terms", label: "Terms" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/safety", label: "Safety" },
-  { href: "/ai-disclosure", label: "AI disclosure" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/legal", label: "Legal & policies" },
-];
-
-export const Route = createFileRoute("/guidelines")({
+export const Route = createFileRoute('/guidelines')({
   head: () => ({
     meta: [
       { title: TITLE },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: URL },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: TITLE },
-      { name: "twitter:description", content: DESCRIPTION },
+      { name: 'description', content: DESCRIPTION },
+      { property: 'og:title', content: TITLE },
+      { property: 'og:description', content: DESCRIPTION },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: URL },
+      { name: 'twitter:card', content: 'summary' },
+      { name: 'twitter:title', content: TITLE },
+      { name: 'twitter:description', content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: URL }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          name: TITLE,
-          description: DESCRIPTION,
-          url: URL,
-        }),
-      },
-    ],
+    links: [{ rel: 'canonical', href: URL }],
   }),
-  component: () => (
-    <ContentPage
-      h1="community guidelines"
-      capsule={CAPSULE}
-      sections={SECTIONS}
-      others={OTHERS}
-    />
-  ),
-});
+  component: GuidelinesPage,
+})
+
+function GuidelinesPage() {
+  return (
+    <DocLayout
+      active="/guidelines"
+      title="community guidelines"
+      subline="short, in-voice. be real, be kind, protect each other."
+    >
+      <div
+        style={{
+          background: '#fff',
+          border: '.5px solid rgba(11,8,15,.08)',
+          borderRadius: 18,
+          padding: '22px 24px',
+          boxShadow: '0 12px 30px -24px rgba(80,10,45,.3)',
+        }}
+      >
+        <h3 style={{ marginTop: 0 }}>be real. be kind.</h3>
+        <p>
+          shutap works because people can be honest here without being exposed or attacked. keep it
+          real, aim any edge at the <b>situation</b>, not the person who shared it.
+        </p>
+
+        <h3>don&apos;t post other people&apos;s private info.</h3>
+        <p>
+          no real names, addresses, workplaces, phone numbers, screenshots with identifying detail —
+          about anyone, including yourself. write about your experience, not their identity.
+        </p>
+
+        <h3>no harassment, no hate.</h3>
+        <p>no threats, no slurs, no pile-ons, no dogpiling on someone who shared.</p>
+
+        <h3>nothing illegal.</h3>
+        <p>
+          and <b>absolutely nothing sexual involving minors</b> — ever. content or accounts here
+          are removed and reported.
+        </p>
+
+        <h3>no impersonation, spam, or scraping.</h3>
+        <p>
+          be who you say you are (under your alias). don&apos;t pretend to be someone else.
+          don&apos;t scrape the site, the companion, or other people&apos;s stories.
+        </p>
+
+        <h3>don&apos;t sell services or hand out professional advice.</h3>
+        <p>
+          share <b>your own</b> experience. do not pose as a therapist, doctor, or lawyer, or
+          instruct anyone else what to do medically, legally, or financially.
+        </p>
+
+        <h3>report anything that breaks this.</h3>
+        <p>use the report tools in the room or on a comment — a real person reviews every report.</p>
+
+        <p style={{ marginTop: 22 }}>
+          <b>We remove content and accounts that break these rules.</b>
+        </p>
+      </div>
+    </DocLayout>
+  )
+}
