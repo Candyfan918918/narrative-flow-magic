@@ -7,6 +7,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { listRelateQueue, relateQueueStats, type RelateQueueRow } from '@/lib/relate-queue.functions'
 import { backfillEmbeddings } from '@/lib/embeddings-backfill.functions'
 import { schedulerHealth, type SchedulerHealth } from '@/lib/scheduler-health.functions'
+import { NoIndex } from '@/components/NoIndex'
 
 
 

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { lovable } from '@/integrations/lovable'
 import { supabase } from '@/integrations/supabase/client'
 import { recordLegalAcceptance } from '@/lib/legal.functions'
+import { NoIndex } from '@/components/NoIndex'
 
 /* Pixel-perfect iframe of the Welcome prototype, with real auth wired through
    postMessage so Google/Apple/email actually authenticate via Lovable Cloud. */

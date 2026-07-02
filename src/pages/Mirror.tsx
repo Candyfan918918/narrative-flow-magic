@@ -29,6 +29,7 @@ import { ActionPill } from '@/components/ShareChannels'
 // Demo cast is shown as an EXAMPLE to any forming account (display-only).
 
 import type { Alias } from '@/data/types'
+import { NoIndex } from '@/components/NoIndex'
 
 /* ─────────────── design tokens ─────────────── */
 const BG = '#100810'
