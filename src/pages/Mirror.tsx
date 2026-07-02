@@ -29,6 +29,7 @@ import { ActionPill } from '@/components/ShareChannels'
 // Demo cast is shown as an EXAMPLE to any forming account (display-only).
 
 import type { Alias } from '@/data/types'
+import { useNoIndex } from '@/components/NoIndex'
 
 /* ─────────────── design tokens ─────────────── */
 const BG = '#100810'
@@ -1035,6 +1036,7 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing }: {
 
 /* ─────────────── page ─────────────── */
 export function MirrorPage() {
+  useNoIndex()
   const navigate = useNavigate()
   const location = useLocation()
   const fetchMine = useServerFn(listMirrorPatterns)

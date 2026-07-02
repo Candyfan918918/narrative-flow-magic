@@ -5,6 +5,7 @@ import { getStripe, getStripeEnvironment } from '@/lib/stripe'
 import { createMirrorCheckout } from '@/lib/payments.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { PaymentTestModeBanner } from '@/components/PaymentTestModeBanner'
+import { useNoIndex } from '@/components/NoIndex'
 
 const PLAN_TO_PRICE: Record<string, { id: string; label: string; price: string }> = {
   monthly: { id: 'mirror_monthly', label: 'monthly', price: '$6/month' },
@@ -12,6 +13,7 @@ const PLAN_TO_PRICE: Record<string, { id: string; label: string; price: string }
 }
 
 export function SubscribePage() {
+  useNoIndex()
   const [search] = useSearchParams()
   const navigate = useNavigate()
   const planKey = (search.get('plan') === 'monthly' ? 'monthly' : 'annual') as 'monthly' | 'annual'

@@ -8,6 +8,7 @@ import { RoomDetail } from '../components/RoomDetail'
 import { useToast } from '../components/Toast'
 import { SHUTAP_SEED } from '../data/seed'
 import type { Room } from '../data/types'
+import { useNoIndex } from '@/components/NoIndex'
 
 interface StoredRoom extends Partial<Room> {
   id: string
@@ -46,6 +47,7 @@ function loadUserRooms(): Room[] {
 }
 
 export function RoomPage() {
+  useNoIndex()
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const id = params.get('id')

@@ -36,6 +36,9 @@ Allow: /
 User-agent: Googlebot
 Allow: /
 
+User-agent: Bingbot
+Allow: /
+
 User-agent: Applebot
 Allow: /
 
@@ -57,14 +60,19 @@ Allow: /
 User-agent: Meta-ExternalAgent
 Allow: /
 
-# Disallow signed-in, admin, and intake surfaces.
+# Disallow signed-in, admin, subscription, and app surfaces.
 Disallow: /api/
 Disallow: /auth
 Disallow: /login
 Disallow: /signup
+Disallow: /welcome
+Disallow: /stream
+Disallow: /room
 Disallow: /profile
+Disallow: /mirror
 Disallow: /subscribe
+Disallow: /admin
 Disallow: /lovable/
 Disallow: /report
 
-# Sitemap directive added once a project URL is assigned.
+Sitemap: https://shutap.com/sitemap.xml

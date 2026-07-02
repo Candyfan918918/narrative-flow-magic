@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/seo/ContentPage";
+import { SITE_URL } from "@/lib/site";
 
 const PATH = "/privacy";
-const URL = "https://narrative-flow-magic.lovable.app/privacy";
+const URL = `${SITE_URL}/privacy`;
 const TITLE = "Privacy Policy — Shutap";
 const DESCRIPTION =
   "How Shutap protects your privacy: pseudonymous by design, PII scrubbed before storage, no sale of your data, and full rights to access, export, and delete.";

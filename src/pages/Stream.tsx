@@ -10,6 +10,7 @@ import { useToast } from '../components/Toast'
 import { SHUTAP_SEED } from '../data/seed'
 import type { Room } from '../data/types'
 import { listPillars } from '../lib/pillars.functions'
+import { useNoIndex } from '@/components/NoIndex'
 
 
 type Filter = 'all' | 'heard' | 'advice' | 'scan'
@@ -66,6 +67,7 @@ function loadUserRooms(): RoomTileData[] {
 }
 
 export function StreamPage() {
+  useNoIndex()
   const navigate = useNavigate()
   const { hash } = useLocation()
   const [filter, setFilter] = useState<Filter>('all')

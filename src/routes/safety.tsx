@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/seo/ContentPage";
+import { SITE_URL } from "@/lib/site";
 
-const URL = "https://narrative-flow-magic.lovable.app/safety";
+const URL = `${SITE_URL}/safety`;
 const TITLE = "Safety at Shutap — crisis resources and how we respond";
 const DESCRIPTION =
   "Shutap is not a crisis service, but safety is built in. Crisis resources (988, Samaritans, findahelpline) and how the companion routes you to real help.";

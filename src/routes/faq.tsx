@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/seo/ContentPage";
+import { SITE_URL } from "@/lib/site";
 
 const PATH = "/faq";
-const URL = "https://narrative-flow-magic.lovable.app/faq";
+const URL = `${SITE_URL}/faq`;
 const TITLE =
   "Shutap FAQ — is it therapy? is it anonymous? is my data safe?";
 const DESCRIPTION =

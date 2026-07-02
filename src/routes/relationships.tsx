@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SITE_URL } from "@/lib/site";
 
 const PATH = "/relationships";
 const TITLE =
@@ -41,12 +42,12 @@ export const Route = createFileRoute("/relationships")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: PATH },
+      { property: "og:url", content: `${SITE_URL}${PATH}` },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: PATH }],
+    links: [{ rel: "canonical", href: `${SITE_URL}${PATH}` }],
     scripts: [
       {
         type: "application/ld+json",
@@ -55,7 +56,7 @@ export const Route = createFileRoute("/relationships")({
           "@type": "CollectionPage",
           name: PILLAR,
           description: DESCRIPTION,
-          url: PATH,
+          url: `${SITE_URL}${PATH}`,
         }),
       },
       {

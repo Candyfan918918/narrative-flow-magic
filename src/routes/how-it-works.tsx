@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/seo/ContentPage";
+import { SITE_URL } from "@/lib/site";
 
 const PATH = "/how-it-works";
 const TITLE = "How Shutap works — real people, AI-guided, outcomes confirmed";
@@ -42,12 +43,12 @@ export const Route = createFileRoute("/how-it-works")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: PATH },
+      { property: "og:url", content: `${SITE_URL}${PATH}` },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: PATH }],
+    links: [{ rel: "canonical", href: `${SITE_URL}${PATH}` }],
     scripts: [
       {
         type: "application/ld+json",
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/how-it-works")({
           "@type": "WebPage",
           name: "How Shutap works",
           description: DESCRIPTION,
-          url: PATH,
+          url: `${SITE_URL}${PATH}`,
         }),
       },
     ],

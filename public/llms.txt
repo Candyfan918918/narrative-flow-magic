@@ -1,6 +1,6 @@
 # Shutap
 
-> Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.
+> Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.
 
 Shutap is the alternative to anonymous-feed venting (Reddit, AITA, Quora). Members keep a consistent pseudonym across stories so voices have a track record, and outcomes are confirmed by the original author rather than inferred from sentiment.
 
@@ -8,17 +8,28 @@ The brand wordplay is "Shutap → speak up." The app is not a clinical service; 
 
 ## Core
 
-- [About](/about): What Shutap is, who it's for, and how it differs from anonymous feed venting.
-- [Methodology](/methodology): How stories are written (real people, no AI-written stories), how outcomes are confirmed, how sensitive topics are routed.
-- [Trust & privacy](/trust): Pseudonymity model, what is and isn't indexed, takedown path.
+- [About](https://shutap.com/about): What Shutap is, who it's for, and how it differs from anonymous feed venting.
+- [How it works](https://shutap.com/how-it-works): Real people, AI-guided, outcomes confirmed — plus how sensitive topics route to real help.
+- [Lived Intelligence](https://shutap.com/lived-intelligence): The human counterpart to AI — the practical knowledge earned by living through real situations and seeing how they turn out.
+- [Trust & privacy](https://shutap.com/trust): Pseudonymity model, PII scrubbing before storage, what is and isn't indexed, takedown path.
 
 ## Pillars
 
-- [Relationships](/relationships): Dating, partners, situationships, breakups, the gray area in between.
-- [Marriage](/marriage): The long-haul stuff — roommate energy, resentment, repair, leaving, staying.
-- [Family](/family): Parents, siblings, in-laws, the family group chat, the guilt.
-- [Career](/career): Work, money, bosses, burnout, the job everyone tells you to be grateful for.
+- [Relationships](https://shutap.com/relationships): Dating, partners, situationships, breakups, the gray area in between.
+- [Marriage](https://shutap.com/marriage): The long-haul stuff — roommate energy, resentment, repair, leaving, staying.
+- [Family](https://shutap.com/family): Parents, siblings, in-laws, the family group chat, the guilt.
+- [Career](https://shutap.com/career): Work, money, bosses, burnout, the job everyone tells you to be grateful for.
+
+## Legal & policies
+
+- [FAQ](https://shutap.com/faq): Common questions — is it therapy (no), is it anonymous (pseudonymous), how is my data handled.
+- [Terms of Service](https://shutap.com/terms): The rules of the room; 18+; not a medical or legal service.
+- [Privacy Policy](https://shutap.com/privacy): Pseudonymous by design, PII scrubbed before storage, no sale of data, full access/export/delete rights.
+- [Community Guidelines](https://shutap.com/guidelines): Protect privacy, aim any sharpness at situations not people.
+- [Safety](https://shutap.com/safety): Crisis resources (988, Samaritans, findahelpline) and how the companion routes to real help.
+- [AI Disclosure](https://shutap.com/ai-disclosure): What the AI does, what it isn't, that it can be wrong, and which models power the companion and Mirror.
+- [Legal hub](https://shutap.com/legal): Index of all policy pages.
 
 ## Optional
 
-- [Sitemap](/sitemap.xml): Machine-readable list of indexable pages.
+- [Sitemap](https://shutap.com/sitemap.xml): Machine-readable list of indexable pages.

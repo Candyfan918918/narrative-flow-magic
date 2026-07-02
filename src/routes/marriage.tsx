@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PillarPage } from "@/components/seo/PillarPage";
+import { SITE_URL } from "@/lib/site";
 
 const PATH = "/marriage";
 const TITLE = "Marriage — vent and read real stories about married life | Shutap";
@@ -41,12 +42,12 @@ export const Route = createFileRoute("/marriage")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: PATH },
+      { property: "og:url", content: `${SITE_URL}${PATH}` },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: PATH }],
+    links: [{ rel: "canonical", href: `${SITE_URL}${PATH}` }],
     scripts: [
       {
         type: "application/ld+json",
@@ -55,7 +56,7 @@ export const Route = createFileRoute("/marriage")({
           "@type": "CollectionPage",
           name: PILLAR,
           description: DESCRIPTION,
-          url: PATH,
+          url: `${SITE_URL}${PATH}`,
         }),
       },
       {

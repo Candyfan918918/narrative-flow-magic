@@ -86,6 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "Shutap" },
       { property: "og:site_name", content: "Shutap" },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://shutap.com" },
       {
         property: "og:title",
         content: "Shutap — vent about relationships, marriage, family & work",

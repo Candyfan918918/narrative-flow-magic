@@ -7,6 +7,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { listRelateQueue, relateQueueStats, type RelateQueueRow } from '@/lib/relate-queue.functions'
 import { backfillEmbeddings } from '@/lib/embeddings-backfill.functions'
 import { schedulerHealth, type SchedulerHealth } from '@/lib/scheduler-health.functions'
+import { useNoIndex } from '@/components/NoIndex'
 
 
 
@@ -14,6 +15,7 @@ const PILLARS = ['all', 'relationships', 'marriage', 'family', 'career'] as cons
 type PillarFilter = (typeof PILLARS)[number]
 
 export function AdminRelateQueuePage() {
+  useNoIndex()
   const list = useServerFn(listRelateQueue)
   const stats = useServerFn(relateQueueStats)
   const [rows, setRows] = useState<RelateQueueRow[]>([])

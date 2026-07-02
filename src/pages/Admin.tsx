@@ -2,8 +2,10 @@
    with a small floating nav so admins can reach the React-built
    Feedback dashboard. */
 import { Link } from 'react-router-dom'
+import { useNoIndex } from '@/components/NoIndex'
 
 export function AdminPage() {
+  useNoIndex()
   return (
     <>
       <iframe

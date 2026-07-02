@@ -12,6 +12,7 @@ import {
   deleteSituation,
 } from '../lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
+import { useNoIndex } from '@/components/NoIndex'
 
 type Tab = 'all' | 'rooms' | 'journals' | 'scans'
 
@@ -54,6 +55,7 @@ function timeAgo(iso: string) {
 }
 
 export function ProfilePage() {
+  useNoIndex()
   const navigate = useNavigate()
   const { toast, ToastHost } = useToast()
   const list = useServerFn(listMySituations)
