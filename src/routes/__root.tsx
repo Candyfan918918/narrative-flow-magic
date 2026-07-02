@@ -119,10 +119,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "Shutap",
-          alternateName: "Shutap. Speak up.",
+          alternateName: "Shutap. Speak Up.",
           description:
-            "Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.",
-          slogan: "Shutap. Speak up.",
+            "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
+          slogan: "Shutap. Speak Up.",
         }),
       },
     ],
