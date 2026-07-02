@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { getAlias, isAdmin as getIsAdmin, rememberReturnTo, signOut as doSignOut } from '../lib/auth'
-import type { Alias } from '../data/types'
+import { rememberReturnTo, signOut as doSignOut } from '../lib/auth'
+import { useCurrentAlias, useIsAdmin } from '../hooks/use-current-alias'
 
 /* Canonical sticky header — identical across Landing, Stream, Halls, Profile.
-   Blinking eye + wordmark on the left; `rooms` + `halls` nav with the current
-   page emphasized; alias pill (or `join →` pill) on the right. */
+   Alias pill is driven by the real Supabase session; sign-out clears both
+   the Supabase session AND cached alias/role. */
 export function Header({ onToast }: { onToast?: (m: string) => void }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const [alias, setAliasState] = useState<Alias | null>(() => getAlias())
+  const { alias, userId } = useCurrentAlias()
+  const admin = useIsAdmin()
   const [menuOpen, setMenuOpen] = useState(false)
   const areaRef = useRef<HTMLDivElement>(null)
-  const admin = getIsAdmin()
-
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -27,12 +26,13 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
     rememberReturnTo(window.location.href)
     navigate('/welcome')
   }
-  const signOut = () => {
+  const signOut = async () => {
     setMenuOpen(false)
-    doSignOut()
-    setAliasState(null)
+    await doSignOut()
     onToast?.('signed out.')
+    navigate('/')
   }
+  
 
   const menuItem: React.CSSProperties = {
     display: 'block',

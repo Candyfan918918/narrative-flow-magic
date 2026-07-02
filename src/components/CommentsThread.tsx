@@ -1,7 +1,6 @@
-// Auth-owned comments thread for a room. Renders the existing comments and
-// lets the author of each comment edit / delete their own. The composer
-// itself lives in RoomDetail (the rich AI-guided one is the single real one).
-import { useEffect, useState } from 'react'
+// Auth-owned comments thread for a room. Renders comments with each
+// commenter's CURRENT alias resolved from public.aliases (not stale text).
+import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import {
@@ -9,6 +8,7 @@ import {
   updateComment,
   deleteComment,
 } from '@/lib/situations.functions'
+import { resolveAliases } from '@/lib/alias.functions'
 import { supabase } from '@/integrations/supabase/client'
 
 function timeAgo(iso: string): string {
@@ -44,10 +44,23 @@ export function CommentsThread({ roomId }: { roomId: string }) {
   const fetchComments = useServerFn(listRoomComments)
   const update = useServerFn(updateComment)
   const remove = useServerFn(deleteComment)
+  const resolve = useServerFn(resolveAliases)
 
   const { data: comments = [] } = useQuery({
     queryKey: ['comments', roomId],
     queryFn: () => fetchComments({ data: { roomId } }),
+  })
+
+  const commenterIds = useMemo(() => {
+    const s = new Set<string>()
+    for (const c of comments) if (c.alias_id) s.add(c.alias_id)
+    return Array.from(s)
+  }, [comments])
+
+  const { data: aliasMap = {} } = useQuery({
+    queryKey: ['alias-map', commenterIds.slice().sort().join(',')],
+    queryFn: () => resolve({ data: { userIds: commenterIds } }) as Promise<Record<string, { display_name: string; emoji: string }>>,
+    enabled: commenterIds.length > 0,
   })
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ['comments', roomId] })
@@ -90,6 +103,9 @@ export function CommentsThread({ roomId }: { roomId: string }) {
         {comments.map((c) => {
           const mine = meId && c.alias_id === meId
           const editing = editingId === c.id
+          const chip = aliasMap[c.alias_id]
+          const who = mine ? 'you' : (chip?.display_name || 'someone')
+          const emoji = chip?.emoji || (mine ? '🩷' : '🙂')
           return (
             <div
               key={c.id}
@@ -111,7 +127,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
                   color: '#9e7a8c',
                 }}
               >
-                <span>{mine ? 'you' : 'someone'}{c.edited ? ' · edited' : ''} · {timeAgo(c.created_at)}</span>
+                <span><span aria-hidden style={{ marginRight: 6 }}>{emoji}</span>{who}{c.edited ? ' · edited' : ''} · {timeAgo(c.created_at)}</span>
                 {mine && !editing && (
                   <span style={{ display: 'flex', gap: 8 }}>
                     <button

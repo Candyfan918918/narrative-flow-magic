@@ -105,10 +105,18 @@ export const saveSituation = createServerFn({ method: 'POST' })
 
     let roomId: string | null = sit.room_id
     if (data.is_public && !roomId) {
+      // Resolve the CURRENT alias from public.aliases — never trust client-supplied alias/emoji.
+      const aliasRow = await context.supabase
+        .from('aliases')
+        .select('display_name, emoji')
+        .eq('user_id', context.userId)
+        .maybeSingle()
+      const displayName = (aliasRow.data as { display_name?: string } | null)?.display_name ?? 'someone'
+      const emoji = (aliasRow.data as { emoji?: string } | null)?.emoji ?? '🩷'
       roomId = await upsertRoomForSituation(context.supabase, sit.id, {
         author_id: context.userId,
-        alias: data.alias ?? 'someone',
-        emoji: data.emoji ?? '🩷',
+        alias: displayName,
+        emoji,
         title: data.title ?? deriveTitle(insertRow.body || insertRow.clean_text),
         body: insertRow.body || insertRow.clean_text,
         support: 'heard',
@@ -169,10 +177,17 @@ export const updateSituation = createServerFn({ method: 'POST' })
 
     let roomId = current.data.room_id as string | null
     if (goingPublic) {
+      const aliasRow = await context.supabase
+        .from('aliases')
+        .select('display_name, emoji')
+        .eq('user_id', context.userId)
+        .maybeSingle()
+      const displayName = (aliasRow.data as { display_name?: string } | null)?.display_name ?? 'someone'
+      const emoji = (aliasRow.data as { emoji?: string } | null)?.emoji ?? '🩷'
       roomId = await upsertRoomForSituation(context.supabase, data.id, {
         author_id: context.userId,
-        alias: 'someone',
-        emoji: '🩷',
+        alias: displayName,
+        emoji,
         title: (patch.title as string) ?? current.data.title ?? deriveTitle((patch.body as string) || current.data.body || current.data.clean_text),
         body: (patch.body as string) ?? current.data.body ?? current.data.clean_text,
         support: 'heard',

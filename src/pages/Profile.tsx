@@ -1,6 +1,5 @@
-/* Real React Profile page (Step 6 of port). Lists the user's own
- * situations (spills, scans, journals) with edit / privacy / delete
- * controls and renders scan rows as score cards. */
+/* Real React Profile page. Lists the user's own situations plus lets them
+ * edit their pseudonymous alias (one row per user in public.aliases). */
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useServerFn } from '@tanstack/react-start'
@@ -11,6 +10,8 @@ import {
   updateSituation,
   deleteSituation,
 } from '../lib/situations.functions'
+import { getMyAlias, upsertMyAlias, rerollMyAlias } from '@/lib/alias.functions'
+import { signOut as unifiedSignOut } from '@/lib/auth'
 import { supabase } from '@/integrations/supabase/client'
 import { useNoIndex } from '@/components/NoIndex'
 
@@ -61,23 +62,41 @@ export function ProfilePage() {
   const list = useServerFn(listMySituations)
   const update = useServerFn(updateSituation)
   const remove = useServerFn(deleteSituation)
+  const readAlias = useServerFn(getMyAlias)
+  const saveAlias = useServerFn(upsertMyAlias)
+  const rerollAlias = useServerFn(rerollMyAlias)
   const [rows, setRows] = useState<Situation[] | null>(null)
   const [email, setEmail] = useState<string>('')
   const [tab, setTab] = useState<Tab>('all')
   const [busy, setBusy] = useState<string | null>(null)
+  const [alias, setAlias] = useState<{ emotion: string; nation: string; creature: string; emoji: string; display_name: string } | null>(null)
+  const [editAlias, setEditAlias] = useState(false)
+  const [aliasBusy, setAliasBusy] = useState(false)
 
   async function refresh() {
     try {
       const data = (await list()) as Situation[]
       setRows(data)
-    } catch (e) {
+    } catch {
       toast('couldn\'t load your stories.')
       setRows([])
     }
   }
 
+  async function refreshAlias() {
+    try {
+      const a = await readAlias()
+      if (a) {
+        const row = a as { emotion: string; nation: string; creature: string; emoji: string; display_name: string }
+        setAlias(row)
+        try { localStorage.setItem('shutap_alias', JSON.stringify({ name: row.display_name, emoji: row.emoji })) } catch {}
+      }
+    } catch { /* not signed in */ }
+  }
+
   useEffect(() => {
     refresh()
+    refreshAlias()
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ''))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -128,8 +147,37 @@ export function ProfilePage() {
   }
 
   async function signOut() {
-    await supabase.auth.signOut()
+    await unifiedSignOut()
     navigate('/welcome')
+  }
+
+  async function onReroll() {
+    setAliasBusy(true)
+    try {
+      const a = await rerollAlias()
+      if (a) {
+        const row = a as { emotion: string; nation: string; creature: string; emoji: string; display_name: string }
+        setAlias(row)
+        try { localStorage.setItem('shutap_alias', JSON.stringify({ name: row.display_name, emoji: row.emoji })) } catch {}
+        toast('new alias.')
+      }
+    } catch { toast('couldn\'t re-roll.') }
+    finally { setAliasBusy(false) }
+  }
+
+  async function onSaveAlias(patch: Partial<{ emotion: string; nation: string; creature: string; emoji: string }>) {
+    setAliasBusy(true)
+    try {
+      const a = await saveAlias({ data: patch })
+      if (a) {
+        const row = a as { emotion: string; nation: string; creature: string; emoji: string; display_name: string }
+        setAlias(row)
+        try { localStorage.setItem('shutap_alias', JSON.stringify({ name: row.display_name, emoji: row.emoji })) } catch {}
+        toast('alias saved.')
+        setEditAlias(false)
+      }
+    } catch { toast('couldn\'t save.') }
+    finally { setAliasBusy(false) }
   }
 
   return (
@@ -151,7 +199,57 @@ export function ProfilePage() {
           </p>
         </div>
 
-        {/* counter strip */}
+        {/* alias card */}
+        {alias && (
+          <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 16, padding: '16px 18px', marginBottom: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <span style={{ width: 42, height: 42, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 22 }}>{alias.emoji}</span>
+              <div style={{ flex: 1, minWidth: 180 }}>
+                <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>your alias</div>
+                <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 18, color: '#0b080f' }}>{alias.display_name}</div>
+              </div>
+              <button
+                disabled={aliasBusy}
+                onClick={() => setEditAlias((v) => !v)}
+                style={btn('#c1216b')}
+              >{editAlias ? 'close' : 'edit alias'}</button>
+              <button
+                disabled={aliasBusy}
+                onClick={onReroll}
+                style={btn('#7F77DD')}
+              >re-roll</button>
+            </div>
+            {editAlias && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+                {(['emotion', 'nation', 'creature'] as const).map((k) => (
+                  <label key={k} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>{k}</span>
+                    <input
+                      defaultValue={alias[k]}
+                      onBlur={(e) => {
+                        const v = e.target.value.trim()
+                        if (v && v !== alias[k]) onSaveAlias({ [k]: v })
+                      }}
+                      style={{ border: '.5px solid rgba(11,8,15,.15)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, background: '#fff' }}
+                    />
+                  </label>
+                ))}
+                <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>emoji</span>
+                  <input
+                    defaultValue={alias.emoji}
+                    onBlur={(e) => {
+                      const v = e.target.value.trim()
+                      if (v && v !== alias.emoji) onSaveAlias({ emoji: v })
+                    }}
+                    maxLength={4}
+                    style={{ border: '.5px solid rgba(11,8,15,.15)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Inter,sans-serif', fontSize: 16, background: '#fff' }}
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+        )}
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
           {[
             { k: 'rooms' as const, n: counts.rooms, label: 'rooms open' },

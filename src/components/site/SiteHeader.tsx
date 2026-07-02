@@ -19,11 +19,20 @@ export function SiteHeader() {
     let dead = false
     ;(async () => {
       try {
-        const [{ getAlias, isAdmin }] = await Promise.all([import('@/lib/auth')])
+        const [{ getAlias }, { getIsAdmin }] = await Promise.all([
+          import('@/lib/auth'),
+          import('@/lib/alias.functions'),
+        ])
         const a = getAlias()
-        if (!dead && a) setAlias({ emoji: a.emoji ?? '✦', name: a.name ?? 'you', admin: isAdmin() })
+        if (dead) return
+        if (a) setAlias({ emoji: a.emoji ?? '✦', name: a.name ?? 'you', admin: false })
+        // upgrade admin flag async
+        try {
+          const isAdmin = await getIsAdmin()
+          if (!dead && a) setAlias((prev) => (prev ? { ...prev, admin: Boolean(isAdmin) } : prev))
+        } catch { /* not signed in */ }
       } catch {
-        /* not signed in / auth module unavailable in this context */
+        /* auth module unavailable */
       }
     })()
     return () => {
