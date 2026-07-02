@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from '@/compat/router'
 import { rememberReturnTo, signOut as doSignOut } from '../lib/auth'
 import { useCurrentAlias, useIsAdmin } from '../hooks/use-current-alias'
+import { EyeMark, ShutapWordmark } from './EyeMark'
 
 /* Canonical sticky header — identical across Landing, Stream, Halls, Profile.
    Alias pill is driven by the real Supabase session; sign-out clears both
@@ -71,21 +72,8 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
           to="/"
           style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}
         >
-          <span
-            style={{ width: 32, height: 23, display: 'block', animation: 'eblink 3.4s infinite', transformOrigin: 'center' }}
-          >
-            <svg viewBox="0 0 140 96" fill="none" style={{ display: 'block', width: '100%', height: '100%' }}>
-              <rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
-              <rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
-              <ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)" />
-              <ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)" />
-              <path d="M44 22 C41 18 35 18 35 24 C35 30 44 36 44 36 C44 36 53 30 53 24 C53 18 47 18 44 22Z" fill="#fff" opacity=".95" />
-              <path d="M112 22 C109 18 103 18 103 24 C103 30 112 36 112 36 C112 36 121 30 121 24 C121 18 115 18 112 22Z" fill="#fff" opacity=".95" />
-            </svg>
-          </span>
-          <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 19, letterSpacing: '-.04em', color: '#0b080f' }}>
-            shut<span style={{ color: '#e7548a' }}>ap</span>
-          </span>
+          <EyeMark size={32} />
+          <ShutapWordmark size={19} ink="#0b080f" letterSpacing="-.04em" />
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

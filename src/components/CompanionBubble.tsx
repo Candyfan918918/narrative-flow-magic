@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { EyeMark } from './EyeMark'
 
 /* The companion: a draggable, semi-transparent pink circle with the brand eyes
    (no pill, no label) — exactly as the user landed on it. Tap (without dragging)
@@ -117,16 +118,9 @@ export function CompanionBubble({
         userSelect: 'none',
       }}
     >
-      <svg
-        viewBox="0 0 56 56"
-        fill="none"
-        style={{ width: 32, height: 32, display: 'block', pointerEvents: 'none' }}
-      >
-        <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-        <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-        <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-        <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-      </svg>
+      <div style={{ pointerEvents: 'none', display: 'inline-flex' }}>
+        <EyeMark size={34} />
+      </div>
     </div>
   )
 }
