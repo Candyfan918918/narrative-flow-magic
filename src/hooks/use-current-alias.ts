@@ -20,13 +20,18 @@ export function useCurrentAlias(): {
 
   const refresh = async () => {
     const { data } = await supabase.auth.getSession()
-    const uid = data.session?.user?.id ?? null
-    setUserId(uid)
-    if (!uid) {
+    const sessUser = data.session?.user
+    const uid = sessUser?.id ?? null
+    const anon = Boolean((sessUser as { is_anonymous?: boolean } | undefined)?.is_anonymous)
+    // Anonymous pseudonymous sessions are NOT "signed in" for UI purposes —
+    // the header should render the join → pill, not an alias.
+    if (!uid || anon) {
+      setUserId(null)
       setAlias(null)
       try { localStorage.removeItem('shutap_alias') } catch { /* noop */ }
       return
     }
+    setUserId(uid)
     try {
       const { getMyAlias } = await import('@/lib/alias.functions')
       const row = await getMyAlias()

@@ -184,24 +184,36 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                 )}
               </>
             ) : (
-              <div
+              <a
+                href="/welcome"
                 role="button"
-                onClick={join}
+                onClick={(e) => {
+                  // Preserve returnTo; still allow real anchor to navigate
+                  // reliably even if the SPA nav handler is intercepted.
+                  try { rememberReturnTo(window.location.href) } catch { /* noop */ }
+                  if (!e.metaKey && !e.ctrlKey && e.button === 0) {
+                    e.preventDefault()
+                    navigate('/welcome')
+                  }
+                }}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   background: '#e7548a',
                   color: '#fff',
+                  textDecoration: 'none',
                   borderRadius: 999,
                   padding: '9px 18px',
                   fontFamily: 'Sora,sans-serif',
                   fontWeight: 700,
                   fontSize: 13,
                   cursor: 'pointer',
+                  position: 'relative',
+                  zIndex: 1,
                 }}
               >
                 join →
-              </div>
+              </a>
             )}
           </div>
         </div>

@@ -82,19 +82,18 @@ export function WelcomeNativePage() {
   const [alias, setAliasState] = useState<{ emotion: string; nation: string; creature: string; emoji: string; display_name: string }>(() => ({ ...randomAliasParts() }))
   const emoji = useMemo(() => CREATURES.find((c) => c.n === alias.creature)?.e ?? alias.emoji, [alias])
 
-  // On mount: if a session already exists (returning from OAuth or refresh),
-  // stamp legal and skip to the age/alias step depending on state.
+  // On mount: only skip past the auth step when a REAL (non-anonymous) user
+  // is signed in. Anonymous pseudonymous sessions must still see the
+  // Google/Apple/email sheet so they can upgrade without losing their id.
   useEffect(() => {
     let cancelled = false
-    const run = async () => {
-      const { data } = await supabase.auth.getSession()
-      if (cancelled || !data.session) return
+    const isAnon = (u: unknown) => Boolean((u as { is_anonymous?: boolean } | undefined)?.is_anonymous)
+    const advanceForRealUser = async () => {
       try { await recordLegalAcceptance({ data: {} }) } catch { /* noop */ }
       try {
         const existing = await getMyAlias()
         if (cancelled) return
         if (existing?.display_name && existing.birth_year) {
-          // Already fully onboarded — resume or head home.
           setAliasState({
             emotion: existing.emotion || '',
             nation: existing.nation || '',
@@ -106,16 +105,22 @@ export function WelcomeNativePage() {
         } else {
           setStep('age')
         }
-      } catch {
-        setStep('age')
+      } catch { if (!cancelled) setStep('age') }
+    }
+    const run = async () => {
+      const { data } = await supabase.auth.getSession()
+      if (cancelled) return
+      if (!data.session || isAnon(data.session.user)) {
+        setStep('auth')
+        return
       }
+      await advanceForRealUser()
     }
     void run()
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        recordLegalAcceptance({ data: {} }).catch(() => {})
-        setStep((s) => (s === 'auth' ? 'age' : s))
-      }
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== 'SIGNED_IN' && event !== 'USER_UPDATED') return
+      if (!session || isAnon(session.user)) return
+      void advanceForRealUser()
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
   }, [])
@@ -123,11 +128,30 @@ export function WelcomeNativePage() {
   const doOAuth = async (provider: 'google' | 'apple') => {
     setBusy(true); setMsg(null)
     try {
-      const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: window.location.origin + '/welcome',
-      })
+      const { data: sess } = await supabase.auth.getSession()
+      const anon = Boolean((sess.session?.user as { is_anonymous?: boolean } | undefined)?.is_anonymous)
+      const redirectTo = window.location.origin + '/welcome'
+      if (sess.session && anon) {
+        // Upgrade path: link the OAuth identity to the SAME anonymous user id
+        // so their existing posts/comments aren't orphaned.
+        const { error } = await supabase.auth.linkIdentity({
+          provider,
+          options: { redirectTo },
+        })
+        if (error) {
+          const linkedElsewhere = /already|exists|registered/i.test(error.message)
+          if (linkedElsewhere) {
+            setMsg({ kind: 'err', text: 'that account is linked to another identity — signing you in there instead. guest activity stays with your guest account.' })
+            const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: redirectTo })
+            if (result.error) setMsg({ kind: 'err', text: result.error.message || 'sign-in failed' })
+          } else {
+            setMsg({ kind: 'err', text: error.message })
+          }
+        }
+        return
+      }
+      const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: redirectTo })
       if (result.error) setMsg({ kind: 'err', text: result.error.message || 'sign-in failed' })
-      // If redirected, browser navigates away. If token returned, onAuthStateChange fires.
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'sign-in failed' })
     } finally {
@@ -143,12 +167,26 @@ export function WelcomeNativePage() {
     }
     setBusy(true); setMsg(null)
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email: v,
-        options: { emailRedirectTo: window.location.origin + '/welcome' },
-      })
-      if (error) setMsg({ kind: 'err', text: error.message })
-      else setMsg({ kind: 'ok', text: 'magic link sent — check your inbox' })
+      const { data: sess } = await supabase.auth.getSession()
+      const anon = Boolean((sess.session?.user as { is_anonymous?: boolean } | undefined)?.is_anonymous)
+      const emailRedirectTo = window.location.origin + '/welcome'
+      if (sess.session && anon) {
+        // Upgrade the same anonymous user with an email confirmation link,
+        // preserving their auth.uid and existing content.
+        const { error } = await supabase.auth.updateUser(
+          { email: v },
+          { emailRedirectTo },
+        )
+        if (error) setMsg({ kind: 'err', text: error.message })
+        else setMsg({ kind: 'ok', text: 'confirmation link sent — check your inbox' })
+      } else {
+        const { error } = await supabase.auth.signInWithOtp({
+          email: v,
+          options: { emailRedirectTo },
+        })
+        if (error) setMsg({ kind: 'err', text: error.message })
+        else setMsg({ kind: 'ok', text: 'magic link sent — check your inbox' })
+      }
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'sign-in failed' })
     } finally {
