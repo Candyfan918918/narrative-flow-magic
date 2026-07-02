@@ -1,6 +1,5 @@
-/* Real React Profile page (Step 6 of port). Lists the user's own
- * situations (spills, scans, journals) with edit / privacy / delete
- * controls and renders scan rows as score cards. */
+/* Real React Profile page. Lists the user's own situations plus lets them
+ * edit their pseudonymous alias (one row per user in public.aliases). */
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useServerFn } from '@tanstack/react-start'
@@ -11,6 +10,8 @@ import {
   updateSituation,
   deleteSituation,
 } from '../lib/situations.functions'
+import { getMyAlias, upsertMyAlias, rerollMyAlias } from '@/lib/alias.functions'
+import { signOut as unifiedSignOut } from '@/lib/auth'
 import { supabase } from '@/integrations/supabase/client'
 import { useNoIndex } from '@/components/NoIndex'
 
