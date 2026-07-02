@@ -30,7 +30,7 @@ function AiDisclosurePage() {
     <DocLayout
       active="/ai-disclosure"
       title="ai disclosure"
-      subline="what the ai does. what it isn\u2019t. which model. and that it can be wrong."
+      subline={"what the ai does. what it isn\u2019t. which model. and that it can be wrong."}
     >
       <h3>what the ai does</h3>
       <p>
