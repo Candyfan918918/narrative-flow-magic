@@ -19,6 +19,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as MarriageRouteImport } from './routes/marriage'
 import { Route as LivedIntelligenceRouteImport } from './routes/lived-intelligence'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as GuidelinesRouteImport } from './routes/guidelines'
 import { Route as FamilyRouteImport } from './routes/family'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -88,6 +89,11 @@ const MarriageRoute = MarriageRouteImport.update({
 const LivedIntelligenceRoute = LivedIntelligenceRouteImport.update({
   id: '/lived-intelligence',
   path: '/lived-intelligence',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuidelinesRoute = GuidelinesRouteImport.update({
@@ -202,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
   '/guidelines': typeof GuidelinesRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
@@ -233,6 +240,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
   '/guidelines': typeof GuidelinesRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
@@ -266,6 +274,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
   '/guidelines': typeof GuidelinesRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
@@ -299,6 +308,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/family'
     | '/guidelines'
+    | '/how-it-works'
     | '/lived-intelligence'
     | '/marriage'
     | '/methodology'
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/family'
     | '/guidelines'
+    | '/how-it-works'
     | '/lived-intelligence'
     | '/marriage'
     | '/methodology'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/family'
     | '/guidelines'
+    | '/how-it-works'
     | '/lived-intelligence'
     | '/marriage'
     | '/methodology'
@@ -395,6 +407,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FamilyRoute: typeof FamilyRoute
   GuidelinesRoute: typeof GuidelinesRoute
+  HowItWorksRoute: typeof HowItWorksRoute
   LivedIntelligenceRoute: typeof LivedIntelligenceRoute
   MarriageRoute: typeof MarriageRoute
   MethodologyRoute: typeof MethodologyRoute
@@ -486,6 +499,13 @@ declare module '@tanstack/react-router' {
       path: '/lived-intelligence'
       fullPath: '/lived-intelligence'
       preLoaderRoute: typeof LivedIntelligenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guidelines': {
@@ -654,6 +674,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FamilyRoute: FamilyRoute,
   GuidelinesRoute: GuidelinesRoute,
+  HowItWorksRoute: HowItWorksRoute,
   LivedIntelligenceRoute: LivedIntelligenceRoute,
   MarriageRoute: MarriageRoute,
   MethodologyRoute: MethodologyRoute,
