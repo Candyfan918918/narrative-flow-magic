@@ -62,7 +62,11 @@ function SafetyPage() {
       title="crisis & safety"
       subline={"shutap isn\u2019t a crisis service, and the companion isn\u2019t a counselor. if you\u2019re in crisis, you deserve real human help right now."}
     >
+      <p style={{ marginTop: 0, marginBottom: 14 }}>
+        if you&apos;re in crisis right now, reach a real person:
+      </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
         {CARDS.map((c) => (
           <a
             key={c.region}
@@ -131,6 +135,15 @@ function SafetyPage() {
         crisis-flagged content on shutap is kept private, never made public, and never used for
         anything except supporting the person who wrote it.
       </p>
+      <style>{`
+        a[href^="tel:"]:focus-visible,
+        a[href^="http"]:focus-visible {
+          outline: 2px solid #e7548a;
+          outline-offset: 2px;
+          border-radius: 16px;
+        }
+      `}</style>
     </DocLayout>
   )
 }
+
