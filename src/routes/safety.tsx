@@ -60,7 +60,7 @@ function SafetyPage() {
     <DocLayout
       active="/safety"
       title="crisis & safety"
-      subline="shutap isn\u2019t a crisis service, and the companion isn\u2019t a counselor. if you\u2019re in crisis, you deserve real human help right now."
+      subline={"shutap isn\u2019t a crisis service, and the companion isn\u2019t a counselor. if you\u2019re in crisis, you deserve real human help right now."}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {CARDS.map((c) => (
