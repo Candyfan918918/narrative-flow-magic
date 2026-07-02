@@ -147,8 +147,37 @@ export function ProfilePage() {
   }
 
   async function signOut() {
-    await supabase.auth.signOut()
+    await unifiedSignOut()
     navigate('/welcome')
+  }
+
+  async function onReroll() {
+    setAliasBusy(true)
+    try {
+      const a = await rerollAlias()
+      if (a) {
+        const row = a as { emotion: string; nation: string; creature: string; emoji: string; display_name: string }
+        setAlias(row)
+        try { localStorage.setItem('shutap_alias', JSON.stringify({ name: row.display_name, emoji: row.emoji })) } catch {}
+        toast('new alias.')
+      }
+    } catch { toast('couldn\'t re-roll.') }
+    finally { setAliasBusy(false) }
+  }
+
+  async function onSaveAlias(patch: Partial<{ emotion: string; nation: string; creature: string; emoji: string }>) {
+    setAliasBusy(true)
+    try {
+      const a = await saveAlias({ data: patch })
+      if (a) {
+        const row = a as { emotion: string; nation: string; creature: string; emoji: string; display_name: string }
+        setAlias(row)
+        try { localStorage.setItem('shutap_alias', JSON.stringify({ name: row.display_name, emoji: row.emoji })) } catch {}
+        toast('alias saved.')
+        setEditAlias(false)
+      }
+    } catch { toast('couldn\'t save.') }
+    finally { setAliasBusy(false) }
   }
 
   return (
