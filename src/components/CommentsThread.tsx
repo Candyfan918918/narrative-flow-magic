@@ -46,9 +46,11 @@ export function CommentsThread({ roomId }: { roomId: string }) {
   const remove = useServerFn(deleteComment)
   const resolve = useServerFn(resolveAliases)
 
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(roomId)
   const { data: comments = [] } = useQuery({
     queryKey: ['comments', roomId],
     queryFn: () => fetchComments({ data: { roomId } }),
+    enabled: isUuid,
   })
 
   const commenterIds = useMemo(() => {
