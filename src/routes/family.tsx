@@ -1,11 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
-import { SeoPage } from "@/components/seo/SeoPage";
-import { HUBS_BY_PILLAR } from "@/lib/seo/hubs";
+import { PillarPage } from "@/components/seo/PillarPage";
 
-const TITLE = "Family — vent about parents, siblings, in-laws";
+const PATH = "/family";
+const TITLE =
+  "Family — vent and read real stories about family relationships | Shutap";
 const DESCRIPTION =
-  "Real stories about family: parents, siblings, in-laws, the family group chat, the guilt. Pseudonymous, with outcomes from people who've been there.";
+  "Real, pseudonymous stories about family — parents, siblings, in-laws, the family group chat, the guilt — and what actually happened next. Someone here gets it.";
+const H1 = "family";
+const CAPSULE =
+  "Parents, siblings, in-laws, the family group chat, the guilt that comes with all of it. This is where people vent about family — pseudonymously, honestly — and come back to share what actually happened next. Whatever the dynamic, someone here has lived it.";
+const WHAT =
+  "Family is the stuff that's hard to say out loud to anyone who knows them: the parent who won't change, the sibling rivalry that never ended, the in-laws, the boundary you can't seem to hold. Spill it under a pseudonym, and hear from people who love and struggle with their families too.";
+const INVITE =
+  "You can say the thing here you can't say at dinner. Start wherever it hurts.";
+const FAQ = [
+  {
+    q: "Is it normal to feel guilty about my family?",
+    a: "Very. Guilt, obligation, and the pull between love and distance are some of the most common threads on Shutap. Seeing others name the same feeling is often the first time it feels okay to.",
+  },
+  {
+    q: "Can I post about my family privately?",
+    a: "Yes — under a pseudonym, with identifying details removed before storage. You can be honest about your family without exposing yourself or them.",
+  },
+  {
+    q: "What will I get here that I won't get elsewhere?",
+    a: "Not verdicts — outcomes. People come back to share what actually happened after they set the boundary, had the conversation, or stepped back, so you can see how it tends to go for people in your spot.",
+  },
+];
+const PILLAR = "Family";
+const OTHERS = [
+  { href: "/relationships", label: "Relationships" },
+  { href: "/marriage", label: "Marriage" },
+  { href: "/career", label: "Career" },
+];
 
 export const Route = createFileRoute("/family")({
   head: () => ({
@@ -15,45 +42,56 @@ export const Route = createFileRoute("/family")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/family" },
+      { property: "og:url", content: PATH },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: "/family" }],
+    links: [{ rel: "canonical", href: PATH }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: PILLAR,
+          description: DESCRIPTION,
+          url: PATH,
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "/" },
+            { "@type": "ListItem", position: 2, name: PILLAR, item: PATH },
+          ],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      },
+    ],
   }),
-  component: FamilyPillar,
+  component: () => (
+    <PillarPage
+      h1={H1}
+      capsule={CAPSULE}
+      what={WHAT}
+      invite={INVITE}
+      faq={FAQ}
+      others={OTHERS}
+    />
+  ),
 });
-
-function FamilyPillar() {
-  return (
-    <SeoPage>
-      <article className="space-y-8">
-        <header className="space-y-3">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            Pillar
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight">Family</h1>
-          <p className="text-lg leading-relaxed text-muted-foreground">
-            Parents, siblings, in-laws, the family group chat, the guilt. The
-            stuff you'd never post on a feed that knows your last name.
-          </p>
-        </header>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Common questions people bring here</h2>
-          <ul className="space-y-2">
-            {HUBS_BY_PILLAR.family.map((h) => (
-              <li key={h.slug}>
-                <Link
-                  to="/is-it-normal/$slug"
-                  params={{ slug: h.slug }}
-                  className="underline-offset-4 hover:underline"
-                >
-                  {h.question}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </article>
-    </SeoPage>
-  );
-}
