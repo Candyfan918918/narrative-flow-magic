@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PillarPage } from "@/components/seo/PillarPage";
+import { SITE_URL } from "@/lib/site";
 
 const PATH = "/family";
 const TITLE =
