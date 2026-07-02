@@ -7,7 +7,7 @@ export const BRAND = {
   tagline: "Shutap. Speak up.",
   // The entity sentence (locked) — goes in every machine-read surface.
   entitySentence:
-    "Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.",
+    "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
   // Short variant for title tags.
   entitySentenceShort:
     "Shutap — vent about relationships, marriage, family & work, pseudonymously, and see what happened next.",
