@@ -433,7 +433,7 @@ export function LandingNativePage() {
       />
 
       {/* Onboarding modal (shown once) */}
-      {onbOpen && frame && (
+      {hydrated && onbOpen && frame && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 95, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div onClick={dismissOnb} style={{ position: 'absolute', inset: 0, background: 'rgba(10,5,14,.72)', backdropFilter: 'blur(8px)' }} />
           <div role="dialog" style={{ position: 'relative', width: '100%', maxWidth: 420, background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '.5px solid rgba(255,255,255,.14)', borderRadius: 24, padding: '26px 28px 28px', textAlign: 'center', animation: 'pop .35s ease' }}>
