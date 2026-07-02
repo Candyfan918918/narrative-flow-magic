@@ -26,6 +26,7 @@ import { Route as MarriageRouteImport } from './routes/marriage'
 import { Route as LivedIntelligenceRouteImport } from './routes/lived-intelligence'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as HallsRouteImport } from './routes/halls'
 import { Route as GuidelinesRouteImport } from './routes/guidelines'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FamilyRouteImport } from './routes/family'
@@ -137,6 +138,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
   path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HallsRoute = HallsRouteImport.update({
+  id: '/halls',
+  path: '/halls',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GuidelinesRoute = GuidelinesRouteImport.update({
   id: '/guidelines',
   path: '/guidelines',
@@ -242,9 +248,9 @@ const AuthenticatedCheckinIdRoute = AuthenticatedCheckinIdRouteImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const HallsHallRegionWindowRoute = HallsHallRegionWindowRouteImport.update({
-  id: '/halls/$hall/$region/$window',
-  path: '/halls/$hall/$region/$window',
-  getParentRoute: () => rootRouteImport,
+  id: '/$hall/$region/$window',
+  path: '/$hall/$region/$window',
+  getParentRoute: () => HallsRoute,
 } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/family': typeof FamilyRoute
   '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
+  '/halls': typeof HallsRouteWithChildren
   '/how-it-works': typeof HowItWorksRoute
   '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
@@ -319,6 +326,7 @@ export interface FileRoutesByTo {
   '/family': typeof FamilyRoute
   '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
+  '/halls': typeof HallsRouteWithChildren
   '/how-it-works': typeof HowItWorksRoute
   '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
@@ -364,6 +372,7 @@ export interface FileRoutesById {
   '/family': typeof FamilyRoute
   '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
+  '/halls': typeof HallsRouteWithChildren
   '/how-it-works': typeof HowItWorksRoute
   '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
@@ -409,6 +418,7 @@ export interface FileRouteTypes {
     | '/family'
     | '/faq'
     | '/guidelines'
+    | '/halls'
     | '/how-it-works'
     | '/legal'
     | '/lived-intelligence'
@@ -452,6 +462,7 @@ export interface FileRouteTypes {
     | '/family'
     | '/faq'
     | '/guidelines'
+    | '/halls'
     | '/how-it-works'
     | '/legal'
     | '/lived-intelligence'
@@ -496,6 +507,7 @@ export interface FileRouteTypes {
     | '/family'
     | '/faq'
     | '/guidelines'
+    | '/halls'
     | '/how-it-works'
     | '/legal'
     | '/lived-intelligence'
@@ -541,6 +553,7 @@ export interface RootRouteChildren {
   FamilyRoute: typeof FamilyRoute
   FaqRoute: typeof FaqRoute
   GuidelinesRoute: typeof GuidelinesRoute
+  HallsRoute: typeof HallsRouteWithChildren
   HowItWorksRoute: typeof HowItWorksRoute
   LegalRoute: typeof LegalRoute
   LivedIntelligenceRoute: typeof LivedIntelligenceRoute
@@ -566,7 +579,6 @@ export interface RootRouteChildren {
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicHooksMirrorEvolutionRoute: typeof ApiPublicHooksMirrorEvolutionRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
-  HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -688,6 +700,13 @@ declare module '@tanstack/react-router' {
       path: '/how-it-works'
       fullPath: '/how-it-works'
       preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/halls': {
+      id: '/halls'
+      path: '/halls'
+      fullPath: '/halls'
+      preLoaderRoute: typeof HallsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guidelines': {
@@ -839,10 +858,10 @@ declare module '@tanstack/react-router' {
     }
     '/halls/$hall/$region/$window': {
       id: '/halls/$hall/$region/$window'
-      path: '/halls/$hall/$region/$window'
+      path: '/$hall/$region/$window'
       fullPath: '/halls/$hall/$region/$window'
       preLoaderRoute: typeof HallsHallRegionWindowRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof HallsRoute
     }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
@@ -893,6 +912,16 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface HallsRouteChildren {
+  HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
+}
+
+const HallsRouteChildren: HallsRouteChildren = {
+  HallsHallRegionWindowRoute: HallsHallRegionWindowRoute,
+}
+
+const HallsRouteWithChildren = HallsRoute._addFileChildren(HallsRouteChildren)
+
 interface SubscribeRouteChildren {
   SubscribeReturnRoute: typeof SubscribeReturnRoute
 }
@@ -917,6 +946,7 @@ const rootRouteChildren: RootRouteChildren = {
   FamilyRoute: FamilyRoute,
   FaqRoute: FaqRoute,
   GuidelinesRoute: GuidelinesRoute,
+  HallsRoute: HallsRouteWithChildren,
   HowItWorksRoute: HowItWorksRoute,
   LegalRoute: LegalRoute,
   LivedIntelligenceRoute: LivedIntelligenceRoute,
@@ -942,7 +972,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicHooksMirrorEvolutionRoute: ApiPublicHooksMirrorEvolutionRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
-  HallsHallRegionWindowRoute: HallsHallRegionWindowRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
