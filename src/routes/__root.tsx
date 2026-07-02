@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Shutap is a pseudonymous community where people vent about relationships, marriage, family, and work — and share what actually happened next.",
+          "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
       },
       { name: "author", content: "Shutap" },
       { property: "og:site_name", content: "Shutap" },
