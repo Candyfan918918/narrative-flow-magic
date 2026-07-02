@@ -104,7 +104,7 @@ export function WelcomeNativePage() {
   const maxYear = new Date().getFullYear() - 18
   const [birth, setBirth] = useState({ day: 1, month: 1, year: maxYear - 12 })
 
-  const [alias, setAliasState] = useState(() => randomAliasParts())
+  const [alias, setAliasState] = useState<{ emotion: string; nation: string; creature: string; emoji: string; display_name: string }>(() => ({ ...randomAliasParts() }))
   const emoji = useMemo(() => CREATURES.find((c) => c.n === alias.creature)?.e ?? alias.emoji, [alias])
 
   // On mount: if a session already exists (returning from OAuth or refresh),
