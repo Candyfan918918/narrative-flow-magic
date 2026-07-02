@@ -21,8 +21,10 @@ export function SpaShell() {
     try { installFeedback() } catch {}
   }, [])
   return (
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </HelmetProvider>
   )
 }
