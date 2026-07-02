@@ -30,7 +30,7 @@ function PrivacyPage() {
     <DocLayout
       active="/privacy"
       title="privacy policy"
-      subline="pseudonymous by design. your content is scrubbed of identifiers before it\u2019s stored."
+      subline={"pseudonymous by design. your content is scrubbed of identifiers before it\u2019s stored."}
     >
       <p>
         <b>Effective July 1, 2026.</b> Controller: Shutap. Contact:{' '}
