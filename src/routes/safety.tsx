@@ -135,6 +135,15 @@ function SafetyPage() {
         crisis-flagged content on shutap is kept private, never made public, and never used for
         anything except supporting the person who wrote it.
       </p>
+      <style>{`
+        a[href^="tel:"]:focus-visible,
+        a[href^="http"]:focus-visible {
+          outline: 2px solid #e7548a;
+          outline-offset: 2px;
+          border-radius: 16px;
+        }
+      `}</style>
     </DocLayout>
   )
 }
+
