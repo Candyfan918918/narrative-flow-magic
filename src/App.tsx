@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from '@/compat/router'
 import { EyeDefs } from './components/EyeDefs'
 import { LandingPage } from './pages/Landing'
 

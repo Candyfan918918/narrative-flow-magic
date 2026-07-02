@@ -2,7 +2,7 @@
  * Admin-only view of un-responded public spills, oldest first, so the
  * launch-era welcoming committee can hit the 30-min first-reaction target. */
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { listRelateQueue, relateQueueStats, type RelateQueueRow } from '@/lib/relate-queue.functions'
 import { backfillEmbeddings } from '@/lib/embeddings-backfill.functions'

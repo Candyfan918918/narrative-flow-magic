@@ -2,7 +2,7 @@
  * localStorage (user-published spills/scans) first, then the seed.
  * Falls back to a friendly empty state when nothing matches. */
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from '@/compat/router'
 import { Header } from '../components/Header'
 import { RoomDetail } from '../components/RoomDetail'
 import { useToast } from '../components/Toast'

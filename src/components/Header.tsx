@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from '@/compat/router'
 import { rememberReturnTo, signOut as doSignOut } from '../lib/auth'
 import { useCurrentAlias, useIsAdmin } from '../hooks/use-current-alias'
 

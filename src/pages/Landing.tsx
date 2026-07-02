@@ -1,6 +1,6 @@
 /* Pixel-perfect port of project/Landing.dc.html with agent bridge. */
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { runSpill } from '@/lib/agents/spill.functions'
 import { saveSituation, updateSituation } from '@/lib/situations.functions'

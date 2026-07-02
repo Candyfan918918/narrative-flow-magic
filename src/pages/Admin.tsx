@@ -1,7 +1,7 @@
 /* Pixel-perfect port of project/Admin.dc.html — served verbatim,
    with a small floating nav so admins can reach the React-built
    Feedback dashboard. */
-import { Link } from 'react-router-dom'
+import { Link } from '@/compat/router'
 import { useNoIndex } from '@/components/NoIndex'
 
 export function AdminPage() {

@@ -3,7 +3,7 @@
    Spill / Scan / Mirror CTAs and the feed preview will be ported in follow-up turns.
    Not wired as the default route yet — see src/pages/Landing.tsx (`?native=1` opt-in). */
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { ONBOARDING_FRAMES } from './data/onboarding'
 import { FALLBACK_ROOMS, type LandingRoom } from './data/rooms'

@@ -4,7 +4,7 @@
  * which was the main source of perceived slowness + the Transitioner
  * "setState during render" warning. */
 import { useEffect } from 'react'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from '@/compat/router'
 import { HelmetProvider } from 'react-helmet-async'
 
 import { App } from '@/App'
