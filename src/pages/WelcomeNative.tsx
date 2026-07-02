@@ -20,37 +20,12 @@ const CREATURES = [
 ]
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+import { EyeMark as BrandEyeMark } from '@/components/brand/EyeMark'
+
 function EyeMark({ size = 52 }: { size?: number }) {
   return (
-    <span
-      style={{
-        display: 'block',
-        width: size,
-        height: (size / 52) * 37,
-        margin: '0 auto',
-        animation: 'weblink 3.4s infinite',
-        transformOrigin: 'center',
-      }}
-    >
-      <svg viewBox="0 0 140 96" fill="none" style={{ display: 'block', width: '100%', height: '100%' }}>
-        <defs>
-          <radialGradient id="wEyeG" cx="40%" cy="18%" r="75%">
-            <stop offset="0%" stopColor="#fff" />
-            <stop offset="18%" stopColor="#ffd0e8" />
-            <stop offset="48%" stopColor="#f060a0" />
-            <stop offset="78%" stopColor="#c0206a" />
-            <stop offset="100%" stopColor="#880040" />
-          </radialGradient>
-          <radialGradient id="wPupG" cx="50%" cy="55%" r="58%">
-            <stop offset="0%" stopColor="#3a1020" />
-            <stop offset="100%" stopColor="#060106" />
-          </radialGradient>
-        </defs>
-        <rect x="16" y="6" width="56" height="84" rx="28" fill="url(#wEyeG)" />
-        <rect x="84" y="6" width="56" height="84" rx="28" fill="url(#wEyeG)" />
-        <ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#wPupG)" />
-        <ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#wPupG)" />
-      </svg>
+    <span style={{ display: 'block', width: size, margin: '0 auto' }}>
+      <BrandEyeMark size={size} />
     </span>
   )
 }

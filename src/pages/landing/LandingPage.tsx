@@ -16,6 +16,7 @@ import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
 import type { Room } from '@/data/types'
+import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
 import './landing.native.css'
 
 // Shared sync key (kept identical to iframe bridge in src/pages/Landing.tsx).
@@ -208,15 +209,8 @@ export function LandingNativePage() {
       <header style={{ position: 'sticky', top: 0, zIndex: 40, background: 'rgba(253,240,245,.88)', backdropFilter: 'blur(18px)', borderBottom: '.5px solid rgba(11,8,15,.07)' }}>
         <div style={{ maxWidth: 740, margin: '0 auto', padding: '11px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}>
-            <span style={{ width: 32, height: 23, display: 'block', animation: 'eblink 3.4s infinite', transformOrigin: 'center' }}>
-              <svg viewBox="0 0 140 96" fill="none" style={{ display: 'block', width: '100%', height: '100%' }}>
-                <rect x="16" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
-                <rect x="84" y="6" width="56" height="84" rx="28" fill="url(#eyeG)" />
-                <ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#pupG)" />
-                <ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#pupG)" />
-              </svg>
-            </span>
-            <span style={{ fontFamily: SORA, fontWeight: 800, fontSize: 19, letterSpacing: '-.04em', color: '#0b080f' }}>shut<span style={{ color: '#e7548a' }}>ap</span></span>
+            <EyeMark size={32} />
+            <ShutapWordmark size={19} ink="#0b080f" letterSpacing="-.04em" />
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <a href="/stream" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}>rooms</a>
@@ -440,14 +434,8 @@ export function LandingNativePage() {
             <div onClick={dismissOnb} role="button" style={{ position: 'absolute', top: 16, right: 18, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#9e7a8c', cursor: 'pointer' }}>skip</div>
             <div style={{ marginBottom: 16 }}>
               {frame.eye ? (
-                <span style={{ display: 'inline-block', width: 46, height: 46 }}>
-                  <svg viewBox="0 0 56 56" fill="none" style={{ display: 'block', width: '100%', height: '100%' }}>
-                    <circle cx={28} cy={28} r={27} fill="rgba(231,84,138,.12)" />
-                    <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-                    <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-                    <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-                    <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-                  </svg>
+                <span style={{ display: 'inline-block' }}>
+                  <EyeMark size={46} />
                 </span>
               ) : (
                 <span style={{ fontSize: 42, lineHeight: 1 }}>{frame.emoji}</span>

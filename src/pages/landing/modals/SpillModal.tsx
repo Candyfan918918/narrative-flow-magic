@@ -14,6 +14,8 @@ import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
+import { EyeMark } from '@/components/EyeMark'
+
 
 const SORA = "'Sora', system-ui, sans-serif"
 const NEWSREADER = "'Newsreader', Georgia, serif"
@@ -138,14 +140,11 @@ function scrubPII(text: string): { clean: string; changes: Array<{ type: string;
 }
 
 function eyeSVG(size = 32) {
+  // Backwards-compat wrapper: renders the canonical brand EyeMark.
   return (
-    <svg className="sc-eye" viewBox="0 0 56 56" fill="none" style={{ display: 'block', width: size, height: size, flex: 'none' }}>
-      <circle cx={28} cy={28} r={27} fill="#fdf0f5" />
-      <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-      <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-      <ellipse cx={20.75} cy={31} rx={4} ry={5} fill="url(#pupG)" />
-      <ellipse cx={35.25} cy={31} rx={4} ry={5} fill="url(#pupG)" />
-    </svg>
+    <span style={{ display: 'inline-flex', flex: 'none' }}>
+      <EyeMark size={size} />
+    </span>
   )
 }
 

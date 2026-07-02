@@ -123,12 +123,9 @@ function scanFallback(n: number): ScanTurn {
 // ─────────────────────────── tiny UI atoms ───────────────────────────
 function CompanionSVG({ size = 34 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 56 56" fill="none" style={{ width: size, height: size, display: 'block', animation: 'eyeCalm 3.6s ease-in-out infinite' }}>
-      <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-      <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-      <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-      <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-    </svg>
+    <span style={{ display: 'inline-flex', flex: 'none' }}>
+      <EyeMark size={size} />
+    </span>
   )
 }
 

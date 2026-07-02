@@ -15,14 +15,21 @@ body {
   overflow-x: hidden;
 }
 
-/* ── shared brand-eye blink (used by <EyeMark />) ────────────────────── */
+/* ── shared brand-eye blink (used by every <EyeMark />) ──────────────── */
+/* Applied via the .shutap-blink class. Wrapped in prefers-reduced-motion so
+   reduced-motion users see a static mark. transform-box:fill-box keeps the
+   scaleY squeeze centered around the mark itself, not the SVG bounding box. */
 @keyframes shutap-blink {
-  0%, 91%, 100% { transform: scaleY(1); }
-  95% { transform: scaleY(.1); }
-  98% { transform: scaleY(1); }
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.08); }
+  97.5% { transform: scaleY(1); }
 }
-@media (prefers-reduced-motion: reduce) {
-  svg[style*="shutap-blink"] { animation: none !important; }
+.shutap-blink {
+  transform-origin: center center;
+  transform-box: fill-box;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .shutap-blink { animation: shutap-blink 3.4s ease-in-out infinite; }
 }
 
 /* ── keyframes ───────────────────────────────────────────────────────── */

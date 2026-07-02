@@ -3,6 +3,7 @@
    row, and an AI reply area fed by /api/complete. Opened by the floating CompanionBubble. */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@/compat/router'
+import { EyeMark } from './EyeMark'
 
 const NEWSREADER = "'Newsreader', Georgia, serif"
 const SORA = "'Sora', system-ui, sans-serif"
@@ -60,13 +61,9 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
       <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(10,5,14,.55)', backdropFilter: 'blur(6px)' }} />
       <div role="dialog" style={{ position: 'relative', width: '100%', maxWidth: 560, background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '.5px solid rgba(255,255,255,.16)', borderRadius: '22px 22px 0 0', padding: 22, animation: 'slideUp .3s ease' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 14 }}>
-          <svg viewBox="0 0 56 56" fill="none" style={{ width: 28, height: 28, flex: 'none', marginTop: 1 }}>
-            <circle cx="28" cy="28" r="27" fill="#fdf0f5" />
-            <rect x="15" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-            <rect x="29.5" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-            <ellipse cx="20.75" cy="31" rx="4" ry="5" fill="url(#pupG)" />
-            <ellipse cx="35.25" cy="31" rx="4" ry="5" fill="url(#pupG)" />
-          </svg>
+          <span style={{ width: 30, display: 'inline-flex', flex: 'none', marginTop: 1 }}>
+            <EyeMark size={30} />
+          </span>
           <div style={{ flex: 1, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0', lineHeight: 1.5 }}>
             i'm the companion. tell me what's going on — i can find you a room, help you spill, scan how you're doing, or just answer.
           </div>
