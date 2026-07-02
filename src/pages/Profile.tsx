@@ -199,7 +199,57 @@ export function ProfilePage() {
           </p>
         </div>
 
-        {/* counter strip */}
+        {/* alias card */}
+        {alias && (
+          <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 16, padding: '16px 18px', marginBottom: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <span style={{ width: 42, height: 42, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 22 }}>{alias.emoji}</span>
+              <div style={{ flex: 1, minWidth: 180 }}>
+                <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>your alias</div>
+                <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 18, color: '#0b080f' }}>{alias.display_name}</div>
+              </div>
+              <button
+                disabled={aliasBusy}
+                onClick={() => setEditAlias((v) => !v)}
+                style={btn('#c1216b')}
+              >{editAlias ? 'close' : 'edit alias'}</button>
+              <button
+                disabled={aliasBusy}
+                onClick={onReroll}
+                style={btn('#7F77DD')}
+              >re-roll</button>
+            </div>
+            {editAlias && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+                {(['emotion', 'nation', 'creature'] as const).map((k) => (
+                  <label key={k} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>{k}</span>
+                    <input
+                      defaultValue={alias[k]}
+                      onBlur={(e) => {
+                        const v = e.target.value.trim()
+                        if (v && v !== alias[k]) onSaveAlias({ [k]: v })
+                      }}
+                      style={{ border: '.5px solid rgba(11,8,15,.15)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, background: '#fff' }}
+                    />
+                  </label>
+                ))}
+                <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>emoji</span>
+                  <input
+                    defaultValue={alias.emoji}
+                    onBlur={(e) => {
+                      const v = e.target.value.trim()
+                      if (v && v !== alias.emoji) onSaveAlias({ emoji: v })
+                    }}
+                    maxLength={4}
+                    style={{ border: '.5px solid rgba(11,8,15,.15)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Inter,sans-serif', fontSize: 16, background: '#fff' }}
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+        )}
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
           {[
             { k: 'rooms' as const, n: counts.rooms, label: 'rooms open' },
