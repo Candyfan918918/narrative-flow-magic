@@ -21,7 +21,8 @@ import {
   type District,
   type Rarity,
 } from '@/lib/agents/mirror-guards'
-import { getAlias, rememberReturnTo, signOut as doSignOut, isAdmin as getIsAdmin } from '@/lib/auth'
+import { getAlias, rememberReturnTo, signOut as doSignOut } from '@/lib/auth'
+import { useIsAdmin } from '@/hooks/use-current-alias'
 import { supabase } from '@/integrations/supabase/client'
 import { MirrorShareSheet } from '@/components/MirrorShareSheet'
 import { ActionPill } from '@/components/ShareChannels'
@@ -160,7 +161,7 @@ function MirrorHeader() {
   const [alias, setAlias] = useState<Alias | null>(() => getAlias())
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const admin = getIsAdmin()
+  const admin = useIsAdmin()
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
@@ -172,9 +173,9 @@ function MirrorHeader() {
     rememberReturnTo(window.location.href)
     navigate('/welcome')
   }
-  const out = () => {
+  const out = async () => {
     setOpen(false)
-    doSignOut()
+    await doSignOut()
     setAlias(null)
   }
   const item: React.CSSProperties = {
