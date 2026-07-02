@@ -12,7 +12,7 @@ import {
   deleteSituation,
 } from '../lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
-import { NoIndex } from '@/components/NoIndex'
+import { useNoIndex } from '@/components/NoIndex'
 
 type Tab = 'all' | 'rooms' | 'journals' | 'scans'
 

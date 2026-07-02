@@ -10,7 +10,7 @@ import { useToast } from '../components/Toast'
 import { SHUTAP_SEED } from '../data/seed'
 import type { Room } from '../data/types'
 import { listPillars } from '../lib/pillars.functions'
-import { NoIndex } from '@/components/NoIndex'
+import { useNoIndex } from '@/components/NoIndex'
 
 
 type Filter = 'all' | 'heard' | 'advice' | 'scan'

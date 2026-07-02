@@ -8,7 +8,7 @@ import { RoomDetail } from '../components/RoomDetail'
 import { useToast } from '../components/Toast'
 import { SHUTAP_SEED } from '../data/seed'
 import type { Room } from '../data/types'
-import { NoIndex } from '@/components/NoIndex'
+import { useNoIndex } from '@/components/NoIndex'
 
 interface StoredRoom extends Partial<Room> {
   id: string
