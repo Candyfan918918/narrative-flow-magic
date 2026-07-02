@@ -39,6 +39,7 @@ import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
+import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
@@ -196,6 +197,11 @@ const ApiCompleteRoute = ApiCompleteRouteImport.update({
   path: '/api/complete',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -239,7 +245,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
@@ -262,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -277,7 +284,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
@@ -300,6 +307,7 @@ export interface FileRoutesByTo {
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -317,7 +325,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
@@ -340,6 +348,7 @@ export interface FileRoutesById {
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/u/$pseudonym': typeof UPseudonymRoute
@@ -380,6 +389,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/welcome'
     | '/profile'
+    | '/admin/feedback'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/welcome'
     | '/profile'
+    | '/admin/feedback'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -457,6 +468,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/welcome'
     | '/_authenticated/profile'
+    | '/admin/feedback'
     | '/api/complete'
     | '/is-it-normal/$slug'
     | '/u/$pseudonym'
@@ -474,7 +486,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AiDisclosureRoute: typeof AiDisclosureRoute
   CareerRoute: typeof CareerRoute
   ContactRoute: typeof ContactRoute
@@ -719,6 +731,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/feedback': {
+      id: '/admin/feedback'
+      path: '/feedback'
+      fullPath: '/admin/feedback'
+      preLoaderRoute: typeof AdminFeedbackRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -784,12 +803,22 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AdminRouteChildren {
+  AdminFeedbackRoute: typeof AdminFeedbackRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminFeedbackRoute: AdminFeedbackRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AiDisclosureRoute: AiDisclosureRoute,
   CareerRoute: CareerRoute,
   ContactRoute: ContactRoute,
