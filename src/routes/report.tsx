@@ -73,7 +73,7 @@ function ReportPage() {
               const body = encodeURIComponent(
                 `Reason: ${reason}\nURL: ${url}\n\nDetails:\n${details}`,
               );
-              window.location.href = `mailto:trust@shutap.app?subject=${encodeURIComponent(
+              window.location.href = `mailto:trust@shutap.com?subject=${encodeURIComponent(
                 "[shutap] report: " + reason,
               )}&body=${body}`;
               setSubmitted(true);
@@ -124,8 +124,8 @@ function ReportPage() {
 
             <p className="text-xs text-muted-foreground">
               you can also email{" "}
-              <a href="mailto:trust@shutap.app" className="underline">
-                trust@shutap.app
+              <a href="mailto:trust@shutap.com" className="underline">
+                trust@shutap.com
               </a>{" "}
               directly.
             </p>

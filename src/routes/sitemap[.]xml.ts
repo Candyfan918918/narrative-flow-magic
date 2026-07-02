@@ -1,11 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { SITE_URL } from "@/lib/site";
 import { HUBS } from "@/lib/seo/hubs";
 import { OUTCOMES, isOutcomeIndexable } from "@/lib/seo/outcomes";
 import { PROFILES, isProfileIndexable } from "@/lib/seo/profiles";
-
-// TODO: replace with your project URL once a project name or custom domain is set.
-const BASE_URL = "";
 
 interface SitemapEntry {
   path: string;
@@ -21,36 +19,44 @@ interface SitemapEntry {
   priority?: string;
 }
 
+// Public, indexable URLs only. Excluded on purpose:
+//   /methodology  → 301 to /how-it-works (consolidated)
+//   /contact, /report → utility/intake, not indexable content
+//   /halls/*      → gated per (hall, region, window) cell; noindex below threshold
+//   app/admin/private routes (see robots.txt Disallow list)
 const entries: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
+  { path: "/lived-intelligence", changefreq: "monthly", priority: "0.9" },
   { path: "/about", changefreq: "monthly", priority: "0.8" },
-  { path: "/methodology", changefreq: "monthly", priority: "0.6" },
+  { path: "/how-it-works", changefreq: "monthly", priority: "0.8" },
   { path: "/trust", changefreq: "monthly", priority: "0.6" },
   { path: "/relationships", changefreq: "weekly", priority: "0.9" },
   { path: "/marriage", changefreq: "weekly", priority: "0.9" },
   { path: "/family", changefreq: "weekly", priority: "0.9" },
   { path: "/career", changefreq: "weekly", priority: "0.9" },
+  { path: "/faq", changefreq: "monthly", priority: "0.7" },
+  { path: "/terms", changefreq: "yearly", priority: "0.4" },
+  { path: "/privacy", changefreq: "yearly", priority: "0.4" },
+  { path: "/guidelines", changefreq: "yearly", priority: "0.4" },
+  { path: "/safety", changefreq: "yearly", priority: "0.4" },
+  { path: "/ai-disclosure", changefreq: "yearly", priority: "0.4" },
+  { path: "/legal", changefreq: "yearly", priority: "0.3" },
   ...HUBS.map((h) => ({
     path: `/is-it-normal/${h.slug}`,
     changefreq: "monthly" as const,
     priority: "0.7",
   })),
-  // Phase 3: only list outcome aggregates that pass the §8 indexability gate.
   ...OUTCOMES.filter(isOutcomeIndexable).map((o) => ({
     path: `/what-happens/${o.slug}`,
     lastmod: o.updatedAt,
     changefreq: "weekly" as const,
     priority: "0.8",
   })),
-  // Phase 3: only list pseudonym profiles with enough author signal.
   ...PROFILES.filter(isProfileIndexable).map((p) => ({
     path: `/u/${p.pseudonym}`,
     changefreq: "weekly" as const,
     priority: "0.5",
   })),
-  // /halls/* and /report are intentionally not listed:
-  //   halls are gated per (hall, region, window) cell and emit noindex
-  //   below threshold; /report is a takedown intake and is always noindex.
 ];
 
 export const Route = createFileRoute("/sitemap.xml")({
@@ -60,7 +66,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         const urls = entries.map((e) =>
           [
             `  <url>`,
-            `    <loc>${BASE_URL}${e.path}</loc>`,
+            `    <loc>${SITE_URL}${e.path}</loc>`,
             e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
             e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
