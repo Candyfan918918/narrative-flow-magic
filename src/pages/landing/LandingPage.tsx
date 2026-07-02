@@ -111,8 +111,9 @@ export function LandingNativePage() {
   const navigate = useNavigate()
   const save = useServerFn(saveSituation)
   const [onbOpen, setOnbOpen] = useState<boolean>(false)
+  const [hydrated, setHydrated] = useState(false)
   useEffect(() => {
-    // Read localStorage only after hydration to avoid a server/client mismatch.
+    setHydrated(true)
     try { if (!localStorage.getItem('shutap_onb_seen')) setOnbOpen(true) } catch { /* noop */ }
   }, [])
   const [onbIdx, setOnbIdx] = useState(0)
