@@ -10,7 +10,7 @@
      to `/welcome` so the existing resume effect in LandingNativePage picks it
      up after sign-in. */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'

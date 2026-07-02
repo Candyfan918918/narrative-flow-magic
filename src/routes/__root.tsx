@@ -111,7 +111,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,18,400;0,18,500;1,18,400;1,18,500&family=Sora:wght@400;500;600;700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,18,400;1,18,400;1,18,500&family=Sora:wght@600;700;800&display=swap",
       },
     ],
     scripts: [
@@ -161,18 +161,28 @@ function RootComponent() {
       // Pseudonymous-first: every visitor must have a real Supabase session so
       // `requireSupabaseAuth` server fns work. Deferred off the critical path
       // so first paint isn't blocked by the auth round-trip on cold refresh.
+      let lastUserId: string | null = null;
       try {
         const { data } = await supabase.auth.getSession();
         if (!data.session) {
           await supabase.auth.signInAnonymously();
+          const { data: after } = await supabase.auth.getSession();
+          lastUserId = after.session?.user?.id ?? null;
+        } else {
+          lastUserId = data.session.user?.id ?? null;
         }
       } catch (e) {
         console.warn("[auth] anonymous bootstrap failed", e);
       }
       if (!mounted) return;
-      const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
         if (!mounted) return;
         if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+        const nextId = session?.user?.id ?? null;
+        // Session restoration on refresh emits SIGNED_IN with the same user —
+        // skip the invalidation storm unless the user actually changed.
+        if (nextId === lastUserId) return;
+        lastUserId = nextId;
         queueMicrotask(() => {
           if (!mounted) return;
           router.invalidate();

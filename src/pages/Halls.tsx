@@ -1,0 +1,46 @@
+/* Minimal native Hall of Fame hub. The deep hall pages live at
+ * /halls/$hall/$region/$window; this is just a discovery entry. */
+import { Link } from '@tanstack/react-router'
+import { SiteHeader } from '@/components/site/SiteHeader'
+import { SiteFooter } from '@/components/site/SiteFooter'
+
+const HALLS = [
+  { slug: 'relationships', label: 'Relationships' },
+  { slug: 'marriage', label: 'Marriage' },
+  { slug: 'family', label: 'Family' },
+  { slug: 'career', label: 'Work & Career' },
+]
+
+export function HallOfFamePageNative() {
+  return (
+    <div style={{ background: '#fdf0f5', minHeight: '100vh' }}>
+      <SiteHeader />
+      <main style={{ maxWidth: 780, margin: '0 auto', padding: '48px 22px 96px' }}>
+        <h1 style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 36, margin: '0 0 12px' }}>
+          Hall of Fame
+        </h1>
+        <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#6b4a5c', fontSize: 17, margin: '0 0 32px', maxWidth: '52ch' }}>
+          The rooms people came back to. What happened next, told by people who actually lived it.
+        </p>
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 12 }}>
+          {HALLS.map((h) => (
+            <li key={h.slug}>
+              <Link
+                to="/halls/$hall/$region/$window"
+                params={{ hall: h.slug, region: 'global', window: '30d' }}
+                style={{
+                  display: 'block', padding: '18px 20px', borderRadius: 14,
+                  background: '#fff', border: '1px solid #f2d3e0', color: '#0b080f',
+                  textDecoration: 'none', fontFamily: 'Sora,sans-serif', fontWeight: 600,
+                }}
+              >
+                {h.label} →
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </main>
+      <SiteFooter />
+    </div>
+  )
+}

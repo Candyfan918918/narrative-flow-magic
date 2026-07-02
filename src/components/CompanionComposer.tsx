@@ -2,7 +2,7 @@
    OVERLAY, lines ~395–415). Bottom sheet: eye + copy + text input + send, a Mirror shortcut
    row, and an AI reply area fed by /api/complete. Opened by the floating CompanionBubble. */
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@/compat/router'
 
 const NEWSREADER = "'Newsreader', Georgia, serif"
 const SORA = "'Sora', system-ui, sans-serif"

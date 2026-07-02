@@ -1,7 +1,7 @@
 /* Real React Profile page. Lists the user's own situations plus lets them
  * edit their pseudonymous alias (one row per user in public.aliases). */
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { Header } from '../components/Header'
 import { useToast } from '../components/Toast'

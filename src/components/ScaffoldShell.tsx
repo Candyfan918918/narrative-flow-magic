@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@/compat/router'
 import { Header } from './Header'
 import { CompanionBubble } from './CompanionBubble'
 import { useToast } from './Toast'

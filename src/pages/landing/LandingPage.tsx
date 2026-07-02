@@ -3,7 +3,7 @@
    Spill / Scan / Mirror CTAs and the feed preview will be ported in follow-up turns.
    Not wired as the default route yet — see src/pages/Landing.tsx (`?native=1` opt-in). */
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { ONBOARDING_FRAMES } from './data/onboarding'
 import { FALLBACK_ROOMS, type LandingRoom } from './data/rooms'
@@ -110,10 +110,12 @@ function useLiveRooms(): LandingRoom[] {
 export function LandingNativePage() {
   const navigate = useNavigate()
   const save = useServerFn(saveSituation)
-  const [onbOpen, setOnbOpen] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false
-    try { return !localStorage.getItem('shutap_onb_seen') } catch { return true }
-  })
+  const [onbOpen, setOnbOpen] = useState<boolean>(false)
+  const [hydrated, setHydrated] = useState(false)
+  useEffect(() => {
+    setHydrated(true)
+    try { if (!localStorage.getItem('shutap_onb_seen')) setOnbOpen(true) } catch { /* noop */ }
+  }, [])
   const [onbIdx, setOnbIdx] = useState(0)
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
@@ -431,7 +433,7 @@ export function LandingNativePage() {
       />
 
       {/* Onboarding modal (shown once) */}
-      {onbOpen && frame && (
+      {hydrated && onbOpen && frame && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 95, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div onClick={dismissOnb} style={{ position: 'absolute', inset: 0, background: 'rgba(10,5,14,.72)', backdropFilter: 'blur(8px)' }} />
           <div role="dialog" style={{ position: 'relative', width: '100%', maxWidth: 420, background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '.5px solid rgba(255,255,255,.14)', borderRadius: 24, padding: '26px 28px 28px', textAlign: 'center', animation: 'pop .35s ease' }}>

@@ -9,32 +9,42 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SubscribeRouteImport } from './routes/subscribe'
+import { Route as StreamRouteImport } from './routes/stream'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SafetyRouteImport } from './routes/safety'
+import { Route as RoomRouteImport } from './routes/room'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as RelationshipsRouteImport } from './routes/relationships'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as MirrorRouteImport } from './routes/mirror'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as MarriageRouteImport } from './routes/marriage'
 import { Route as LivedIntelligenceRouteImport } from './routes/lived-intelligence'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as HallsRouteImport } from './routes/halls'
 import { Route as GuidelinesRouteImport } from './routes/guidelines'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FamilyRouteImport } from './routes/family'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as AiDisclosureRouteImport } from './routes/ai-disclosure'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug'
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
+import { Route as SubscribeReturnRouteImport } from './routes/subscribe.return'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
+import { Route as AdminRelateQueueRouteImport } from './routes/admin.relate-queue'
+import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
@@ -43,6 +53,11 @@ import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/publi
 import { Route as ApiPublicHooksMirrorEvolutionRouteImport } from './routes/api/public/hooks/mirror-evolution'
 import { Route as ApiPublicHooksDispatchCheckinsRouteImport } from './routes/api/public/hooks/dispatch-checkins'
 
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrustRoute = TrustRouteImport.update({
   id: '/trust',
   path: '/trust',
@@ -53,6 +68,16 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubscribeRoute = SubscribeRouteImport.update({
+  id: '/subscribe',
+  path: '/subscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StreamRoute = StreamRouteImport.update({
+  id: '/stream',
+  path: '/stream',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -61,6 +86,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SafetyRoute = SafetyRouteImport.update({
   id: '/safety',
   path: '/safety',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoomRoute = RoomRouteImport.update({
+  id: '/room',
+  path: '/room',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportRoute = ReportRouteImport.update({
@@ -76,6 +106,11 @@ const RelationshipsRoute = RelationshipsRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MirrorRoute = MirrorRouteImport.update({
+  id: '/mirror',
+  path: '/mirror',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MethodologyRoute = MethodologyRouteImport.update({
@@ -101,6 +136,11 @@ const LegalRoute = LegalRouteImport.update({
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HallsRoute = HallsRouteImport.update({
+  id: '/halls',
+  path: '/halls',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuidelinesRoute = GuidelinesRouteImport.update({
@@ -133,6 +173,11 @@ const AiDisclosureRoute = AiDisclosureRouteImport.update({
   path: '/ai-disclosure',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -162,6 +207,11 @@ const UPseudonymRoute = UPseudonymRouteImport.update({
   path: '/u/$pseudonym',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubscribeReturnRoute = SubscribeReturnRouteImport.update({
+  id: '/return',
+  path: '/return',
+  getParentRoute: () => SubscribeRoute,
+} as any)
 const IsItNormalSlugRoute = IsItNormalSlugRouteImport.update({
   id: '/is-it-normal/$slug',
   path: '/is-it-normal/$slug',
@@ -171,6 +221,16 @@ const ApiCompleteRoute = ApiCompleteRouteImport.update({
   id: '/api/complete',
   path: '/api/complete',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRelateQueueRoute = AdminRelateQueueRouteImport.update({
+  id: '/relate-queue',
+  path: '/relate-queue',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
@@ -188,9 +248,9 @@ const AuthenticatedCheckinIdRoute = AuthenticatedCheckinIdRouteImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const HallsHallRegionWindowRoute = HallsHallRegionWindowRouteImport.update({
-  id: '/halls/$hall/$region/$window',
-  path: '/halls/$hall/$region/$window',
-  getParentRoute: () => rootRouteImport,
+  id: '/$hall/$region/$window',
+  path: '/$hall/$region/$window',
+  getParentRoute: () => HallsRoute,
 } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
@@ -215,27 +275,37 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
   '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
+  '/halls': typeof HallsRouteWithChildren
   '/how-it-works': typeof HowItWorksRoute
   '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
+  '/mirror': typeof MirrorRoute
   '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
+  '/room': typeof RoomRoute
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/stream': typeof StreamRoute
+  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/welcome': typeof WelcomeRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
+  '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -249,27 +319,37 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
   '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
+  '/halls': typeof HallsRouteWithChildren
   '/how-it-works': typeof HowItWorksRoute
   '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
+  '/mirror': typeof MirrorRoute
   '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
+  '/room': typeof RoomRoute
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/stream': typeof StreamRoute
+  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/welcome': typeof WelcomeRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
+  '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -285,27 +365,37 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
   '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
+  '/halls': typeof HallsRouteWithChildren
   '/how-it-works': typeof HowItWorksRoute
   '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
+  '/mirror': typeof MirrorRoute
   '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
+  '/room': typeof RoomRoute
   '/safety': typeof SafetyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/stream': typeof StreamRoute
+  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/welcome': typeof WelcomeRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
+  '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -321,27 +411,37 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/about'
+    | '/admin'
     | '/ai-disclosure'
     | '/career'
     | '/contact'
     | '/family'
     | '/faq'
     | '/guidelines'
+    | '/halls'
     | '/how-it-works'
     | '/legal'
     | '/lived-intelligence'
     | '/marriage'
     | '/methodology'
+    | '/mirror'
     | '/privacy'
     | '/relationships'
     | '/report'
+    | '/room'
     | '/safety'
     | '/sitemap.xml'
+    | '/stream'
+    | '/subscribe'
     | '/terms'
     | '/trust'
+    | '/welcome'
     | '/profile'
+    | '/admin/feedback'
+    | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
     | '/checkin/$id'
@@ -355,27 +455,37 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/about'
+    | '/admin'
     | '/ai-disclosure'
     | '/career'
     | '/contact'
     | '/family'
     | '/faq'
     | '/guidelines'
+    | '/halls'
     | '/how-it-works'
     | '/legal'
     | '/lived-intelligence'
     | '/marriage'
     | '/methodology'
+    | '/mirror'
     | '/privacy'
     | '/relationships'
     | '/report'
+    | '/room'
     | '/safety'
     | '/sitemap.xml'
+    | '/stream'
+    | '/subscribe'
     | '/terms'
     | '/trust'
+    | '/welcome'
     | '/profile'
+    | '/admin/feedback'
+    | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
     | '/checkin/$id'
@@ -390,27 +500,37 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/$'
     | '/about'
+    | '/admin'
     | '/ai-disclosure'
     | '/career'
     | '/contact'
     | '/family'
     | '/faq'
     | '/guidelines'
+    | '/halls'
     | '/how-it-works'
     | '/legal'
     | '/lived-intelligence'
     | '/marriage'
     | '/methodology'
+    | '/mirror'
     | '/privacy'
     | '/relationships'
     | '/report'
+    | '/room'
     | '/safety'
     | '/sitemap.xml'
+    | '/stream'
+    | '/subscribe'
     | '/terms'
     | '/trust'
+    | '/welcome'
     | '/_authenticated/profile'
+    | '/admin/feedback'
+    | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
     | '/_authenticated/checkin/$id'
@@ -426,24 +546,31 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AiDisclosureRoute: typeof AiDisclosureRoute
   CareerRoute: typeof CareerRoute
   ContactRoute: typeof ContactRoute
   FamilyRoute: typeof FamilyRoute
   FaqRoute: typeof FaqRoute
   GuidelinesRoute: typeof GuidelinesRoute
+  HallsRoute: typeof HallsRouteWithChildren
   HowItWorksRoute: typeof HowItWorksRoute
   LegalRoute: typeof LegalRoute
   LivedIntelligenceRoute: typeof LivedIntelligenceRoute
   MarriageRoute: typeof MarriageRoute
   MethodologyRoute: typeof MethodologyRoute
+  MirrorRoute: typeof MirrorRoute
   PrivacyRoute: typeof PrivacyRoute
   RelationshipsRoute: typeof RelationshipsRoute
   ReportRoute: typeof ReportRoute
+  RoomRoute: typeof RoomRoute
   SafetyRoute: typeof SafetyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StreamRoute: typeof StreamRoute
+  SubscribeRoute: typeof SubscribeRouteWithChildren
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
+  WelcomeRoute: typeof WelcomeRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
   UPseudonymRoute: typeof UPseudonymRoute
@@ -452,11 +579,17 @@ export interface RootRouteChildren {
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicHooksMirrorEvolutionRoute: typeof ApiPublicHooksMirrorEvolutionRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
-  HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trust': {
       id: '/trust'
       path: '/trust'
@@ -471,6 +604,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subscribe': {
+      id: '/subscribe'
+      path: '/subscribe'
+      fullPath: '/subscribe'
+      preLoaderRoute: typeof SubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stream': {
+      id: '/stream'
+      path: '/stream'
+      fullPath: '/stream'
+      preLoaderRoute: typeof StreamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -483,6 +630,13 @@ declare module '@tanstack/react-router' {
       path: '/safety'
       fullPath: '/safety'
       preLoaderRoute: typeof SafetyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/room': {
+      id: '/room'
+      path: '/room'
+      fullPath: '/room'
+      preLoaderRoute: typeof RoomRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/report': {
@@ -504,6 +658,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mirror': {
+      id: '/mirror'
+      path: '/mirror'
+      fullPath: '/mirror'
+      preLoaderRoute: typeof MirrorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/methodology': {
@@ -539,6 +700,13 @@ declare module '@tanstack/react-router' {
       path: '/how-it-works'
       fullPath: '/how-it-works'
       preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/halls': {
+      id: '/halls'
+      path: '/halls'
+      fullPath: '/halls'
+      preLoaderRoute: typeof HallsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guidelines': {
@@ -583,6 +751,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiDisclosureRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -625,6 +800,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UPseudonymRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subscribe/return': {
+      id: '/subscribe/return'
+      path: '/return'
+      fullPath: '/subscribe/return'
+      preLoaderRoute: typeof SubscribeReturnRouteImport
+      parentRoute: typeof SubscribeRoute
+    }
     '/is-it-normal/$slug': {
       id: '/is-it-normal/$slug'
       path: '/is-it-normal/$slug'
@@ -638,6 +820,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/complete'
       preLoaderRoute: typeof ApiCompleteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/relate-queue': {
+      id: '/admin/relate-queue'
+      path: '/relate-queue'
+      fullPath: '/admin/relate-queue'
+      preLoaderRoute: typeof AdminRelateQueueRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/feedback': {
+      id: '/admin/feedback'
+      path: '/feedback'
+      fullPath: '/admin/feedback'
+      preLoaderRoute: typeof AdminFeedbackRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
@@ -662,10 +858,10 @@ declare module '@tanstack/react-router' {
     }
     '/halls/$hall/$region/$window': {
       id: '/halls/$hall/$region/$window'
-      path: '/halls/$hall/$region/$window'
+      path: '/$hall/$region/$window'
       fullPath: '/halls/$hall/$region/$window'
       preLoaderRoute: typeof HallsHallRegionWindowRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof HallsRoute
     }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
@@ -704,29 +900,70 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AdminRouteChildren {
+  AdminFeedbackRoute: typeof AdminFeedbackRoute
+  AdminRelateQueueRoute: typeof AdminRelateQueueRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminFeedbackRoute: AdminFeedbackRoute,
+  AdminRelateQueueRoute: AdminRelateQueueRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface HallsRouteChildren {
+  HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
+}
+
+const HallsRouteChildren: HallsRouteChildren = {
+  HallsHallRegionWindowRoute: HallsHallRegionWindowRoute,
+}
+
+const HallsRouteWithChildren = HallsRoute._addFileChildren(HallsRouteChildren)
+
+interface SubscribeRouteChildren {
+  SubscribeReturnRoute: typeof SubscribeReturnRoute
+}
+
+const SubscribeRouteChildren: SubscribeRouteChildren = {
+  SubscribeReturnRoute: SubscribeReturnRoute,
+}
+
+const SubscribeRouteWithChildren = SubscribeRoute._addFileChildren(
+  SubscribeRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   AiDisclosureRoute: AiDisclosureRoute,
   CareerRoute: CareerRoute,
   ContactRoute: ContactRoute,
   FamilyRoute: FamilyRoute,
   FaqRoute: FaqRoute,
   GuidelinesRoute: GuidelinesRoute,
+  HallsRoute: HallsRouteWithChildren,
   HowItWorksRoute: HowItWorksRoute,
   LegalRoute: LegalRoute,
   LivedIntelligenceRoute: LivedIntelligenceRoute,
   MarriageRoute: MarriageRoute,
   MethodologyRoute: MethodologyRoute,
+  MirrorRoute: MirrorRoute,
   PrivacyRoute: PrivacyRoute,
   RelationshipsRoute: RelationshipsRoute,
   ReportRoute: ReportRoute,
+  RoomRoute: RoomRoute,
   SafetyRoute: SafetyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StreamRoute: StreamRoute,
+  SubscribeRoute: SubscribeRouteWithChildren,
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
+  WelcomeRoute: WelcomeRoute,
   ApiCompleteRoute: ApiCompleteRoute,
   IsItNormalSlugRoute: IsItNormalSlugRoute,
   UPseudonymRoute: UPseudonymRoute,
@@ -735,7 +972,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicHooksMirrorEvolutionRoute: ApiPublicHooksMirrorEvolutionRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
-  HallsHallRegionWindowRoute: HallsHallRegionWindowRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

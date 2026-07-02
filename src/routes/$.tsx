@@ -1,7 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { SpaShell } from '@/components/SpaShell'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
+// Catch-all: unknown paths land on the stream feed.
 export const Route = createFileRoute('/$')({
-  ssr: false,
-  component: SpaShell,
+  beforeLoad: () => { throw redirect({ to: '/stream' }) },
 })
