@@ -125,38 +125,55 @@ export function WelcomeNativePage() {
     return () => { cancelled = true; sub.subscription.unsubscribe() }
   }, [])
 
-  const doOAuth = async (provider: 'google' | 'apple') => {
-    setBusy(true); setMsg(null)
-    try {
-      const { data: sess } = await supabase.auth.getSession()
-      const anon = Boolean((sess.session?.user as { is_anonymous?: boolean } | undefined)?.is_anonymous)
-      const redirectTo = window.location.origin + '/welcome'
-      if (sess.session && anon) {
-        // Upgrade path: link the OAuth identity to the SAME anonymous user id
-        // so their existing posts/comments aren't orphaned.
+  // Cached in state so click handlers don't `await` before triggering the
+  // OAuth redirect — popup blockers reject a location change that isn't
+  // synchronous with the user gesture.
+  const [anonSession, setAnonSession] = useState<boolean>(false)
+  useEffect(() => {
+    let dead = false
+    ;(async () => {
+      const { data } = await supabase.auth.getSession()
+      if (dead) return
+      const u = data.session?.user as { is_anonymous?: boolean } | undefined
+      setAnonSession(Boolean(u?.is_anonymous))
+    })()
+    return () => { dead = true }
+  }, [])
+
+  const runOAuth = async (provider: 'google' | 'apple') => {
+    const redirectTo = window.location.origin + '/welcome'
+    // If we have a real (non-anon) session already, nothing to do.
+    // If anon, try to upgrade via linkIdentity so the auth.uid stays stable
+    // and their existing spills/comments carry over. If manual identity
+    // linking isn't enabled on the project, fall back to a plain sign-in.
+    if (anonSession) {
+      try {
         const { error } = await supabase.auth.linkIdentity({
           provider,
           options: { redirectTo },
         })
-        if (error) {
-          const linkedElsewhere = /already|exists|registered/i.test(error.message)
-          if (linkedElsewhere) {
-            setMsg({ kind: 'err', text: 'that account is linked to another identity — signing you in there instead. guest activity stays with your guest account.' })
-            const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: redirectTo })
-            if (result.error) setMsg({ kind: 'err', text: result.error.message || 'sign-in failed' })
-          } else {
-            setMsg({ kind: 'err', text: error.message })
-          }
+        if (!error) return // browser is redirecting
+        const linkingUnsupported = /manual linking|not enabled|disabled|unsupported/i.test(error.message)
+        const alreadyLinked = /already|exists|registered/i.test(error.message)
+        if (!linkingUnsupported && !alreadyLinked) {
+          setMsg({ kind: 'err', text: error.message })
+          return
         }
-        return
+        setMsg({ kind: 'err', text: 'signing you in — guest activity may stay with your guest account.' })
+      } catch (e) {
+        setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'link failed — trying regular sign-in' })
       }
-      const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: redirectTo })
-      if (result.error) setMsg({ kind: 'err', text: result.error.message || 'sign-in failed' })
-    } catch (e) {
-      setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'sign-in failed' })
-    } finally {
-      setBusy(false)
     }
+    const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: redirectTo })
+    if (result.error) {
+      setMsg({ kind: 'err', text: result.error.message || 'sign-in failed — provider may not be enabled' })
+    }
+  }
+
+  const doOAuth = (provider: 'google' | 'apple') => {
+    setBusy(true); setMsg(null)
+    // Kick off synchronously so the popup/redirect is bound to the click.
+    void runOAuth(provider).finally(() => setBusy(false))
   }
 
   const doEmail = async () => {
@@ -167,32 +184,38 @@ export function WelcomeNativePage() {
     }
     setBusy(true); setMsg(null)
     try {
-      const { data: sess } = await supabase.auth.getSession()
-      const anon = Boolean((sess.session?.user as { is_anonymous?: boolean } | undefined)?.is_anonymous)
       const emailRedirectTo = window.location.origin + '/welcome'
-      if (sess.session && anon) {
-        // Upgrade the same anonymous user with an email confirmation link,
-        // preserving their auth.uid and existing content.
+      if (anonSession) {
+        // Try to upgrade the anonymous user; if the project has email-change
+        // confirmations disabled, this can fail — fall back to signInWithOtp
+        // so the user can still get in.
         const { error } = await supabase.auth.updateUser(
           { email: v },
           { emailRedirectTo },
         )
-        if (error) setMsg({ kind: 'err', text: error.message })
-        else setMsg({ kind: 'ok', text: 'confirmation link sent — check your inbox' })
-      } else {
-        const { error } = await supabase.auth.signInWithOtp({
-          email: v,
-          options: { emailRedirectTo },
-        })
-        if (error) setMsg({ kind: 'err', text: error.message })
-        else setMsg({ kind: 'ok', text: 'magic link sent — check your inbox' })
+        if (!error) {
+          setMsg({ kind: 'ok', text: 'confirmation link sent — check your inbox' })
+          return
+        }
+        const shouldFallback = /disabled|not enabled|unsupported|forbidden/i.test(error.message)
+        if (!shouldFallback) {
+          setMsg({ kind: 'err', text: error.message })
+          return
+        }
       }
+      const { error: otpErr } = await supabase.auth.signInWithOtp({
+        email: v,
+        options: { emailRedirectTo },
+      })
+      if (otpErr) setMsg({ kind: 'err', text: otpErr.message })
+      else setMsg({ kind: 'ok', text: 'magic link sent — check your inbox' })
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'sign-in failed' })
     } finally {
       setBusy(false)
     }
   }
+
 
   const confirmAge = () => {
     const dob = new Date(birth.year, birth.month - 1, birth.day)
@@ -228,6 +251,10 @@ export function WelcomeNativePage() {
         emoji: savedTyped?.emoji ?? emoji,
       })
       await recordLegalAcceptance({ data: {} }).catch(() => {})
+      try {
+        const { trackEvent } = await import('@/lib/tracking')
+        void trackEvent('alias_minted', { display_name: alias.display_name })
+      } catch { /* noop */ }
       setStep('welcome')
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'save failed' })

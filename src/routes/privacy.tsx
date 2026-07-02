@@ -50,9 +50,11 @@ function PrivacyPage() {
       <h3>what we collect</h3>
       <ul>
         <li><b>Account:</b> a pseudonym, your email (sign-in and check-ins), timezone, notification preferences, consent records.</li>
+        <li><b>OAuth profile data:</b> if you sign in with Google or Apple, we receive and store your name, email, avatar, and the provider you used. Apple only shares your name on your first sign-in, so we save it right away. Your real name is never shown to other users.</li>
         <li><b>Content:</b> your stories, spills, scans, and check-in responses — stored only in scrubbed form.</li>
-        <li><b>Usage:</b> product analytics via PostHog, tied to a pseudonymous ID.</li>
-        <li><b>Device/technical:</b> standard log and device data.</li>
+        <li><b>Usage:</b> product analytics via PostHog and our own database tables (page views, spills, comments, reactions, share clicks, and other in-app events), tied to your pseudonymous user id.</li>
+        <li><b>Approximate location:</b> country and (when available) city derived from your IP address at page load, plus your device / user-agent string. We use this to understand where the community is coming from and to keep the service safe. We do not store your IP address.</li>
+        <li><b>Visit history:</b> per-browser-session records of when you visited, what path you loaded, and whether you're a returning visitor.</li>
       </ul>
 
       <h3>how we use it</h3>
@@ -73,9 +75,11 @@ function PrivacyPage() {
       <h3>subprocessors</h3>
       <ul>
         <li><b>Lovable / Supabase</b> — database, auth, storage, and hosting.</li>
+        <li><b>Cloudflare</b> — edge network. Provides the approximate country/city header used above.</li>
         <li><b>Lovable AI Gateway (Google Gemini)</b> — AI responses for the companion and Mirror.</li>
+        <li><b>Google / Apple</b> — sign-in providers when you choose to use them.</li>
         <li><b>Resend</b> — email delivery for sign-in and check-ins.</li>
-        <li><b>PostHog</b> — pseudonymous product analytics.</li>
+        <li><b>PostHog</b> — pseudonymous product analytics with IP-based geolocation.</li>
       </ul>
       <p>Each processes data only to provide their service to shutap.</p>
 

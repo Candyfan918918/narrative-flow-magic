@@ -158,12 +158,11 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
     const run = async () => {
       const { supabase } = await import("@/integrations/supabase/client");
-      // Pseudonymous-first: every visitor must have a real Supabase session so
-      // `requireSupabaseAuth` server fns work. Deferred off the critical path
-      // so first paint isn't blocked by the auth round-trip on cold refresh.
+      const { initPostHog } = await import("@/lib/posthog");
+      const { recordVisitOnce, syncProfileFromSession, trackEvent } = await import("@/lib/tracking");
       let lastUserId: string | null = null;
       try {
         const { data } = await supabase.auth.getSession();
@@ -174,6 +173,13 @@ function RootComponent() {
         } else {
           lastUserId = data.session.user?.id ?? null;
         }
+        const u = (await supabase.auth.getSession()).data.session?.user;
+        // Fire tracking after the session settles so profile ties to the
+        // real user id when they're already signed in.
+        void initPostHog();
+        void recordVisitOnce(window.location.pathname);
+        void syncProfileFromSession(u as never);
+        void trackEvent("page_view", { path: window.location.pathname });
       } catch (e) {
         console.warn("[auth] anonymous bootstrap failed", e);
       }
@@ -182,10 +188,14 @@ function RootComponent() {
         if (!mounted) return;
         if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
         const nextId = session?.user?.id ?? null;
-        // Session restoration on refresh emits SIGNED_IN with the same user —
-        // skip the invalidation storm unless the user actually changed.
         if (nextId === lastUserId) return;
         lastUserId = nextId;
+        const u = session?.user as { is_anonymous?: boolean } | undefined;
+        if (event === "SIGNED_IN" && u && !u.is_anonymous) {
+          void syncProfileFromSession(session?.user as never);
+          const provider = (session?.user?.app_metadata as { provider?: string } | undefined)?.provider ?? "email";
+          void trackEvent("sign_in", { provider });
+        }
         queueMicrotask(() => {
           if (!mounted) return;
           router.invalidate();

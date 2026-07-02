@@ -375,6 +375,10 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         return
       }
       const res = await save({ data: payload as never })
+      try {
+        const { trackEvent } = await import('@/lib/tracking')
+        void trackEvent('spill_created', { pillar: payload.pillar, is_public: isPublic, has_room: Boolean(res?.room_id) })
+      } catch { /* noop */ }
       setTimeout(() => {
         if (isPublic && res?.room_id) navigate(`/stream#room-${res.room_id}`)
         else navigate('/profile')
