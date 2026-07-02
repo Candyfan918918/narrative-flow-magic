@@ -4,41 +4,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
+import { useCurrentAlias, useIsAdmin } from '@/hooks/use-current-alias'
 
 type AliasChip = { emoji: string; name: string; admin: boolean }
 
 export function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const [mounted, setMounted] = useState(false)
-  const [alias, setAlias] = useState<AliasChip | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const areaRef = useRef<HTMLDivElement>(null)
+  const { alias: liveAlias } = useCurrentAlias()
+  const isAdmin = useIsAdmin()
+  const alias: AliasChip | null = liveAlias
+    ? { emoji: liveAlias.emoji ?? '✦', name: liveAlias.name ?? 'you', admin: isAdmin }
+    : null
 
-  useEffect(() => {
-    setMounted(true)
-    let dead = false
-    ;(async () => {
-      try {
-        const [{ getAlias }, { getIsAdmin }] = await Promise.all([
-          import('@/lib/auth'),
-          import('@/lib/alias.functions'),
-        ])
-        const a = getAlias()
-        if (dead) return
-        if (a) setAlias({ emoji: a.emoji ?? '✦', name: a.name ?? 'you', admin: false })
-        // upgrade admin flag async
-        try {
-          const isAdmin = await getIsAdmin()
-          if (!dead && a) setAlias((prev) => (prev ? { ...prev, admin: Boolean(isAdmin) } : prev))
-        } catch { /* not signed in */ }
-      } catch {
-        /* auth module unavailable */
-      }
-    })()
-    return () => {
-      dead = true
-    }
-  }, [])
+  useEffect(() => { setMounted(true) }, [])
+
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -79,8 +61,8 @@ export function SiteHeader() {
     } catch {
       /* noop */
     }
-    setAlias(null)
     if (typeof window !== 'undefined') window.location.href = '/'
+    return
   }
 
   const join = () => {
