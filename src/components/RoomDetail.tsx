@@ -5,7 +5,7 @@ import { useServerFn } from '@tanstack/react-start'
 import type { Room } from '../data/types'
 import { REACTIONS } from '../data/constants'
 import { complete, extractJSON } from '../lib/ai'
-import { eyeSVG } from './EyeDefs'
+import { EyeMark } from './EyeMark'
 import { track } from '../lib/feedback'
 import { CommentsThread } from './CommentsThread'
 import { ScanShareCard } from './ScanShareCard'
@@ -379,7 +379,7 @@ export function RoomDetail({
             alignItems: 'flex-start',
           }}
         >
-          <span dangerouslySetInnerHTML={{ __html: eyeSVG(22, 16) }} />
+          <span style={{ display: 'inline-flex', flex: 'none' }}><EyeMark size={22} /></span>
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#f7b8d4', marginBottom: 6 }}>
               companion
@@ -524,13 +524,9 @@ export function RoomDetail({
         {/* comments */}
         <div style={{ marginTop: 28, paddingTop: 22, borderTop: '.5px solid rgba(11,8,15,.08)' }}>
           <div style={{ display: 'flex', gap: 11, alignItems: 'flex-start', marginBottom: 14 }}>
-            <svg viewBox="0 0 56 56" fill="none" style={{ display: 'block', width: 24, height: 24, flex: 'none', marginTop: 2 }}>
-              <circle cx="28" cy="28" r="27" fill="#fdf0f5" />
-              <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-              <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG)" />
-              <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-              <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG)" />
-            </svg>
+            <span style={{ display: 'inline-flex', flex: 'none', marginTop: 2 }}>
+              <EyeMark size={26} />
+            </span>
             <div>
               <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#c1216b', marginBottom: 5 }}>
                 companion
