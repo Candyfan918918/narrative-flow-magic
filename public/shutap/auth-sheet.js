@@ -22,14 +22,12 @@
 
   function goWelcome(){
     rememberReturn();
-    // If we're inside the SPA iframe bridge, ask the parent to navigate.
-    try{
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'shutap-nav', to: '/welcome' }, '*');
-        return;
-      }
-    }catch(e){}
-    location.href = '/welcome';
+    try {
+      // Always navigate the top window — /welcome is a React SPA route.
+      (window.top || window).location.href = '/welcome';
+    } catch(e) {
+      location.href = '/welcome';
+    }
   }
 
   window.ShutapAuth = {
