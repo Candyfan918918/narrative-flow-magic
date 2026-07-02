@@ -1,36 +1,62 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SeoPage } from "@/components/seo/SeoPage";
+import { ContentPage } from "@/components/seo/ContentPage";
+
+const URL = "https://narrative-flow-magic.lovable.app/safety";
+const TITLE = "Safety at Shutap — crisis resources and how we respond";
+const DESCRIPTION =
+  "Shutap is not a crisis service, but safety is built in. Crisis resources (988, Samaritans, findahelpline) and how the companion routes you to real help.";
+const CAPSULE =
+  "Shutap is not a crisis service, but safety is built in. If you're in danger or thinking about harming yourself, please reach out to real help right now — you deserve support from a trained person.";
+
+const SECTIONS = [
+  { heading: "If you're in crisis", body: "In the US, call or text 988 (Suicide & Crisis Lifeline). In the UK, call Samaritans at 116 123. Anywhere, find a local helpline at findahelpline.com. If someone is in immediate danger, contact emergency services." },
+  { heading: "How Shutap responds", body: "When the companion notices signs of crisis, it stops and shares these resources. It does not treat a crisis as content — crisis messages are kept private, never shown publicly, and never monetized." },
+  { heading: "What Shutap is not", body: "Shutap is not a therapist, counselor, or emergency service, and the AI cannot provide crisis intervention. It's a place for support and reflection, alongside — not instead of — real help." },
+  { heading: "Looking out for each other", body: "If you see someone who may be at risk, encourage them toward real support and use the report tools so we can help." },
+];
+
+const OTHERS = [
+  { href: "/terms", label: "Terms" },
+  { href: "/privacy", label: "Privacy" },
+  { href: "/guidelines", label: "Community guidelines" },
+  { href: "/ai-disclosure", label: "AI disclosure" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/legal", label: "Legal & policies" },
+];
 
 export const Route = createFileRoute("/safety")({
   head: () => ({
     meta: [
-      { title: "Crisis & Safety — Shutap" },
-      { name: "description", content: "Shutap isn't a crisis service. If you're in crisis, you deserve real, human help right now — here are the lines that pick up." },
-      { property: "og:title", content: "Crisis & Safety — Shutap" },
-      { property: "og:description", content: "Real help, real humans, right now." },
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: URL },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: "/safety" }],
+    links: [{ rel: "canonical", href: URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: TITLE,
+          description: DESCRIPTION,
+          url: URL,
+        }),
+      },
+    ],
   }),
-  component: SafetyPage,
+  component: () => (
+    <ContentPage
+      h1="safety"
+      capsule={CAPSULE}
+      sections={SECTIONS}
+      others={OTHERS}
+    />
+  ),
 });
-
-function SafetyPage() {
-  return (
-    <SeoPage>
-      <article className="space-y-6">
-        <h1 className="text-3xl font-semibold tracking-tight">crisis &amp; safety</h1>
-        <p className="text-lg leading-relaxed">
-          Shutap isn't a crisis service, and our companion isn't a counselor. If you're in crisis, you deserve real, human help right now:
-        </p>
-        <ul className="space-y-3 text-base">
-          <li><strong>US:</strong> call or text <a className="underline" href="tel:988">988</a> (Suicide &amp; Crisis Lifeline)</li>
-          <li><strong>UK:</strong> Samaritans, <a className="underline" href="tel:116123">116 123</a></li>
-          <li><strong>Anywhere:</strong> <a className="underline" href="https://findahelpline.com" target="_blank" rel="noopener noreferrer">findahelpline.com</a></li>
-        </ul>
-        <p className="leading-relaxed text-muted-foreground">
-          When our companion notices something serious, it stops and points you here. Crisis messages are kept private, are never made public, and are never used for anything but supporting you. You're not alone. 🤍
-        </p>
-      </article>
-    </SeoPage>
-  );
-}
