@@ -340,6 +340,33 @@ export type Database = {
           },
         ]
       }
+      events: {
+        Row: {
+          id: string
+          name: string
+          properties: Json
+          session_id: string | null
+          ts: string
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          properties?: Json
+          session_id?: string | null
+          ts?: string
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          properties?: Json
+          session_id?: string | null
+          ts?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       feedback_events: {
         Row: {
           alias: string | null
@@ -709,6 +736,63 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          first_name: string | null
+          first_visit_at: string
+          full_name: string | null
+          is_anonymous: boolean
+          last_city: string | null
+          last_country: string | null
+          last_name: string | null
+          last_user_agent: string | null
+          last_visit_at: string
+          provider: string | null
+          updated_at: string
+          user_id: string
+          visit_count: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          first_visit_at?: string
+          full_name?: string | null
+          is_anonymous?: boolean
+          last_city?: string | null
+          last_country?: string | null
+          last_name?: string | null
+          last_user_agent?: string | null
+          last_visit_at?: string
+          provider?: string | null
+          updated_at?: string
+          user_id: string
+          visit_count?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          first_visit_at?: string
+          full_name?: string | null
+          is_anonymous?: boolean
+          last_city?: string | null
+          last_country?: string | null
+          last_name?: string | null
+          last_user_agent?: string | null
+          last_visit_at?: string
+          provider?: string | null
+          updated_at?: string
+          user_id?: string
+          visit_count?: number
+        }
+        Relationships: []
+      }
       room_reactions: {
         Row: {
           created_at: string
@@ -1021,6 +1105,45 @@ export type Database = {
         }
         Relationships: []
       }
+      visits: {
+        Row: {
+          city: string | null
+          country: string | null
+          id: string
+          is_revisit: boolean
+          path: string | null
+          referrer: string | null
+          session_id: string
+          started_at: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          id?: string
+          is_revisit?: boolean
+          path?: string | null
+          referrer?: string | null
+          session_id: string
+          started_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          id?: string
+          is_revisit?: boolean
+          path?: string | null
+          referrer?: string | null
+          session_id?: string
+          started_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1037,6 +1160,14 @@ export type Database = {
       cancel_pending_checkins: {
         Args: { _situation_id: string }
         Returns: undefined
+      }
+      get_user_stats: {
+        Args: { _user_id: string }
+        Returns: {
+          comments: number
+          reactions: number
+          spills: number
+        }[]
       }
       has_active_mirror: {
         Args: { check_env?: string; user_uuid: string }
