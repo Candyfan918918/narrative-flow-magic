@@ -251,6 +251,10 @@ export function WelcomeNativePage() {
         emoji: savedTyped?.emoji ?? emoji,
       })
       await recordLegalAcceptance({ data: {} }).catch(() => {})
+      try {
+        const { trackEvent } = await import('@/lib/tracking')
+        void trackEvent('alias_minted', { display_name: alias.display_name })
+      } catch { /* noop */ }
       setStep('welcome')
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'save failed' })
