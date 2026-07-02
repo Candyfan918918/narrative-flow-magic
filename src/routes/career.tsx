@@ -42,7 +42,7 @@ export const Route = createFileRoute("/career")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: PATH },
+      { property: "og:url", content: `${SITE_URL}${PATH}` },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },

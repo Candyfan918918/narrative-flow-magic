@@ -44,7 +44,7 @@ export const Route = createFileRoute("/trust")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: PATH },
+      { property: "og:url", content: `${SITE_URL}${PATH}` },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
