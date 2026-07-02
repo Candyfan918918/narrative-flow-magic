@@ -62,23 +62,41 @@ export function ProfilePage() {
   const list = useServerFn(listMySituations)
   const update = useServerFn(updateSituation)
   const remove = useServerFn(deleteSituation)
+  const readAlias = useServerFn(getMyAlias)
+  const saveAlias = useServerFn(upsertMyAlias)
+  const rerollAlias = useServerFn(rerollMyAlias)
   const [rows, setRows] = useState<Situation[] | null>(null)
   const [email, setEmail] = useState<string>('')
   const [tab, setTab] = useState<Tab>('all')
   const [busy, setBusy] = useState<string | null>(null)
+  const [alias, setAlias] = useState<{ emotion: string; nation: string; creature: string; emoji: string; display_name: string } | null>(null)
+  const [editAlias, setEditAlias] = useState(false)
+  const [aliasBusy, setAliasBusy] = useState(false)
 
   async function refresh() {
     try {
       const data = (await list()) as Situation[]
       setRows(data)
-    } catch (e) {
+    } catch {
       toast('couldn\'t load your stories.')
       setRows([])
     }
   }
 
+  async function refreshAlias() {
+    try {
+      const a = await readAlias()
+      if (a) {
+        const row = a as { emotion: string; nation: string; creature: string; emoji: string; display_name: string }
+        setAlias(row)
+        try { localStorage.setItem('shutap_alias', JSON.stringify({ name: row.display_name, emoji: row.emoji })) } catch {}
+      }
+    } catch { /* not signed in */ }
+  }
+
   useEffect(() => {
     refresh()
+    refreshAlias()
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ''))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
