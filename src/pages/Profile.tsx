@@ -151,6 +151,21 @@ export function ProfilePage() {
     navigate('/welcome')
   }
 
+  function cacheAlias(row: { emoji: string; display_name: string }) {
+    try { localStorage.setItem('shutap_alias', JSON.stringify({ name: row.display_name, emoji: row.emoji })) } catch {}
+    // Also rewrite the user's own historic room tiles so the feed reflects
+    // the current alias (item 6: no stale denormalized display).
+    try {
+      const raw = localStorage.getItem('shutap_user_situations')
+      if (raw) {
+        const arr = JSON.parse(raw) as Array<{ alias?: string; emoji?: string }>
+        for (const r of arr) { r.alias = row.display_name; r.emoji = row.emoji }
+        localStorage.setItem('shutap_user_situations', JSON.stringify(arr))
+      }
+    } catch { /* noop */ }
+    window.dispatchEvent(new Event('shutap:alias-changed'))
+  }
+
   async function onReroll() {
     setAliasBusy(true)
     try {
@@ -158,7 +173,7 @@ export function ProfilePage() {
       if (a) {
         const row = a as { emotion: string; nation: string; creature: string; emoji: string; display_name: string }
         setAlias(row)
-        try { localStorage.setItem('shutap_alias', JSON.stringify({ name: row.display_name, emoji: row.emoji })) } catch {}
+        cacheAlias(row)
         toast('new alias.')
       }
     } catch { toast('couldn\'t re-roll.') }
@@ -172,7 +187,7 @@ export function ProfilePage() {
       if (a) {
         const row = a as { emotion: string; nation: string; creature: string; emoji: string; display_name: string }
         setAlias(row)
-        try { localStorage.setItem('shutap_alias', JSON.stringify({ name: row.display_name, emoji: row.emoji })) } catch {}
+        cacheAlias(row)
         toast('alias saved.')
         setEditAlias(false)
       }
