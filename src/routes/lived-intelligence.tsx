@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SITE_URL } from "@/lib/site";
 
 const TITLE =
   "What is Lived Intelligence? The human counterpart to artificial intelligence";
@@ -6,6 +7,7 @@ const DESCRIPTION =
   "Lived Intelligence is the practical knowledge earned by living through real situations and seeing how they turn out — the human counterpart to AI. Shutap is built to capture it.";
 const DEFINITION =
   "The practical knowledge that comes from living through real situations and seeing how they turn out — the human counterpart to artificial intelligence.";
+const URL = `${SITE_URL}/lived-intelligence`;
 
 export const Route = createFileRoute("/lived-intelligence")({
   head: () => ({
@@ -15,12 +17,12 @@ export const Route = createFileRoute("/lived-intelligence")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "article" },
-      { property: "og:url", content: "/lived-intelligence" },
+      { property: "og:url", content: URL },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
     ],
-    links: [{ rel: "canonical", href: "/lived-intelligence" }],
+    links: [{ rel: "canonical", href: URL }],
     scripts: [
       {
         type: "application/ld+json",
