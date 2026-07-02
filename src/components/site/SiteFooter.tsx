@@ -1,4 +1,4 @@
-// Shared footer for info/legal pages.
+// Shared footer for info/legal pages. Link order matches DocLayout's doc-nav.
 const INFO_LINKS: { href: string; label: string }[] = [
   { href: '/terms', label: 'Terms of Service' },
   { href: '/privacy', label: 'Privacy Policy' },
@@ -32,14 +32,16 @@ export function SiteFooter() {
             <a
               key={l.href}
               href={l.href}
+              className="shutap-footer-link"
               style={{
                 fontFamily: 'Inter,sans-serif',
                 fontSize: 12.5,
                 color: '#6b4a5c',
                 textDecoration: 'none',
+                padding: '2px 4px',
+                borderRadius: 6,
+                transition: 'color .15s',
               }}
-              onMouseEnter={(e) => ((e.currentTarget.style.color = '#a01a55'))}
-              onMouseLeave={(e) => ((e.currentTarget.style.color = '#6b4a5c'))}
             >
               {l.label}
             </a>
@@ -56,6 +58,14 @@ export function SiteFooter() {
           18+ · pseudonymous · not a medical or legal service
         </div>
       </div>
+      <style>{`
+        .shutap-footer-link:hover { color: #a01a55; }
+        .shutap-footer-link:focus-visible {
+          outline: 2px solid #e7548a;
+          outline-offset: 2px;
+          border-radius: 6px;
+        }
+      `}</style>
     </footer>
   )
 }

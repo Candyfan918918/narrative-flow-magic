@@ -1,7 +1,8 @@
 // Themed document surface for the info/legal pages: sticky doc-nav on the
 // left, main content on the right. Wraps SiteHeader + SiteFooter so every
 // route using DocLayout has identical chrome.
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
+import { useRouterState } from '@tanstack/react-router'
 import { SiteHeader } from './SiteHeader'
 import { SiteFooter } from './SiteFooter'
 
@@ -25,6 +26,13 @@ export function DocLayout({
   subline?: string
   children: ReactNode
 }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+
+  // Scroll restoration: land at the top on route change between doc pages.
+  useEffect(() => {
+    if (typeof window !== 'undefined') window.scrollTo(0, 0)
+  }, [pathname])
+
   return (
     <div style={{ background: '#fdf0f5', minHeight: '100vh', color: '#1b0f16' }}>
       <SiteHeader />
@@ -56,7 +64,9 @@ export function DocLayout({
               letterSpacing: '.16em',
               textTransform: 'uppercase',
               color: '#9e7a8c',
-              padding: '0 12px 10px',
+              padding: '0 12px 12px',
+              marginBottom: 8,
+              borderBottom: '1px solid rgba(11,8,15,.06)',
             }}
           >
             trust &amp; legal
@@ -68,6 +78,7 @@ export function DocLayout({
                 <a
                   key={l.href}
                   href={l.href}
+                  className={`shutap-doc-link${isActive ? ' is-active' : ''}`}
                   style={{
                     display: 'block',
                     padding: '8px 12px',
@@ -77,14 +88,9 @@ export function DocLayout({
                     fontWeight: isActive ? 600 : 500,
                     color: isActive ? '#a01a55' : '#6b4a5c',
                     background: isActive ? '#fff' : 'transparent',
+                    boxShadow: isActive ? '0 1px 2px rgba(11,8,15,.05)' : 'none',
                     textDecoration: 'none',
-                    transition: 'color .15s',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.color = '#a01a55'
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) e.currentTarget.style.color = '#6b4a5c'
+                    transition: 'color .15s, background .15s',
                   }}
                 >
                   {l.label}
@@ -101,7 +107,12 @@ export function DocLayout({
             minWidth: 0,
           }}
         >
-          <header style={{ animation: 'shutap-doc-in .5s ease both' }}>
+          <header
+            style={{
+              animation: 'shutap-doc-in .5s ease both',
+              marginBottom: 12,
+            }}
+          >
             <h1
               style={{
                 fontFamily: 'Sora,sans-serif',
@@ -122,7 +133,7 @@ export function DocLayout({
                   fontStyle: 'italic',
                   fontSize: 15,
                   color: '#6b4a5c',
-                  margin: '0 0 24px',
+                  margin: 0,
                   lineHeight: 1.55,
                 }}
               >
@@ -135,6 +146,10 @@ export function DocLayout({
       </div>
       <SiteFooter />
       <style>{`
+        .shutap-doc-body > h3:first-child,
+        .shutap-doc-body > *:first-child > h3:first-child {
+          margin-top: 8px;
+        }
         .shutap-doc-body h3 {
           font-family: 'Sora', sans-serif;
           font-weight: 700;
@@ -154,6 +169,15 @@ export function DocLayout({
         .shutap-doc-body ul { padding-left: 20px; margin: 0 0 10px; }
         .shutap-doc-body a { color: #c1216b; text-decoration: none; border-bottom: 1px solid rgba(193,33,107,.25); }
         .shutap-doc-body a:hover { color: #a01a55; }
+        .shutap-doc-link:hover:not(.is-active) {
+          background: rgba(231,84,138,.06);
+          color: #a01a55;
+        }
+        .shutap-doc-link:focus-visible {
+          outline: 2px solid #e7548a;
+          outline-offset: 2px;
+          border-radius: 999px;
+        }
         @keyframes shutap-doc-in {
           from { opacity: 0; transform: translateY(6px); }
           to { opacity: 1; transform: translateY(0); }

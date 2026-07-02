@@ -19,7 +19,6 @@ export function SiteHeader() {
     let dead = false
     ;(async () => {
       try {
-        // Read the same alias the SPA uses without importing the SPA router.
         const [{ getAlias, isAdmin }] = await Promise.all([import('@/lib/auth')])
         const a = getAlias()
         if (!dead && a) setAlias({ emoji: a.emoji ?? '✦', name: a.name ?? 'you', admin: isAdmin() })
@@ -46,6 +45,7 @@ export function SiteHeader() {
       <a
         key={href}
         href={href}
+        className={`shutap-nav-link${active ? ' is-active' : ''}`}
         style={{
           fontFamily: 'Newsreader,serif',
           fontStyle: 'italic',
@@ -54,6 +54,7 @@ export function SiteHeader() {
           textDecoration: 'none',
           padding: '6px 12px',
           borderRadius: 999,
+          transition: 'background .15s, color .15s',
         }}
       >
         {label}
@@ -134,7 +135,11 @@ export function SiteHeader() {
           ) : alias ? (
             <div style={{ position: 'relative' }}>
               <button
+                type="button"
                 onClick={() => setMenuOpen((v) => !v)}
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+                className="shutap-auth-pill"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -169,6 +174,7 @@ export function SiteHeader() {
               </button>
               {menuOpen && (
                 <div
+                  role="menu"
                   style={{
                     position: 'absolute',
                     right: 0,
@@ -182,22 +188,29 @@ export function SiteHeader() {
                     zIndex: 70,
                   }}
                 >
-                  <a href="/profile" style={menuItem}>your profile</a>
-                  <a href="/profile#settings" style={menuItem}>settings</a>
-                  <a href="/#spill" style={{ ...menuItem, color: '#c1216b' }}>spill it →</a>
-                  <a href="/mirror" style={{ ...menuItem, color: '#7F77DD' }}>the mirror ✦</a>
-                  {alias.admin && <a href="/admin" style={menuItem}>admin dashboard</a>}
+                  <a href="/profile" role="menuitem" className="shutap-menu-item" style={menuItem}>your profile</a>
+                  <a href="/profile#settings" role="menuitem" className="shutap-menu-item" style={menuItem}>settings</a>
+                  <a href="/#spill" role="menuitem" className="shutap-menu-item" style={{ ...menuItem, color: '#c1216b' }}>spill it →</a>
+                  <a href="/mirror" role="menuitem" className="shutap-menu-item" style={{ ...menuItem, color: '#7F77DD' }}>the mirror ✦</a>
+                  {alias.admin && <a href="/admin" role="menuitem" className="shutap-menu-item" style={menuItem}>admin dashboard</a>}
                   <div style={{ height: '.5px', background: 'rgba(11,8,15,.08)', margin: '6px 0' }} />
-                  <div role="button" onClick={signOut} style={{ ...menuItem, color: '#9e7a8c' }}>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={signOut}
+                    className="shutap-menu-item"
+                    style={{ ...menuItem, color: '#9e7a8c', width: '100%', textAlign: 'left', background: 'transparent', border: 0, font: 'inherit' }}
+                  >
                     sign out
-                  </div>
+                  </button>
                 </div>
               )}
             </div>
           ) : (
-            <div
-              role="button"
+            <button
+              type="button"
               onClick={join}
+              className="shutap-auth-pill"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -209,13 +222,34 @@ export function SiteHeader() {
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: 'pointer',
+                border: 0,
               }}
             >
               join →
-            </div>
+            </button>
           )}
         </div>
       </div>
+      <style>{`
+        .shutap-nav-link:hover:not(.is-active) {
+          background: rgba(231,84,138,.08);
+          color: #a01a55;
+        }
+        .shutap-nav-link:focus-visible,
+        .shutap-auth-pill:focus-visible {
+          outline: 2px solid #e7548a;
+          outline-offset: 2px;
+          border-radius: 999px;
+        }
+        .shutap-menu-item:focus-visible {
+          outline: 2px solid #e7548a;
+          outline-offset: 2px;
+          border-radius: 10px;
+        }
+        .shutap-menu-item:hover {
+          background: rgba(231,84,138,.06);
+        }
+      `}</style>
     </header>
   )
 }
