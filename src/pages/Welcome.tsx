@@ -7,6 +7,7 @@ import { useNoIndex } from '@/components/NoIndex'
 /* Pixel-perfect iframe of the Welcome prototype, with real auth wired through
    postMessage so Google/Apple/email actually authenticate via Lovable Cloud. */
 export function WelcomePage() {
+  useNoIndex()
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {

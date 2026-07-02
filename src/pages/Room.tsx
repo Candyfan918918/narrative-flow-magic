@@ -47,6 +47,7 @@ function loadUserRooms(): Room[] {
 }
 
 export function RoomPage() {
+  useNoIndex()
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const id = params.get('id')

@@ -1036,6 +1036,7 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing }: {
 
 /* ─────────────── page ─────────────── */
 export function MirrorPage() {
+  useNoIndex()
   const navigate = useNavigate()
   const location = useLocation()
   const fetchMine = useServerFn(listMirrorPatterns)

@@ -55,6 +55,7 @@ function timeAgo(iso: string) {
 }
 
 export function ProfilePage() {
+  useNoIndex()
   const navigate = useNavigate()
   const { toast, ToastHost } = useToast()
   const list = useServerFn(listMySituations)

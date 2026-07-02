@@ -67,6 +67,7 @@ function loadUserRooms(): RoomTileData[] {
 }
 
 export function StreamPage() {
+  useNoIndex()
   const navigate = useNavigate()
   const { hash } = useLocation()
   const [filter, setFilter] = useState<Filter>('all')

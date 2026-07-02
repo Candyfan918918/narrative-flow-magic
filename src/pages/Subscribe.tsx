@@ -13,6 +13,7 @@ const PLAN_TO_PRICE: Record<string, { id: string; label: string; price: string }
 }
 
 export function SubscribePage() {
+  useNoIndex()
   const [search] = useSearchParams()
   const navigate = useNavigate()
   const planKey = (search.get('plan') === 'monthly' ? 'monthly' : 'annual') as 'monthly' | 'annual'

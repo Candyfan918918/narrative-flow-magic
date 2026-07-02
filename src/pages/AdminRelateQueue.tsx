@@ -15,6 +15,7 @@ const PILLARS = ['all', 'relationships', 'marriage', 'family', 'career'] as cons
 type PillarFilter = (typeof PILLARS)[number]
 
 export function AdminRelateQueuePage() {
+  useNoIndex()
   const list = useServerFn(listRelateQueue)
   const stats = useServerFn(relateQueueStats)
   const [rows, setRows] = useState<RelateQueueRow[]>([])

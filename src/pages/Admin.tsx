@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useNoIndex } from '@/components/NoIndex'
 
 export function AdminPage() {
+  useNoIndex()
   return (
     <>
       <iframe
