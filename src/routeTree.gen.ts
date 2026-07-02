@@ -19,8 +19,10 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as MarriageRouteImport } from './routes/marriage'
 import { Route as LivedIntelligenceRouteImport } from './routes/lived-intelligence'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as GuidelinesRouteImport } from './routes/guidelines'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FamilyRouteImport } from './routes/family'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareerRouteImport } from './routes/career'
@@ -91,6 +93,11 @@ const LivedIntelligenceRoute = LivedIntelligenceRouteImport.update({
   path: '/lived-intelligence',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
@@ -99,6 +106,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const GuidelinesRoute = GuidelinesRouteImport.update({
   id: '/guidelines',
   path: '/guidelines',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FamilyRoute = FamilyRouteImport.update({
@@ -207,8 +219,10 @@ export interface FileRoutesByFullPath {
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
+  '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
@@ -239,8 +253,10 @@ export interface FileRoutesByTo {
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
+  '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
@@ -273,8 +289,10 @@ export interface FileRoutesById {
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
   '/family': typeof FamilyRoute
+  '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
   '/methodology': typeof MethodologyRoute
@@ -307,8 +325,10 @@ export interface FileRouteTypes {
     | '/career'
     | '/contact'
     | '/family'
+    | '/faq'
     | '/guidelines'
     | '/how-it-works'
+    | '/legal'
     | '/lived-intelligence'
     | '/marriage'
     | '/methodology'
@@ -339,8 +359,10 @@ export interface FileRouteTypes {
     | '/career'
     | '/contact'
     | '/family'
+    | '/faq'
     | '/guidelines'
     | '/how-it-works'
+    | '/legal'
     | '/lived-intelligence'
     | '/marriage'
     | '/methodology'
@@ -372,8 +394,10 @@ export interface FileRouteTypes {
     | '/career'
     | '/contact'
     | '/family'
+    | '/faq'
     | '/guidelines'
     | '/how-it-works'
+    | '/legal'
     | '/lived-intelligence'
     | '/marriage'
     | '/methodology'
@@ -406,8 +430,10 @@ export interface RootRouteChildren {
   CareerRoute: typeof CareerRoute
   ContactRoute: typeof ContactRoute
   FamilyRoute: typeof FamilyRoute
+  FaqRoute: typeof FaqRoute
   GuidelinesRoute: typeof GuidelinesRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  LegalRoute: typeof LegalRoute
   LivedIntelligenceRoute: typeof LivedIntelligenceRoute
   MarriageRoute: typeof MarriageRoute
   MethodologyRoute: typeof MethodologyRoute
@@ -501,6 +527,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LivedIntelligenceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/how-it-works': {
       id: '/how-it-works'
       path: '/how-it-works'
@@ -513,6 +546,13 @@ declare module '@tanstack/react-router' {
       path: '/guidelines'
       fullPath: '/guidelines'
       preLoaderRoute: typeof GuidelinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/family': {
@@ -673,8 +713,10 @@ const rootRouteChildren: RootRouteChildren = {
   CareerRoute: CareerRoute,
   ContactRoute: ContactRoute,
   FamilyRoute: FamilyRoute,
+  FaqRoute: FaqRoute,
   GuidelinesRoute: GuidelinesRoute,
   HowItWorksRoute: HowItWorksRoute,
+  LegalRoute: LegalRoute,
   LivedIntelligenceRoute: LivedIntelligenceRoute,
   MarriageRoute: MarriageRoute,
   MethodologyRoute: MethodologyRoute,
@@ -698,13 +740,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
