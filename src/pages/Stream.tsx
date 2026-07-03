@@ -3,7 +3,7 @@
  * dynamic source the iframe used). Scan rooms render as score-card tiles. */
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from '@/compat/router'
-import { Header } from '../components/Header'
+
 import { RoomTile, type RoomTileData } from '../components/RoomTile'
 import { RoomDetail } from '../components/RoomDetail'
 import { useToast } from '../components/Toast'
