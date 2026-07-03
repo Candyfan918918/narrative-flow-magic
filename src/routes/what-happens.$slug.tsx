@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
 import { getOutcome, isOutcomeIndexable, type OutcomeAggregate } from "@/lib/seo/outcomes";
 import { getHub } from "@/lib/seo/hubs";
+import { SITE_URL } from "@/lib/site";
 
 export const Route = createFileRoute("/what-happens/$slug")({
   loader: ({ params }) => {
