@@ -149,7 +149,7 @@ export const recordVisit = createServerFn({ method: 'POST' })
 const EventIn = z.object({
   session_id: z.string().min(1).max(120).optional(),
   name: z.string().min(1).max(80),
-  properties: z.record(z.unknown()).optional(),
+  properties: z.record(z.string(), z.unknown()).optional(),
 })
 
 export const trackEventFn = createServerFn({ method: 'POST' })
