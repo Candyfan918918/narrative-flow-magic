@@ -127,7 +127,10 @@ export function StreamPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-      <Header onToast={toastMsg} />
+
+
+
+
 
 
 
