@@ -35,7 +35,7 @@ export function DocLayout({
 
   return (
     <div style={{ background: '#fdf0f5', minHeight: '100vh', color: '#1b0f16' }}>
-      <SiteHeader />
+      
       <div
         style={{
           maxWidth: 980,
