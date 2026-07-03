@@ -52,14 +52,20 @@ interface SupabaseUserLike {
   app_metadata?: Record<string, unknown> | null
 }
 
-export async function syncProfileFromSession(user: SupabaseUserLike | null | undefined): Promise<void> {
+export async function syncProfileFromSession(
+  user: SupabaseUserLike | null | undefined,
+  opts: { login?: boolean } = {},
+): Promise<void> {
   if (!user || user.is_anonymous) return
+  const login = opts.login === true
   try {
-    // Fire once per session per user id, so we don't hammer the DB every
-    // route change; new sign-in from a fresh browser always fires.
+    // Fire once per session per user id for passive syncs. A genuine sign-in
+    // (login=true) always fires so login_count/last_login_at increment.
     const key = `${PROFILE_SENT_KEY}:${user.id}`
-    if (sessionStorage.getItem(key)) return
-    sessionStorage.setItem(key, '1')
+    if (!login) {
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, '1')
+    }
   } catch { /* noop */ }
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>
   const app = (user.app_metadata ?? {}) as Record<string, unknown>
@@ -80,6 +86,7 @@ export async function syncProfileFromSession(user: SupabaseUserLike | null | und
         avatar_url: avatar,
         provider,
         is_anonymous: false,
+        login,
       },
     })
   } catch { /* noop */ }
