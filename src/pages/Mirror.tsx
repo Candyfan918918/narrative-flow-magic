@@ -1039,25 +1039,35 @@ export function MirrorPage() {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
   }, [])
 
-
+  // Server-decided entitlement — free vs paid vs demo owner (RULE 7).
+  // Never trust the client. Anonymous / errors → treated as non-entitled.
+  const { getMirrorEntitlement } = require('@/lib/entitlements.functions') as typeof import('@/lib/entitlements.functions')
+  const fetchEnt = useServerFn(getMirrorEntitlement)
+  const { data: entitlement } = useQuery({
+    queryKey: ['mirror-entitlement'],
+    queryFn: () => fetchEnt().catch(() => ({ entitled: false, demoAccount: false, reason: 'anonymous' as const })),
+    staleTime: 60_000,
+  })
+  const isDemoAccount = !!entitlement?.demoAccount
+  const isEntitled = !!entitlement?.entitled
 
   const mineList = (mine ?? []) as unknown as MirrorPatternView[]
   const isForming = mineList.length < 2
 
+  // Demo/seed content is ONLY fetched for the owner demo account (RULE 6).
   const { data: demo } = useQuery({
     queryKey: ['mirror-patterns', 'demo'],
     queryFn: () => fetchDemo(),
-    enabled: isForming,
+    enabled: isForming && isDemoAccount,
     staleTime: 1000 * 60 * 30,
   })
 
   const dbDemo = (demo ?? []) as unknown as MirrorPatternView[]
-  const demoList = dbDemo.length ? dbDemo : EXAMPLE_PATTERNS
+  const demoList = isDemoAccount ? (dbDemo.length ? dbDemo : EXAMPLE_PATTERNS) : []
   const [showDemo, setShowDemo] = useState(false)
-  // While forming, render the seeded cast as a clearly-labeled EXAMPLE so the
-  // page reads as a full styled reading instead of an empty shell. Display
-  // only — never persisted as the user's own data.
-  const autoDemo = isForming && demoList.length > 0
+  // Auto-render seeded cast ONLY for the demo owner while their mirror is
+  // forming. Everyone else sees the honest empty state (Forming component).
+  const autoDemo = isForming && isDemoAccount && demoList.length > 0
   const list = showDemo || autoDemo ? demoList : mineList
   const isExample = autoDemo || showDemo
 
