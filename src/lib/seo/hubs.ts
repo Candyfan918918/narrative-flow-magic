@@ -131,7 +131,7 @@ export const HUBS: SituationHub[] = [
     pillar: "marriage",
     question: "how do people know when their marriage is over?",
     answer:
-      "Usually they knew long before they admitted it. The most common marker people here describe is contempt — not anger, contempt. When you stop being annoyed and start being repulsed, that's the line. The second marker is when picturing your life without them feels like relief, not grief.",
+      "Usually they knew long before they admitted it. A common marker people describe is contempt — not anger, contempt. When you stop being annoyed and start being repulsed, that's the line. The second marker is when picturing your life without them feels like relief, not grief.",
     paa: [
       { q: "What's the #1 predictor of divorce?", a: "Contempt, per the Gottman research. Not conflict — contempt." },
       { q: "Is wanting to leave the same as it being over?", a: "No. Most people who want to leave once stay and repair. The ones who leave usually wanted to for years first." },
