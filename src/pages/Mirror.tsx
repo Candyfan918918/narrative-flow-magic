@@ -1231,7 +1231,7 @@ export function MirrorPage() {
           background: '#c1216b2b', filter: 'blur(64px)', animation: 'mirror-bg-c 20s ease-in-out infinite',
         }} />
       </div>
-      <MirrorHeader />
+      
       <main style={{ maxWidth: 1080, margin: '0 auto', padding: '36px 22px 80px' }}>
         {/* hero zone */}
         <div style={{ textAlign: 'center', marginBottom: 22 }}>
