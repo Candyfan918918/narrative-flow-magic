@@ -369,21 +369,53 @@ export function WelcomeNativePage() {
                   <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, color: MUTED }}>or</span>
                   <div style={{ flex: 1, height: .5, background: 'rgba(255,255,255,.12)' }} />
                 </div>
-                <div style={{ display: 'flex', gap: 9 }}>
-                  <input
-                    type="email"
-                    placeholder="your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && doEmail()}
-                    style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
-                  />
-                  <button
-                    onClick={doEmail}
-                    disabled={busy}
-                    style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                  >go →</button>
-                </div>
+                {emailPhase === 'input' && (
+                  <div style={{ display: 'flex', gap: 9 }}>
+                    <input
+                      type="email"
+                      placeholder="your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && doEmail()}
+                      style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
+                    />
+                    <button
+                      onClick={doEmail}
+                      disabled={busy}
+                      style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    >go →</button>
+                  </div>
+                )}
+                {emailPhase === 'code' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }} data-testid="email-code-step">
+                    <div style={{ display: 'flex', gap: 9 }}>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        placeholder="6-digit code"
+                        maxLength={6}
+                        value={code}
+                        onChange={(e) => setCode(e.target.value.replace(/\D+/g, '').slice(0, 6))}
+                        onKeyDown={(e) => e.key === 'Enter' && verifyEmailCode()}
+                        style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Sora',sans-serif", fontSize: 20, letterSpacing: '.4em', outline: 'none', textAlign: 'center' }}
+                      />
+                      <button
+                        onClick={verifyEmailCode}
+                        disabled={busy}
+                        style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      >verify →</button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setCode(''); setEmailPhase('input'); setMsg(null) }}
+                      style={{ background: 'transparent', border: 0, color: MUTED, fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}
+                    >use a different email</button>
+                  </div>
+                )}
+                {msg && emailPhase === 'code' && (
+                  <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, color: msg.kind === 'err' ? ACCENT : SOFT }}>{msg.text}</div>
+                )}
               </div>
               <div style={{ textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 12.5, color: MUTED }}>
                 18+ only · your real name is never attached to anything here
