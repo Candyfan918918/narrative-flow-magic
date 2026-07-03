@@ -3,6 +3,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
+import { requireRealUser } from './require-real-user'
 import { scrubText } from './agents/scrubber.functions'
 
 const Pillar = z.enum(['relationships', 'marriage', 'family', 'career'])
@@ -58,7 +59,7 @@ const SaveInput = z.object({
 type ScanBand = 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'
 
 export const saveSituation = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => SaveInput.parse(d))
   .handler(async ({ data, context }) => {
     // re-scrub text + body
@@ -140,7 +141,7 @@ const UpdateInput = z.object({
 })
 
 export const updateSituation = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => UpdateInput.parse(d))
   .handler(async ({ data, context }) => {
     const current = await context.supabase
@@ -209,7 +210,7 @@ export const updateSituation = createServerFn({ method: 'POST' })
   })
 
 export const deleteSituation = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { data: current } = await context.supabase
@@ -238,7 +239,7 @@ No therapy-speak. No em-dashes. No "I hear you / sit with that / that's valid / 
 Lowercase, short, real. Return ONLY strict JSON, no prose.`
 
 export const composePost = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) =>
     z.object({ transcript: z.string().min(1).max(12000), pillar: Pillar.optional() }).parse(d),
   )
@@ -271,7 +272,7 @@ ${data.transcript}
   })
 
 export const aiEditPost = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) =>
     z
       .object({
@@ -326,7 +327,7 @@ export const listRoomComments = createServerFn({ method: 'GET' })
   })
 
 export const createComment = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) =>
     z.object({ roomId: z.string().uuid(), text: z.string().min(1).max(2000) }).parse(d),
   )
@@ -378,7 +379,7 @@ export const createComment = createServerFn({ method: 'POST' })
   })
 
 export const updateComment = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) =>
     z.object({ id: z.string().uuid(), text: z.string().min(1).max(2000) }).parse(d),
   )
@@ -394,7 +395,7 @@ export const updateComment = createServerFn({ method: 'POST' })
   })
 
 export const deleteComment = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase

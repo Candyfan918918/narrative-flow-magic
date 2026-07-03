@@ -13,6 +13,7 @@ import {
   listMirrorPatterns,
   listDemoPatterns,
 } from '@/lib/mirror-pipeline.functions'
+import { getMirrorEntitlement } from '@/lib/entitlements.functions'
 import { runMirrorCrossRead } from '@/lib/agents/mirror.functions'
 import {
   DISTRICT_LABEL,
@@ -1039,25 +1040,34 @@ export function MirrorPage() {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
   }, [])
 
-
+  // Server-decided entitlement — free vs paid vs demo owner (RULE 7).
+  // Never trust the client. Anonymous / errors → treated as non-entitled.
+  const fetchEnt = useServerFn(getMirrorEntitlement)
+  const { data: entitlement } = useQuery({
+    queryKey: ['mirror-entitlement'],
+    queryFn: () => fetchEnt().catch(() => ({ entitled: false, demoAccount: false, reason: 'anonymous' as const })),
+    staleTime: 60_000,
+  })
+  const isDemoAccount = !!entitlement?.demoAccount
+  const isEntitled = !!entitlement?.entitled
 
   const mineList = (mine ?? []) as unknown as MirrorPatternView[]
   const isForming = mineList.length < 2
 
+  // Demo/seed content is ONLY fetched for the owner demo account (RULE 6).
   const { data: demo } = useQuery({
     queryKey: ['mirror-patterns', 'demo'],
     queryFn: () => fetchDemo(),
-    enabled: isForming,
+    enabled: isForming && isDemoAccount,
     staleTime: 1000 * 60 * 30,
   })
 
   const dbDemo = (demo ?? []) as unknown as MirrorPatternView[]
-  const demoList = dbDemo.length ? dbDemo : EXAMPLE_PATTERNS
+  const demoList = isDemoAccount ? (dbDemo.length ? dbDemo : EXAMPLE_PATTERNS) : []
   const [showDemo, setShowDemo] = useState(false)
-  // While forming, render the seeded cast as a clearly-labeled EXAMPLE so the
-  // page reads as a full styled reading instead of an empty shell. Display
-  // only — never persisted as the user's own data.
-  const autoDemo = isForming && demoList.length > 0
+  // Auto-render seeded cast ONLY for the demo owner while their mirror is
+  // forming. Everyone else sees the honest empty state (Forming component).
+  const autoDemo = isForming && isDemoAccount && demoList.length > 0
   const list = showDemo || autoDemo ? demoList : mineList
   const isExample = autoDemo || showDemo
 
@@ -1344,6 +1354,62 @@ export function MirrorPage() {
           }}>ILLUSTRATIVE — NOT YOUR DATA · <button onClick={() => setShowDemo(false)} style={{ background: 'transparent', border: 0, color: GOLD, cursor: 'pointer', textDecoration: 'underline' }}>hide</button></div>
         )}
 
+        {/* Free-tier lock: one reading (the hero card above) is shown fully;
+            everything below is covered as a blurred mosaic with a single
+            unlock button. Owner demo + active subscribers see the full
+            Mirror. Server decides entitlement — see getMirrorEntitlement. */}
+        {!isEntitled && !isExample && mostRecent ? (
+          <section aria-label="Locked Mirror layers" style={{
+            marginTop: 32, position: 'relative', borderRadius: 20, overflow: 'hidden',
+            border: `.5px solid ${GOLD}44`,
+            background: 'radial-gradient(120% 90% at 50% 0%, #1a0c1a, #0a0610 65%)',
+          }}>
+            <div aria-hidden style={{
+              filter: 'blur(14px) saturate(1.1)', opacity: .55,
+              pointerEvents: 'none', userSelect: 'none',
+              display: 'grid', gap: 14, padding: 24,
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            }}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} style={{
+                  height: 140, borderRadius: 14,
+                  background: `linear-gradient(155deg, ${GOLD}22, #2a1424 60%, #150a1a)`,
+                  border: `.5px solid ${GOLD}22`,
+                }} />
+              ))}
+            </div>
+            <div style={{
+              position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
+              padding: '32px 20px', textAlign: 'center',
+            }}>
+              <div>
+                <div style={{
+                  fontFamily: "'Sora',sans-serif", fontSize: 10.5, fontWeight: 700,
+                  letterSpacing: '.28em', color: GOLD, marginBottom: 10,
+                }}>THE REST OF YOU</div>
+                <p style={{
+                  margin: '0 0 18px', maxWidth: 480,
+                  fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+                  fontSize: 22, lineHeight: 1.25, color: INK,
+                }}>your world, cross-reads, movement markers, reflective questions and the speak channel unlock with the mirror.</p>
+                <button
+                  onClick={() => navigate('/subscribe')}
+                  style={{
+                    background: '#e7548a', color: '#fff', border: 0, borderRadius: 999,
+                    padding: '12px 22px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
+                    fontSize: 13, cursor: 'pointer', letterSpacing: '.05em',
+                    boxShadow: '0 12px 28px -12px rgba(231,84,138,.6)',
+                  }}
+                >unlock the mirror →</button>
+                <div style={{
+                  marginTop: 10, fontFamily: "'Newsreader',serif", fontStyle: 'italic',
+                  color: MUTED, fontSize: 13,
+                }}>crisis support stays free, always.</div>
+              </div>
+            </div>
+          </section>
+        ) : (
+          <>
         {/* your world */}
         {list.length > 0 && (
           <>
@@ -1433,6 +1499,8 @@ export function MirrorPage() {
               )
             })}
           </section>
+        )}
+          </>
         )}
 
         {/* footer */}

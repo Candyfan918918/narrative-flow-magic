@@ -3,6 +3,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
+import { requireRealUser } from './require-real-user'
 
 const PARTS = {
   emotions: ['Quiet','Wistful','Defiant','Restless','Tender','Patient','Bitter','Forlorn','Tired','Honest','Careful','Steady','Mortified','Hopeful','Reluctant','Curious','Fierce','Gentle'],
@@ -51,7 +52,7 @@ export const getMyAlias = createServerFn({ method: 'GET' })
  *  with sensible defaults (random alias, birth 1990-01-01 unless supplied).
  *  Enforces one row per user via PK on user_id. */
 export const upsertMyAlias = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => AliasIn.parse(d))
   .handler(async ({ data, context }) => {
     // Read existing so we can partial-update without breaking NOT NULL fields.
@@ -102,7 +103,7 @@ export const upsertMyAlias = createServerFn({ method: 'POST' })
 /** Re-roll the alias display fields (emotion/nation/creature/emoji/display_name)
  *  while preserving user_id + birth date. */
 export const rerollMyAlias = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .handler(async ({ context }) => {
     const p = randomAliasParts()
     const { data, error } = await context.supabase

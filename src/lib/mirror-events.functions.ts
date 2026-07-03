@@ -4,6 +4,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
+import { requireRealUser } from './require-real-user'
 import { ingestMirrorEvent } from '@/lib/mirror-pipeline.functions'
 
 const Input = z.object({
@@ -14,7 +15,7 @@ const Input = z.object({
 })
 
 export const recordMirrorEvent = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
     await ingestMirrorEvent({ data })

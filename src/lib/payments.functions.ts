@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
+import { requireRealUser } from './require-real-user';
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from '@/lib/stripe.server';
 
 type CheckoutResult = { clientSecret: string } | { error: string };
@@ -39,7 +40,7 @@ async function resolveOrCreateCustomer(
 }
 
 export const createMirrorCheckout = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((data: { priceId: string; returnUrl: string; environment: StripeEnv }) => {
     if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error('Invalid priceId');
     return data;
@@ -75,7 +76,7 @@ export const createMirrorCheckout = createServerFn({ method: 'POST' })
   });
 
 export const createMirrorPortal = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((data: { returnUrl: string; environment: StripeEnv }) => data)
   .handler(async ({ data, context }): Promise<PortalResult> => {
     const { supabase, userId } = context;

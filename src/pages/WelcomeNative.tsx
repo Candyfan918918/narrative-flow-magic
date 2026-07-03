@@ -71,10 +71,23 @@ const wheelSelect: React.CSSProperties = {
 
 export function WelcomeNativePage() {
   useNoIndex()
-  const [step, setStep] = useState<Step>('auth')
+  // Persist a hard rejection for the session — an under-18 result must not
+  // be re-attempted by simply re-picking a year (RULE 4).
+  const initialStep: Step = (() => {
+    try {
+      if (sessionStorage.getItem('shutap_age_rejected') === '1') return 'age'
+    } catch { /* noop */ }
+    return 'auth'
+  })()
+  const [step, setStep] = useState<Step>(initialStep)
   const [email, setEmail] = useState('')
+  const [emailPhase, setEmailPhase] = useState<'input' | 'code'>('input')
+  const [code, setCode] = useState('')
   const [msg, setMsg] = useState<{ kind: 'err' | 'ok'; text: string } | null>(null)
   const [busy, setBusy] = useState(false)
+  const [ageBlocked, setAgeBlocked] = useState<boolean>(() => {
+    try { return sessionStorage.getItem('shutap_age_rejected') === '1' } catch { return false }
+  })
 
   const maxYear = new Date().getFullYear() - 18
   const [birth, setBirth] = useState({ day: 1, month: 1, year: maxYear - 12 })
@@ -185,32 +198,42 @@ export function WelcomeNativePage() {
     setBusy(true); setMsg(null)
     try {
       const emailRedirectTo = window.location.origin + '/welcome'
-      if (anonSession) {
-        // Try to upgrade the anonymous user; if the project has email-change
-        // confirmations disabled, this can fail — fall back to signInWithOtp
-        // so the user can still get in.
-        const { error } = await supabase.auth.updateUser(
-          { email: v },
-          { emailRedirectTo },
-        )
-        if (!error) {
-          setMsg({ kind: 'ok', text: 'confirmation link sent — check your inbox' })
-          return
-        }
-        const shouldFallback = /disabled|not enabled|unsupported|forbidden/i.test(error.message)
-        if (!shouldFallback) {
-          setMsg({ kind: 'err', text: error.message })
-          return
-        }
-      }
+      // Always fire signInWithOtp — Supabase sends BOTH a 6-digit code (if
+      // the email template includes {{ .Token }}) and a magic link. The
+      // in-app path we drive is the code path so mobile users don't lose
+      // their session to app-switching (RULE 3).
       const { error: otpErr } = await supabase.auth.signInWithOtp({
         email: v,
-        options: { emailRedirectTo },
+        options: { emailRedirectTo, shouldCreateUser: true },
       })
-      if (otpErr) setMsg({ kind: 'err', text: otpErr.message })
-      else setMsg({ kind: 'ok', text: 'magic link sent — check your inbox' })
+      if (otpErr) { setMsg({ kind: 'err', text: otpErr.message }); return }
+      setEmailPhase('code')
+      setMsg({ kind: 'ok', text: 'we emailed you a 6-digit code — enter it below (the magic link also works).' })
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'sign-in failed' })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const verifyEmailCode = async () => {
+    const token = code.trim()
+    if (!/^\d{6}$/.test(token)) {
+      setMsg({ kind: 'err', text: 'enter the 6-digit code from the email' })
+      return
+    }
+    setBusy(true); setMsg(null)
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token,
+        type: 'email',
+      })
+      if (error) { setMsg({ kind: 'err', text: error.message }); return }
+      // onAuthStateChange picks up SIGNED_IN and advances the flow.
+      setMsg({ kind: 'ok', text: 'verified.' })
+    } catch (e) {
+      setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'verification failed' })
     } finally {
       setBusy(false)
     }
@@ -224,11 +247,25 @@ export function WelcomeNativePage() {
     let age = now.getFullYear() - dob.getFullYear()
     const m = now.getMonth() - dob.getMonth()
     if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age--
-    if (age < 18) { setMsg({ kind: 'err', text: 'shutap is 18+ only' }); return }
+    if (age < 18) {
+      try { sessionStorage.setItem('shutap_age_rejected', '1') } catch { /* noop */ }
+      setAgeBlocked(true)
+      setMsg({ kind: 'err', text: 'shutap is 18+ only. account access is not available.' })
+      return
+    }
     setMsg(null); setStep('alias')
   }
 
-  const spin = () => setAliasState(randomAliasParts())
+  // Ensure a re-roll never returns the same triple twice in a row (RULE 5).
+  const spin = () => setAliasState((prev) => {
+    for (let i = 0; i < 8; i++) {
+      const next = randomAliasParts()
+      if (next.emotion !== prev.emotion || next.nation !== prev.nation || next.creature !== prev.creature) {
+        return next
+      }
+    }
+    return randomAliasParts()
+  })
 
   const keepAlias = async () => {
     setBusy(true); setMsg(null)
@@ -265,13 +302,30 @@ export function WelcomeNativePage() {
 
   const enterRoom = () => {
     try {
+      // Generalized intent resume (RULE 2). Any interaction that redirected
+      // to /welcome captured a shutap_pending_intent describing what to do.
+      const raw = sessionStorage.getItem('shutap_pending_intent')
+      if (raw) {
+        sessionStorage.removeItem('shutap_pending_intent')
+        const intent = JSON.parse(raw) as
+          | { kind: 'spill' } | { kind: 'scan' } | { kind: 'subscribe' }
+          | { kind: 'comment' | 'relate' | 'react'; roomId: string }
+          | { kind: 'custom'; url: string }
+        if (intent.kind === 'spill') { window.location.replace('/#spill'); return }
+        if (intent.kind === 'scan') { window.location.replace('/#scan'); return }
+        if (intent.kind === 'subscribe') { window.location.replace('/subscribe'); return }
+        if (intent.kind === 'custom') { window.location.replace(intent.url); return }
+        if ('roomId' in intent && intent.roomId) {
+          window.location.replace('/room?id=' + encodeURIComponent(intent.roomId)); return
+        }
+      }
       const pc = sessionStorage.getItem('shutap_pending_comment')
       if (pc) {
         const parsed = JSON.parse(pc) as { roomId?: string }
         if (parsed?.roomId) { window.location.replace('/room?id=' + encodeURIComponent(parsed.roomId)); return }
       }
       if (sessionStorage.getItem('shutap_pending_save')) {
-        window.location.replace('/'); return
+        window.location.replace('/#spill'); return
       }
       const ret = sessionStorage.getItem('shutap_returnTo')
       if (ret) { sessionStorage.removeItem('shutap_returnTo'); window.location.replace(ret); return }
@@ -315,21 +369,53 @@ export function WelcomeNativePage() {
                   <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, color: MUTED }}>or</span>
                   <div style={{ flex: 1, height: .5, background: 'rgba(255,255,255,.12)' }} />
                 </div>
-                <div style={{ display: 'flex', gap: 9 }}>
-                  <input
-                    type="email"
-                    placeholder="your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && doEmail()}
-                    style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
-                  />
-                  <button
-                    onClick={doEmail}
-                    disabled={busy}
-                    style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                  >go →</button>
-                </div>
+                {emailPhase === 'input' && (
+                  <div style={{ display: 'flex', gap: 9 }}>
+                    <input
+                      type="email"
+                      placeholder="your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && doEmail()}
+                      style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
+                    />
+                    <button
+                      onClick={doEmail}
+                      disabled={busy}
+                      style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    >go →</button>
+                  </div>
+                )}
+                {emailPhase === 'code' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }} data-testid="email-code-step">
+                    <div style={{ display: 'flex', gap: 9 }}>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        placeholder="6-digit code"
+                        maxLength={6}
+                        value={code}
+                        onChange={(e) => setCode(e.target.value.replace(/\D+/g, '').slice(0, 6))}
+                        onKeyDown={(e) => e.key === 'Enter' && verifyEmailCode()}
+                        style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Sora',sans-serif", fontSize: 20, letterSpacing: '.4em', outline: 'none', textAlign: 'center' }}
+                      />
+                      <button
+                        onClick={verifyEmailCode}
+                        disabled={busy}
+                        style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      >verify →</button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setCode(''); setEmailPhase('input'); setMsg(null) }}
+                      style={{ background: 'transparent', border: 0, color: MUTED, fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}
+                    >use a different email</button>
+                  </div>
+                )}
+                {msg && emailPhase === 'code' && (
+                  <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, color: msg.kind === 'err' ? ACCENT : SOFT }}>{msg.text}</div>
+                )}
               </div>
               <div style={{ textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 12.5, color: MUTED }}>
                 18+ only · your real name is never attached to anything here
@@ -366,7 +452,13 @@ export function WelcomeNativePage() {
                   <div style={{ marginTop: 12, fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: msg.kind === 'err' ? ACCENT : '#f7b8d4' }}>{msg.text}</div>
                 )}
               </div>
-              <button style={primaryBtn} onClick={confirmAge}>confirm →</button>
+              {ageBlocked ? (
+                <div data-testid="age-blocked" style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(231,84,138,.08)', border: '1px solid rgba(231,84,138,.35)', color: '#f7b8d4', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, lineHeight: 1.5 }}>
+                  shutap is 18 and over. this session is closed to account content. clear your browser session to try another day.
+                </div>
+              ) : (
+                <button style={primaryBtn} onClick={confirmAge}>confirm →</button>
+              )}
             </div>
           )}
 
