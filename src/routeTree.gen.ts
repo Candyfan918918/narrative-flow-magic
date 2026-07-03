@@ -22,6 +22,7 @@ import { Route as RelationshipsRouteImport } from './routes/relationships'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MirrorRouteImport } from './routes/mirror'
 import { Route as MethodologyRouteImport } from './routes/methodology'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MarriageRouteImport } from './routes/marriage'
 import { Route as LivedIntelligenceRouteImport } from './routes/lived-intelligence'
 import { Route as LegalRouteImport } from './routes/legal'
@@ -49,11 +50,15 @@ import { Route as ApiCompleteRouteImport } from './routes/api/complete'
 import { Route as AdminRelateQueueRouteImport } from './routes/admin.relate-queue'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicHooksMirrorEvolutionRouteImport } from './routes/api/public/hooks/mirror-evolution'
@@ -122,6 +127,11 @@ const MirrorRoute = MirrorRouteImport.update({
 const MethodologyRoute = MethodologyRouteImport.update({
   id: '/methodology',
   path: '/methodology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarriageRoute = MarriageRouteImport.update({
@@ -258,6 +268,18 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiFeedbackEventsRoute = ApiFeedbackEventsRouteImport.update({
   id: '/api/feedback/events',
   path: '/api/feedback/events',
@@ -285,6 +307,17 @@ const AuthenticatedAdminAnalyticsRoute =
     path: '/admin/analytics',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HallsHallRegionWindowRoute = HallsHallRegionWindowRouteImport.update({
   id: '/$hall/$region/$window',
   path: '/$hall/$region/$window',
@@ -325,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
+  '/mcp': typeof McpRoute
   '/methodology': typeof MethodologyRoute
   '/mirror': typeof MirrorRoute
   '/privacy': typeof PrivacyRoute
@@ -338,6 +372,8 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/relate-queue': typeof AdminRelateQueueRoute
@@ -349,6 +385,8 @@ export interface FileRoutesByFullPath {
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -375,6 +413,7 @@ export interface FileRoutesByTo {
   '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
+  '/mcp': typeof McpRoute
   '/methodology': typeof MethodologyRoute
   '/mirror': typeof MirrorRoute
   '/privacy': typeof PrivacyRoute
@@ -388,6 +427,8 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/relate-queue': typeof AdminRelateQueueRoute
@@ -399,6 +440,8 @@ export interface FileRoutesByTo {
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -427,6 +470,7 @@ export interface FileRoutesById {
   '/legal': typeof LegalRoute
   '/lived-intelligence': typeof LivedIntelligenceRoute
   '/marriage': typeof MarriageRoute
+  '/mcp': typeof McpRoute
   '/methodology': typeof MethodologyRoute
   '/mirror': typeof MirrorRoute
   '/privacy': typeof PrivacyRoute
@@ -440,6 +484,8 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/welcome': typeof WelcomeRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/relate-queue': typeof AdminRelateQueueRoute
@@ -451,6 +497,8 @@ export interface FileRoutesById {
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -479,6 +527,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/lived-intelligence'
     | '/marriage'
+    | '/mcp'
     | '/methodology'
     | '/mirror'
     | '/privacy'
@@ -492,6 +541,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trust'
     | '/welcome'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/profile'
     | '/admin/feedback'
     | '/admin/relate-queue'
@@ -503,6 +554,8 @@ export interface FileRouteTypes {
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/admin/analytics'
     | '/admin/events'
     | '/admin/users'
@@ -529,6 +582,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/lived-intelligence'
     | '/marriage'
+    | '/mcp'
     | '/methodology'
     | '/mirror'
     | '/privacy'
@@ -542,6 +596,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trust'
     | '/welcome'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/profile'
     | '/admin/feedback'
     | '/admin/relate-queue'
@@ -553,6 +609,8 @@ export interface FileRouteTypes {
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/admin/analytics'
     | '/admin/events'
     | '/admin/users'
@@ -580,6 +638,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/lived-intelligence'
     | '/marriage'
+    | '/mcp'
     | '/methodology'
     | '/mirror'
     | '/privacy'
@@ -593,6 +652,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trust'
     | '/welcome'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/profile'
     | '/admin/feedback'
     | '/admin/relate-queue'
@@ -604,6 +665,8 @@ export interface FileRouteTypes {
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/users'
@@ -632,6 +695,7 @@ export interface RootRouteChildren {
   LegalRoute: typeof LegalRoute
   LivedIntelligenceRoute: typeof LivedIntelligenceRoute
   MarriageRoute: typeof MarriageRoute
+  McpRoute: typeof McpRoute
   MethodologyRoute: typeof MethodologyRoute
   MirrorRoute: typeof MirrorRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -645,6 +709,8 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
   WelcomeRoute: typeof WelcomeRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
   SitemapsCoreDotxmlRoute: typeof SitemapsCoreDotxmlRoute
@@ -652,6 +718,8 @@ export interface RootRouteChildren {
   SitemapsProfilesDotxmlRoute: typeof SitemapsProfilesDotxmlRoute
   UPseudonymRoute: typeof UPseudonymRoute
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicHooksMirrorEvolutionRoute: typeof ApiPublicHooksMirrorEvolutionRoute
@@ -749,6 +817,13 @@ declare module '@tanstack/react-router' {
       path: '/methodology'
       fullPath: '/methodology'
       preLoaderRoute: typeof MethodologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marriage': {
@@ -940,6 +1015,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/feedback/events': {
       id: '/api/feedback/events'
       path: '/api/feedback/events'
@@ -974,6 +1063,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/analytics'
       preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/halls/$hall/$region/$window': {
       id: '/halls/$hall/$region/$window'
@@ -1076,6 +1179,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalRoute: LegalRoute,
   LivedIntelligenceRoute: LivedIntelligenceRoute,
   MarriageRoute: MarriageRoute,
+  McpRoute: McpRoute,
   MethodologyRoute: MethodologyRoute,
   MirrorRoute: MirrorRoute,
   PrivacyRoute: PrivacyRoute,
@@ -1089,6 +1193,9 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
   WelcomeRoute: WelcomeRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiCompleteRoute: ApiCompleteRoute,
   IsItNormalSlugRoute: IsItNormalSlugRoute,
   SitemapsCoreDotxmlRoute: SitemapsCoreDotxmlRoute,
@@ -1096,6 +1203,8 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapsProfilesDotxmlRoute: SitemapsProfilesDotxmlRoute,
   UPseudonymRoute: UPseudonymRoute,
   WhatHappensSlugRoute: WhatHappensSlugRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicHooksMirrorEvolutionRoute: ApiPublicHooksMirrorEvolutionRoute,
@@ -1104,3 +1213,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

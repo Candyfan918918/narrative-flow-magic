@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://toulurftkjzjbydwuyfd.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "shutap-mcp",
+      "version": "0.1.0",
+      "title": "Shutap"
+    },
+    "tools": [
+      {
+        "name": "list_my_situations",
+        "title": "List my situations",
+        "description": "List the signed-in user's own Shutap situations (spills), newest first. Returns id, pillar, clean_text, scan, status, and created_at.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "Max rows to return (default 20).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "pillar": {
+              "description": "Filter by life pillar.",
+              "type": "string",
+              "enum": [
+                "relationships",
+                "marriage",
+                "family",
+                "career"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_situation",
+        "title": "Create a situation (spill)",
+        "description": "Create a new Shutap situation (spill) for the signed-in user. The text is stored privately unless is_public is true.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "clean_text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000,
+              "description": "The situation text to record."
+            },
+            "pillar": {
+              "type": "string",
+              "enum": [
+                "relationships",
+                "marriage",
+                "family",
+                "career"
+              ],
+              "description": "Life pillar the situation belongs to."
+            },
+            "is_public": {
+              "description": "Whether to publish to the community stream (default false).",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "clean_text",
+            "pillar"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
