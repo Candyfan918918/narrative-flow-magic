@@ -71,10 +71,23 @@ const wheelSelect: React.CSSProperties = {
 
 export function WelcomeNativePage() {
   useNoIndex()
-  const [step, setStep] = useState<Step>('auth')
+  // Persist a hard rejection for the session — an under-18 result must not
+  // be re-attempted by simply re-picking a year (RULE 4).
+  const initialStep: Step = (() => {
+    try {
+      if (sessionStorage.getItem('shutap_age_rejected') === '1') return 'age'
+    } catch { /* noop */ }
+    return 'auth'
+  })()
+  const [step, setStep] = useState<Step>(initialStep)
   const [email, setEmail] = useState('')
+  const [emailPhase, setEmailPhase] = useState<'input' | 'code'>('input')
+  const [code, setCode] = useState('')
   const [msg, setMsg] = useState<{ kind: 'err' | 'ok'; text: string } | null>(null)
   const [busy, setBusy] = useState(false)
+  const [ageBlocked, setAgeBlocked] = useState<boolean>(() => {
+    try { return sessionStorage.getItem('shutap_age_rejected') === '1' } catch { return false }
+  })
 
   const maxYear = new Date().getFullYear() - 18
   const [birth, setBirth] = useState({ day: 1, month: 1, year: maxYear - 12 })
