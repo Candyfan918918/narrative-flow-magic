@@ -416,8 +416,10 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
     setPhase('saving')
     try {
       const { data: sess } = await supabase.auth.getSession()
-      if (!sess.session) {
+      const isAnon = Boolean((sess.session?.user as { is_anonymous?: boolean } | undefined)?.is_anonymous)
+      if (!sess.session || isAnon) {
         sessionStorage.setItem('shutap_pending_save', JSON.stringify(payload))
+        sessionStorage.setItem('shutap_pending_intent', 'scan')
         navigate('/welcome')
         return
       }
