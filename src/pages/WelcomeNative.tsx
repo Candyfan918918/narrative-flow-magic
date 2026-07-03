@@ -198,32 +198,42 @@ export function WelcomeNativePage() {
     setBusy(true); setMsg(null)
     try {
       const emailRedirectTo = window.location.origin + '/welcome'
-      if (anonSession) {
-        // Try to upgrade the anonymous user; if the project has email-change
-        // confirmations disabled, this can fail — fall back to signInWithOtp
-        // so the user can still get in.
-        const { error } = await supabase.auth.updateUser(
-          { email: v },
-          { emailRedirectTo },
-        )
-        if (!error) {
-          setMsg({ kind: 'ok', text: 'confirmation link sent — check your inbox' })
-          return
-        }
-        const shouldFallback = /disabled|not enabled|unsupported|forbidden/i.test(error.message)
-        if (!shouldFallback) {
-          setMsg({ kind: 'err', text: error.message })
-          return
-        }
-      }
+      // Always fire signInWithOtp — Supabase sends BOTH a 6-digit code (if
+      // the email template includes {{ .Token }}) and a magic link. The
+      // in-app path we drive is the code path so mobile users don't lose
+      // their session to app-switching (RULE 3).
       const { error: otpErr } = await supabase.auth.signInWithOtp({
         email: v,
-        options: { emailRedirectTo },
+        options: { emailRedirectTo, shouldCreateUser: true },
       })
-      if (otpErr) setMsg({ kind: 'err', text: otpErr.message })
-      else setMsg({ kind: 'ok', text: 'magic link sent — check your inbox' })
+      if (otpErr) { setMsg({ kind: 'err', text: otpErr.message }); return }
+      setEmailPhase('code')
+      setMsg({ kind: 'ok', text: 'we emailed you a 6-digit code — enter it below (the magic link also works).' })
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'sign-in failed' })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const verifyEmailCode = async () => {
+    const token = code.trim()
+    if (!/^\d{6}$/.test(token)) {
+      setMsg({ kind: 'err', text: 'enter the 6-digit code from the email' })
+      return
+    }
+    setBusy(true); setMsg(null)
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token,
+        type: 'email',
+      })
+      if (error) { setMsg({ kind: 'err', text: error.message }); return }
+      // onAuthStateChange picks up SIGNED_IN and advances the flow.
+      setMsg({ kind: 'ok', text: 'verified.' })
+    } catch (e) {
+      setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'verification failed' })
     } finally {
       setBusy(false)
     }
@@ -237,11 +247,25 @@ export function WelcomeNativePage() {
     let age = now.getFullYear() - dob.getFullYear()
     const m = now.getMonth() - dob.getMonth()
     if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age--
-    if (age < 18) { setMsg({ kind: 'err', text: 'shutap is 18+ only' }); return }
+    if (age < 18) {
+      try { sessionStorage.setItem('shutap_age_rejected', '1') } catch { /* noop */ }
+      setAgeBlocked(true)
+      setMsg({ kind: 'err', text: 'shutap is 18+ only. account access is not available.' })
+      return
+    }
     setMsg(null); setStep('alias')
   }
 
-  const spin = () => setAliasState(randomAliasParts())
+  // Ensure a re-roll never returns the same triple twice in a row (RULE 5).
+  const spin = () => setAliasState((prev) => {
+    for (let i = 0; i < 8; i++) {
+      const next = randomAliasParts()
+      if (next.emotion !== prev.emotion || next.nation !== prev.nation || next.creature !== prev.creature) {
+        return next
+      }
+    }
+    return randomAliasParts()
+  })
 
   const keepAlias = async () => {
     setBusy(true); setMsg(null)
