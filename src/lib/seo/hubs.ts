@@ -45,7 +45,7 @@ export const HUBS: SituationHub[] = [
     pillar: "relationships",
     question: "why do I feel guilty after going no-contact?",
     answer:
-      "Because guilt and doing-the-right-thing aren't opposites. No-contact protects you from someone whose presence costs more than it pays — but your nervous system was trained to keep them comfortable, so it'll keep ringing the bell. The guilt fades. It usually doesn't fade in week one. Most people here say it takes ~3 months.",
+      "Because guilt and doing-the-right-thing aren't opposites. No-contact protects you from someone whose presence costs more than it pays — but your nervous system was trained to keep them comfortable, so it'll keep ringing the bell. The guilt fades. It usually doesn't fade in week one. For most people it takes a few months.",
     paa: [
       { q: "Does the guilt ever fully go away?", a: "It dulls. Most people stop feeling it daily by month 3, and only notice it on birthdays and holidays after that." },
       { q: "Am I a bad person for going no-contact with a parent?", a: "No. Estrangement is usually the last option, not the first." },
