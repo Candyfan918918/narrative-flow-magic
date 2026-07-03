@@ -49,6 +49,7 @@ const ProfileIn = z.object({
   avatar_url: z.string().url().nullable().optional(),
   provider: z.string().max(40).nullable().optional(),
   is_anonymous: z.boolean().optional(),
+  login: z.boolean().optional(),
 })
 
 export const upsertMyProfile = createServerFn({ method: 'POST' })
@@ -61,18 +62,18 @@ export const upsertMyProfile = createServerFn({ method: 'POST' })
     const now = new Date().toISOString()
     const existing = await supabaseAdmin
       .from('profiles')
-      .select('user_id, first_visit_at, visit_count, first_name, last_name, full_name, avatar_url, email')
+      .select('user_id, first_visit_at, visit_count, first_name, last_name, full_name, avatar_url, email, login_count, signup_at')
       .eq('user_id', userId)
       .maybeSingle()
     const prev = existing.data as {
       first_visit_at?: string; visit_count?: number;
       first_name?: string | null; last_name?: string | null;
       full_name?: string | null; avatar_url?: string | null; email?: string | null;
+      login_count?: number | null; signup_at?: string | null;
     } | null
-    // Apple returns name only on the FIRST authorization; preserve prior
-    // values if the current payload has null/undefined.
     const merge = <T,>(next: T | null | undefined, prev: T | null | undefined): T | null | undefined =>
       next ?? prev
+    const isLogin = data.login === true && data.is_anonymous !== true
     const row = {
       user_id: userId,
       email: merge(data.email, prev?.email),
@@ -82,6 +83,7 @@ export const upsertMyProfile = createServerFn({ method: 'POST' })
       avatar_url: merge(data.avatar_url, prev?.avatar_url),
       provider: data.provider ?? null,
       is_anonymous: data.is_anonymous ?? false,
+      signup_at: prev?.signup_at ?? now,
       first_visit_at: prev?.first_visit_at ?? now,
       last_visit_at: now,
       visit_count: (prev?.visit_count ?? 0) + 1,
@@ -89,6 +91,9 @@ export const upsertMyProfile = createServerFn({ method: 'POST' })
       last_city: geo.city,
       last_user_agent: geo.userAgent,
       updated_at: now,
+      ...(isLogin
+        ? { last_login_at: now, login_count: (prev?.login_count ?? 0) + 1 }
+        : {}),
     }
     const { error } = await supabaseAdmin
       .from('profiles')

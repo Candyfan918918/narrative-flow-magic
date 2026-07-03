@@ -747,10 +747,13 @@ export type Database = {
           is_anonymous: boolean
           last_city: string | null
           last_country: string | null
+          last_login_at: string | null
           last_name: string | null
           last_user_agent: string | null
           last_visit_at: string
+          login_count: number
           provider: string | null
+          signup_at: string | null
           updated_at: string
           user_id: string
           visit_count: number
@@ -765,10 +768,13 @@ export type Database = {
           is_anonymous?: boolean
           last_city?: string | null
           last_country?: string | null
+          last_login_at?: string | null
           last_name?: string | null
           last_user_agent?: string | null
           last_visit_at?: string
+          login_count?: number
           provider?: string | null
+          signup_at?: string | null
           updated_at?: string
           user_id: string
           visit_count?: number
@@ -783,10 +789,13 @@ export type Database = {
           is_anonymous?: boolean
           last_city?: string | null
           last_country?: string | null
+          last_login_at?: string | null
           last_name?: string | null
           last_user_agent?: string | null
           last_visit_at?: string
+          login_count?: number
           provider?: string | null
+          signup_at?: string | null
           updated_at?: string
           user_id?: string
           visit_count?: number
