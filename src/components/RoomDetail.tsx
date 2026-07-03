@@ -12,6 +12,7 @@ import { ScanShareCard } from './ScanShareCard'
 import { createComment } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { ActionPill } from './ShareChannels'
+import { requireRealUser, type PendingIntent } from '@/lib/auth-guard'
 
 const PENDING_COMMENT_KEY = 'shutap_pending_comment'
 
@@ -110,7 +111,8 @@ export function RoomDetail({
     })
   }
 
-  const shareRoom = () => {
+  const shareRoom = async () => {
+    if (!(await requireRealUser({ kind: 'custom', url: window.location.href }))) return
     if (isScan) {
       setScanShareOpen(true)
       return
@@ -283,6 +285,8 @@ export function RoomDetail({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room.id])
 
+  const gate = async (intent: PendingIntent): Promise<boolean> => requireRealUser(intent)
+
   const bars = REACTIONS.map((rx) => (
     <span key={rx.k} style={{ flex: room.reactions[rx.k], background: rx.color }} />
   ))
@@ -450,7 +454,8 @@ export function RoomDetail({
                   key={rx.k}
                   className={'react-btn' + (isActive ? ' active' : '')}
                   style={{ color: rx.color }}
-                  onClick={() => {
+                  onClick={async () => {
+                    if (!(await gate({ kind: 'react', roomId: room.id, reaction: rx.k }))) return
                     setActive((prev) => {
                       const next = new Set(prev)
                       if (next.has(rx.k)) next.delete(rx.k)
@@ -490,7 +495,8 @@ export function RoomDetail({
               surface="light"
               tone={related ? 'accent' : 'ghost'}
               ariaLabel="Relate to this"
-              onClick={() => {
+              onClick={async () => {
+                if (!(await gate({ kind: 'relate', roomId: room.id }))) return
                 setRelated(true)
                 toast("added. the room knows you're there.")
                 track('relate', { target: `room:${room.id}` })
@@ -550,7 +556,8 @@ export function RoomDetail({
               {chips.map((s, i) => (
                 <button
                   key={i}
-                  onClick={() => {
+                  onClick={async () => {
+                    if (!(await gate({ kind: 'comment', roomId: room.id }))) return
                     const t = cmtRef.current
                     if (t) {
                       t.value = s + ' '
@@ -578,7 +585,7 @@ export function RoomDetail({
               ))}
             </div>
 
-            <CommentField cmtRef={cmtRef} autosize={autosize} onSend={submitComment} />
+            <CommentField cmtRef={cmtRef} autosize={autosize} onSend={submitComment} onGate={() => gate({ kind: 'comment', roomId: room.id })} />
 
             <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c', marginTop: 8 }}>{helpText}</div>
 
@@ -607,12 +614,21 @@ function CommentField({
   cmtRef,
   autosize,
   onSend,
+  onGate,
 }: {
   cmtRef: React.RefObject<HTMLTextAreaElement | null>
   autosize: () => void
   onSend: () => void
+  onGate: () => Promise<boolean>
 }) {
   const [focused, setFocused] = useState(false)
+  const [gated, setGated] = useState(false)
+  const ensureGate = async () => {
+    if (gated) return true
+    const ok = await onGate()
+    if (ok) setGated(true)
+    return ok
+  }
   return (
     <div
       style={{
@@ -631,7 +647,13 @@ function CommentField({
         rows={2}
         placeholder="vent here — it doesn't have to be advice. say how it lands for you…"
         onInput={autosize}
-        onFocus={() => setFocused(true)}
+        onMouseDown={(e) => {
+          if (!gated) {
+            e.preventDefault()
+            void ensureGate()
+          }
+        }}
+        onFocus={() => { setFocused(true); void ensureGate() }}
         onBlur={() => setFocused(false)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey) {

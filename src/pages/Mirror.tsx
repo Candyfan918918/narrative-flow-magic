@@ -1393,7 +1393,11 @@ export function MirrorPage() {
                   fontSize: 22, lineHeight: 1.25, color: INK,
                 }}>your world, cross-reads, movement markers, reflective questions and the speak channel unlock with the mirror.</p>
                 <button
-                  onClick={() => navigate('/subscribe')}
+                  onClick={async () => {
+                    const { requireRealUser } = await import('@/lib/auth-guard')
+                    if (!(await requireRealUser({ kind: 'subscribe' }))) return
+                    navigate('/subscribe')
+                  }}
                   style={{
                     background: '#e7548a', color: '#fff', border: 0, borderRadius: 999,
                     padding: '12px 22px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
