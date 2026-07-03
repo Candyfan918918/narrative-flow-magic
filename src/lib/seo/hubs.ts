@@ -255,7 +255,7 @@ export const HUBS: SituationHub[] = [
     pillar: "career",
     question: "how do you know when to quit without another job lined up?",
     answer:
-      "When the math works and the body says so. The math: runway covers 6–9 months at your real expenses (not the optimistic version). The body: you're getting sick more, sleeping worse, and Sunday night feels like Tuesday. People here who quit without a job almost universally say they wished they'd done it three months earlier.",
+      "When the math works and the body says so. The math: runway covers 6–9 months at your real expenses (not the optimistic version). The body: you're getting sick more, sleeping worse, and Sunday night feels like Tuesday. People who quit without a job often say they wished they'd done it three months earlier.",
     paa: [
       { q: "How much runway do I need to quit?", a: "Most people say 6 months minimum, 9 to feel okay, 12 to feel free. Less is doable; it's just harder." },
       { q: "Will a gap on my resume hurt me?", a: "Less than it used to. \"Took time off to reset\" is now a sentence recruiters hear weekly." },
