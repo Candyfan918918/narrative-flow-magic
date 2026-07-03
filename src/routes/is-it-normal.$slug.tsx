@@ -1,6 +1,7 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
 import { getHub, HUBS_BY_PILLAR, type SituationHub } from "@/lib/seo/hubs";
+import { SITE_URL } from "@/lib/site";
 
 export const Route = createFileRoute("/is-it-normal/$slug")({
   loader: ({ params }) => {
