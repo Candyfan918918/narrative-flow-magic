@@ -21,7 +21,7 @@ export const HUBS: SituationHub[] = [
     pillar: "relationships",
     question: "is it normal to feel lonely in a relationship?",
     answer:
-      "Yes — and it's more common than the relationship advice industry admits. Loneliness inside a relationship usually means the emotional channel has gone quiet, not that the relationship is over. People here describe it as living with a roommate who knows your coffee order but not what you're scared of. Naming it out loud is usually step one.",
+      "Yes — and it's more common than the relationship advice industry admits. Loneliness inside a relationship usually means the emotional channel has gone quiet, not that the relationship is over. A common way people describe it is living with a roommate who knows your coffee order but not what you're scared of. Naming it out loud is usually step one.",
     paa: [
       { q: "Why do I feel lonely even though I'm not single?", a: "Loneliness tracks emotional intimacy, not physical proximity. You can sleep next to someone every night and still feel unseen." },
       { q: "Should I leave if I feel lonely in my relationship?", a: "Not automatically. Loneliness is a signal to investigate — not a verdict. Many people repair it; others use it as the nudge they needed." },
