@@ -453,7 +453,8 @@ export function RoomDetail({
                   key={rx.k}
                   className={'react-btn' + (isActive ? ' active' : '')}
                   style={{ color: rx.color }}
-                  onClick={() => {
+                  onClick={async () => {
+                    if (!(await gate({ kind: 'react', roomId: room.id, reaction: rx.k }))) return
                     setActive((prev) => {
                       const next = new Set(prev)
                       if (next.has(rx.k)) next.delete(rx.k)
