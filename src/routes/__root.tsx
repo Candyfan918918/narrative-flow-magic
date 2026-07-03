@@ -193,7 +193,7 @@ function RootComponent() {
         lastUserId = nextId;
         const u = session?.user as { is_anonymous?: boolean } | undefined;
         if (event === "SIGNED_IN" && u && !u.is_anonymous) {
-          void syncProfileFromSession(session?.user as never);
+          void syncProfileFromSession(session?.user as never, { login: true });
           const provider = (session?.user?.app_metadata as { provider?: string } | undefined)?.provider ?? "email";
           void trackEvent("sign_in", { provider });
         }
