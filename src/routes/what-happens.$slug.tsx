@@ -11,7 +11,7 @@ export const Route = createFileRoute("/what-happens/$slug")({
     return { outcome, hub: hub ?? null, slug: params.slug };
   },
   head: ({ params, loaderData }) => {
-    const url = `/what-happens/${params.slug}`;
+    const url = `${SITE_URL}/what-happens/${params.slug}`;
     const indexable = isOutcomeIndexable(loaderData?.outcome);
     const title = loaderData?.outcome
       ? `What happens when — ${loaderData.outcome.question} — shutap`
