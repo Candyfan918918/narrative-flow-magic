@@ -13,7 +13,7 @@ const HALLS = [
 export function HallOfFamePageNative() {
   return (
     <div style={{ background: '#fdf0f5', minHeight: '100vh' }}>
-      <SiteHeader />
+      
       <main style={{ maxWidth: 780, margin: '0 auto', padding: '48px 22px 96px' }}>
         <h1 style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 36, margin: '0 0 12px' }}>
           Hall of Fame
