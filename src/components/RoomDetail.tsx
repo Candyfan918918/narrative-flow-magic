@@ -585,7 +585,7 @@ export function RoomDetail({
               ))}
             </div>
 
-            <CommentField cmtRef={cmtRef} autosize={autosize} onSend={submitComment} />
+            <CommentField cmtRef={cmtRef} autosize={autosize} onSend={submitComment} onGate={() => gate({ kind: 'comment', roomId: room.id })} />
 
             <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c', marginTop: 8 }}>{helpText}</div>
 
