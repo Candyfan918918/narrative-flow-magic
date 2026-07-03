@@ -13,6 +13,7 @@ import {
   listMirrorPatterns,
   listDemoPatterns,
 } from '@/lib/mirror-pipeline.functions'
+import { getMirrorEntitlement } from '@/lib/entitlements.functions'
 import { runMirrorCrossRead } from '@/lib/agents/mirror.functions'
 import {
   DISTRICT_LABEL,
