@@ -268,15 +268,17 @@ export const listMirrorPatterns = createServerFn({ method: 'GET' })
     return data ?? []
   })
 
+// Demo/seed patterns are ONLY served to the owner's demo account
+// (whatcandyeats@gmail.com). Every other user — signed-in or anonymous —
+// receives an empty list so their Mirror is authentically their own data
+// (RULE 6). Enforced server-side; client cannot override.
 export const listDemoPatterns = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { createClient } = await import('@supabase/supabase-js')
-    const sb = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { persistSession: false, autoRefreshToken: false } },
-    )
-    const { data } = await sb
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const claims = context.claims as { email?: string; is_anonymous?: boolean } | undefined
+    const { isOwnerDemoEmail } = await import('./require-real-user')
+    if (claims?.is_anonymous || !isOwnerDemoEmail(claims?.email)) return []
+    const { data } = await context.supabase
       .from('mirror_patterns')
       .select('id, name, emoji, district, rarity, state, insight, punch, record, count, depth, trend, trend_dir, sources, first_seen, last_seen')
       .eq('is_demo', true)
