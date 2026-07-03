@@ -41,6 +41,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug'
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as SubscribeReturnRouteImport } from './routes/subscribe.return'
+import { Route as SitemapsProfilesDotxmlRouteImport } from './routes/sitemaps/profiles[.]xml'
+import { Route as SitemapsOutcomesDotxmlRouteImport } from './routes/sitemaps/outcomes[.]xml'
+import { Route as SitemapsCoreDotxmlRouteImport } from './routes/sitemaps/core[.]xml'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
 import { Route as AdminRelateQueueRouteImport } from './routes/admin.relate-queue'
@@ -215,6 +218,21 @@ const SubscribeReturnRoute = SubscribeReturnRouteImport.update({
   path: '/return',
   getParentRoute: () => SubscribeRoute,
 } as any)
+const SitemapsProfilesDotxmlRoute = SitemapsProfilesDotxmlRouteImport.update({
+  id: '/sitemaps/profiles.xml',
+  path: '/sitemaps/profiles.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapsOutcomesDotxmlRoute = SitemapsOutcomesDotxmlRouteImport.update({
+  id: '/sitemaps/outcomes.xml',
+  path: '/sitemaps/outcomes.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapsCoreDotxmlRoute = SitemapsCoreDotxmlRouteImport.update({
+  id: '/sitemaps/core.xml',
+  path: '/sitemaps/core.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IsItNormalSlugRoute = IsItNormalSlugRouteImport.update({
   id: '/is-it-normal/$slug',
   path: '/is-it-normal/$slug',
@@ -325,6 +343,9 @@ export interface FileRoutesByFullPath {
   '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/sitemaps/core.xml': typeof SitemapsCoreDotxmlRoute
+  '/sitemaps/outcomes.xml': typeof SitemapsOutcomesDotxmlRoute
+  '/sitemaps/profiles.xml': typeof SitemapsProfilesDotxmlRoute
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
@@ -372,6 +393,9 @@ export interface FileRoutesByTo {
   '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/sitemaps/core.xml': typeof SitemapsCoreDotxmlRoute
+  '/sitemaps/outcomes.xml': typeof SitemapsOutcomesDotxmlRoute
+  '/sitemaps/profiles.xml': typeof SitemapsProfilesDotxmlRoute
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
@@ -421,6 +445,9 @@ export interface FileRoutesById {
   '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
+  '/sitemaps/core.xml': typeof SitemapsCoreDotxmlRoute
+  '/sitemaps/outcomes.xml': typeof SitemapsOutcomesDotxmlRoute
+  '/sitemaps/profiles.xml': typeof SitemapsProfilesDotxmlRoute
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
@@ -470,6 +497,9 @@ export interface FileRouteTypes {
     | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/sitemaps/core.xml'
+    | '/sitemaps/outcomes.xml'
+    | '/sitemaps/profiles.xml'
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
@@ -517,6 +547,9 @@ export interface FileRouteTypes {
     | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/sitemaps/core.xml'
+    | '/sitemaps/outcomes.xml'
+    | '/sitemaps/profiles.xml'
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
@@ -565,6 +598,9 @@ export interface FileRouteTypes {
     | '/admin/relate-queue'
     | '/api/complete'
     | '/is-it-normal/$slug'
+    | '/sitemaps/core.xml'
+    | '/sitemaps/outcomes.xml'
+    | '/sitemaps/profiles.xml'
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
@@ -611,6 +647,9 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
+  SitemapsCoreDotxmlRoute: typeof SitemapsCoreDotxmlRoute
+  SitemapsOutcomesDotxmlRoute: typeof SitemapsOutcomesDotxmlRoute
+  SitemapsProfilesDotxmlRoute: typeof SitemapsProfilesDotxmlRoute
   UPseudonymRoute: typeof UPseudonymRoute
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
@@ -845,6 +884,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubscribeReturnRouteImport
       parentRoute: typeof SubscribeRoute
     }
+    '/sitemaps/profiles.xml': {
+      id: '/sitemaps/profiles.xml'
+      path: '/sitemaps/profiles.xml'
+      fullPath: '/sitemaps/profiles.xml'
+      preLoaderRoute: typeof SitemapsProfilesDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemaps/outcomes.xml': {
+      id: '/sitemaps/outcomes.xml'
+      path: '/sitemaps/outcomes.xml'
+      fullPath: '/sitemaps/outcomes.xml'
+      preLoaderRoute: typeof SitemapsOutcomesDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemaps/core.xml': {
+      id: '/sitemaps/core.xml'
+      path: '/sitemaps/core.xml'
+      fullPath: '/sitemaps/core.xml'
+      preLoaderRoute: typeof SitemapsCoreDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/is-it-normal/$slug': {
       id: '/is-it-normal/$slug'
       path: '/is-it-normal/$slug'
@@ -1031,6 +1091,9 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   ApiCompleteRoute: ApiCompleteRoute,
   IsItNormalSlugRoute: IsItNormalSlugRoute,
+  SitemapsCoreDotxmlRoute: SitemapsCoreDotxmlRoute,
+  SitemapsOutcomesDotxmlRoute: SitemapsOutcomesDotxmlRoute,
+  SitemapsProfilesDotxmlRoute: SitemapsProfilesDotxmlRoute,
   UPseudonymRoute: UPseudonymRoute,
   WhatHappensSlugRoute: WhatHappensSlugRoute,
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
