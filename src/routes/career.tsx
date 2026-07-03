@@ -3,8 +3,7 @@ import { PillarPage } from "@/components/seo/PillarPage";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/career";
-const TITLE =
-  "Career & work — vent and read real stories about work life | Shutap";
+const TITLE = "Career & work — real stories about work life | Shutap";
 const DESCRIPTION =
   "Real, pseudonymous stories about work — bosses, burnout, money, the job you're supposed to be grateful for — and what actually happened next. You're not alone in it.";
 const H1 = "career";

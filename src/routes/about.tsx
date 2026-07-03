@@ -3,8 +3,7 @@ import { ContentPage } from "@/components/seo/ContentPage";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/about";
-const TITLE =
-  "About Shutap — a pseudonymous community for venting, with AI-guided support";
+const TITLE = "About Shutap — pseudonymous venting with AI support";
 const DESCRIPTION =
   "What Shutap is, who it's for, and how it differs from anonymous venting on Reddit or AITA. Pseudonymous, private by design, built around what actually happened next.";
 const CAPSULE =

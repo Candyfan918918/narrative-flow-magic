@@ -3,8 +3,7 @@ import { PillarPage } from "@/components/seo/PillarPage";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/family";
-const TITLE =
-  "Family — vent and read real stories about family relationships | Shutap";
+const TITLE = "Family — parents, siblings, in-laws: real stories | Shutap";
 const DESCRIPTION =
   "Real, pseudonymous stories about family — parents, siblings, in-laws, the family group chat, the guilt — and what actually happened next. Someone here gets it.";
 const H1 = "family";

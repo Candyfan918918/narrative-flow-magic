@@ -2,8 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/relationships";
-const TITLE =
-  "Relationships — vent and read real stories about dating, partners & breakups | Shutap";
+const TITLE = "Relationships — real stories about dating & breakups | Shutap";
 const DESCRIPTION =
   "Read and share real, pseudonymous stories about relationships — dating, partners, situationships, breakups — and see what happened next. Someone here has lived your exact thing.";
 const H1 = "relationships";
