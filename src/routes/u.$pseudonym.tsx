@@ -6,6 +6,7 @@ import {
   profileSignal,
   type PseudonymProfile,
 } from "@/lib/seo/profiles";
+import { SITE_URL } from "@/lib/site";
 
 export const Route = createFileRoute("/u/$pseudonym")({
   loader: ({ params }) => {
