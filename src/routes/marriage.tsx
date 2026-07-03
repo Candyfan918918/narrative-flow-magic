@@ -3,7 +3,7 @@ import { PillarPage } from "@/components/seo/PillarPage";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/marriage";
-const TITLE = "Marriage — vent and read real stories about married life | Shutap";
+const TITLE = "Marriage — real stories about married life | Shutap";
 const DESCRIPTION =
   "Real, pseudonymous stories about marriage — resentment, repair, roommate energy, staying, leaving — and what actually happened next. You're not the only one.";
 const H1 = "marriage";
