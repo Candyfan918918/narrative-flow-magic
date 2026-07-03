@@ -49,6 +49,7 @@ const ProfileIn = z.object({
   avatar_url: z.string().url().nullable().optional(),
   provider: z.string().max(40).nullable().optional(),
   is_anonymous: z.boolean().optional(),
+  login: z.boolean().optional(),
 })
 
 export const upsertMyProfile = createServerFn({ method: 'POST' })
