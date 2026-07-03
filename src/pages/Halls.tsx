@@ -1,7 +1,7 @@
 /* Minimal native Hall of Fame hub. The deep hall pages live at
  * /halls/$hall/$region/$window; this is just a discovery entry. */
 import { Link } from '@tanstack/react-router'
-import { SiteHeader } from '@/components/site/SiteHeader'
+
 import { SiteFooter } from '@/components/site/SiteFooter'
 
 const HALLS = [
