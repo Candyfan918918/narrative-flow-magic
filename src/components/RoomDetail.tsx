@@ -614,12 +614,21 @@ function CommentField({
   cmtRef,
   autosize,
   onSend,
+  onGate,
 }: {
   cmtRef: React.RefObject<HTMLTextAreaElement | null>
   autosize: () => void
   onSend: () => void
+  onGate: () => Promise<boolean>
 }) {
   const [focused, setFocused] = useState(false)
+  const [gated, setGated] = useState(false)
+  const ensureGate = async () => {
+    if (gated) return true
+    const ok = await onGate()
+    if (ok) setGated(true)
+    return ok
+  }
   return (
     <div
       style={{
@@ -638,7 +647,13 @@ function CommentField({
         rows={2}
         placeholder="vent here — it doesn't have to be advice. say how it lands for you…"
         onInput={autosize}
-        onFocus={() => setFocused(true)}
+        onMouseDown={(e) => {
+          if (!gated) {
+            e.preventDefault()
+            void ensureGate()
+          }
+        }}
+        onFocus={() => { setFocused(true); void ensureGate() }}
         onBlur={() => setFocused(false)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey) {
