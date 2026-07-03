@@ -83,7 +83,7 @@ export const HUBS: SituationHub[] = [
     pillar: "marriage",
     question: "is it normal to feel invisible in my marriage?",
     answer:
-      "Yes, and it's one of the most common things people bring here. Invisible in a marriage usually means the maintenance got automated — schedules, kids, logistics — and the noticing stopped. The fix isn't grand gestures; it's the small re-noticing. People who repaired it say it started with one honest sentence, not a weekend away.",
+      "Yes, and it's one of the most common things people bring up. Invisible in a marriage usually means the maintenance got automated — schedules, kids, logistics — and the noticing stopped. The fix isn't grand gestures; it's the small re-noticing. People who repaired it say it started with one honest sentence, not a weekend away.",
     paa: [
       { q: "Why does my spouse stop seeing me after years together?", a: "Familiarity dulls attention. It's not malice; it's how brains conserve energy. It can be reversed deliberately." },
       { q: "Is feeling invisible a reason to leave?", a: "It's a reason to talk. If the talk goes nowhere twice, it becomes a reason to reconsider." },
