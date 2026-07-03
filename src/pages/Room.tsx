@@ -72,8 +72,8 @@ export function RoomPage() {
   if (!id || !room) {
     return (
       <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-        <Header onToast={toastMsg} />
         <main style={{ maxWidth: 640, margin: '0 auto', padding: '60px 22px', textAlign: 'center' }}>
+
           <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 10 }}>
             this room
           </div>
