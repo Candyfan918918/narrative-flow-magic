@@ -302,13 +302,30 @@ export function WelcomeNativePage() {
 
   const enterRoom = () => {
     try {
+      // Generalized intent resume (RULE 2). Any interaction that redirected
+      // to /welcome captured a shutap_pending_intent describing what to do.
+      const raw = sessionStorage.getItem('shutap_pending_intent')
+      if (raw) {
+        sessionStorage.removeItem('shutap_pending_intent')
+        const intent = JSON.parse(raw) as
+          | { kind: 'spill' } | { kind: 'scan' } | { kind: 'subscribe' }
+          | { kind: 'comment' | 'relate' | 'react'; roomId: string }
+          | { kind: 'custom'; url: string }
+        if (intent.kind === 'spill') { window.location.replace('/#spill'); return }
+        if (intent.kind === 'scan') { window.location.replace('/#scan'); return }
+        if (intent.kind === 'subscribe') { window.location.replace('/subscribe'); return }
+        if (intent.kind === 'custom') { window.location.replace(intent.url); return }
+        if ('roomId' in intent && intent.roomId) {
+          window.location.replace('/room?id=' + encodeURIComponent(intent.roomId)); return
+        }
+      }
       const pc = sessionStorage.getItem('shutap_pending_comment')
       if (pc) {
         const parsed = JSON.parse(pc) as { roomId?: string }
         if (parsed?.roomId) { window.location.replace('/room?id=' + encodeURIComponent(parsed.roomId)); return }
       }
       if (sessionStorage.getItem('shutap_pending_save')) {
-        window.location.replace('/'); return
+        window.location.replace('/#spill'); return
       }
       const ret = sessionStorage.getItem('shutap_returnTo')
       if (ret) { sessionStorage.removeItem('shutap_returnTo'); window.location.replace(ret); return }
