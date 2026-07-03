@@ -284,6 +284,8 @@ export function RoomDetail({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room.id])
 
+  const gate = async (intent: PendingIntent): Promise<boolean> => requireRealUser(intent)
+
   const bars = REACTIONS.map((rx) => (
     <span key={rx.k} style={{ flex: room.reactions[rx.k], background: rx.color }} />
   ))
