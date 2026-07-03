@@ -207,7 +207,7 @@ export const HUBS: SituationHub[] = [
     pillar: "career",
     question: "is it normal to cry at work?",
     answer:
-      "Yes. Crying at work usually isn't about the moment — it's the body releasing pressure that's been building for weeks. Most people here describe it the same way: a tiny thing happens (a Slack message, a meeting that ran long) and the wall comes down. It doesn't mean you're weak. It means you've been holding it for too long.",
+      "Yes. Crying at work usually isn't about the moment — it's the body releasing pressure that's been building for weeks. Most people describe it the same way: a tiny thing happens (a Slack message, a meeting that ran long) and the wall comes down. It doesn't mean you're weak. It means you've been holding it for too long.",
     paa: [
       { q: "Will crying at work hurt my career?", a: "Usually less than people fear. Most colleagues are kinder about it in the moment than the inner critic is afterward." },
       { q: "Should I apologize for crying at work?", a: "No need to over-apologize. \"Sorry, rough week\" closes the loop. Don't make it the meeting." },
