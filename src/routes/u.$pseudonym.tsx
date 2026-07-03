@@ -15,7 +15,7 @@ export const Route = createFileRoute("/u/$pseudonym")({
     return profile;
   },
   head: ({ params, loaderData }) => {
-    const url = `/u/${params.pseudonym}`;
+    const url = `${SITE_URL}/u/${params.pseudonym}`;
     const indexable = isProfileIndexable(loaderData ?? undefined);
     const title = loaderData
       ? `${loaderData.pseudonym} — shutap`
