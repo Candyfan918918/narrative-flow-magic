@@ -21,7 +21,7 @@ export const HUBS: SituationHub[] = [
     pillar: "relationships",
     question: "is it normal to feel lonely in a relationship?",
     answer:
-      "Yes — and it's more common than the relationship advice industry admits. Loneliness inside a relationship usually means the emotional channel has gone quiet, not that the relationship is over. People here describe it as living with a roommate who knows your coffee order but not what you're scared of. Naming it out loud is usually step one.",
+      "Yes — and it's more common than the relationship advice industry admits. Loneliness inside a relationship usually means the emotional channel has gone quiet, not that the relationship is over. A common way people describe it is living with a roommate who knows your coffee order but not what you're scared of. Naming it out loud is usually step one.",
     paa: [
       { q: "Why do I feel lonely even though I'm not single?", a: "Loneliness tracks emotional intimacy, not physical proximity. You can sleep next to someone every night and still feel unseen." },
       { q: "Should I leave if I feel lonely in my relationship?", a: "Not automatically. Loneliness is a signal to investigate — not a verdict. Many people repair it; others use it as the nudge they needed." },
@@ -45,7 +45,7 @@ export const HUBS: SituationHub[] = [
     pillar: "relationships",
     question: "why do I feel guilty after going no-contact?",
     answer:
-      "Because guilt and doing-the-right-thing aren't opposites. No-contact protects you from someone whose presence costs more than it pays — but your nervous system was trained to keep them comfortable, so it'll keep ringing the bell. The guilt fades. It usually doesn't fade in week one. Most people here say it takes ~3 months.",
+      "Because guilt and doing-the-right-thing aren't opposites. No-contact protects you from someone whose presence costs more than it pays — but your nervous system was trained to keep them comfortable, so it'll keep ringing the bell. The guilt fades. It usually doesn't fade in week one. For most people it takes a few months.",
     paa: [
       { q: "Does the guilt ever fully go away?", a: "It dulls. Most people stop feeling it daily by month 3, and only notice it on birthdays and holidays after that." },
       { q: "Am I a bad person for going no-contact with a parent?", a: "No. Estrangement is usually the last option, not the first." },
@@ -83,7 +83,7 @@ export const HUBS: SituationHub[] = [
     pillar: "marriage",
     question: "is it normal to feel invisible in my marriage?",
     answer:
-      "Yes, and it's one of the most common things people bring here. Invisible in a marriage usually means the maintenance got automated — schedules, kids, logistics — and the noticing stopped. The fix isn't grand gestures; it's the small re-noticing. People who repaired it say it started with one honest sentence, not a weekend away.",
+      "Yes, and it's one of the most common things people bring up. Invisible in a marriage usually means the maintenance got automated — schedules, kids, logistics — and the noticing stopped. The fix isn't grand gestures; it's the small re-noticing. People who repaired it say it started with one honest sentence, not a weekend away.",
     paa: [
       { q: "Why does my spouse stop seeing me after years together?", a: "Familiarity dulls attention. It's not malice; it's how brains conserve energy. It can be reversed deliberately." },
       { q: "Is feeling invisible a reason to leave?", a: "It's a reason to talk. If the talk goes nowhere twice, it becomes a reason to reconsider." },
@@ -131,7 +131,7 @@ export const HUBS: SituationHub[] = [
     pillar: "marriage",
     question: "how do people know when their marriage is over?",
     answer:
-      "Usually they knew long before they admitted it. The most common marker people here describe is contempt — not anger, contempt. When you stop being annoyed and start being repulsed, that's the line. The second marker is when picturing your life without them feels like relief, not grief.",
+      "Usually they knew long before they admitted it. A common marker people describe is contempt — not anger, contempt. When you stop being annoyed and start being repulsed, that's the line. The second marker is when picturing your life without them feels like relief, not grief.",
     paa: [
       { q: "What's the #1 predictor of divorce?", a: "Contempt, per the Gottman research. Not conflict — contempt." },
       { q: "Is wanting to leave the same as it being over?", a: "No. Most people who want to leave once stay and repair. The ones who leave usually wanted to for years first." },
@@ -157,7 +157,7 @@ export const HUBS: SituationHub[] = [
     pillar: "family",
     question: "how do I set boundaries with my parents without the guilt?",
     answer:
-      "You don't. The guilt comes free with the boundary; the trick is acting on the boundary anyway. Guilt is the toll, not the sign you're wrong. People here describe it as \"feeling like a bad daughter while doing the right thing for the first time.\" That feeling fades. The boundary holds.",
+      "You don't. The guilt comes free with the boundary; the trick is acting on the boundary anyway. Guilt is the toll, not the sign you're wrong. A common way people describe it is \"feeling like a bad daughter while doing the right thing for the first time.\" That feeling fades. The boundary holds.",
     paa: [
       { q: "Why do my parents react badly to boundaries?", a: "Because the old system worked for them. Any change in the system feels like loss to whoever was getting more out of it." },
       { q: "What's a healthy boundary with parents?", a: "Anything you can hold without resentment. If you need to explain it three times, it's a request — not a boundary." },
@@ -207,7 +207,7 @@ export const HUBS: SituationHub[] = [
     pillar: "career",
     question: "is it normal to cry at work?",
     answer:
-      "Yes. Crying at work usually isn't about the moment — it's the body releasing pressure that's been building for weeks. Most people here describe it the same way: a tiny thing happens (a Slack message, a meeting that ran long) and the wall comes down. It doesn't mean you're weak. It means you've been holding it for too long.",
+      "Yes. Crying at work usually isn't about the moment — it's the body releasing pressure that's been building for weeks. Most people describe it the same way: a tiny thing happens (a Slack message, a meeting that ran long) and the wall comes down. It doesn't mean you're weak. It means you've been holding it for too long.",
     paa: [
       { q: "Will crying at work hurt my career?", a: "Usually less than people fear. Most colleagues are kinder about it in the moment than the inner critic is afterward." },
       { q: "Should I apologize for crying at work?", a: "No need to over-apologize. \"Sorry, rough week\" closes the loop. Don't make it the meeting." },
@@ -255,7 +255,7 @@ export const HUBS: SituationHub[] = [
     pillar: "career",
     question: "how do you know when to quit without another job lined up?",
     answer:
-      "When the math works and the body says so. The math: runway covers 6–9 months at your real expenses (not the optimistic version). The body: you're getting sick more, sleeping worse, and Sunday night feels like Tuesday. People here who quit without a job almost universally say they wished they'd done it three months earlier.",
+      "When the math works and the body says so. The math: runway covers 6–9 months at your real expenses (not the optimistic version). The body: you're getting sick more, sleeping worse, and Sunday night feels like Tuesday. People who quit without a job often say they wished they'd done it three months earlier.",
     paa: [
       { q: "How much runway do I need to quit?", a: "Most people say 6 months minimum, 9 to feel okay, 12 to feel free. Less is doable; it's just harder." },
       { q: "Will a gap on my resume hurt me?", a: "Less than it used to. \"Took time off to reset\" is now a sentence recruiters hear weekly." },

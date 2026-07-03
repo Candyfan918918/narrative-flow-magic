@@ -1,6 +1,7 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
 import { getHub, HUBS_BY_PILLAR, type SituationHub } from "@/lib/seo/hubs";
+import { SITE_URL } from "@/lib/site";
 
 export const Route = createFileRoute("/is-it-normal/$slug")({
   loader: ({ params }) => {
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/is-it-normal/$slug")({
     if (!loaderData) return { meta: [{ title: "Not found" }] };
     const title = `${capitalize(loaderData.question)} — shutap`;
     const description = loaderData.answer.slice(0, 155);
-    const url = `/is-it-normal/${params.slug}`;
+    const url = `${SITE_URL}/is-it-normal/${params.slug}`;
     return {
       meta: [
         { title },
