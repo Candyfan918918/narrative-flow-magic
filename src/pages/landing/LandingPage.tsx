@@ -125,29 +125,44 @@ export function LandingNativePage() {
   const featured = liveRooms[0]
   const gridRooms = liveRooms.slice(0, 4)
 
-  const openSpill = useCallback(() => { setSpillOpen(true) }, [])
+  const openSpill = useCallback(async () => {
+    const { requireRealUser } = await import('@/lib/auth-guard')
+    if (!(await requireRealUser({ kind: 'spill' }))) return
+    setSpillOpen(true)
+  }, [])
   const closeSpill = useCallback(() => { setSpillOpen(false) }, [])
-  const openScan = useCallback(() => { setScanOpen(true) }, [])
+  const openScan = useCallback(async () => {
+    const { requireRealUser } = await import('@/lib/auth-guard')
+    if (!(await requireRealUser({ kind: 'scan' }))) return
+    setScanOpen(true)
+  }, [])
   const closeScan = useCallback(() => { setScanOpen(false) }, [])
   const openMirror = useCallback(() => { navigate('/mirror') }, [navigate])
 
   // Intent hash handling — /#spill, /#scan, /#ask open native modals directly
   // (#ask maps to spill, same as the iframe's openComposer → spill fallthrough);
   // /#mirror routes to the React /mirror page.
+  // Only auto-open for a REAL signed-in user (resume path from /welcome).
+  // Anonymous visitors landing on /#spill via a shared link are re-gated.
   useEffect(() => {
     const h = window.location.hash
     if (!h) return
-    if (h === '#spill' || h === '#ask') {
+    ;(async () => {
+      if (h === '#mirror') { history.replaceState(null, '', window.location.pathname + window.location.search); navigate('/mirror'); return }
+      if (h !== '#spill' && h !== '#ask' && h !== '#scan') return
+      const { data: sess } = await supabase.auth.getSession()
+      const u = sess.session?.user as { is_anonymous?: boolean } | undefined
+      const real = !!sess.session && !u?.is_anonymous
       history.replaceState(null, '', window.location.pathname + window.location.search)
-      setSpillOpen(true)
-      return
-    }
-    if (h === '#scan') {
-      history.replaceState(null, '', window.location.pathname + window.location.search)
-      setScanOpen(true)
-      return
-    }
-    if (h === '#mirror') { history.replaceState(null, '', window.location.pathname + window.location.search); navigate('/mirror'); return }
+      if (!real) {
+        const { saveIntent } = await import('@/lib/auth-guard')
+        saveIntent(h === '#scan' ? { kind: 'scan' } : { kind: 'spill' })
+        window.location.assign('/welcome')
+        return
+      }
+      if (h === '#scan') setScanOpen(true)
+      else setSpillOpen(true)
+    })()
   }, [navigate])
 
   // Resume a pending Spill save after the user returns from sign-in. Mirrors
