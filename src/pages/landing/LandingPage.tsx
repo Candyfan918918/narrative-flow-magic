@@ -220,26 +220,9 @@ export function LandingNativePage() {
         </defs>
       </svg>
 
-      {/* HEADER */}
-      <header style={{ position: 'sticky', top: 0, zIndex: 40, background: 'rgba(253,240,245,.88)', backdropFilter: 'blur(18px)', borderBottom: '.5px solid rgba(11,8,15,.07)' }}>
-        <div style={{ maxWidth: 740, margin: '0 auto', padding: '11px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}>
-            <EyeMark size={32} />
-            <ShutapWordmark size={19} ink="#0b080f" letterSpacing="-.04em" />
-          </a>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <a href="/stream" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}>rooms</a>
-            <a href="/halls" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}>halls</a>
-            <button
-              type="button"
-              onClick={() => navigate('/welcome')}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#e7548a', color: '#fff', borderRadius: 999, padding: '9px 18px', cursor: 'pointer', fontFamily: SORA, fontWeight: 700, fontSize: 13, transition: '.18s', border: 'none' }}
-            >
-              join →
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* HEADER — provided globally by <GlobalHeader /> in the root layout. */}
+
+
 
       <main>
         {/* HERO */}
