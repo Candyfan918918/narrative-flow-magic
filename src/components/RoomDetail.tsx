@@ -111,7 +111,8 @@ export function RoomDetail({
     })
   }
 
-  const shareRoom = () => {
+  const shareRoom = async () => {
+    if (!(await requireRealUser({ kind: 'custom', url: window.location.href }))) return
     if (isScan) {
       setScanShareOpen(true)
       return
