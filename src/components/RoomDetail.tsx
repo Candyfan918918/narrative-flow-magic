@@ -556,7 +556,8 @@ export function RoomDetail({
               {chips.map((s, i) => (
                 <button
                   key={i}
-                  onClick={() => {
+                  onClick={async () => {
+                    if (!(await gate({ kind: 'comment', roomId: room.id }))) return
                     const t = cmtRef.current
                     if (t) {
                       t.value = s + ' '
