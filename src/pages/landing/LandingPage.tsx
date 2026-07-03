@@ -237,7 +237,7 @@ export function LandingNativePage() {
               finally, somewhere to <em style={{ fontStyle: 'normal', background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>not shut up.</em>
             </h1>
             <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 18, lineHeight: 1.6, color: '#4a3040', maxWidth: '46ch', margin: '0 0 30px' }}>
-              venting is free therapy — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
+              let it all out — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, maxWidth: 480 }}>
