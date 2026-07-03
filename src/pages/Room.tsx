@@ -3,7 +3,7 @@
  * Falls back to a friendly empty state when nothing matches. */
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from '@/compat/router'
-import { Header } from '../components/Header'
+
 import { RoomDetail } from '../components/RoomDetail'
 import { useToast } from '../components/Toast'
 import { SHUTAP_SEED } from '../data/seed'
@@ -72,8 +72,8 @@ export function RoomPage() {
   if (!id || !room) {
     return (
       <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-        <Header onToast={toastMsg} />
         <main style={{ maxWidth: 640, margin: '0 auto', padding: '60px 22px', textAlign: 'center' }}>
+
           <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 10 }}>
             this room
           </div>
@@ -109,7 +109,7 @@ export function RoomPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-      <Header onToast={toastMsg} />
+
       <RoomDetail room={room} onBack={() => navigate('/stream')} toast={toastMsg} />
       {ToastHost}
     </div>

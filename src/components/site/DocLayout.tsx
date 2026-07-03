@@ -3,7 +3,7 @@
 // route using DocLayout has identical chrome.
 import { useEffect, type ReactNode } from 'react'
 import { useRouterState } from '@tanstack/react-router'
-import { SiteHeader } from './SiteHeader'
+
 import { SiteFooter } from './SiteFooter'
 
 const DOC_NAV: { href: string; label: string }[] = [
@@ -35,7 +35,7 @@ export function DocLayout({
 
   return (
     <div style={{ background: '#fdf0f5', minHeight: '100vh', color: '#1b0f16' }}>
-      <SiteHeader />
+      
       <div
         style={{
           maxWidth: 980,

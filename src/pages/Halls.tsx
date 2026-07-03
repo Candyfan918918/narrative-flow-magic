@@ -1,7 +1,7 @@
 /* Minimal native Hall of Fame hub. The deep hall pages live at
  * /halls/$hall/$region/$window; this is just a discovery entry. */
 import { Link } from '@tanstack/react-router'
-import { SiteHeader } from '@/components/site/SiteHeader'
+
 import { SiteFooter } from '@/components/site/SiteFooter'
 
 const HALLS = [
@@ -13,7 +13,7 @@ const HALLS = [
 export function HallOfFamePageNative() {
   return (
     <div style={{ background: '#fdf0f5', minHeight: '100vh' }}>
-      <SiteHeader />
+      
       <main style={{ maxWidth: 780, margin: '0 auto', padding: '48px 22px 96px' }}>
         <h1 style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 36, margin: '0 0 12px' }}>
           Hall of Fame

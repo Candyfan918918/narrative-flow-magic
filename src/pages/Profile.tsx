@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
-import { Header } from '../components/Header'
+
 import { useToast } from '../components/Toast'
 import {
   listMySituations,
@@ -197,7 +197,7 @@ export function ProfilePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-      <Header onToast={toast} />
+
 
       <main style={{ maxWidth: 1000, margin: '0 auto', padding: '26px 22px 90px' }}>
         {/* eyebrow */}
