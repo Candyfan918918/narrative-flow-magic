@@ -369,8 +369,10 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     setPhase(isPublic ? 'publishing' : 'saving-journal')
     try {
       const { data: sess } = await supabase.auth.getSession()
-      if (!sess.session) {
+      const isAnon = Boolean((sess.session?.user as { is_anonymous?: boolean } | undefined)?.is_anonymous)
+      if (!sess.session || isAnon) {
         sessionStorage.setItem('shutap_pending_save', JSON.stringify(payload))
+        sessionStorage.setItem('shutap_pending_intent', 'spill')
         navigate('/welcome')
         return
       }
