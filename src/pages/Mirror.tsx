@@ -1042,7 +1042,6 @@ export function MirrorPage() {
 
   // Server-decided entitlement — free vs paid vs demo owner (RULE 7).
   // Never trust the client. Anonymous / errors → treated as non-entitled.
-  const { getMirrorEntitlement } = require('@/lib/entitlements.functions') as typeof import('@/lib/entitlements.functions')
   const fetchEnt = useServerFn(getMirrorEntitlement)
   const { data: entitlement } = useQuery({
     queryKey: ['mirror-entitlement'],
