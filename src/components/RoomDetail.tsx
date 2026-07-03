@@ -494,7 +494,8 @@ export function RoomDetail({
               surface="light"
               tone={related ? 'accent' : 'ghost'}
               ariaLabel="Relate to this"
-              onClick={() => {
+              onClick={async () => {
+                if (!(await gate({ kind: 'relate', roomId: room.id }))) return
                 setRelated(true)
                 toast("added. the room knows you're there.")
                 track('relate', { target: `room:${room.id}` })
