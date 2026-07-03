@@ -5,6 +5,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
+import { requireRealUser } from './require-real-user'
 
 export type RelateQueueRow = {
   situation_id: string
@@ -32,7 +33,7 @@ async function assertAdmin(supabase: { rpc: (fn: string, args: Record<string, un
 }
 
 export const listRelateQueue = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => ListInput.parse(d))
   .handler(async ({ data, context }): Promise<{ rows: RelateQueueRow[]; sla_minutes: number }> => {
     await assertAdmin(context.supabase as never, context.userId)

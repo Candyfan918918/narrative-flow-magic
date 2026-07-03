@@ -3,6 +3,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
+import { requireRealUser } from './require-real-user'
 
 // In-voice beat copy keyed by checkin type (matches §3b of the launch spec).
 export const BEATS: Record<string, { title: string; chips: { value: string; label: string }[]; kind: 'trajectory' | 'action' | 'resolution' | 'feeling' }> = {
@@ -41,7 +42,7 @@ export const getDueCheckin = createServerFn({ method: 'GET' })
 
 // Fetch a specific check-in card (e.g. from the email deep link).
 export const getCheckin = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { data: ck } = await context.supabase
@@ -72,7 +73,7 @@ const ResponseInput = z.object({
 })
 
 export const recordCheckinResponse = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => ResponseInput.parse(d))
   .handler(async ({ data, context }) => {
     const { data: ck, error: ckErr } = await context.supabase
@@ -106,7 +107,7 @@ export const recordCheckinResponse = createServerFn({ method: 'POST' })
   })
 
 export const setNotificationPrefs = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) =>
     z.object({
       email: z.string().email().optional(),
@@ -129,7 +130,7 @@ export const setNotificationPrefs = createServerFn({ method: 'POST' })
   })
 
 export const snoozeCheckin = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireRealUser])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await context.supabase
