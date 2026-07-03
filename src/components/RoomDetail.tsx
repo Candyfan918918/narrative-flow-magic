@@ -12,6 +12,7 @@ import { ScanShareCard } from './ScanShareCard'
 import { createComment } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { ActionPill } from './ShareChannels'
+import { requireRealUser, type PendingIntent } from '@/lib/auth-guard'
 
 const PENDING_COMMENT_KEY = 'shutap_pending_comment'
 
