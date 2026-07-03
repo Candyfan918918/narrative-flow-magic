@@ -109,7 +109,7 @@ export function RoomPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-      <Header onToast={toastMsg} />
+
       <RoomDetail room={room} onBack={() => navigate('/stream')} toast={toastMsg} />
       {ToastHost}
     </div>
