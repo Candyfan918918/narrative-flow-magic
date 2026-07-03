@@ -157,7 +157,7 @@ export const HUBS: SituationHub[] = [
     pillar: "family",
     question: "how do I set boundaries with my parents without the guilt?",
     answer:
-      "You don't. The guilt comes free with the boundary; the trick is acting on the boundary anyway. Guilt is the toll, not the sign you're wrong. People here describe it as \"feeling like a bad daughter while doing the right thing for the first time.\" That feeling fades. The boundary holds.",
+      "You don't. The guilt comes free with the boundary; the trick is acting on the boundary anyway. Guilt is the toll, not the sign you're wrong. A common way people describe it is \"feeling like a bad daughter while doing the right thing for the first time.\" That feeling fades. The boundary holds.",
     paa: [
       { q: "Why do my parents react badly to boundaries?", a: "Because the old system worked for them. Any change in the system feels like loss to whoever was getting more out of it." },
       { q: "What's a healthy boundary with parents?", a: "Anything you can hold without resentment. If you need to explain it three times, it's a request — not a boundary." },
