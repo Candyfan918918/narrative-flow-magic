@@ -1,4 +1,5 @@
-/* Pixel-perfect iframe port of Shutap-Feedback-Admin.html (0627 handoff). */
+/* Pixel-perfect iframe port of Shutap-Feedback-Admin.html (0627 handoff).
+ * Rendered below the GlobalHeader — fills remaining viewport. */
 import { NoIndex } from '@/components/NoIndex'
 
 export function AdminFeedbackPage() {
@@ -8,7 +9,7 @@ export function AdminFeedbackPage() {
       <iframe
         src="/shutap/Shutap-Feedback-Admin.dc.html"
         title="Shutap — Feedback Admin"
-        style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, background: '#faf9f5' }}
+        style={{ display: 'block', width: '100%', height: 'calc(100vh - 96px)', border: 0, background: '#faf9f5' }}
       />
     </>
   )
