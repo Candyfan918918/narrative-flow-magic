@@ -3,7 +3,7 @@
 // route using DocLayout has identical chrome.
 import { useEffect, type ReactNode } from 'react'
 import { useRouterState } from '@tanstack/react-router'
-import { SiteHeader } from './SiteHeader'
+
 import { SiteFooter } from './SiteFooter'
 
 const DOC_NAV: { href: string; label: string }[] = [
