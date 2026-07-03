@@ -50,6 +50,7 @@ import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/eve
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
+import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicHooksMirrorEvolutionRouteImport } from './routes/api/public/hooks/mirror-evolution'
@@ -260,6 +261,12 @@ const AuthenticatedAdminEventsRoute =
     path: '/admin/events',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminAnalyticsRoute =
+  AuthenticatedAdminAnalyticsRouteImport.update({
+    id: '/admin/analytics',
+    path: '/admin/analytics',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const HallsHallRegionWindowRoute = HallsHallRegionWindowRouteImport.update({
   id: '/$hall/$region/$window',
   path: '/$hall/$region/$window',
@@ -321,6 +328,7 @@ export interface FileRoutesByFullPath {
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -367,6 +375,7 @@ export interface FileRoutesByTo {
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -415,6 +424,7 @@ export interface FileRoutesById {
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
+  '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/admin/analytics'
     | '/admin/events'
     | '/admin/users'
     | '/checkin/$id'
@@ -509,6 +520,7 @@ export interface FileRouteTypes {
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/admin/analytics'
     | '/admin/events'
     | '/admin/users'
     | '/checkin/$id'
@@ -556,6 +568,7 @@ export interface FileRouteTypes {
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/what-happens/$slug'
+    | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/users'
     | '/_authenticated/checkin/$id'
@@ -895,6 +908,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/analytics': {
+      id: '/_authenticated/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/halls/$hall/$region/$window': {
       id: '/halls/$hall/$region/$window'
       path: '/$hall/$region/$window'
@@ -928,6 +948,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedCheckinIdRoute: typeof AuthenticatedCheckinIdRoute
@@ -935,6 +956,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedCheckinIdRoute: AuthenticatedCheckinIdRoute,
