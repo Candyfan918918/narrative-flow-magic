@@ -13,7 +13,7 @@ export const Route = createFileRoute("/is-it-normal/$slug")({
     if (!loaderData) return { meta: [{ title: "Not found" }] };
     const title = `${capitalize(loaderData.question)} — shutap`;
     const description = loaderData.answer.slice(0, 155);
-    const url = `/is-it-normal/${params.slug}`;
+    const url = `${SITE_URL}/is-it-normal/${params.slug}`;
     return {
       meta: [
         { title },
