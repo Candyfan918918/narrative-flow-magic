@@ -53,13 +53,10 @@ function AdminUsersPage() {
   return (
     <div style={{ padding: 24, fontFamily: "'Inter',sans-serif", background: '#fdf0f5', minHeight: '100vh' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
+        <div style={{ marginBottom: 20 }}>
           <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 26, fontWeight: 800, color: '#0b080f', margin: 0 }}>users</h1>
-          <nav style={{ display: 'flex', gap: 12, fontSize: 13 }}>
-            <a href="/admin" style={{ color: '#c1216b' }}>← admin</a>
-            <a href="/admin/events" style={{ color: '#c1216b' }}>events →</a>
-          </nav>
         </div>
+
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
