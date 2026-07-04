@@ -1,8 +1,10 @@
-// Server-only email helper (Phase 3b). Sends retention check-in emails
-// via Resend. Returns { ok, error } so the scheduler can mark rows
-// 'sent' or 'failed' without throwing.
+// DEPRECATED: legacy check-in email sender with inline copy. New code MUST
+// use `sendEmail(identity, templateId, vars, to)` from `@/lib/email/send.server`
+// and the templates registry in `@/lib/email/templates.ts`. Retained only so
+// existing dispatch code compiles; not wired into the active scheduler.
+import { IDENTITIES, formatFrom } from './email/identities'
 const RESEND_URL = 'https://api.resend.com/emails'
-const FROM_DEFAULT = 'shutap <onboarding@resend.dev>'
+const FROM_DEFAULT = formatFrom(IDENTITIES.hello)
 
 export type CheckinType = 'day0' | 'day1' | 'day2' | 'day3' | 'day7' | 'day14'
 
