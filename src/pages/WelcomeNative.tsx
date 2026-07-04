@@ -291,6 +291,7 @@ export function WelcomeNativePage() {
       try {
         const { trackEvent } = await import('@/lib/tracking')
         void trackEvent('alias_minted', { display_name: alias.display_name })
+        void trackEvent('sign_up_completed', { display_name: alias.display_name })
       } catch { /* noop */ }
       setStep('welcome')
     } catch (e) {
