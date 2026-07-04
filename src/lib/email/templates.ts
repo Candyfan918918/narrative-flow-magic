@@ -40,7 +40,7 @@ export const TEMPLATES: Record<TemplateId, TemplateEntry> = {
   welcome: {
     id: 'welcome',
     identity: 'hello',
-    emailClass: 'engagement',
+    emailClass: 'transactional',
     subject: () => "you're in.",
     preview: () => 'your space to say the thing you can\'t say anywhere else.',
     cta: 'come say it',
