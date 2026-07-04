@@ -3,7 +3,7 @@
 // each check-in is one warm line + a single pink CTA deep-linking to
 // the eye check-in card. No marketing chrome, no multi-button layouts.
 
-import type { IdentityId } from './identities'
+import type { EmailClass, IdentityId } from './identities'
 import { baseLayout, baseText, ctaButton, escapeHtml } from './layout'
 
 export type TemplateId =
@@ -14,6 +14,7 @@ export type TemplateId =
   | 'checkin_day7'
   | 'checkin_day14'
   | 'checkin_day30'
+  | 'reengagement'
 
 export type TemplateVars = {
   alias?: string
@@ -25,6 +26,7 @@ export type TemplateVars = {
 export type TemplateEntry = {
   id: TemplateId
   identity: IdentityId
+  emailClass: EmailClass
   subject: (v: TemplateVars) => string
   preview: (v: TemplateVars) => string
   cta: string
@@ -38,6 +40,7 @@ export const TEMPLATES: Record<TemplateId, TemplateEntry> = {
   welcome: {
     id: 'welcome',
     identity: 'hello',
+    emailClass: 'transactional',
     subject: () => "you're in.",
     preview: () => 'your space to say the thing you can\'t say anywhere else.',
     cta: 'come say it',
@@ -52,6 +55,7 @@ come say it: ${v.deep_link ?? 'https://shutap.com'}`,
   checkin_day1: {
     id: 'checkin_day1',
     identity: 'hello',
+    emailClass: 'engagement',
     subject: () => 'how\'d you sleep on it?',
     preview: () => 'been thinking about what you spilled.',
     cta: 'open the check-in',
@@ -66,6 +70,7 @@ open the check-in: ${v.deep_link ?? ''}`,
   checkin_day2: {
     id: 'checkin_day2',
     identity: 'hello',
+    emailClass: 'engagement',
     subject: () => 'you good today?',
     preview: () => 'no pressure, just checking.',
     cta: 'open the check-in',
@@ -80,6 +85,7 @@ open the check-in: ${v.deep_link ?? ''}`,
   checkin_day3: {
     id: 'checkin_day3',
     identity: 'hello',
+    emailClass: 'engagement',
     subject: () => 'ok be honest',
     preview: () => 'did you do anything or still stewing.',
     cta: 'open the check-in',
@@ -94,6 +100,7 @@ open the check-in: ${v.deep_link ?? ''}`,
   checkin_day7: {
     id: 'checkin_day7',
     identity: 'hello',
+    emailClass: 'engagement',
     subject: () => 'where are things now?',
     preview: () => 'a week in.',
     cta: 'open the check-in',
@@ -108,6 +115,7 @@ open the check-in: ${v.deep_link ?? ''}`,
   checkin_day14: {
     id: 'checkin_day14',
     identity: 'hello',
+    emailClass: 'engagement',
     subject: () => 'looking back — what happened?',
     preview: () => 'two weeks on.',
     cta: 'open the check-in',
@@ -122,6 +130,7 @@ open the check-in: ${v.deep_link ?? ''}`,
   checkin_day30: {
     id: 'checkin_day30',
     identity: 'hello',
+    emailClass: 'engagement',
     subject: () => "still going? where's it at now?",
     preview: () => 'a month later.',
     cta: 'open the check-in',
@@ -132,6 +141,21 @@ open the check-in: ${v.deep_link ?? ''}`,
 a month later. still going? where's it at now?
 
 open the check-in: ${v.deep_link ?? ''}`,
+  },
+  reengagement: {
+    id: 'reengagement',
+    identity: 'hello',
+    emailClass: 'nontransactional',
+    subject: () => "still here when you're ready",
+    preview: () => "still here when you're ready.",
+    cta: 'open shutap',
+    buildBodyHtml: (v) => `<p style="margin:0 0 8px">${escapeHtml(g(v))}</p>
+<p style="margin:0 0 8px">still here when you're ready — your space is waiting, no pressure.</p>`,
+    buildBodyText: (v) => `${g(v)}
+
+still here when you're ready — your space is waiting, no pressure.
+
+open shutap: ${v.deep_link ?? 'https://shutap.com'}`,
   },
 }
 
