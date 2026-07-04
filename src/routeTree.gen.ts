@@ -61,6 +61,7 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicHooksReengagementEmailsRouteImport } from './routes/api/public/hooks/reengagement-emails'
 import { Route as ApiPublicHooksMirrorEvolutionRouteImport } from './routes/api/public/hooks/mirror-evolution'
 import { Route as ApiPublicHooksDispatchCheckinsRouteImport } from './routes/api/public/hooks/dispatch-checkins'
 
@@ -329,6 +330,12 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksReengagementEmailsRoute =
+  ApiPublicHooksReengagementEmailsRouteImport.update({
+    id: '/api/public/hooks/reengagement-emails',
+    path: '/api/public/hooks/reengagement-emails',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksMirrorEvolutionRoute =
   ApiPublicHooksMirrorEvolutionRouteImport.update({
     id: '/api/public/hooks/mirror-evolution',
@@ -394,6 +401,7 @@ export interface FileRoutesByFullPath {
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
+  '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -449,6 +457,7 @@ export interface FileRoutesByTo {
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
+  '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -506,6 +515,7 @@ export interface FileRoutesById {
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
+  '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -563,6 +573,7 @@ export interface FileRouteTypes {
     | '/api/feedback/events'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
+    | '/api/public/hooks/reengagement-emails'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesByTo: FileRoutesByTo
@@ -618,6 +629,7 @@ export interface FileRouteTypes {
     | '/api/feedback/events'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
+    | '/api/public/hooks/reengagement-emails'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   id:
@@ -674,6 +686,7 @@ export interface FileRouteTypes {
     | '/api/feedback/events'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
+    | '/api/public/hooks/reengagement-emails'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesById: FileRoutesById
@@ -723,6 +736,7 @@ export interface RootRouteChildren {
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicHooksMirrorEvolutionRoute: typeof ApiPublicHooksMirrorEvolutionRoute
+  ApiPublicHooksReengagementEmailsRoute: typeof ApiPublicHooksReengagementEmailsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -1092,6 +1106,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/reengagement-emails': {
+      id: '/api/public/hooks/reengagement-emails'
+      path: '/api/public/hooks/reengagement-emails'
+      fullPath: '/api/public/hooks/reengagement-emails'
+      preLoaderRoute: typeof ApiPublicHooksReengagementEmailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/mirror-evolution': {
       id: '/api/public/hooks/mirror-evolution'
       path: '/api/public/hooks/mirror-evolution'
@@ -1208,6 +1229,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicHooksMirrorEvolutionRoute: ApiPublicHooksMirrorEvolutionRoute,
+  ApiPublicHooksReengagementEmailsRoute: ApiPublicHooksReengagementEmailsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
