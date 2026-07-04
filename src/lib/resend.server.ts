@@ -42,15 +42,13 @@ export async function sendResendEmail({ to, subject, html, from, replyTo, text }
   }
 }
 
+import { baseLayout, ctaButton, escapeHtml } from './email/layout'
+import { IDENTITIES } from './email/identities'
+
 // Re-engagement email body. Kept here (not in TemplateId registry) because
 // it isn't part of the check-in cadence spec. Uses the shared email-safe
 // layout for visual consistency.
 export function reengagementEmailHtml(displayName?: string | null): string {
-  // Lazy import to keep this file dependency-light at module scope.
-  // Layout helpers are pure functions with no side effects.
-  const { baseLayout, escapeHtml } = require('./email/layout') as typeof import('./email/layout')
-  const { IDENTITIES } = require('./email/identities') as typeof import('./email/identities')
-  const { ctaButton } = require('./email/layout') as typeof import('./email/layout')
   const greeting = displayName ? `hey ${escapeHtml(displayName.toLowerCase())},` : 'hey,'
   const body = `<p style="margin:0 0 8px">${greeting}</p>
 <p style="margin:0 0 8px">still here when you're ready — your space is waiting, no pressure.</p>
