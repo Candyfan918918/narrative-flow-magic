@@ -1,15 +1,19 @@
-// Server-only Resend email sender for transactional emails from hello@shutap.com.
+// Low-level Resend HTTP wrapper. Retained for the re-engagement email which
+// isn't in the TemplateId registry. Callers MUST pass an identity-formatted
+// `from` string (see src/lib/email/identities.ts → formatFrom). No hardcoded
+// default from — pass one explicitly.
 const RESEND_URL = 'https://api.resend.com/emails'
-const DEFAULT_FROM = 'shutap <hello@shutap.com>'
 
 export type SendResendArgs = {
   to: string
   subject: string
   html: string
-  from?: string
+  from: string // "Name <addr>" — build with formatFrom(IDENTITIES.x)
+  replyTo?: string
+  text?: string
 }
 
-export async function sendResendEmail({ to, subject, html, from }: SendResendArgs): Promise<{ ok: boolean; error?: string }> {
+export async function sendResendEmail({ to, subject, html, from, replyTo, text }: SendResendArgs): Promise<{ ok: boolean; error?: string }> {
   const key = process.env.RESEND_API_KEY
   if (!key) return { ok: false, error: 'RESEND_API_KEY missing' }
   try {
@@ -20,10 +24,12 @@ export async function sendResendEmail({ to, subject, html, from }: SendResendArg
         authorization: `Bearer ${key}`,
       },
       body: JSON.stringify({
-        from: from ?? process.env.RESEND_FROM ?? DEFAULT_FROM,
+        from,
         to: [to],
+        reply_to: replyTo,
         subject,
         html,
+        text,
       }),
     })
     if (!r.ok) {
@@ -36,25 +42,21 @@ export async function sendResendEmail({ to, subject, html, from }: SendResendArg
   }
 }
 
-export function welcomeEmailHtml(displayName?: string | null): string {
-  const greeting = displayName ? `hi ${escapeHtml(displayName)},` : 'hi,'
-  return `<div style="font-family:'Newsreader',Georgia,serif;font-size:16px;line-height:1.7;color:#1a0a12;max-width:520px;margin:0 auto;padding:28px 24px">
-    <p style="margin:0 0 16px;font-style:italic">${greeting}</p>
-    <p style="margin:0 0 16px">you're in. this is your space to say the thing you can't say anywhere else — the one that's been sitting in your chest, the one you keep swallowing at dinner. no advice, no fixing, no one from your real life watching. just spill it, and see what actually happened next for people who've lived your exact thing.</p>
-    <p style="margin:20px 0 0">— shutap</p>
-    <p style="margin:28px 0 0;font-size:12px;color:#9e7a8c;font-family:'Inter',sans-serif">sit with it. no fixing.</p>
-  </div>`
-}
+import { baseLayout, ctaButton, escapeHtml } from './email/layout'
+import { IDENTITIES } from './email/identities'
 
+// Re-engagement email body. Kept here (not in TemplateId registry) because
+// it isn't part of the check-in cadence spec. Uses the shared email-safe
+// layout for visual consistency.
 export function reengagementEmailHtml(displayName?: string | null): string {
-  const greeting = displayName ? `hi ${escapeHtml(displayName)}, ` : ''
-  return `<div style="font-family:'Newsreader',Georgia,serif;font-size:16px;line-height:1.7;color:#1a0a12;max-width:520px;margin:0 auto;padding:28px 24px">
-    <p style="margin:0 0 16px;font-style:italic">${greeting}still here when you're ready — your space is waiting, no pressure.</p>
-    <p style="margin:24px 0 0"><a href="https://shutap.com" style="color:#c1216b;text-decoration:none;font-weight:600">open shutap →</a></p>
-    <p style="margin:28px 0 0;font-size:12px;color:#9e7a8c;font-family:'Inter',sans-serif">— shutap</p>
-  </div>`
-}
-
-function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+  const greeting = displayName ? `hey ${escapeHtml(displayName.toLowerCase())},` : 'hey,'
+  const body = `<p style="margin:0 0 8px">${greeting}</p>
+<p style="margin:0 0 8px">still here when you're ready — your space is waiting, no pressure.</p>
+${ctaButton('https://shutap.com', 'open shutap')}`
+  return baseLayout({
+    preview: "still here when you're ready.",
+    bodyHtml: body,
+    identity: IDENTITIES.hello,
+    unsubscribeUrl: 'https://shutap.com/profile#notifications',
+  })
 }

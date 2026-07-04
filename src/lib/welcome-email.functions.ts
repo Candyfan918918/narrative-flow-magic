@@ -7,7 +7,7 @@ export const sendWelcomeEmail = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-    const { sendResendEmail, welcomeEmailHtml } = await import('./resend.server')
+    const { sendEmail } = await import('./email/send.server')
 
     // Guard: don't resend
     const { data: alias } = await supabaseAdmin
@@ -24,11 +24,12 @@ export const sendWelcomeEmail = createServerFn({ method: 'POST' })
     const email = userRes.user.email
     if (userRes.user.is_anonymous) return { ok: false, skipped: 'anonymous' as const }
 
-    const res = await sendResendEmail({
-      to: email,
-      subject: "you're in.",
-      html: welcomeEmailHtml(alias.display_name),
-    })
+    const res = await sendEmail(
+      'hello',
+      'welcome',
+      { alias: alias.display_name ?? undefined, deep_link: 'https://shutap.com' },
+      email,
+    )
     if (!res.ok) return { ok: false, error: res.error }
 
     await supabaseAdmin
