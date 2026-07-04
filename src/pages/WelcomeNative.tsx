@@ -294,6 +294,7 @@ export function WelcomeNativePage() {
         void trackEvent('alias_minted', { display_name: alias.display_name })
         void trackEvent('sign_up_completed', { display_name: alias.display_name })
       } catch { /* noop */ }
+      void sendWelcomeEmail().catch(() => {})
       setStep('welcome')
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'save failed' })
