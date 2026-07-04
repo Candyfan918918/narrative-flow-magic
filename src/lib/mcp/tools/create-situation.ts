@@ -27,10 +27,11 @@ export default defineTool({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    const userId = ctx.getUserId();
     const { data: alias, error: aliasErr } = await supabase
       .from("aliases")
-      .select("id")
-      .eq("user_id", ctx.getUserId())
+      .select("user_id")
+      .eq("user_id", userId)
       .maybeSingle();
     if (aliasErr) return { content: [{ type: "text", text: aliasErr.message }], isError: true };
     if (!alias) {
@@ -47,13 +48,14 @@ export default defineTool({
     const { data, error } = await supabase
       .from("situations")
       .insert({
-        alias_id: alias.id,
+        alias_id: userId,
         clean_text,
         pillar,
         is_public: is_public ?? false,
       })
       .select("id, pillar, is_public, created_at")
       .single();
+
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     return {
       content: [{ type: "text", text: `Created situation ${data.id}` }],

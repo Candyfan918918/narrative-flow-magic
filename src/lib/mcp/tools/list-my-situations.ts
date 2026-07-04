@@ -27,10 +27,11 @@ export default defineTool({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
+    const userId = ctx.getUserId();
     const { data: alias, error: aliasErr } = await supabase
       .from("aliases")
-      .select("id")
-      .eq("user_id", ctx.getUserId())
+      .select("user_id")
+      .eq("user_id", userId)
       .maybeSingle();
     if (aliasErr) {
       return { content: [{ type: "text", text: aliasErr.message }], isError: true };
@@ -44,13 +45,14 @@ export default defineTool({
     let q = supabase
       .from("situations")
       .select("id, pillar, clean_text, initial_scan, status, created_at")
-      .eq("alias_id", alias.id)
+      .eq("alias_id", userId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(limit ?? 20);
     if (pillar) q = q.eq("pillar", pillar);
     const { data, error } = await q;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+
     return {
       content: [{ type: "text", text: JSON.stringify(data ?? [], null, 2) }],
       structuredContent: { rows: data ?? [] },
