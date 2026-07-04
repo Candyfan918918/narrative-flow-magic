@@ -12,9 +12,10 @@ export function posthog(): PostHog | null {
 export async function initPostHog(): Promise<void> {
   if (_initTried || typeof window === 'undefined') return
   _initTried = true
-  const key = import.meta.env.VITE_POSTHOG_KEY as string | undefined
-  const host = (import.meta.env.VITE_POSTHOG_HOST as string | undefined) || 'https://us.i.posthog.com'
-  if (!key) return
+  // TEMP: hardcoded to verify PostHog delivery end-to-end. Once confirmed,
+  // revert to import.meta.env.VITE_POSTHOG_KEY / VITE_POSTHOG_HOST.
+  const key = 'phc_AbkqMae5LW3GCw9Be7Sqp4VChsY6vSDYKYEjL3tZSupE'
+  const host = 'https://us.i.posthog.com'
   try {
     const mod = await import('posthog-js')
     mod.default.init(key, {
@@ -25,10 +26,13 @@ export async function initPostHog(): Promise<void> {
       autocapture: false,
     })
     _ph = mod.default
-  } catch {
+    console.log('PostHog initialized')
+  } catch (e) {
+    console.warn('PostHog init failed', e)
     _ph = null
   }
 }
+
 
 export function posthogIdentify(
   userId: string,
