@@ -209,10 +209,19 @@ function RootComponent() {
     const handle: number = ric
       ? ric(() => { void run(); }, { timeout: 1500 })
       : (window.setTimeout(() => { void run(); }, 0) as unknown as number);
+    // Fire page_view on every route change (initial page_view fires from run() above).
+    let lastPath = window.location.pathname;
+    const unsubNav = router.subscribe('onResolved', () => {
+      const p = window.location.pathname;
+      if (p === lastPath) return;
+      lastPath = p;
+      void import('@/lib/tracking').then(({ trackEvent }) => trackEvent('page_view', { path: p }));
+    });
     return () => {
       mounted = false;
       const cic = (window as unknown as { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback;
       if (ric && cic) cic(handle); else window.clearTimeout(handle);
+      unsubNav();
       (RootComponent as unknown as { _unsub?: () => void })._unsub?.();
     };
   }, [router, queryClient]);
