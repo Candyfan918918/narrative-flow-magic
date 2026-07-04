@@ -41,22 +41,3 @@ export async function sendResendEmail({ to, subject, html, from, replyTo, text }
     return { ok: false, error: e instanceof Error ? e.message : 'fetch failed' }
   }
 }
-
-import { baseLayout, ctaButton, escapeHtml } from './email/layout'
-import { IDENTITIES } from './email/identities'
-
-// Re-engagement email body. Kept here (not in TemplateId registry) because
-// it isn't part of the check-in cadence spec. Uses the shared email-safe
-// layout for visual consistency.
-export function reengagementEmailHtml(displayName?: string | null): string {
-  const greeting = displayName ? `hey ${escapeHtml(displayName.toLowerCase())},` : 'hey,'
-  const body = `<p style="margin:0 0 8px">${greeting}</p>
-<p style="margin:0 0 8px">still here when you're ready — your space is waiting, no pressure.</p>
-${ctaButton('https://shutap.com', 'open shutap')}`
-  return baseLayout({
-    preview: "still here when you're ready.",
-    bodyHtml: body,
-    identity: IDENTITIES.hello,
-    unsubscribeUrl: 'https://shutap.com/profile#notifications',
-  })
-}
