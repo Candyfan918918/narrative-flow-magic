@@ -1,6 +1,13 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { initPostHog } from "./lib/posthog";
+
+// Fire PostHog init as early as possible on the client — before any routing.
+if (typeof window !== "undefined") {
+  void initPostHog();
+}
+
 
 export const getRouter = () => {
   const queryClient = new QueryClient({
