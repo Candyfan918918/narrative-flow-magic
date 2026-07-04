@@ -3,7 +3,7 @@
 // each check-in is one warm line + a single pink CTA deep-linking to
 // the eye check-in card. No marketing chrome, no multi-button layouts.
 
-import type { IdentityId } from './identities'
+import type { EmailClass, IdentityId } from './identities'
 import { baseLayout, baseText, ctaButton, escapeHtml } from './layout'
 
 export type TemplateId =
