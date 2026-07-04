@@ -14,8 +14,7 @@ export const Route = createFileRoute('/api/public/hooks/reengagement-emails')({
         }
 
         const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-        const { sendResendEmail, reengagementEmailHtml } = await import('@/lib/resend.server')
-        const { IDENTITIES, formatFrom } = await import('@/lib/email/identities')
+        const { sendEmail } = await import('@/lib/email/send.server')
 
         const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
 
