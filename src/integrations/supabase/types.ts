@@ -32,9 +32,11 @@ export type Database = {
           nation: string
           notif_email: string | null
           notif_email_opt_in: boolean
+          reengagement_email_sent_at: string | null
           timezone: string
           updated_at: string
           user_id: string
+          welcome_email_sent_at: string | null
         }
         Insert: {
           accepted_privacy_at?: string | null
@@ -53,9 +55,11 @@ export type Database = {
           nation: string
           notif_email?: string | null
           notif_email_opt_in?: boolean
+          reengagement_email_sent_at?: string | null
           timezone?: string
           updated_at?: string
           user_id: string
+          welcome_email_sent_at?: string | null
         }
         Update: {
           accepted_privacy_at?: string | null
@@ -74,9 +78,11 @@ export type Database = {
           nation?: string
           notif_email?: string | null
           notif_email_opt_in?: boolean
+          reengagement_email_sent_at?: string | null
           timezone?: string
           updated_at?: string
           user_id?: string
+          welcome_email_sent_at?: string | null
         }
         Relationships: []
       }

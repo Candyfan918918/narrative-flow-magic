@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
 import { recordLegalAcceptance } from '@/lib/legal.functions'
 import { upsertMyAlias, randomAliasParts, getMyAlias } from '@/lib/alias.functions'
+import { sendWelcomeEmail } from '@/lib/welcome-email.functions'
 import { useNoIndex } from '@/components/NoIndex'
 import { setAlias } from '@/lib/auth'
 
@@ -293,6 +294,7 @@ export function WelcomeNativePage() {
         void trackEvent('alias_minted', { display_name: alias.display_name })
         void trackEvent('sign_up_completed', { display_name: alias.display_name })
       } catch { /* noop */ }
+      void sendWelcomeEmail().catch(() => {})
       setStep('welcome')
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'save failed' })
