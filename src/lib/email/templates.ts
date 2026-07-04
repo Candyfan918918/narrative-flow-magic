@@ -14,6 +14,7 @@ export type TemplateId =
   | 'checkin_day7'
   | 'checkin_day14'
   | 'checkin_day30'
+  | 'reengagement'
 
 export type TemplateVars = {
   alias?: string
@@ -25,6 +26,7 @@ export type TemplateVars = {
 export type TemplateEntry = {
   id: TemplateId
   identity: IdentityId
+  emailClass: EmailClass
   subject: (v: TemplateVars) => string
   preview: (v: TemplateVars) => string
   cta: string
