@@ -142,6 +142,21 @@ a month later. still going? where's it at now?
 
 open the check-in: ${v.deep_link ?? ''}`,
   },
+  reengagement: {
+    id: 'reengagement',
+    identity: 'hello',
+    emailClass: 'nontransactional',
+    subject: () => "still here when you're ready",
+    preview: () => "still here when you're ready.",
+    cta: 'open shutap',
+    buildBodyHtml: (v) => `<p style="margin:0 0 8px">${escapeHtml(g(v))}</p>
+<p style="margin:0 0 8px">still here when you're ready — your space is waiting, no pressure.</p>`,
+    buildBodyText: (v) => `${g(v)}
+
+still here when you're ready — your space is waiting, no pressure.
+
+open shutap: ${v.deep_link ?? 'https://shutap.com'}`,
+  },
 }
 
 // Re-export helpers so render.ts can build the shell.
