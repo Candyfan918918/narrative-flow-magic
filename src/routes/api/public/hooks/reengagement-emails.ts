@@ -51,14 +51,13 @@ export const Route = createFileRoute('/api/public/hooks/reengagement-emails')({
           const email = userRes?.user?.email
           if (!email || userRes?.user?.is_anonymous) { skipped++; continue }
 
-          const res = await sendResendEmail({
-            to: email,
-            subject: "still here when you're ready",
-            html: reengagementEmailHtml(a.display_name),
-            from: formatFrom(IDENTITIES.hello),
-            replyTo: IDENTITIES.hello.replyTo,
-          })
-          if (!res.ok) { skipped++; continue }
+          const res = await sendEmail(
+            'hello',
+            'reengagement',
+            { alias: a.display_name ?? undefined, deep_link: 'https://shutap.com' },
+            email,
+          )
+          if (!res.ok || res.suppressed) { skipped++; continue }
 
           await supabaseAdmin
             .from('aliases')
