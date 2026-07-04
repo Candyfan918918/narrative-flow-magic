@@ -56,6 +56,8 @@ export const Route = createFileRoute('/api/public/hooks/reengagement-emails')({
             to: email,
             subject: "still here when you're ready",
             html: reengagementEmailHtml(a.display_name),
+            from: formatFrom(IDENTITIES.hello),
+            replyTo: IDENTITIES.hello.replyTo,
           })
           if (!res.ok) { skipped++; continue }
 
