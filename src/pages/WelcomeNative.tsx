@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
 import { recordLegalAcceptance } from '@/lib/legal.functions'
 import { upsertMyAlias, randomAliasParts, getMyAlias } from '@/lib/alias.functions'
+import { sendWelcomeEmail } from '@/lib/welcome-email.functions'
 import { useNoIndex } from '@/components/NoIndex'
 import { setAlias } from '@/lib/auth'
 
