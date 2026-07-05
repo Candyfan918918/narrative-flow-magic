@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useEffect, useState } from 'react'
 import { processUnsubscribe, type PrefsDto } from '@/lib/email/prefs.functions'
+import { EyeMark } from '@/components/brand/EyeMark'
 
 export const Route = createFileRoute('/email/unsubscribe')({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -38,42 +39,85 @@ function UnsubscribeRoute() {
     <main
       style={{
         minHeight: '100vh',
-        background: '#fdfcfb',
-        color: '#3b2734',
+        background: '#fdf0f5',
+        color: '#1b0f16',
         fontFamily: 'Inter, system-ui, sans-serif',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '32px 20px',
+        padding: '40px 22px',
       }}
     >
       <div
         style={{
-          maxWidth: 480,
+          maxWidth: 520,
           width: '100%',
-          background: '#fff8f2',
-          border: '1px solid #f0e2d4',
-          borderRadius: 16,
-          padding: '40px 32px',
+          background: '#ffffff',
+          border: '1px solid rgba(11,8,15,.08)',
+          borderRadius: 22,
+          padding: '40px 34px',
           textAlign: 'center',
-          boxShadow: '0 12px 40px rgba(107, 60, 82, 0.08)',
+          boxShadow: '0 22px 44px -28px rgba(60,10,30,.42)',
+          animation: 'shutap-fadeup .5s ease both',
         }}
       >
-        <div style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.01em', marginBottom: 8 }}>
-          shutap
-        </div>
+        <a
+          href="/"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            textDecoration: 'none',
+            color: '#1b0f16',
+            marginBottom: 22,
+          }}
+        >
+          <EyeMark size={34} />
+          <span
+            style={{
+              fontFamily: 'Sora, sans-serif',
+              fontWeight: 800,
+              fontSize: 20,
+              letterSpacing: '-.02em',
+            }}
+          >
+            shutap
+          </span>
+        </a>
+
         {state === 'pending' ? (
-          <p style={{ color: '#9e7a8c', margin: 0 }}>updating your preferences…</p>
+          <p style={{ color: '#6b4a5c', margin: 0, fontSize: 14 }}>
+            updating your preferences…
+          </p>
         ) : ok ? (
           <>
-            <h1 style={{ fontSize: 24, fontWeight: 600, margin: '12px 0 12px' }}>
+            <h1
+              style={{
+                fontFamily: 'Sora, sans-serif',
+                fontWeight: 800,
+                fontSize: 'clamp(22px, 4.5vw, 30px)',
+                letterSpacing: '-.02em',
+                margin: '4px 0 12px',
+                color: '#0b080f',
+                lineHeight: 1.15,
+              }}
+            >
               you're unsubscribed.
             </h1>
-            <p style={{ color: '#6b3c52', lineHeight: 1.6, margin: '0 0 20px' }}>
+            <p
+              style={{
+                fontFamily: 'Newsreader, serif',
+                fontStyle: 'italic',
+                color: '#6b4a5c',
+                lineHeight: 1.6,
+                margin: '0 0 22px',
+                fontSize: 16,
+              }}
+            >
               transactional and security emails may still arrive — everything else is off.
             </p>
             {state.email ? (
-              <p style={{ color: '#9e7a8c', fontSize: 13, margin: '0 0 24px' }}>
+              <p style={{ color: '#9e7a8c', fontSize: 12.5, margin: '0 0 26px' }}>
                 for {state.email}
               </p>
             ) : null}
@@ -82,13 +126,17 @@ function UnsubscribeRoute() {
               search={{ token }}
               style={{
                 display: 'inline-block',
-                background: '#6b3c52',
-                color: '#fff8f2',
-                padding: '12px 22px',
+                background: '#e7548a',
+                color: '#ffffff',
+                padding: '13px 26px',
                 borderRadius: 999,
                 textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: 500,
+                fontFamily: 'Sora, sans-serif',
+                fontSize: 13.5,
+                fontWeight: 600,
+                letterSpacing: '-.005em',
+                boxShadow: '0 18px 40px -14px rgba(80,10,45,.55)',
+                transition: 'transform .18s, box-shadow .18s',
               }}
             >
               manage preferences instead
@@ -96,16 +144,40 @@ function UnsubscribeRoute() {
           </>
         ) : (
           <>
-            <h1 style={{ fontSize: 22, fontWeight: 600, margin: '12px 0 12px' }}>
+            <h1
+              style={{
+                fontFamily: 'Sora, sans-serif',
+                fontWeight: 800,
+                fontSize: 'clamp(20px, 4vw, 26px)',
+                letterSpacing: '-.02em',
+                margin: '4px 0 12px',
+                color: '#0b080f',
+              }}
+            >
               this link isn't valid.
             </h1>
-            <p style={{ color: '#6b3c52', lineHeight: 1.6, margin: 0 }}>
+            <p
+              style={{
+                fontFamily: 'Newsreader, serif',
+                fontStyle: 'italic',
+                color: '#6b4a5c',
+                lineHeight: 1.6,
+                margin: 0,
+                fontSize: 15.5,
+              }}
+            >
               the token may have expired or already been used. sign in to manage your email
               preferences directly.
             </p>
           </>
         )}
       </div>
+      <style>{`
+        @keyframes shutap-fadeup {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: none; }
+        }
+      `}</style>
     </main>
   )
 }

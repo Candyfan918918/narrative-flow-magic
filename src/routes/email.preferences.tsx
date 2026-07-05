@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useEffect, useState } from 'react'
 import { loadPrefs, savePrefs, type PrefsDto } from '@/lib/email/prefs.functions'
+import { EyeMark } from '@/components/brand/EyeMark'
 
 export const Route = createFileRoute('/email/preferences')({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -17,7 +18,10 @@ export const Route = createFileRoute('/email/preferences')({
   component: PreferencesRoute,
 })
 
-type GroupKey = 'notif_checkins_opt_out' | 'notif_community_opt_out' | 'notif_digest_opt_out'
+type GroupKey =
+  | 'notif_checkins_opt_out'
+  | 'notif_community_opt_out'
+  | 'notif_digest_opt_out'
 
 const GROUPS: { key: GroupKey; title: string; desc: string }[] = [
   {
@@ -77,122 +81,260 @@ function PreferencesRoute() {
     <main
       style={{
         minHeight: '100vh',
-        background: '#fdfcfb',
-        color: '#3b2734',
+        background: '#fdf0f5',
+        color: '#1b0f16',
         fontFamily: 'Inter, system-ui, sans-serif',
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        padding: '48px 20px',
+        padding: '48px 22px 80px',
       }}
     >
       <div
         style={{
-          maxWidth: 560,
+          maxWidth: 600,
           width: '100%',
-          background: '#fff8f2',
-          border: '1px solid #f0e2d4',
-          borderRadius: 16,
-          padding: '36px 32px',
-          boxShadow: '0 12px 40px rgba(107, 60, 82, 0.08)',
+          animation: 'shutap-fadeup .5s ease both',
         }}
       >
-        <div style={{ fontSize: 22, fontWeight: 600, marginBottom: 4 }}>shutap</div>
-        <h1 style={{ fontSize: 22, fontWeight: 600, margin: '8px 0 4px' }}>email preferences</h1>
+        <a
+          href="/"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            textDecoration: 'none',
+            color: '#1b0f16',
+            marginBottom: 28,
+          }}
+        >
+          <EyeMark size={34} />
+          <span
+            style={{
+              fontFamily: 'Sora, sans-serif',
+              fontWeight: 800,
+              fontSize: 20,
+              letterSpacing: '-.02em',
+            }}
+          >
+            shutap
+          </span>
+        </a>
+
+        <div
+          style={{
+            fontFamily: 'Sora, sans-serif',
+            fontWeight: 700,
+            fontSize: 10,
+            letterSpacing: '.16em',
+            textTransform: 'uppercase',
+            color: '#9e7a8c',
+            marginBottom: 8,
+          }}
+        >
+          your inbox
+        </div>
+        <h1
+          style={{
+            fontFamily: 'Sora, sans-serif',
+            fontWeight: 800,
+            fontSize: 'clamp(26px, 5vw, 34px)',
+            letterSpacing: '-.02em',
+            color: '#0b080f',
+            margin: '0 0 10px',
+            lineHeight: 1.12,
+          }}
+        >
+          email preferences
+        </h1>
         {state !== 'pending' && state.ok && state.email ? (
-          <p style={{ color: '#9e7a8c', fontSize: 13, margin: '0 0 24px' }}>for {state.email}</p>
+          <p
+            style={{
+              fontFamily: 'Newsreader, serif',
+              fontStyle: 'italic',
+              color: '#6b4a5c',
+              fontSize: 15,
+              margin: '0 0 28px',
+            }}
+          >
+            for {state.email}
+          </p>
         ) : (
-          <p style={{ color: '#9e7a8c', fontSize: 13, margin: '0 0 24px' }}>
+          <p
+            style={{
+              fontFamily: 'Newsreader, serif',
+              fontStyle: 'italic',
+              color: '#6b4a5c',
+              fontSize: 15,
+              margin: '0 0 28px',
+            }}
+          >
             choose what shows up in your inbox.
           </p>
         )}
 
-        {state === 'pending' ? (
-          <p style={{ color: '#9e7a8c' }}>loading…</p>
-        ) : !state.ok || !state.prefs ? (
-          <div>
-            <p style={{ lineHeight: 1.6, margin: '0 0 20px' }}>
-              this link isn't valid or has expired. sign in to manage your email preferences.
-            </p>
-            <a
-              href="/auth?next=/email/preferences"
-              style={{
-                display: 'inline-block',
-                background: '#6b3c52',
-                color: '#fff8f2',
-                padding: '12px 22px',
-                borderRadius: 999,
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: 500,
-              }}
-            >
-              sign in
-            </a>
-          </div>
-        ) : (
-          <>
-            {state.prefs.notif_all_opt_out ? (
-              <div
+        <div
+          style={{
+            background: '#ffffff',
+            border: '1px solid rgba(11,8,15,.08)',
+            borderRadius: 22,
+            padding: '28px 26px',
+            boxShadow: '0 22px 44px -28px rgba(60,10,30,.32)',
+          }}
+        >
+          {state === 'pending' ? (
+            <p style={{ color: '#6b4a5c', margin: 0, fontSize: 14 }}>loading…</p>
+          ) : !state.ok || !state.prefs ? (
+            <div>
+              <p
                 style={{
-                  background: '#f6ecdf',
-                  border: '1px solid #e6d3bd',
-                  borderRadius: 10,
-                  padding: '12px 14px',
-                  fontSize: 13,
-                  color: '#6b3c52',
-                  marginBottom: 20,
+                  lineHeight: 1.65,
+                  margin: '0 0 20px',
+                  color: '#3a2630',
+                  fontSize: 14.5,
                 }}
               >
-                you unsubscribed from all optional email. toggle any group back on below to resume it.
-              </div>
-            ) : null}
+                this link isn't valid or has expired. sign in to manage your email
+                preferences.
+              </p>
+              <a
+                href="/auth?next=/email/preferences"
+                style={{
+                  display: 'inline-block',
+                  background: '#e7548a',
+                  color: '#ffffff',
+                  padding: '12px 24px',
+                  borderRadius: 999,
+                  textDecoration: 'none',
+                  fontFamily: 'Sora, sans-serif',
+                  fontSize: 13.5,
+                  fontWeight: 600,
+                  boxShadow: '0 18px 40px -14px rgba(80,10,45,.55)',
+                }}
+              >
+                sign in
+              </a>
+            </div>
+          ) : (
+            <>
+              {state.prefs.notif_all_opt_out ? (
+                <div
+                  style={{
+                    background: '#fdf0f5',
+                    border: '1px solid rgba(231,84,138,.28)',
+                    borderRadius: 14,
+                    padding: '12px 14px',
+                    fontFamily: 'Newsreader, serif',
+                    fontStyle: 'italic',
+                    fontSize: 13.5,
+                    color: '#a01a55',
+                    marginBottom: 18,
+                    lineHeight: 1.55,
+                  }}
+                >
+                  you unsubscribed from all optional email. toggle any group back on
+                  below to resume it.
+                </div>
+              ) : null}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {GROUPS.map((g) => {
-                const off = Boolean(state.prefs?.[g.key])
-                return (
-                  <label
-                    key={g.key}
-                    style={{
-                      display: 'flex',
-                      gap: 14,
-                      alignItems: 'flex-start',
-                      padding: '14px 16px',
-                      background: '#fdfcfb',
-                      border: '1px solid #f0e2d4',
-                      borderRadius: 12,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={!off}
-                      onChange={(e) => toggle(g.key, !e.target.checked)}
-                      disabled={saving}
-                      style={{ marginTop: 3, accentColor: '#6b3c52' }}
-                    />
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: 15 }}>{g.title}</div>
-                      <div style={{ color: '#6b3c52', fontSize: 13, lineHeight: 1.5, marginTop: 2 }}>
-                        {g.desc}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {GROUPS.map((g) => {
+                  const off = Boolean(state.prefs?.[g.key])
+                  return (
+                    <label
+                      key={g.key}
+                      className="shutap-pref-row"
+                      style={{
+                        display: 'flex',
+                        gap: 14,
+                        alignItems: 'flex-start',
+                        padding: '14px 16px',
+                        background: '#fdf0f5',
+                        border: '1px solid rgba(11,8,15,.06)',
+                        borderRadius: 16,
+                        cursor: 'pointer',
+                        transition: 'border-color .15s, background .15s',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!off}
+                        onChange={(e) => toggle(g.key, !e.target.checked)}
+                        disabled={saving}
+                        style={{
+                          marginTop: 3,
+                          accentColor: '#e7548a',
+                          width: 16,
+                          height: 16,
+                        }}
+                      />
+                      <div>
+                        <div
+                          style={{
+                            fontFamily: 'Sora, sans-serif',
+                            fontWeight: 700,
+                            fontSize: 14.5,
+                            color: '#0b080f',
+                            letterSpacing: '-.005em',
+                          }}
+                        >
+                          {g.title}
+                        </div>
+                        <div
+                          style={{
+                            color: '#6b4a5c',
+                            fontSize: 13,
+                            lineHeight: 1.55,
+                            marginTop: 3,
+                          }}
+                        >
+                          {g.desc}
+                        </div>
                       </div>
-                    </div>
-                  </label>
-                )
-              })}
-            </div>
+                    </label>
+                  )
+                })}
+              </div>
 
-            <div style={{ marginTop: 22, minHeight: 20, fontSize: 13, color: '#9e7a8c' }}>
-              {saving ? 'saving…' : saved ? 'saved.' : ''}
-            </div>
+              <div
+                style={{
+                  marginTop: 20,
+                  minHeight: 20,
+                  fontSize: 12.5,
+                  fontFamily: 'Newsreader, serif',
+                  fontStyle: 'italic',
+                  color: saved ? '#c1216b' : '#9e7a8c',
+                  transition: 'color .2s',
+                }}
+              >
+                {saving ? 'saving…' : saved ? 'saved.' : ''}
+              </div>
+            </>
+          )}
+        </div>
 
-            <p style={{ marginTop: 24, fontSize: 12, color: '#9e7a8c', lineHeight: 1.6 }}>
-              transactional and security emails (magic links, account notices) always arrive.
-            </p>
-          </>
-        )}
+        <p
+          style={{
+            marginTop: 22,
+            fontSize: 12,
+            color: '#9e7a8c',
+            lineHeight: 1.6,
+            textAlign: 'center',
+          }}
+        >
+          transactional and security emails (magic links, account notices) always arrive.
+        </p>
       </div>
+      <style>{`
+        @keyframes shutap-fadeup {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: none; }
+        }
+        .shutap-pref-row:hover {
+          border-color: rgba(231,84,138,.35) !important;
+          background: #fbe6ef !important;
+        }
+      `}</style>
     </main>
   )
 }
