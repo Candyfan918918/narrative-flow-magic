@@ -188,7 +188,7 @@ export function RoomDetail({
         '@context': 'https://schema.org',
         '@type': 'DiscussionForumPosting',
         headline: room.title,
-        articleBody: room.body,
+        articleBody: room.body || room.clean_text || '',
         author: { '@type': 'Person', name: room.alias, description: 'pseudonymous member of Shutap' },
         interactionStatistic: [
           { '@type': 'InteractionCounter', interactionType: 'https://schema.org/LikeAction', userInteractionCount: room.relates },
