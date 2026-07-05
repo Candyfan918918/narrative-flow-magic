@@ -46,6 +46,8 @@ import { Route as SitemapsProfilesDotxmlRouteImport } from './routes/sitemaps/pr
 import { Route as SitemapsOutcomesDotxmlRouteImport } from './routes/sitemaps/outcomes[.]xml'
 import { Route as SitemapsCoreDotxmlRouteImport } from './routes/sitemaps/core[.]xml'
 import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email.unsubscribe'
+import { Route as EmailPreferencesRouteImport } from './routes/email.preferences'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
 import { Route as AdminRelateQueueRouteImport } from './routes/admin.relate-queue'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
@@ -249,6 +251,16 @@ const IsItNormalSlugRoute = IsItNormalSlugRouteImport.update({
   path: '/is-it-normal/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailPreferencesRoute = EmailPreferencesRouteImport.update({
+  id: '/email/preferences',
+  path: '/email/preferences',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCompleteRoute = ApiCompleteRouteImport.update({
   id: '/api/complete',
   path: '/api/complete',
@@ -385,6 +397,8 @@ export interface FileRoutesByFullPath {
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
+  '/email/preferences': typeof EmailPreferencesRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/sitemaps/core.xml': typeof SitemapsCoreDotxmlRoute
   '/sitemaps/outcomes.xml': typeof SitemapsOutcomesDotxmlRoute
@@ -441,6 +455,8 @@ export interface FileRoutesByTo {
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
+  '/email/preferences': typeof EmailPreferencesRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/sitemaps/core.xml': typeof SitemapsCoreDotxmlRoute
   '/sitemaps/outcomes.xml': typeof SitemapsOutcomesDotxmlRoute
@@ -499,6 +515,8 @@ export interface FileRoutesById {
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
+  '/email/preferences': typeof EmailPreferencesRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/is-it-normal/$slug': typeof IsItNormalSlugRoute
   '/sitemaps/core.xml': typeof SitemapsCoreDotxmlRoute
   '/sitemaps/outcomes.xml': typeof SitemapsOutcomesDotxmlRoute
@@ -557,6 +575,8 @@ export interface FileRouteTypes {
     | '/admin/feedback'
     | '/admin/relate-queue'
     | '/api/complete'
+    | '/email/preferences'
+    | '/email/unsubscribe'
     | '/is-it-normal/$slug'
     | '/sitemaps/core.xml'
     | '/sitemaps/outcomes.xml'
@@ -613,6 +633,8 @@ export interface FileRouteTypes {
     | '/admin/feedback'
     | '/admin/relate-queue'
     | '/api/complete'
+    | '/email/preferences'
+    | '/email/unsubscribe'
     | '/is-it-normal/$slug'
     | '/sitemaps/core.xml'
     | '/sitemaps/outcomes.xml'
@@ -670,6 +692,8 @@ export interface FileRouteTypes {
     | '/admin/feedback'
     | '/admin/relate-queue'
     | '/api/complete'
+    | '/email/preferences'
+    | '/email/unsubscribe'
     | '/is-it-normal/$slug'
     | '/sitemaps/core.xml'
     | '/sitemaps/outcomes.xml'
@@ -725,6 +749,8 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
+  EmailPreferencesRoute: typeof EmailPreferencesRoute
+  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   IsItNormalSlugRoute: typeof IsItNormalSlugRoute
   SitemapsCoreDotxmlRoute: typeof SitemapsCoreDotxmlRoute
   SitemapsOutcomesDotxmlRoute: typeof SitemapsOutcomesDotxmlRoute
@@ -1001,6 +1027,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IsItNormalSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email/preferences': {
+      id: '/email/preferences'
+      path: '/email/preferences'
+      fullPath: '/email/preferences'
+      preLoaderRoute: typeof EmailPreferencesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/complete': {
       id: '/api/complete'
       path: '/api/complete'
@@ -1218,6 +1258,8 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiCompleteRoute: ApiCompleteRoute,
+  EmailPreferencesRoute: EmailPreferencesRoute,
+  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   IsItNormalSlugRoute: IsItNormalSlugRoute,
   SitemapsCoreDotxmlRoute: SitemapsCoreDotxmlRoute,
   SitemapsOutcomesDotxmlRoute: SitemapsOutcomesDotxmlRoute,
