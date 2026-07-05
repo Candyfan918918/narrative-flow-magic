@@ -1,100 +1,72 @@
+## Plan: email preferences + tokenized unsubscribe
 
-# Performance + Auth Refactor Plan
+### 1. Database migration (schema)
+Extend `public.profiles` (no new table — aligns with existing user record):
+- `email_prefs_token text unique` — random 32-byte base64url, generated lazily on first email send.
+- `notif_all_opt_out boolean not null default false` — one-click unsubscribe flip.
+- `notif_checkins_opt_out boolean not null default false` — engagement (check-in series).
+- `notif_community_opt_out boolean not null default false` — engagement (new_reply, milestone).
+- `notif_digest_opt_out boolean not null default false` — nontransactional (digest, popular_today, hall_updates, reengagement).
+- Partial unique index on `email_prefs_token where email_prefs_token is not null`.
 
-Priority order matches your spec. All changes preserve current visual design and URLs.
+No new RLS needed (server routes use `supabaseAdmin` — routes are public-visitor + token-authed).
 
-## 1. Native `/welcome` (no iframe)
+### 2. New server module `src/lib/email/prefs.server.ts`
+Uses `supabaseAdmin` (loaded dynamically) — never imported by client code.
+- `ensureEmailPrefsToken(email)` → `{ userId, token, prefs } | null`. Looks up profile by email (case-insensitive), generates token if missing, returns current prefs.
+- `getPrefsByToken(token)` → `{ userId, email, prefs } | null`.
+- `updatePrefs(token, patch)` → boolean.
+- `unsubscribeAllByToken(token)` → boolean (sets `notif_all_opt_out = true` and all three group flags true).
+- Token = `crypto.randomBytes(32).toString('base64url')`.
 
-- Create `src/routes/welcome.tsx` (ssr:false, immediate shell) rendering a new `src/pages/WelcomeNative.tsx`.
-- Pixel-match current design: auth sheet → age gate → alias mint/re-roll (reuse styles from `Welcome.dc.html`, but as React JSX using the same tokens/CSS the native landing already uses).
-- Wire real auth directly:
-  - Google/Apple: `lovable.auth.signInWithOAuth("google" | "apple", { redirect_uri: origin + "/welcome" })`.
-  - Email: `supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: origin + "/welcome" } })`.
-  - On mount: if `supabase.auth.getSession()` returns a session, skip auth sheet → jump to age gate or alias step depending on whether alias exists.
-- After alias mint: `upsertMyAlias` → `recordLegalAcceptance` → consume `shutap_pending_comment` / `shutap_pending_save` and navigate.
-- Delete the iframe file `src/pages/Welcome.tsx` + its 250ms click-bridge and postMessage injection.
+### 3. `src/lib/email/render.ts`
+- Remove `DEFAULT_UNSUB = 'https://shutap.com/profile#notifications'`.
+- If `unsubscribe_url` / `preferences_url` missing from vars → leave empty (send layer supplies them per-recipient). Text-footer only prints the line when a URL is present.
 
-## 2. Remove BrowserRouter + react-helmet-async — migrate SPA to TanStack file routes
+### 4. `src/lib/email/send.server.ts`
+- New optional param `SendOpts.crisisFlagged` remains as caller override; other flags become derived defaults.
+- Before render:
+  1. `ensureEmailPrefsToken(to)` — best-effort; if profile not found (e.g. test address), send with empty prefs (transactional only path unaffected).
+  2. Build `https://shutap.com/email/unsubscribe?token=…` and `…/preferences?token=…`, inject into vars unless caller supplied.
+- Enforcement matrix (only applies when `emailClass !== 'transactional'`):
+  - `notif_all_opt_out` → suppress everything (engagement + nontransactional).
+  - `notif_checkins_opt_out` → suppress `checkin_day*` (engagement).
+  - `notif_community_opt_out` → suppress `new_reply`, `milestone` (engagement).
+  - `notif_digest_opt_out` → suppress `digest`, `popular_today`, `hall_updates`, `reengagement` (nontransactional).
+  - Caller `crisisFlagged` still suppresses engagement + nontransactional.
+- Add Resend `headers` on non-transactional sends:
+  - `List-Unsubscribe`: `<https://shutap.com/email/unsubscribe?token=…>`
+  - `List-Unsubscribe-Post`: `List-Unsubscribe=One-Click`
 
-Migrate these existing `react-router-dom` pages into `src/routes/`:
+### 5. Routes (public, top-level, `noindex`)
+- `src/routes/email.unsubscribe.tsx`
+  - `createServerFn` `POST` `processUnsubscribe({ token })` → calls `unsubscribeAllByToken`.
+  - Loader (public) reads `?token=`, invokes the fn, passes result to component.
+  - Renders minimal branded page (cream `#fdfcfb`, shutap wordmark, "you're unsubscribed. transactional and security emails may still arrive." + link to preferences with same token).
+  - `head()` adds `<meta name="robots" content="noindex,nofollow">` and page-specific title.
+- `src/routes/email.preferences.tsx`
+  - Server fns: `loadPrefs({ token })` and `savePrefs({ token, patch })`.
+  - If token missing/invalid → render sign-in CTA that links to `/auth?next=/email/preferences` (no auto-token creation; signed-in flow deferred — out of scope here, CTA-only).
+  - If valid → three toggles (check-ins / community / digests) with save button; success toast.
+  - `noindex` meta.
 
-| New route file | Component | Notes |
-|---|---|---|
-| `src/routes/stream.tsx` | wraps existing `StreamPage` | keep `#room-<id>` hash behavior |
-| `src/routes/room.tsx` | `RoomPage` (reads `?id=` search) | keep current URL |
-| `src/routes/halls.tsx` | `HallOfFamePage` | |
-| `src/routes/profile.tsx` | `ProfilePage` | client-only |
-| `src/routes/mirror.tsx` | `MirrorPage` | client-only |
-| `src/routes/subscribe.tsx` | `SubscribePage` | |
-| `src/routes/subscribe.return.tsx` | `SubscribeReturnPage` | |
-| `src/routes/admin.tsx` + `.feedback` + `.relate-queue` | `AdminPage`, etc | client-only |
-| existing `src/routes/legal.tsx` | keep, ensure `LegalPage` mounts natively | drop iframe |
+### 6. Router bootstrap
+No change to `src/start.ts` — server fns already covered. `/email/*` paths are public top-level routes, not under `_authenticated`, so no auth gate applies.
 
-Each route uses `ssr:false` (auth-heavy) except landing/stream. Fallback: a small branded eye+"Loading…" component, not `null`.
+### Files to change / create
+Create:
+- `src/lib/email/prefs.server.ts`
+- `src/routes/email.unsubscribe.tsx`
+- `src/routes/email.preferences.tsx`
+- migration (via `supabase--migration`)
 
-Update every `useNavigate` / `<Link>` / `useLocation` / `useParams` inside the migrated components to the TanStack equivalents. Because these live in `src/pages/*.tsx` and `src/components/*.tsx` today, this is mostly:
-- `import { useNavigate } from 'react-router-dom'` → `from '@tanstack/react-router'`
-- `navigate('/stream')` → `navigate({ to: '/stream' })`
-- `<Link to="/x">` API is already compatible.
+Edit:
+- `src/lib/email/render.ts` — drop hardcoded default.
+- `src/lib/email/send.server.ts` — recipient lookup, URL injection, enforcement, List-Unsubscribe headers.
 
-Delete `src/App.tsx`, `src/components/SpaShell.tsx`, `src/routes/index.tsx` (replaced by direct native LandingPage), the `Suspense` splash. Old `src/routes/$.tsx` catchall stays, but points to a `<Navigate to="/stream">` equivalent using TanStack.
+Verify: `bunx tsgo --noEmit` clean.
 
-Uninstall: `react-router-dom`, `react-helmet-async`. Sweep for stragglers.
-
-## 3. SSR / prerender landing + stream
-
-- `src/routes/index.tsx`: remove `ssr:false`, render `<LandingNativePage />` directly. Iframe fallback (`?legacy=1`) becomes a client-only branch behind `useHydrated()`. All Supabase / auth calls in LandingPage move into `useEffect` (audit needed — the native landing already uses hooks + tanstack-query, should be fine).
-- `src/routes/stream.tsx`: SSR-enabled. Loader uses public read of the rooms list via a `createServerFn` with the publishable server client + narrow `TO anon` SELECT (already available for rooms). Client hydrates and takes over for realtime/auth-scoped bits.
-- Everything auth-gated stays client-hydrated.
-
-## 4. Font diet
-
-Audit tells us which of `Sora`, `Newsreader`, `Inter`, `Cormorant Garamond` are actually referenced. Working assumption from grep:
-- Sora: used (display).
-- Newsreader: used (serif italics).
-- Inter: used (body).
-- Cormorant Garamond: check Mirror card — if only there, keep at 1 weight; otherwise drop.
-
-Replace the current 4-family, ~17-variant `<link>` in `__root.tsx` with a single Google Fonts URL containing only the weights we render, `&display=swap`. Preload the two most critical woff2 files (probably Sora 600 + Inter 500) via `<link rel="preload" as="font" ...>` with `crossorigin`. Remove references to `/public/shutap/bundle/*.woff2` and `/public/shutap/vendor/react*` from any first-party route.
-
-## 5. Kill the refetch storm
-
-In `src/routes/__root.tsx` `onAuthStateChange`:
-
-```ts
-let lastUserId: string | null = null
-supabase.auth.onAuthStateChange((event, session) => {
-  const nextId = session?.user?.id ?? null
-  if (nextId === lastUserId) return          // session restore = noop
-  lastUserId = nextId
-  queueMicrotask(() => {
-    router.invalidate()
-    queryClient.invalidateQueries()
-  })
-})
-```
-
-In `src/router.tsx`, set `new QueryClient({ defaultOptions: { queries: { staleTime: 60_000, gcTime: 5*60_000, refetchOnWindowFocus: false } } })`.
-
-## 6. Legacy iframe polling
-
-- Gate the `setInterval(getSession, 1500)` loop in `src/pages/Landing.tsx` (or wherever it lives) behind `search?.legacy === '1'` and clear it once first sync succeeds.
-- Once welcome is native, delete the 250ms click-bridge inject entirely (already covered by Step 1).
-
-## Verification after implementation
-
-- `bun run build` succeeds, `tsgo` clean.
-- `curl http://localhost:8080/` returns HTML with landing hero text (not empty `<div id="root">`).
-- Manual: `/welcome` renders sheet immediately, no iframe in devtools; email button triggers `signInWithOtp` (network tab); no console errors on `/`, `/stream`, `/welcome`.
-
-## Rollback
-
-Each step is isolated. If Step 3 SSR breaks a hook, flip `ssr:false` back on `/` only.
-
-## Report
-
-At end I'll report: bytes removed from client bundle (react-router-dom + react-helmet-async + iframe assets), first-paint HTML before/after for `/`.
-
----
-
-Confirm and I'll execute. This is a substantial change touching ~20 files; expect it to take several turns and a build cycle.
+### Notes / assumptions
+- Random-token column chosen over HMAC: no dependency on a server signing secret, one-column schema change, token is opaque and revocable per-user (rotate by nulling the column).
+- Preferences page for anonymous visitors without a token intentionally shows only a sign-in CTA — building the authed self-serve flow would require touching `_authenticated/` and is not requested.
+- Test/non-user recipients (e.g. `whatcandyeats@gmail.com`) will get empty `unsubscribe_url`/`preferences_url` since no profile row exists; `<tr>` strip rules already drop the footer row cleanly.
