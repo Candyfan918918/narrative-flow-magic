@@ -17,7 +17,6 @@ export type RenderedEmail = {
   identity: Identity
 }
 
-const DEFAULT_UNSUB = 'https://shutap.com/profile#notifications'
 const DEFAULT_DEEP_LINK = 'https://shutap.com'
 
 // The exact paragraph in the spill-followup design that gets swapped out
@@ -34,8 +33,6 @@ function firstAlias(alias?: string): string {
 }
 
 function buildVarMap(vars: TemplateVars): Record<string, string> {
-  const unsubscribe_url = vars.unsubscribe_url || DEFAULT_UNSUB
-  const preferences_url = vars.preferences_url || DEFAULT_UNSUB
   const deep_link = vars.deep_link || DEFAULT_DEEP_LINK
   const cta_url = vars.cta_url || deep_link
   const first_alias = vars.first_alias || firstAlias(vars.alias)
@@ -44,9 +41,10 @@ function buildVarMap(vars: TemplateVars): Record<string, string> {
   for (const [k, v] of Object.entries(vars)) {
     if (typeof v === 'string') out[k] = v
   }
-  // Overrides / defaults.
-  out.unsubscribe_url = unsubscribe_url
-  out.preferences_url = preferences_url
+  // Overrides / defaults. unsubscribe_url / preferences_url are supplied by
+  // the send layer per-recipient; leave empty when the caller omits them.
+  out.unsubscribe_url = vars.unsubscribe_url ?? ''
+  out.preferences_url = vars.preferences_url ?? ''
   out.deep_link = deep_link
   out.cta_url = cta_url
   out.first_alias = first_alias
