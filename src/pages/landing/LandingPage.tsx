@@ -402,12 +402,19 @@ export function LandingNativePage() {
           <div>shutap — a room for what you're carrying</div>
           <div style={{ marginTop: 3 }}>18+ · pseudonymous · your real name never shows · your story, your rules 🤍</div>
           <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: '7px 16px', justifyContent: 'center', fontStyle: 'normal' }}>
+            <a href="/relationships" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Relationships</a>
+            <a href="/marriage" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Marriage</a>
+            <a href="/family" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Family</a>
+            <a href="/career" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Career</a>
+            <a href="/lived-intelligence" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Lived Intelligence</a>
+            <a href="/faq" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>FAQ</a>
             <a href="/terms" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Terms</a>
             <a href="/privacy" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Privacy</a>
             <a href="/guidelines" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Guidelines</a>
             <a href="/safety" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Safety</a>
             <a href="mailto:hello@shutap.com" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Contact</a>
           </div>
+
           <div style={{ marginTop: 9, fontSize: 11.5, color: '#b09aa6', maxWidth: '42ch', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.5 }}>
             shutap is your group chat, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
           </div>
