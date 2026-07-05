@@ -1,4 +1,5 @@
-import { createFileRoute, useServerFn } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+import { useServerFn } from '@tanstack/react-start'
 import { useEffect, useState } from 'react'
 import { loadPrefs, savePrefs, type PrefsDto } from '@/lib/email/prefs.functions'
 
