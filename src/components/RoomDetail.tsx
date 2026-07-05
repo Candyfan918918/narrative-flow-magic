@@ -188,7 +188,7 @@ export function RoomDetail({
         '@context': 'https://schema.org',
         '@type': 'DiscussionForumPosting',
         headline: room.title,
-        articleBody: room.body,
+        articleBody: room.body || room.clean_text || '',
         author: { '@type': 'Person', name: room.alias, description: 'pseudonymous member of Shutap' },
         interactionStatistic: [
           { '@type': 'InteractionCounter', interactionType: 'https://schema.org/LikeAction', userInteractionCount: room.relates },
@@ -365,9 +365,9 @@ export function RoomDetail({
           <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, color: '#6b4a5c' }}>{room.alias}</span>
         </div>
 
-        {room.body && (
+        {(room.body || room.clean_text) && (
           <p style={{ fontFamily: 'Newsreader,serif', fontSize: 17, lineHeight: 1.65, color: '#2e1a26', margin: '0 0 26px', whiteSpace: 'pre-line' }}>
-            {room.body}
+            {room.body || room.clean_text}
           </p>
         )}
 

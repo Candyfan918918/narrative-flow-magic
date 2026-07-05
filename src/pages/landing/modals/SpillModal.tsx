@@ -356,6 +356,14 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     // read the latest edits synchronously from the DOM (state batch may lag).
     const liveTitle = titleElRef.current ? scrubPII((titleElRef.current.innerText || '').replace(/\n+/g, ' ').trim()).clean : c.title
     const liveBody = bodyElRef.current ? scrubPII((bodyElRef.current.innerText || '').trim()).clean : c.body
+    // Preview-consistency guard: never publish a title-only / empty post.
+    // A degraded AI compose can leave the body blank or identical to the
+    // title — hold the user on the preview until they add the story.
+    if (!liveBody || liveBody === liveTitle.trim()) {
+      setEditNote('your story looks empty — add the story before posting.')
+      setPhase('preview')
+      return
+    }
     const payload = {
       kind: 'spill' as const,
       pillar: (c.pillar || 'relationships') as 'relationships' | 'marriage' | 'family' | 'career',

@@ -29,6 +29,7 @@ export interface Room {
   hours: string
   reactions: ReactionCounts
   body: string
+  clean_text?: string | null
   reflection: string
   hall: string
   rested?: boolean

@@ -75,7 +75,7 @@ export const saveSituation = createServerFn({ method: 'POST' })
       pillar: data.pillar,
       clean_text: cleanScrub.clean_text || data.clean_text || '',
       title: data.title ?? null,
-      body: bodyScrub.clean_text || null,
+      body: bodyScrub.clean_text || data.body || null,
       kind: data.kind ?? null,
       tags: data.tags,
       initial_scan: data.initial_scan ?? null,
