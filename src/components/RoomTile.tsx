@@ -85,7 +85,7 @@ export function RoomTile({ room, onOpen }: { room: RoomTileData; onOpen: (r: Roo
               {room.title}
             </h3>
             <p style={{ fontFamily: 'Newsreader,serif', fontSize: 14, lineHeight: 1.5, color: '#4a3040', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-              {room.body}
+              {room.body || room.clean_text}
             </p>
           </>
         )}
