@@ -109,7 +109,10 @@ export function renderTemplate(templateId: TemplateId, vars: TemplateVars): Rend
   const preview = substituteAll(tpl.preview(vars), values)
 
   // Prepend a preview-text hint to the plain-text body for parity.
-  const text = `${preview}\n\n${tpl.buildBodyText(vars).trim()}\n\n—\nunsubscribe or manage preferences: ${values.unsubscribe_url}\n`
+  const footer = values.unsubscribe_url
+    ? `\n\n—\nunsubscribe or manage preferences: ${values.unsubscribe_url}\n`
+    : '\n'
+  const text = `${preview}\n\n${tpl.buildBodyText(vars).trim()}${footer}`
 
   return { subject, html, text, identity }
 }
