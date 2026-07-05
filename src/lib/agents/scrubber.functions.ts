@@ -64,7 +64,10 @@ export const scrubText = createServerFn({ method: 'POST' })
     })
 
     const parsed = tryParseJson<ScrubResult>(llm.text)
-    if (parsed && typeof parsed.clean_text === 'string') {
+    // Guard: LLM must not erase non-empty input. An empty/whitespace-only
+    // clean_text for non-empty input is treated as a scrubber failure — we
+    // fall back to the regex-scrubbed text rather than persisting "".
+    if (parsed && typeof parsed.clean_text === 'string' && parsed.clean_text.trim().length > 0) {
       // Union both passes' replacements
       const all = [...first.replacements, ...(parsed.replacements ?? [])]
       return {
