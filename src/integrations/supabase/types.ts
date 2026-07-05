@@ -747,6 +747,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           email: string | null
+          email_prefs_token: string | null
           first_name: string | null
           first_visit_at: string
           full_name: string | null
@@ -758,6 +759,10 @@ export type Database = {
           last_user_agent: string | null
           last_visit_at: string
           login_count: number
+          notif_all_opt_out: boolean
+          notif_checkins_opt_out: boolean
+          notif_community_opt_out: boolean
+          notif_digest_opt_out: boolean
           provider: string | null
           signup_at: string | null
           updated_at: string
@@ -768,6 +773,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          email_prefs_token?: string | null
           first_name?: string | null
           first_visit_at?: string
           full_name?: string | null
@@ -779,6 +785,10 @@ export type Database = {
           last_user_agent?: string | null
           last_visit_at?: string
           login_count?: number
+          notif_all_opt_out?: boolean
+          notif_checkins_opt_out?: boolean
+          notif_community_opt_out?: boolean
+          notif_digest_opt_out?: boolean
           provider?: string | null
           signup_at?: string | null
           updated_at?: string
@@ -789,6 +799,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          email_prefs_token?: string | null
           first_name?: string | null
           first_visit_at?: string
           full_name?: string | null
@@ -800,6 +811,10 @@ export type Database = {
           last_user_agent?: string | null
           last_visit_at?: string
           login_count?: number
+          notif_all_opt_out?: boolean
+          notif_checkins_opt_out?: boolean
+          notif_community_opt_out?: boolean
+          notif_digest_opt_out?: boolean
           provider?: string | null
           signup_at?: string | null
           updated_at?: string
