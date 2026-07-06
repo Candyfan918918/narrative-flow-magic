@@ -509,8 +509,8 @@ function btn(color: string): React.CSSProperties {
 }
 
 function planLabelFor(priceId: string | null): string {
-  if (priceId === 'mirror_monthly') return 'monthly · $6/mo'
-  if (priceId === 'mirror_annual') return 'annual · $49/yr'
+  if (priceId === 'mirror_monthly') return 'monthly · $7.99/mo'
+  if (priceId === 'mirror_annual') return 'annual · $49.99/yr'
   return priceId ?? 'unknown plan'
 }
 
