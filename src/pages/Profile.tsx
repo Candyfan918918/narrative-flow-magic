@@ -69,6 +69,9 @@ export function ProfilePage() {
   const readAlias = useServerFn(getMyAlias)
   const saveAlias = useServerFn(upsertMyAlias)
   const rerollAlias = useServerFn(rerollMyAlias)
+  const fetchBilling = useServerFn(getMyBillingStatus)
+  const openPortalFn = useServerFn(createMirrorPortal)
+  const deleteAccountFn = useServerFn(deleteMyAccount)
   const [rows, setRows] = useState<Situation[] | null>(null)
   const [email, setEmail] = useState<string>('')
   const [tab, setTab] = useState<Tab>('all')
@@ -76,6 +79,11 @@ export function ProfilePage() {
   const [alias, setAlias] = useState<{ emotion: string; nation: string; creature: string; emoji: string; display_name: string } | null>(null)
   const [editAlias, setEditAlias] = useState(false)
   const [aliasBusy, setAliasBusy] = useState(false)
+  const [billing, setBilling] = useState<BillingStatus | undefined>(undefined)
+  const [portalBusy, setPortalBusy] = useState(false)
+  const [deleteBusy, setDeleteBusy] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState('')
+  const [showDelete, setShowDelete] = useState(false)
 
   async function refresh() {
     try {
