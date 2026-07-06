@@ -11,6 +11,10 @@ import {
   deleteSituation,
 } from '../lib/situations.functions'
 import { getMyAlias, upsertMyAlias, rerollMyAlias } from '@/lib/alias.functions'
+import { getMyBillingStatus, type BillingStatus } from '@/lib/billing.functions'
+import { createMirrorPortal } from '@/lib/payments.functions'
+import { deleteMyAccount } from '@/lib/account.functions'
+import { getStripeEnvironment } from '@/lib/stripe'
 import { signOut as unifiedSignOut } from '@/lib/auth'
 import { supabase } from '@/integrations/supabase/client'
 import { useNoIndex } from '@/components/NoIndex'
