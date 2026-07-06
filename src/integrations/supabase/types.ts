@@ -1179,6 +1179,36 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_active_users: {
+        Args: never
+        Returns: {
+          dau: number
+          mau: number
+          wau: number
+        }[]
+      }
+      admin_country_counts: {
+        Args: never
+        Returns: {
+          cnt: number
+          country: string
+        }[]
+      }
+      admin_event_counts: {
+        Args: never
+        Returns: {
+          d30: number
+          d7: number
+          name: string
+        }[]
+      }
+      admin_provider_counts: {
+        Args: never
+        Returns: {
+          cnt: number
+          provider: string
+        }[]
+      }
       alias_public: {
         Args: { _user_id: string }
         Returns: {
