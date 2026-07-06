@@ -104,6 +104,17 @@ export async function updatePrefsByToken(
   if (!rec) return null
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const next: EmailPrefs = { ...rec.prefs, ...patch }
+  // If the user re-enables any category (sets an opt-out to false), clear the
+  // global "all off" flag so per-category prefs actually take effect. Without
+  // this, notif_all_opt_out short-circuits every non-transactional send in
+  // suppressionFromPrefs() and the toggle appears to do nothing.
+  if (
+    !next.notif_checkins_opt_out ||
+    !next.notif_community_opt_out ||
+    !next.notif_digest_opt_out
+  ) {
+    next.notif_all_opt_out = false
+  }
   const { error } = await supabaseAdmin
     .from('profiles')
     .update(next)
