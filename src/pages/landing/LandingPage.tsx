@@ -148,7 +148,12 @@ export function LandingNativePage() {
       const h = window.location.hash
       if (!h) return
       if (h === '#mirror') { history.replaceState(null, '', window.location.pathname + window.location.search); navigate('/mirror'); return }
-      if (h !== '#spill' && h !== '#ask' && h !== '#scan') return
+      if (h === '#ask') {
+        history.replaceState(null, '', window.location.pathname + window.location.search)
+        setComposerOpen(true)
+        return
+      }
+      if (h !== '#spill' && h !== '#scan') return
       const { data: sess } = await supabase.auth.getSession()
       const u = sess.session?.user as { is_anonymous?: boolean } | undefined
       const real = !!sess.session && !u?.is_anonymous

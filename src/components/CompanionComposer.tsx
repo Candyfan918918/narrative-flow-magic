@@ -1,15 +1,18 @@
 /* Native port of the iframe's composerRoot sheet (public/shutap/Landing.dc.html §COMPOSER
    OVERLAY, lines ~395–415). Bottom sheet: eye + copy + text input + send, a Mirror shortcut
-   row, and an AI reply area fed by /api/complete. Opened by the floating CompanionBubble. */
+   row, and an AI reply area fed by the runCompanion server function (mode 'ask').
+   Opened by the floating CompanionBubble. */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@/compat/router'
+import { useServerFn } from '@tanstack/react-start'
 import { EyeMark } from './EyeMark'
+import { runCompanion } from '@/lib/agents/companion.functions'
 
 const NEWSREADER = "'Newsreader', Georgia, serif"
 const SORA = "'Sora', system-ui, sans-serif"
 
-const COMPANION_SYS =
-  "You are shutap's companion — a warm, most-perceptive-friend voice. Reply in 1–3 short sentences, lowercase, no lists, no clinical language. If the user seems to want to vent, gently invite them to 'spill it'. If they ask how they're doing, invite them to 'scan it'. If they ask what shutap is, answer briefly. Never diagnose; never give medical/legal advice."
+type AskRoom = { id: string; title: string; alias: string; emoji: string }
+type Turn = { role: 'user' | 'assistant'; content: string }
 
 export function CompanionComposer({ open, onClose, onSpill, onScan }: {
   open: boolean
@@ -18,13 +21,18 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
   onScan: () => void
 }) {
   const navigate = useNavigate()
+  const ask = useServerFn(runCompanion)
   const inputRef = useRef<HTMLInputElement>(null)
   const [reply, setReply] = useState<string>('')
+  const [rooms, setRooms] = useState<AskRoom[]>([])
   const [busy, setBusy] = useState(false)
+  const [history, setHistory] = useState<Turn[]>([])
 
   useEffect(() => {
     if (open) {
       setReply('')
+      setRooms([])
+      setHistory([])
       queueMicrotask(() => inputRef.current?.focus())
     }
   }, [open])
@@ -32,28 +40,29 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
   const send = useCallback(async () => {
     const v = (inputRef.current?.value || '').trim()
     if (!v || busy) return
-    // simple intent routing (mirrors iframe openComposer heuristics)
-    const low = v.toLowerCase()
-    if (/(off my chest|vent|spill|need to talk|tell you)/.test(low)) { onClose(); onSpill(); return }
-    if (/(how am i|scan|check in on me|read me)/.test(low)) { onClose(); onScan(); return }
-    if (/mirror/.test(low)) { onClose(); navigate('/mirror'); return }
     setBusy(true)
     setReply('…')
+    setRooms([])
+    const nextHistory: Turn[] = [...history, { role: 'user', content: v }]
+    setHistory(nextHistory)
+    if (inputRef.current) inputRef.current.value = ''
     try {
-      const res = await fetch('/api/complete', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ system: COMPANION_SYS, prompt: v, max_tokens: 220 }),
-      })
-      const j = await res.json().catch(() => ({} as { text?: string; completion?: string }))
-      const text = (j.text || j.completion || '').trim() || "i'm here — say a bit more?"
+      const res = await ask({ data: { mode: 'ask', messages: nextHistory } })
+      const text = (res?.text || '').trim() || "i'm here — say a bit more?"
       setReply(text)
+      setHistory((h) => [...h, { role: 'assistant', content: text }])
+      if (res?.action === 'spill') { onClose(); onSpill(); return }
+      if (res?.action === 'scan') { onClose(); onScan(); return }
+      if (res?.action === 'mirror') { onClose(); navigate('/mirror'); return }
+      if (res?.action === 'rooms' && Array.isArray(res.rooms)) {
+        setRooms(res.rooms as AskRoom[])
+      }
     } catch {
       setReply("i couldn't reach the network. try again in a moment.")
     } finally {
       setBusy(false)
     }
-  }, [busy, navigate, onClose, onScan, onSpill])
+  }, [ask, busy, history, navigate, onClose, onScan, onSpill])
 
   if (!open) return null
   return (
@@ -92,6 +101,25 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
         </div>
         {reply && (
           <div style={{ marginTop: 14, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14.5, color: '#c4a0b2', lineHeight: 1.55 }}>{reply}</div>
+        )}
+        {rooms.length > 0 && (
+          <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {rooms.map((r) => (
+              <div
+                key={r.id}
+                role="button"
+                onClick={() => { onClose(); navigate(`/stream#room-${r.id}`) }}
+                style={{ display: 'flex', alignItems: 'center', gap: 11, background: 'rgba(255,255,255,.05)', border: '.5px solid rgba(255,255,255,.12)', borderRadius: 12, padding: '11px 13px', cursor: 'pointer' }}
+              >
+                <span style={{ fontSize: 20, flex: 'none' }}>{r.emoji}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 13, color: '#f7e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</div>
+                  <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12, color: '#9e7a8c', marginTop: 1 }}>{r.alias}</div>
+                </div>
+                <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#f7b8d4', flex: 'none' }}>open →</span>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
