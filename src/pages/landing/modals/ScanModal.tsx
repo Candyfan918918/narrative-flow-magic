@@ -132,9 +132,9 @@ function CompanionSVG({ size = 34 }: { size?: number }) {
   )
 }
 
-function ThinkingDots({ label }: { label: string }) {
+function ThinkingDots({ label, marginTop = 14 }: { label: string; marginTop?: number }) {
   return (
-    <div style={{ marginTop: 14, display: 'inline-flex', gap: 5, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#b3a0d0' }}>
+    <div style={{ marginTop, display: 'inline-flex', gap: 5, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#b3a0d0' }}>
       {label}
       <i style={{ width: 5, height: 5, borderRadius: '50%', background: '#7F77DD', display: 'block', animation: 'blinkdot 1.2s infinite' }} />
       <i style={{ width: 5, height: 5, borderRadius: '50%', background: '#7F77DD', display: 'block', animation: 'blinkdot 1.2s .2s infinite' }} />
