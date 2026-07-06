@@ -10,6 +10,7 @@ import { upsertMyAlias, randomAliasParts, getMyAlias } from '@/lib/alias.functio
 import { sendWelcomeEmail } from '@/lib/welcome-email.functions'
 import { useNoIndex } from '@/components/NoIndex'
 import { setAlias } from '@/lib/auth'
+import { getRouterRef } from '@/lib/router-ref'
 
 type Step = 'auth' | 'age' | 'alias' | 'welcome'
 
@@ -103,7 +104,9 @@ export function WelcomeNativePage() {
     let cancelled = false
     const isAnon = (u: unknown) => Boolean((u as { is_anonymous?: boolean } | undefined)?.is_anonymous)
     const advanceForRealUser = async () => {
-      try { await recordLegalAcceptance({ data: {} }) } catch { /* noop */ }
+      // Fire legal acceptance in parallel with alias lookup — it's a
+      // fire-and-forget write and blocking on it costs a full round-trip.
+      void recordLegalAcceptance({ data: {} }).catch(() => {})
       try {
         const existing = await getMyAlias()
         if (cancelled) return
@@ -304,6 +307,19 @@ export function WelcomeNativePage() {
   }
 
   const enterRoom = () => {
+    const router = getRouterRef()
+    const goPath = (to: string) => {
+      if (router) router.navigate({ to })
+      else window.location.replace(to)
+    }
+    const goHash = (hash: 'spill' | 'scan') => {
+      if (router) router.navigate({ to: '/', hash })
+      else window.location.replace('/#' + hash)
+    }
+    const goRoom = (roomId: string) => {
+      if (router) router.navigate({ to: '/room', search: { id: roomId } as never })
+      else window.location.replace('/room?id=' + encodeURIComponent(roomId))
+    }
     try {
       // Generalized intent resume (RULE 2). Any interaction that redirected
       // to /welcome captured a shutap_pending_intent describing what to do.
@@ -314,26 +330,41 @@ export function WelcomeNativePage() {
           | { kind: 'spill' } | { kind: 'scan' } | { kind: 'subscribe' }
           | { kind: 'comment' | 'relate' | 'react'; roomId: string }
           | { kind: 'custom'; url: string }
-        if (intent.kind === 'spill') { window.location.replace('/#spill'); return }
-        if (intent.kind === 'scan') { window.location.replace('/#scan'); return }
-        if (intent.kind === 'subscribe') { window.location.replace('/subscribe'); return }
-        if (intent.kind === 'custom') { window.location.replace(intent.url); return }
-        if ('roomId' in intent && intent.roomId) {
-          window.location.replace('/room?id=' + encodeURIComponent(intent.roomId)); return
+        if (intent.kind === 'spill') { goHash('spill'); return }
+        if (intent.kind === 'scan') { goHash('scan'); return }
+        if (intent.kind === 'subscribe') { goPath('/subscribe'); return }
+        if (intent.kind === 'custom') {
+          const url = intent.url
+          // Same-origin relative paths → client-side push; otherwise full nav.
+          if (url.startsWith('/') && !url.startsWith('//') && router) {
+            router.history.push(url)
+          } else {
+            window.location.replace(url)
+          }
+          return
         }
+        if ('roomId' in intent && intent.roomId) { goRoom(intent.roomId); return }
       }
       const pc = sessionStorage.getItem('shutap_pending_comment')
       if (pc) {
         const parsed = JSON.parse(pc) as { roomId?: string }
-        if (parsed?.roomId) { window.location.replace('/room?id=' + encodeURIComponent(parsed.roomId)); return }
+        if (parsed?.roomId) { goRoom(parsed.roomId); return }
       }
       if (sessionStorage.getItem('shutap_pending_save')) {
-        window.location.replace('/#spill'); return
+        goHash('spill'); return
       }
       const ret = sessionStorage.getItem('shutap_returnTo')
-      if (ret) { sessionStorage.removeItem('shutap_returnTo'); window.location.replace(ret); return }
+      if (ret) {
+        sessionStorage.removeItem('shutap_returnTo')
+        if (ret.startsWith('/') && !ret.startsWith('//') && router) {
+          router.history.push(ret)
+        } else {
+          window.location.replace(ret)
+        }
+        return
+      }
     } catch { /* noop */ }
-    window.location.replace('/stream')
+    goPath('/stream')
   }
 
   return (
