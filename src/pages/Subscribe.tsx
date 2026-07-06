@@ -185,7 +185,7 @@ export function SubscribeReturnPage() {
     : state === 'checking' ? 'confirming your subscription…'
     : state === 'incomplete' ? 'we couldn\'t confirm your subscription yet.'
     : 'no checkout session found.'
-  const body = state === 'ok' ? 'your 7-day free trial has started. you can manage or cancel anytime from your profile.'
+  const body = state === 'ok' ? 'your 14-day free trial has started. you can manage or cancel anytime from your profile — cancellation applies from the end of the current period.'
     : state === 'checking' ? 'one moment while stripe finalizes.'
     : state === 'incomplete' ? 'if you completed payment, it should appear on your profile within a minute. otherwise, try again.'
     : 'try starting checkout again.'
