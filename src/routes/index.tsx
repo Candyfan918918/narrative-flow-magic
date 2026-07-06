@@ -8,6 +8,9 @@ const HOME_DESCRIPTION =
 const HOME_URL = `${SITE_URL}/`
 
 export const Route = createFileRoute('/')({
+  headers: () => ({
+    'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+  }),
   head: () => ({
     meta: [
       { title: HOME_TITLE },
