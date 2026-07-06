@@ -19,7 +19,7 @@ export const BEATS: Record<string, { title: string; chips: { value: string; labe
     { value: 'in_progress', label: 'in progress' }, { value: 'resolved', label: 'resolved' }, { value: 'avoided', label: 'avoided' }, { value: 'worse', label: 'worse' }] },
   day14: { title: 'looking back — what happened?', kind: 'resolution', chips: [
     { value: 'resolved', label: 'resolved' }, { value: 'avoided', label: 'avoided' }, { value: 'worse', label: 'worse' }, { value: 'in_progress', label: 'still going' }] },
-  adaptive: { title: "still going? where's it at now?", kind: 'resolution', chips: [
+  adaptive30: { title: "still going? where's it at now?", kind: 'resolution', chips: [
     { value: 'in_progress', label: 'still in it' }, { value: 'resolved', label: 'resolved' }, { value: 'avoided', label: 'avoided' }] },
 }
 

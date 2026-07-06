@@ -23,17 +23,17 @@ export const deleteMyAccount = createServerFn({ method: 'POST' })
     const { supabase, userId } = context
     try {
       // Best-effort: cancel any active/trialing/past_due Stripe subscription
-      // for this user in this environment before removing the auth row.
+      // for this user across BOTH environments before removing the auth row.
       const { data: subs } = await supabase
         .from('subscriptions')
-        .select('stripe_subscription_id,status')
+        .select('stripe_subscription_id,status,environment')
         .eq('user_id', userId)
-        .eq('environment', data.environment)
         .in('status', ['active', 'trialing', 'past_due'])
       if (subs && subs.length) {
-        const stripe = createStripeClient(data.environment)
         for (const s of subs) {
           try {
+            const env = s.environment as StripeEnv
+            const stripe = createStripeClient(env)
             await stripe.subscriptions.cancel(s.stripe_subscription_id as string)
           } catch (err) {
             console.error('[deleteMyAccount] cancel failed', getStripeErrorMessage(err))
