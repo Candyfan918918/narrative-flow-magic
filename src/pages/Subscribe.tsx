@@ -9,8 +9,8 @@ import { supabase } from '@/integrations/supabase/client'
 import { useNoIndex } from '@/components/NoIndex'
 
 const PLAN_TO_PRICE: Record<string, { id: string; label: string; price: string }> = {
-  monthly: { id: 'mirror_monthly', label: 'monthly', price: '$6/month' },
-  annual:  { id: 'mirror_annual',  label: 'annual',  price: '$49/year'  },
+  monthly: { id: 'mirror_monthly', label: 'monthly', price: '$7.99/month' },
+  annual:  { id: 'mirror_annual',  label: 'annual',  price: '$49.99/year' },
 }
 
 export function SubscribePage() {
