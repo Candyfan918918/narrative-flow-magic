@@ -82,13 +82,25 @@ export function CompanionBubble({
       }
     }
 
+    const onResize = () => {
+      const sz = el.offsetWidth || 58
+      const r = el.getBoundingClientRect()
+      const nx = Math.max(8, Math.min(window.innerWidth - sz - 8, r.left))
+      const ny = Math.max(8, Math.min(window.innerHeight - sz - 8, r.top))
+      el.style.left = nx + 'px'
+      el.style.top = ny + 'px'
+      el.style.bottom = 'auto'
+    }
+
     el.addEventListener('pointerdown', down)
     window.addEventListener('pointermove', move, { passive: false })
     window.addEventListener('pointerup', up)
+    window.addEventListener('resize', onResize)
     return () => {
       el.removeEventListener('pointerdown', down)
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
+      window.removeEventListener('resize', onResize)
     }
   }, [])
 
