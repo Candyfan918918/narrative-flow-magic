@@ -17,8 +17,8 @@ export async function complete(opts: {
   system?: string
   maxTokens?: number
 }): Promise<string> {
-  const { data } = await supabase.auth.getSession()
-  const token = data.session?.access_token
+  const { data: sessionData } = await supabase.auth.getSession()
+  const token = sessionData.session?.access_token
   const res = await fetch('/api/complete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
