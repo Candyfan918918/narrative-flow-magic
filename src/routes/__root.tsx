@@ -237,6 +237,7 @@ function RootComponent() {
       <GlobalHeader />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <CompanionBubble onOpen={() => navigate('/#ask')} />
     </QueryClientProvider>
   );
 }
