@@ -42,9 +42,11 @@ type Composed = { title: string; body: string; tags: string[]; pillar: Pillar }
 type Phase = 'chat' | 'reflect' | 'support' | 'compose' | 'preview' | 'publishing' | 'saving-journal'
 
 async function callComplete(userText: string, system?: string): Promise<string> {
+  const { data: sessionData } = await supabase.auth.getSession()
+  const token = sessionData.session?.access_token
   const res = await fetch('/api/complete', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify({
       messages: [{ role: 'user', content: userText }],
       system: system ?? SPILL_SYSTEM,
