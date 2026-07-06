@@ -11,6 +11,10 @@ import {
   deleteSituation,
 } from '../lib/situations.functions'
 import { getMyAlias, upsertMyAlias, rerollMyAlias } from '@/lib/alias.functions'
+import { getMyBillingStatus, type BillingStatus } from '@/lib/billing.functions'
+import { createMirrorPortal } from '@/lib/payments.functions'
+import { deleteMyAccount } from '@/lib/account.functions'
+import { getStripeEnvironment } from '@/lib/stripe'
 import { signOut as unifiedSignOut } from '@/lib/auth'
 import { supabase } from '@/integrations/supabase/client'
 import { useNoIndex } from '@/components/NoIndex'
@@ -65,6 +69,9 @@ export function ProfilePage() {
   const readAlias = useServerFn(getMyAlias)
   const saveAlias = useServerFn(upsertMyAlias)
   const rerollAlias = useServerFn(rerollMyAlias)
+  const fetchBilling = useServerFn(getMyBillingStatus)
+  const openPortalFn = useServerFn(createMirrorPortal)
+  const deleteAccountFn = useServerFn(deleteMyAccount)
   const [rows, setRows] = useState<Situation[] | null>(null)
   const [email, setEmail] = useState<string>('')
   const [tab, setTab] = useState<Tab>('all')
@@ -72,6 +79,11 @@ export function ProfilePage() {
   const [alias, setAlias] = useState<{ emotion: string; nation: string; creature: string; emoji: string; display_name: string } | null>(null)
   const [editAlias, setEditAlias] = useState(false)
   const [aliasBusy, setAliasBusy] = useState(false)
+  const [billing, setBilling] = useState<BillingStatus | undefined>(undefined)
+  const [portalBusy, setPortalBusy] = useState(false)
+  const [deleteBusy, setDeleteBusy] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState('')
+  const [showDelete, setShowDelete] = useState(false)
 
   async function refresh() {
     try {
@@ -94,12 +106,55 @@ export function ProfilePage() {
     } catch { /* not signed in */ }
   }
 
+  async function refreshBilling() {
+    try {
+      const b = await fetchBilling({ data: { environment: getStripeEnvironment() } })
+      setBilling(b)
+    } catch { setBilling(null) }
+  }
+
   useEffect(() => {
     refresh()
     refreshAlias()
+    refreshBilling()
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ''))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  async function openPortal() {
+    setPortalBusy(true)
+    try {
+      const result = await openPortalFn({
+        data: { environment: getStripeEnvironment(), returnUrl: `${window.location.origin}/profile` },
+      })
+      if ('error' in result) throw new Error(result.error)
+      window.location.href = result.url
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'couldn\'t open billing portal.')
+      setPortalBusy(false)
+    }
+  }
+
+  async function onDeleteAccount() {
+    if (deleteConfirm !== 'delete my account') {
+      toast('type "delete my account" to confirm.')
+      return
+    }
+    setDeleteBusy(true)
+    try {
+      const result = await deleteAccountFn({
+        data: { environment: getStripeEnvironment(), confirm: deleteConfirm },
+      })
+      if ('error' in result) throw new Error(result.error)
+      try { localStorage.clear() } catch { /* noop */ }
+      await supabase.auth.signOut()
+      toast('account deleted.')
+      navigate('/welcome')
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'couldn\'t delete account.')
+      setDeleteBusy(false)
+    }
+  }
 
   const counts = useMemo(() => {
     if (!rows) return { rooms: 0, journals: 0, scans: 0 }
@@ -382,8 +437,53 @@ export function ProfilePage() {
           </div>
         )}
 
+        {/* billing card */}
         <div style={{ marginTop: 36, paddingTop: 22, borderTop: '.5px solid rgba(11,8,15,.08)' }}>
+          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 10 }}>
+            billing
+          </div>
+          <BillingCard billing={billing} onOpenPortal={openPortal} portalBusy={portalBusy} navigate={navigate} />
+        </div>
+
+        <div style={{ marginTop: 30, paddingTop: 22, borderTop: '.5px solid rgba(11,8,15,.08)' }}>
           <button onClick={signOut} style={{ ...btn('#6b4a5c'), background: 'transparent' }}>sign out</button>
+        </div>
+
+        {/* danger zone */}
+        <div style={{ marginTop: 30, paddingTop: 22, borderTop: '.5px solid rgba(158,58,58,.16)' }}>
+          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e3a3a', marginBottom: 10 }}>
+            danger zone
+          </div>
+          {!showDelete ? (
+            <button onClick={() => setShowDelete(true)} style={{ ...btn('#9e3a3a'), background: 'transparent' }}>delete account</button>
+          ) : (
+            <div style={{ background: '#fff5f5', border: '.5px solid rgba(158,58,58,.24)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15, color: '#0b080f', lineHeight: 1.5 }}>
+                this permanently deletes your account, alias, stories, scans, and cancels any active subscription. it cannot be undone.
+              </div>
+              <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 11, color: '#6b4a5c' }}>
+                type <strong>delete my account</strong> to confirm.
+              </div>
+              <input
+                value={deleteConfirm}
+                onChange={(e) => setDeleteConfirm(e.target.value)}
+                placeholder="delete my account"
+                style={{ border: '.5px solid rgba(158,58,58,.32)', borderRadius: 10, padding: '9px 12px', fontFamily: 'Inter,sans-serif', fontSize: 14, background: '#fff' }}
+              />
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button
+                  disabled={deleteBusy || deleteConfirm !== 'delete my account'}
+                  onClick={onDeleteAccount}
+                  style={{ ...btn('#9e3a3a'), opacity: (deleteBusy || deleteConfirm !== 'delete my account') ? 0.5 : 1 }}
+                >{deleteBusy ? 'deleting…' : 'delete permanently'}</button>
+                <button
+                  disabled={deleteBusy}
+                  onClick={() => { setShowDelete(false); setDeleteConfirm('') }}
+                  style={btn('#6b4a5c')}
+                >cancel</button>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
@@ -406,4 +506,78 @@ function btn(color: string): React.CSSProperties {
     textTransform: 'uppercase',
     cursor: 'pointer',
   }
+}
+
+function planLabelFor(priceId: string | null): string {
+  if (priceId === 'mirror_monthly') return 'monthly · $6/mo'
+  if (priceId === 'mirror_annual') return 'annual · $49/yr'
+  return priceId ?? 'unknown plan'
+}
+
+function BillingCard({
+  billing,
+  onOpenPortal,
+  portalBusy,
+  navigate,
+}: {
+  billing: BillingStatus | undefined
+  onOpenPortal: () => void
+  portalBusy: boolean
+  navigate: (path: string) => void
+}) {
+  if (billing === undefined) {
+    return <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#9e7a8c' }}>loading…</div>
+  }
+  if (billing === null) {
+    return (
+      <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15, color: '#0b080f' }}>
+          you're on the free tier.
+        </div>
+        <div>
+          <button onClick={() => navigate('/subscribe?plan=annual')} style={btn('#c1216b')}>open the full mirror →</button>
+        </div>
+      </div>
+    )
+  }
+  const end = billing.currentPeriodEnd ? new Date(billing.currentPeriodEnd) : null
+  const endStr = end ? end.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : null
+  const statusLabel =
+    billing.status === 'trialing' ? 'trialing'
+    : billing.status === 'active' && billing.cancelAtPeriodEnd ? 'canceling'
+    : billing.status === 'active' ? 'active'
+    : billing.status === 'past_due' ? 'payment failed'
+    : billing.status === 'canceled' && billing.isActive ? 'canceled (grace period)'
+    : billing.status
+  const statusColor =
+    billing.status === 'past_due' ? '#c87c4a'
+    : billing.cancelAtPeriodEnd || billing.status === 'canceled' ? '#9e7a8c'
+    : '#5B8A5E'
+  return (
+    <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+        <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: statusColor, background: statusColor + '18', padding: '3px 8px', borderRadius: 999 }}>
+          {statusLabel}
+        </span>
+        <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15, color: '#0b080f' }}>
+          {planLabelFor(billing.priceId)}
+        </span>
+      </div>
+      {endStr && (
+        <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13.5, color: '#6b4a5c' }}>
+          {billing.status === 'trialing' ? `trial ends ${endStr}`
+            : billing.cancelAtPeriodEnd || billing.status === 'canceled' ? `access ends ${endStr}`
+            : billing.status === 'past_due' ? `payment retrying · access until ${endStr}`
+            : `renews ${endStr}`}
+        </div>
+      )}
+      <div>
+        {billing.hasCustomer && (
+          <button onClick={onOpenPortal} disabled={portalBusy} style={btn('#c1216b')}>
+            {portalBusy ? 'opening…' : 'manage billing →'}
+          </button>
+        )}
+      </div>
+    </div>
+  )
 }
