@@ -7,12 +7,17 @@ import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { EyeMark } from './EyeMark'
 import { runCompanion } from '@/lib/agents/companion.functions'
+import { getDueCheckin, recordCheckinResponse, snoozeCheckin } from '@/lib/checkins.functions'
+import { supabase } from '@/integrations/supabase/client'
 
 const NEWSREADER = "'Newsreader', Georgia, serif"
 const SORA = "'Sora', system-ui, sans-serif"
 
 type AskRoom = { id: string; title: string; alias: string; emoji: string }
 type Turn = { role: 'user' | 'assistant'; content: string }
+type BeatKind = 'trajectory' | 'action' | 'resolution' | 'feeling'
+type Beat = { title: string; chips: { value: string; label: string }[]; kind: BeatKind }
+type DueCheckin = { id: string; type: string; beat: Beat | null }
 
 export function CompanionComposer({ open, onClose, onSpill, onScan }: {
   open: boolean
