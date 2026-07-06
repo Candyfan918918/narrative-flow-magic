@@ -160,6 +160,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let mounted = true
