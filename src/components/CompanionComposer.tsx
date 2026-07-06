@@ -140,6 +140,57 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
           </div>
           <div onClick={onClose} role="button" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', cursor: 'pointer', flex: 'none' }}>close</div>
         </div>
+        {due && due.beat && (
+          <div style={{ marginBottom: 14, background: 'rgba(231,84,138,.08)', border: '.5px solid rgba(231,84,138,.28)', borderRadius: 16, padding: '14px 15px' }}>
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14.5, color: '#f7e8f0', lineHeight: 1.5, marginBottom: 12 }}>
+              {due.beat.title}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+              {due.beat.chips.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  onClick={() => onChip(c.value)}
+                  disabled={checkinBusy}
+                  style={{ fontFamily: SORA, fontWeight: 600, fontSize: 12.5, padding: '7px 13px', borderRadius: 999, border: '1px solid rgba(231,84,138,.35)', background: 'rgba(231,84,138,.14)', color: '#f7e8f0', cursor: checkinBusy ? 'wait' : 'pointer', opacity: checkinBusy ? 0.6 : 1, transition: 'background .15s' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(231,84,138,.28)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(231,84,138,.14)' }}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+            {!noteOpen ? (
+              <div
+                role="button"
+                onClick={() => setNoteOpen(true)}
+                style={{ display: 'inline-block', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#caaebb', cursor: 'pointer', marginRight: 14 }}
+              >
+                add a note — optional
+              </div>
+            ) : (
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value.slice(0, 2000))}
+                placeholder="add a note — optional"
+                rows={2}
+                style={{ display: 'block', width: '100%', marginTop: 4, marginBottom: 8, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 10, padding: '8px 10px', color: '#f7e8f0', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, outline: 'none', resize: 'vertical' }}
+              />
+            )}
+            <div
+              role="button"
+              onClick={onSnooze}
+              style={{ display: 'inline-block', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c', cursor: 'pointer' }}
+            >
+              not now
+            </div>
+          </div>
+        )}
+        {checkinAck && !due && (
+          <div style={{ marginBottom: 14, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#f7b8d4', lineHeight: 1.5 }}>
+            {checkinAck}
+          </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 14, padding: '12px 14px' }}>
           <input
             ref={inputRef}
