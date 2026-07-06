@@ -479,10 +479,10 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       <ScanHeader pct={pct} onClose={onClose} />
 
       {phase === 'loading' && (
-        <div style={{ flex: 1, display: 'grid', placeItems: 'center', padding: '40px 24px', textAlign: 'center' }}>
-          <div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center' }}>
+          <div className="flex items-center gap-2">
             <CompanionSVG size={34} />
-            <ThinkingDots label={qa.length ? 'reading that' : 'tuning in'} />
+            <ThinkingDots label={qa.length ? 'reading that' : 'hold on… responding soon'} marginTop={0} />
           </div>
         </div>
       )}
