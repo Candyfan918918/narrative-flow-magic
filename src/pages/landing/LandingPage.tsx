@@ -144,9 +144,9 @@ export function LandingNativePage() {
   // Only auto-open for a REAL signed-in user (resume path from /welcome).
   // Anonymous visitors landing on /#spill via a shared link are re-gated.
   useEffect(() => {
-    const h = window.location.hash
-    if (!h) return
-    ;(async () => {
+    const handle = async () => {
+      const h = window.location.hash
+      if (!h) return
       if (h === '#mirror') { history.replaceState(null, '', window.location.pathname + window.location.search); navigate('/mirror'); return }
       if (h !== '#spill' && h !== '#ask' && h !== '#scan') return
       const { data: sess } = await supabase.auth.getSession()
@@ -161,8 +161,13 @@ export function LandingNativePage() {
       }
       if (h === '#scan') setScanOpen(true)
       else setSpillOpen(true)
-    })()
+    }
+    void handle()
+    const onHash = () => { void handle() }
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
   }, [navigate])
+
 
   // Resume a pending Spill save after the user returns from sign-in. Mirrors
   // the iframe bridge's resume logic in src/pages/Landing.tsx.
