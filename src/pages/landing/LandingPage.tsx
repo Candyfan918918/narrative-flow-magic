@@ -421,8 +421,8 @@ export function LandingNativePage() {
         </footer>
       </main>
 
-      {/* Companion pill — draggable (position persisted); tap opens the companion composer (NOT Spill) */}
-      <CompanionBubble onOpen={() => setComposerOpen(true)} />
+      {/* Global companion bubble is rendered in the root layout. The #ask hash
+          below re-uses this page's composer state when returning from other pages. */}
       <CompanionComposer
         open={composerOpen}
         onClose={() => setComposerOpen(false)}
