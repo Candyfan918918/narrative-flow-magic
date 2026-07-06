@@ -84,6 +84,17 @@ async function handleDeleted(sub: any, env: StripeEnv) {
   }).eq('stripe_subscription_id', sub.id).eq('environment', env);
 }
 
+async function handleInvoicePaymentFailed(invoice: any, env: StripeEnv) {
+  // Dunning: reflect payment failure promptly so the UI can warn the user
+  // instead of waiting for the downstream customer.subscription.updated event.
+  const subId = invoice.subscription;
+  if (!subId) return;
+  await getSupabase().from('subscriptions').update({
+    status: 'past_due',
+    updated_at: new Date().toISOString(),
+  }).eq('stripe_subscription_id', subId).eq('environment', env);
+}
+
 export const Route = createFileRoute('/api/public/payments/webhook')({
   server: {
     handlers: {
@@ -102,6 +113,8 @@ export const Route = createFileRoute('/api/public/payments/webhook')({
               await handleUpdated(event.data.object, env); break;
             case 'customer.subscription.deleted':
               await handleDeleted(event.data.object, env); break;
+            case 'invoice.payment_failed':
+              await handleInvoicePaymentFailed(event.data.object, env); break;
             default:
               console.log('Unhandled:', event.type);
           }
