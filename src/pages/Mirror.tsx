@@ -1045,7 +1045,7 @@ export function MirrorPage() {
   const fetchEnt = useServerFn(getMirrorEntitlement)
   const { data: entitlement } = useQuery({
     queryKey: ['mirror-entitlement'],
-    queryFn: () => fetchEnt().catch(() => ({ entitled: false, demoAccount: false, reason: 'anonymous' as const })),
+    queryFn: () => fetchEnt({ data: { environment: getStripeEnvironment() } }).catch(() => ({ entitled: false, demoAccount: false, reason: 'anonymous' as const })),
     staleTime: 60_000,
   })
   const isDemoAccount = !!entitlement?.demoAccount
