@@ -106,7 +106,7 @@ async function callScanAI(qa: QA[], aliasName: string | null): Promise<ScanTurn>
 }
 
 // Fallback deck — verbatim from Landing.dc.html scanFallbackCard (~1657).
-function scanFallback(n: number): ScanTurn {
+function scanFallback(n: number, hasText: boolean): ScanTurn {
   const seq: ScanTurn[] = [
     { line: "ok, i'm here. let's get a real read on you - no wrong answers, take your time.", prompt: "what's this mostly about?", card: { type: 'choice', options: ['love / someone i love', 'family', 'a friend', 'work', 'me, internally', 'something else'] } },
     { line: "okay. tell me the shape of it -", prompt: 'what actually happened? a few words.', card: { type: 'text', placeholder: 'the gist of it...' } },
@@ -118,6 +118,7 @@ function scanFallback(n: number): ScanTurn {
     { line: 'and this part matters -', prompt: 'have you said any of this out loud?', card: { type: 'choice', options: ['not to anyone', 'to one person', 'to a few people', 'everyone knows but me'] } },
     { line: "last thing, then i'll read you -", prompt: 'what would actually help right now?', card: { type: 'multi', options: ['to be heard', 'some clarity', "to know i'm not wrong", 'to feel less alone', 'for it to change', 'to let it go'], max: 2 } },
   ]
+  if (!hasText && n >= 1 && n < seq.length) return seq[1]
   if (n >= seq.length) return { done: true, score: 520, signature: 'Carrying It Quietly', read: "you're holding something real right now - not a five-alarm fire, but it's there, and it's yours. saying it out loud was the right move.", factors: ['still looping', 'not said out loud'] }
   return seq[n]
 }
