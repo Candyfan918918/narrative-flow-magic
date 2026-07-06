@@ -118,7 +118,7 @@ export function CompanionBubble({
         userSelect: 'none',
       }}
     >
-      <div style={{ pointerEvents: 'none', display: 'inline-flex' }}>
+      <div style={{ pointerEvents: 'none', display: 'inline-flex', transform: 'translateX(-2px)' }}>
         <EyeMark size={34} />
       </div>
     </div>

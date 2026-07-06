@@ -13,6 +13,8 @@ import appCss from "../styles/global.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { CompanionBubble } from "@/components/CompanionBubble";
+import { useNavigate } from "@/compat/router";
 
 function NotFoundComponent() {
   return (
@@ -158,6 +160,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let mounted = true
@@ -234,6 +237,7 @@ function RootComponent() {
       <GlobalHeader />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <CompanionBubble onOpen={() => navigate('/#ask')} />
     </QueryClientProvider>
   );
 }
