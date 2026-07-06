@@ -106,12 +106,55 @@ export function ProfilePage() {
     } catch { /* not signed in */ }
   }
 
+  async function refreshBilling() {
+    try {
+      const b = await fetchBilling({ data: { environment: getStripeEnvironment() } })
+      setBilling(b)
+    } catch { setBilling(null) }
+  }
+
   useEffect(() => {
     refresh()
     refreshAlias()
+    refreshBilling()
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ''))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  async function openPortal() {
+    setPortalBusy(true)
+    try {
+      const result = await openPortalFn({
+        data: { environment: getStripeEnvironment(), returnUrl: `${window.location.origin}/profile` },
+      })
+      if ('error' in result) throw new Error(result.error)
+      window.location.href = result.url
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'couldn\'t open billing portal.')
+      setPortalBusy(false)
+    }
+  }
+
+  async function onDeleteAccount() {
+    if (deleteConfirm !== 'delete my account') {
+      toast('type "delete my account" to confirm.')
+      return
+    }
+    setDeleteBusy(true)
+    try {
+      const result = await deleteAccountFn({
+        data: { environment: getStripeEnvironment(), confirm: deleteConfirm },
+      })
+      if ('error' in result) throw new Error(result.error)
+      try { localStorage.clear() } catch { /* noop */ }
+      await supabase.auth.signOut()
+      toast('account deleted.')
+      navigate('/welcome')
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'couldn\'t delete account.')
+      setDeleteBusy(false)
+    }
+  }
 
   const counts = useMemo(() => {
     if (!rows) return { rooms: 0, journals: 0, scans: 0 }
