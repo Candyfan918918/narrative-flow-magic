@@ -28,7 +28,7 @@ export const getMyBillingStatus = createServerFn({ method: 'GET' })
       .select('status,price_id,current_period_end,cancel_at_period_end,stripe_customer_id')
       .eq('user_id', context.userId)
       .eq('environment', data.environment)
-      .order('created_at', { ascending: false })
+      .order('current_period_end', { ascending: false })
       .limit(1)
       .maybeSingle()
     if (!row) return null

@@ -67,21 +67,51 @@ async function handleUpdated(sub: any, env: StripeEnv) {
   const item = sub.items?.data?.[0];
   const periodStart = item?.current_period_start ?? sub.current_period_start;
   const periodEnd = item?.current_period_end ?? sub.current_period_end;
-  await getSupabase().from('subscriptions').update({
+  const userId = sub.metadata?.userId;
+
+  // Stripe does NOT guarantee `.created` arrives before `.updated`. If we
+  // only UPDATE, an out-of-order `.updated` matches zero rows and is lost,
+  // leaving the paying user without an entitlement row. Upsert on
+  // stripe_subscription_id so this event self-heals either way. If userId
+  // is missing on the update event (metadata not always echoed), fall
+  // back to a plain UPDATE so we don't null out user_id on an existing row.
+  if (userId) {
+    const { error } = await getSupabase().from('subscriptions').upsert({
+      user_id: userId,
+      stripe_subscription_id: sub.id,
+      stripe_customer_id: sub.customer,
+      product_id: productIdFrom(item) === 'mirror' ? 'mirror' : (item?.price?.product?.metadata?.lovable_external_id || 'mirror'),
+      price_id: priceIdFrom(item),
+      status: sub.status,
+      current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
+      current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+      cancel_at_period_end: sub.cancel_at_period_end ?? false,
+      environment: env,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'stripe_subscription_id' });
+    if (error) console.error('[stripe webhook] subscriptions upsert failed on updated:', error, { subscription_id: sub.id, env });
+    return;
+  }
+
+  const { error, count } = await getSupabase().from('subscriptions').update({
     status: sub.status,
     price_id: priceIdFrom(item),
     current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
     current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
     cancel_at_period_end: sub.cancel_at_period_end ?? false,
     updated_at: new Date().toISOString(),
-  }).eq('stripe_subscription_id', sub.id).eq('environment', env);
+  }, { count: 'exact' }).eq('stripe_subscription_id', sub.id).eq('environment', env);
+  if (error) console.error('[stripe webhook] subscriptions update failed on updated:', error, { subscription_id: sub.id, env });
+  else if (!count) console.error(`[stripe webhook] no subscription row for ${sub.id} — event out of order?`, { env });
 }
 
 async function handleDeleted(sub: any, env: StripeEnv) {
-  await getSupabase().from('subscriptions').update({
+  const { error, count } = await getSupabase().from('subscriptions').update({
     status: 'canceled',
     updated_at: new Date().toISOString(),
-  }).eq('stripe_subscription_id', sub.id).eq('environment', env);
+  }, { count: 'exact' }).eq('stripe_subscription_id', sub.id).eq('environment', env);
+  if (error) console.error('[stripe webhook] subscriptions update failed on deleted:', error, { subscription_id: sub.id, env });
+  else if (!count) console.error(`[stripe webhook] no subscription row for ${sub.id} — event out of order?`, { env });
 }
 
 async function handleInvoicePaymentFailed(invoice: any, env: StripeEnv) {
@@ -89,10 +119,12 @@ async function handleInvoicePaymentFailed(invoice: any, env: StripeEnv) {
   // instead of waiting for the downstream customer.subscription.updated event.
   const subId = invoice.subscription;
   if (!subId) return;
-  await getSupabase().from('subscriptions').update({
+  const { error, count } = await getSupabase().from('subscriptions').update({
     status: 'past_due',
     updated_at: new Date().toISOString(),
-  }).eq('stripe_subscription_id', subId).eq('environment', env);
+  }, { count: 'exact' }).eq('stripe_subscription_id', subId).eq('environment', env);
+  if (error) console.error('[stripe webhook] subscriptions update failed on invoice.payment_failed:', error, { subscription_id: subId, env });
+  else if (!count) console.error(`[stripe webhook] no subscription row for ${subId} — event out of order?`, { env });
 }
 
 export const Route = createFileRoute('/api/public/payments/webhook')({
