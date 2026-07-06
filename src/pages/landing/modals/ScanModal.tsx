@@ -132,9 +132,9 @@ function CompanionSVG({ size = 34 }: { size?: number }) {
   )
 }
 
-function ThinkingDots({ label }: { label: string }) {
+function ThinkingDots({ label, marginTop = 14 }: { label: string; marginTop?: number }) {
   return (
-    <div style={{ marginTop: 14, display: 'inline-flex', gap: 5, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#b3a0d0' }}>
+    <div style={{ marginTop, display: 'inline-flex', gap: 5, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#b3a0d0' }}>
       {label}
       <i style={{ width: 5, height: 5, borderRadius: '50%', background: '#7F77DD', display: 'block', animation: 'blinkdot 1.2s infinite' }} />
       <i style={{ width: 5, height: 5, borderRadius: '50%', background: '#7F77DD', display: 'block', animation: 'blinkdot 1.2s .2s infinite' }} />
@@ -479,10 +479,10 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       <ScanHeader pct={pct} onClose={onClose} />
 
       {phase === 'loading' && (
-        <div style={{ flex: 1, display: 'grid', placeItems: 'center', padding: '40px 24px', textAlign: 'center' }}>
-          <div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center' }}>
+          <div className="flex items-center gap-2">
             <CompanionSVG size={34} />
-            <ThinkingDots label={qa.length ? 'reading that' : 'tuning in'} />
+            <ThinkingDots label={qa.length ? 'reading that' : 'hold on… responding soon'} marginTop={0} />
           </div>
         </div>
       )}
