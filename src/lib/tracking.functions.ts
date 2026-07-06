@@ -5,25 +5,54 @@
 // role so RLS never rejects a legitimate ping.
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
+import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
-function readUserFromRequest(): Promise<{ userId: string | null; token: string | null }> {
-  const req = getRequest()
-  const authHeader = req?.headers.get('authorization') || null
-  if (!authHeader?.startsWith('Bearer ')) return Promise.resolve({ userId: null, token: null })
-  const token = authHeader.slice(7)
-  if (token.split('.').length !== 3) return Promise.resolve({ userId: null, token: null })
-  // Best-effort decode of the JWT sub claim without a network round-trip.
-  try {
-    const payload = JSON.parse(
-      Buffer.from(token.split('.')[1], 'base64').toString('utf8'),
-    ) as { sub?: string; exp?: number }
-    if (payload?.exp && payload.exp * 1000 < Date.now()) return Promise.resolve({ userId: null, token })
-    return Promise.resolve({ userId: payload.sub ?? null, token })
-  } catch {
-    return Promise.resolve({ userId: null, token })
+function isNewSupabaseApiKey(value: string): boolean {
+  return value.startsWith('sb_publishable_') || value.startsWith('sb_secret_')
+}
+
+function createSupabaseFetch(supabaseKey: string): typeof fetch {
+  return (input, init) => {
+    const headers = new Headers(
+      typeof Request !== 'undefined' && input instanceof Request ? input.headers : undefined,
+    )
+    if (init?.headers) {
+      new Headers(init.headers).forEach((value, key) => headers.set(key, value))
+    }
+    if (isNewSupabaseApiKey(supabaseKey) && headers.get('Authorization') === `Bearer ${supabaseKey}`) {
+      headers.delete('Authorization')
+    }
+    headers.set('apikey', supabaseKey)
+    return fetch(input, { ...init, headers })
   }
 }
+
+async function readUserFromRequest(): Promise<{ userId: string | null; token: string | null }> {
+  const req = getRequest()
+  const authHeader = req?.headers.get('authorization') || null
+  if (!authHeader?.startsWith('Bearer ')) return { userId: null, token: null }
+  const token = authHeader.slice(7)
+  if (token.split('.').length !== 3) return { userId: null, token: null }
+  const SUPABASE_URL = process.env.SUPABASE_URL
+  const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return { userId: null, token }
+  try {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      global: {
+        fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    })
+    const { data, error } = await supabase.auth.getClaims(token)
+    if (error || !data?.claims?.sub) return { userId: null, token }
+    return { userId: data.claims.sub, token }
+  } catch {
+    return { userId: null, token }
+  }
+}
+
 
 function extractGeo(): { country: string | null; city: string | null; userAgent: string | null } {
   const req = getRequest()
