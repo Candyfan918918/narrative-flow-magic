@@ -27,20 +27,77 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
 }) {
   const navigate = useNavigate()
   const ask = useServerFn(runCompanion)
+  const fetchDue = useServerFn(getDueCheckin)
+  const submitCheckin = useServerFn(recordCheckinResponse)
+  const snoozeFn = useServerFn(snoozeCheckin)
   const inputRef = useRef<HTMLInputElement>(null)
   const [reply, setReply] = useState<string>('')
   const [rooms, setRooms] = useState<AskRoom[]>([])
   const [busy, setBusy] = useState(false)
   const [history, setHistory] = useState<Turn[]>([])
+  const [due, setDue] = useState<DueCheckin | null>(null)
+  const [noteOpen, setNoteOpen] = useState(false)
+  const [note, setNote] = useState('')
+  const [checkinBusy, setCheckinBusy] = useState(false)
+  const [checkinAck, setCheckinAck] = useState<string>('')
 
   useEffect(() => {
-    if (open) {
-      setReply('')
-      setRooms([])
-      setHistory([])
-      queueMicrotask(() => inputRef.current?.focus())
+    if (!open) return
+    setReply('')
+    setRooms([])
+    setHistory([])
+    setDue(null)
+    setNoteOpen(false)
+    setNote('')
+    setCheckinAck('')
+    queueMicrotask(() => inputRef.current?.focus())
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { data: sess } = await supabase.auth.getSession()
+        const u = sess.session?.user as { is_anonymous?: boolean } | undefined
+        const real = !!sess.session && !u?.is_anonymous
+        if (!real) return
+        const d = await fetchDue()
+        if (cancelled) return
+        if (d && d.beat) setDue(d as DueCheckin)
+      } catch { /* fail silent */ }
+    })()
+    return () => { cancelled = true }
+  }, [open, fetchDue])
+
+  const onChip = useCallback(async (value: string) => {
+    if (!due || !due.beat || checkinBusy) return
+    setCheckinBusy(true)
+    const kind = due.beat.kind
+    const clean = note.trim().slice(0, 2000)
+    const payload: Record<string, unknown> = { checkin_id: due.id }
+    if (kind === 'trajectory') payload.trajectory = value
+    else if (kind === 'action') payload.action = value
+    else if (kind === 'resolution') payload.resolution = value
+    else if (kind === 'feeling') payload.feeling_tap = value
+    if (clean) payload.clean_text = clean
+    try {
+      await submitCheckin({ data: payload as never })
+      setDue(null)
+      setNoteOpen(false)
+      setNote('')
+      setCheckinAck("noted 🤍 — i'll check on you again.")
+    } catch {
+      setDue(null)
+    } finally {
+      setCheckinBusy(false)
     }
-  }, [open])
+  }, [due, note, checkinBusy, submitCheckin])
+
+  const onSnooze = useCallback(async () => {
+    if (!due) return
+    const id = due.id
+    setDue(null)
+    setNoteOpen(false)
+    setNote('')
+    try { await snoozeFn({ data: { id } }) } catch { /* fail silent */ }
+  }, [due, snoozeFn])
 
   const send = useCallback(async () => {
     const v = (inputRef.current?.value || '').trim()
