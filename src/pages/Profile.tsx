@@ -437,8 +437,53 @@ export function ProfilePage() {
           </div>
         )}
 
+        {/* billing card */}
         <div style={{ marginTop: 36, paddingTop: 22, borderTop: '.5px solid rgba(11,8,15,.08)' }}>
+          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 10 }}>
+            billing
+          </div>
+          <BillingCard billing={billing} onOpenPortal={openPortal} portalBusy={portalBusy} navigate={navigate} />
+        </div>
+
+        <div style={{ marginTop: 30, paddingTop: 22, borderTop: '.5px solid rgba(11,8,15,.08)' }}>
           <button onClick={signOut} style={{ ...btn('#6b4a5c'), background: 'transparent' }}>sign out</button>
+        </div>
+
+        {/* danger zone */}
+        <div style={{ marginTop: 30, paddingTop: 22, borderTop: '.5px solid rgba(158,58,58,.16)' }}>
+          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e3a3a', marginBottom: 10 }}>
+            danger zone
+          </div>
+          {!showDelete ? (
+            <button onClick={() => setShowDelete(true)} style={{ ...btn('#9e3a3a'), background: 'transparent' }}>delete account</button>
+          ) : (
+            <div style={{ background: '#fff5f5', border: '.5px solid rgba(158,58,58,.24)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15, color: '#0b080f', lineHeight: 1.5 }}>
+                this permanently deletes your account, alias, stories, scans, and cancels any active subscription. it cannot be undone.
+              </div>
+              <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 11, color: '#6b4a5c' }}>
+                type <strong>delete my account</strong> to confirm.
+              </div>
+              <input
+                value={deleteConfirm}
+                onChange={(e) => setDeleteConfirm(e.target.value)}
+                placeholder="delete my account"
+                style={{ border: '.5px solid rgba(158,58,58,.32)', borderRadius: 10, padding: '9px 12px', fontFamily: 'Inter,sans-serif', fontSize: 14, background: '#fff' }}
+              />
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button
+                  disabled={deleteBusy || deleteConfirm !== 'delete my account'}
+                  onClick={onDeleteAccount}
+                  style={{ ...btn('#9e3a3a'), opacity: (deleteBusy || deleteConfirm !== 'delete my account') ? 0.5 : 1 }}
+                >{deleteBusy ? 'deleting…' : 'delete permanently'}</button>
+                <button
+                  disabled={deleteBusy}
+                  onClick={() => { setShowDelete(false); setDeleteConfirm('') }}
+                  style={btn('#6b4a5c')}
+                >cancel</button>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
