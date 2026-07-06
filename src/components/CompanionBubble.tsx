@@ -1,5 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useServerFn } from '@tanstack/react-start'
 import { EyeMark } from './EyeMark'
+import { getDueCheckin } from '@/lib/checkins.functions'
+import { supabase } from '@/integrations/supabase/client'
 
 /* The companion: a draggable, semi-transparent pink circle with the brand eyes
    (no pill, no label). Tap (without dragging) opens the Ask flow; drag to
