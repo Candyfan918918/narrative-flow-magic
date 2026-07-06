@@ -422,8 +422,17 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         if (isPublic && res?.room_id) navigate(`/stream#room-${res.room_id}`)
         else navigate('/profile')
       }, 850)
-    } catch {
-      setEditNote('couldn\u2019t save — try again in a sec.')
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      if (msg.includes('sign_in_required')) {
+        try {
+          sessionStorage.setItem('shutap_pending_save', JSON.stringify(payload))
+          sessionStorage.setItem('shutap_pending_intent', 'spill')
+        } catch { /* noop */ }
+        navigate('/welcome')
+        return
+      }
+      setEditNote('couldn’t save — ' + msg + '. try again in a sec.')
       setPhase('preview')
     }
   }, [composed, supportMode, save, navigate, syncPreviewDOM])
