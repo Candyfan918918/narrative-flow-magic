@@ -9,8 +9,8 @@ import { supabase } from '@/integrations/supabase/client'
 import { useNoIndex } from '@/components/NoIndex'
 
 const PLAN_TO_PRICE: Record<string, { id: string; label: string; price: string }> = {
-  monthly: { id: 'mirror_monthly', label: 'monthly', price: '$6/month' },
-  annual:  { id: 'mirror_annual',  label: 'annual',  price: '$49/year'  },
+  monthly: { id: 'mirror_monthly', label: 'monthly', price: '$7.99/month' },
+  annual:  { id: 'mirror_annual',  label: 'annual',  price: '$49.99/year' },
 }
 
 export function SubscribePage() {
@@ -102,7 +102,7 @@ export function SubscribePage() {
           open the full mirror
         </div>
         <div style={{ color: '#caaebb', fontSize: 14.5, lineHeight: 1.55, marginBottom: 18 }}>
-          {plan.label} · {plan.price} · 7 days free
+          {plan.label} · {plan.price} · 14 days free · founders' pricing
         </div>
         {alreadySubbed ? (
           <div style={{ background: 'rgba(255,255,255,.04)', border: '.5px solid rgba(247,232,240,.16)', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -136,11 +136,16 @@ export function SubscribePage() {
             {err}
           </div>
         ) : (
-          <div style={{ background: '#fff', borderRadius: 14, overflow: 'hidden' }}>
-            <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
-              <EmbeddedCheckout />
-            </EmbeddedCheckoutProvider>
-          </div>
+          <>
+            <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', lineHeight: 1.55, marginBottom: 14 }}>
+              founders' pricing — locked in for as long as you stay subscribed. your card is required now; after your 14-day free trial ends you'll be charged automatically unless you cancel first. cancel anytime from your profile — cancellation takes effect at the end of your current billing period, and payments for the current or past periods are not refunded. by subscribing you agree to the <a href="/terms" style={{ color: '#9e7a8c', textDecoration: 'underline' }}>terms</a> and <a href="/privacy" style={{ color: '#9e7a8c', textDecoration: 'underline' }}>privacy policy</a>.
+            </div>
+            <div style={{ background: '#fff', borderRadius: 14, overflow: 'hidden' }}>
+              <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
+                <EmbeddedCheckout />
+              </EmbeddedCheckoutProvider>
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -180,7 +185,7 @@ export function SubscribeReturnPage() {
     : state === 'checking' ? 'confirming your subscription…'
     : state === 'incomplete' ? 'we couldn\'t confirm your subscription yet.'
     : 'no checkout session found.'
-  const body = state === 'ok' ? 'your 7-day free trial has started. you can manage or cancel anytime from your profile.'
+  const body = state === 'ok' ? 'your 14-day free trial has started. you can manage or cancel anytime from your profile — cancellation applies from the end of the current period.'
     : state === 'checking' ? 'one moment while stripe finalizes.'
     : state === 'incomplete' ? 'if you completed payment, it should appear on your profile within a minute. otherwise, try again.'
     : 'try starting checkout again.'
