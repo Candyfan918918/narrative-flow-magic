@@ -16,11 +16,11 @@
     <animateTransform attributeName="transform" attributeType="XML" type="scale"
       values="1 1; 1 1; 1 0.08; 1 1; 1 1" keyTimes="0; 0.92; 0.95; 0.975; 1"
       dur="3.4s" repeatCount="indefinite"/>
-    <rect x="16" y="6" width="56" height="84" rx="28" fill="url(#fe)"/>
-    <rect x="84" y="6" width="56" height="84" rx="28" fill="url(#fe)"/>
-    <ellipse cx="44" cy="62" rx="19" ry="24" fill="url(#fp)"/>
-    <ellipse cx="112" cy="62" rx="19" ry="24" fill="url(#fp)"/>
-    <path d="M44 22 C41 18 35 18 35 24 C35 30 44 36 44 36 C44 36 53 30 53 24 C53 18 47 18 44 22Z" fill="#ffffff" opacity=".95"/>
-    <path d="M112 22 C109 18 103 18 103 24 C103 30 112 36 112 36 C112 36 121 30 121 24 C121 18 115 18 112 22Z" fill="#ffffff" opacity=".95"/>
+    <rect x="8" y="6" width="56" height="84" rx="28" fill="url(#fe)"/>
+    <rect x="76" y="6" width="56" height="84" rx="28" fill="url(#fe)"/>
+    <ellipse cx="36" cy="62" rx="19" ry="24" fill="url(#fp)"/>
+    <ellipse cx="104" cy="62" rx="19" ry="24" fill="url(#fp)"/>
+    <path d="M36 22 C33 18 27 18 27 24 C27 30 36 36 36 36 C36 36 45 30 45 24 C45 18 39 18 36 22Z" fill="#ffffff" opacity=".95"/>
+    <path d="M104 22 C101 18 95 18 95 24 C95 30 104 36 104 36 C104 36 113 30 113 24 C113 18 107 18 104 22Z" fill="#ffffff" opacity=".95"/>
   </g>
 </svg>
