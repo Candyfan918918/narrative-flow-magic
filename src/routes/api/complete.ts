@@ -1,7 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { generateText, streamText } from 'ai'
+import { createClient } from '@supabase/supabase-js'
 import { createLovableAiGatewayProvider } from '@/lib/ai-gateway.server'
 import { COMPANION_CONSTITUTION } from '@/lib/agents/constitution'
+import type { Database } from '@/integrations/supabase/types'
 
 
 interface CompleteBody {
@@ -19,11 +21,61 @@ const json = (body: unknown, status = 200) =>
 
 const fallback = (error: string) => json({ error, fallback: true })
 
+function isNewSupabaseApiKey(value: string): boolean {
+  return value.startsWith('sb_publishable_') || value.startsWith('sb_secret_')
+}
+
+function createSupabaseFetch(supabaseKey: string): typeof fetch {
+  return (input, init) => {
+    const headers = new Headers(
+      typeof Request !== 'undefined' && input instanceof Request ? input.headers : undefined,
+    )
+    if (init?.headers) {
+      new Headers(init.headers).forEach((value, key) => headers.set(key, value))
+    }
+    if (isNewSupabaseApiKey(supabaseKey) && headers.get('Authorization') === `Bearer ${supabaseKey}`) {
+      headers.delete('Authorization')
+    }
+    headers.set('apikey', supabaseKey)
+    return fetch(input, { ...init, headers })
+  }
+}
+
 export const Route = createFileRoute('/api/complete')({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
+          // Auth gate: require a valid project-issued Supabase JWT before any
+          // inference. Anonymous Supabase sessions are allowed (guest spill/scan
+          // on the landing page), we just refuse unauthenticated traffic so this
+          // isn't an open AI proxy billed to LOVABLE_API_KEY.
+          // TODO: add per-user rate limiting as a follow-up.
+          const authHeader = request.headers.get('authorization')
+          if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return json({ error: 'unauthorized' }, 401)
+          }
+          const token = authHeader.slice('Bearer '.length).trim()
+          if (!token || token.split('.').length !== 3) {
+            return json({ error: 'unauthorized' }, 401)
+          }
+          const SUPABASE_URL = process.env.SUPABASE_URL
+          const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY
+          if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+            return json({ error: 'unauthorized' }, 401)
+          }
+          const authSupabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+            global: {
+              fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
+              headers: { Authorization: `Bearer ${token}` },
+            },
+            auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+          })
+          const { data: claimsData, error: claimsError } = await authSupabase.auth.getClaims(token)
+          if (claimsError || !claimsData?.claims?.sub) {
+            return json({ error: 'unauthorized' }, 401)
+          }
+
           const body = (await request.json()) as CompleteBody
           const messages = Array.isArray(body.messages) ? body.messages : []
           if (!messages.length) return json({ error: 'messages required' }, 400)

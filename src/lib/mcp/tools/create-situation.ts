@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
 import { z } from "zod";
+import { scrubText } from "@/lib/agents/scrubber.functions";
+import { classifyCrisis } from "@/lib/agents/guard.functions";
 
 function supabaseForUser(ctx: ToolContext) {
   return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
@@ -45,13 +47,36 @@ export default defineTool({
         isError: true,
       };
     }
+    // Mirror runSpill: scrub PII first, then crisis-classify. Fail safe — if
+    // scrubbing throws, keep the raw text but force private; if crisis, force
+    // private + crisis_flag regardless of the caller's is_public argument.
+    let textToInsert = clean_text;
+    let forcePrivate = false;
+    let crisisFlag = false;
+    try {
+      const scrub = await scrubText({ data: { raw: clean_text } });
+      textToInsert = scrub.clean_text && scrub.clean_text.length > 0 ? scrub.clean_text : clean_text;
+      try {
+        const guard = await classifyCrisis({ data: { clean_text: textToInsert } });
+        if (guard.crisis) {
+          crisisFlag = true;
+          forcePrivate = true;
+        }
+      } catch {
+        // guard failure is non-fatal; proceed with scrubbed text and caller's is_public
+      }
+    } catch {
+      forcePrivate = true;
+    }
+
     const { data, error } = await supabase
       .from("situations")
       .insert({
         alias_id: userId,
-        clean_text,
+        clean_text: textToInsert,
         pillar,
-        is_public: is_public ?? false,
+        is_public: forcePrivate ? false : (is_public ?? false),
+        crisis_flag: crisisFlag,
       })
       .select("id, pillar, is_public, created_at")
       .single();
