@@ -90,21 +90,22 @@ function loadUserRoomsLive(): LandingRoom[] {
   } catch { return [] }
 }
 function useLiveRooms(): LandingRoom[] {
-  const [version, setVersion] = useState(0)
+  // Seed-only on first render (SSR + first client paint) so hydration matches.
+  // localStorage-backed user rooms merge in AFTER hydration, in an effect.
+  const [userRooms, setUserRooms] = useState<LandingRoom[]>([])
   useEffect(() => {
+    setUserRooms(loadUserRoomsLive())
     const onStorage = (e: StorageEvent) => {
-      if (e.key === 'shutap_user_situations') setVersion(v => v + 1)
+      if (e.key === 'shutap_user_situations') setUserRooms(loadUserRoomsLive())
     }
     window.addEventListener('storage', onStorage)
     return () => window.removeEventListener('storage', onStorage)
   }, [])
   return useMemo(() => {
     const seed = (SHUTAP_SEED.rooms || []).map(r => toLandingRoom(r as Room))
-    const user = loadUserRoomsLive()
-    const live = [...user, ...seed]
+    const live = [...userRooms, ...seed]
     return live.length ? live : FALLBACK_ROOMS
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version])
+  }, [userRooms])
 }
 
 export function LandingNativePage() {
