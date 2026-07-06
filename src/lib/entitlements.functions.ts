@@ -45,9 +45,10 @@ export const getMirrorEntitlement = createServerFn({ method: 'GET' })
     if ((row.status === 'active' || row.status === 'trialing') && withinPeriod) {
       return { entitled: true, demoAccount: false, reason: 'active_subscription' }
     }
-    // Dunning: Stripe is still retrying. Keep access so users aren't
-    // punished for a card blip; webhook downgrades to canceled on failure.
-    if (row.status === 'past_due' && withinPeriod) {
+    // Dunning: Stripe is still retrying. Retain access by status alone while
+    // Stripe retries; the subscription.deleted webhook downgrades to canceled
+    // and revokes access at final failure, not by the period clock.
+    if (row.status === 'past_due') {
       return { entitled: true, demoAccount: false, reason: 'past_due' }
     }
     // Cancel-at-period-end: retain access until the period actually ends.
