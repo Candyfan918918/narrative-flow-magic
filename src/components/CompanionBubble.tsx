@@ -17,6 +17,23 @@ export function CompanionBubble({
   const ref = useRef<HTMLDivElement>(null)
   const onOpenRef = useRef(onOpen)
   useEffect(() => { onOpenRef.current = onOpen }, [onOpen])
+  const fetchDue = useServerFn(getDueCheckin)
+  const [hasDue, setHasDue] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { data: sess } = await supabase.auth.getSession()
+        const u = sess.session?.user as { is_anonymous?: boolean } | undefined
+        const real = !!sess.session && !u?.is_anonymous
+        if (!real) return
+        const d = await fetchDue()
+        if (!cancelled && d) setHasDue(true)
+      } catch { /* fail silent */ }
+    })()
+    return () => { cancelled = true }
+  }, [fetchDue])
 
   useEffect(() => {
     const el = ref.current
