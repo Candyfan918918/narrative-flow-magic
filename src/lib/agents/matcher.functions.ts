@@ -63,7 +63,10 @@ export const findMatches = createServerFn({ method: 'POST' })
         const { data: rows } = await supabase.rpc('match_situations', {
           query_embedding: vec as never,
           match_pillar: data.pillar,
-          match_count: 25,
+          // Count breadth: fetch up to 500 above the similarity floor so the
+          // honest resonance number reflects reality (spec §7.3, e.g. "50+
+          // people"). Returned `stories` are still sliced to the top 2 below.
+          match_count: 500,
           similarity_floor: SIMILARITY_FLOOR,
         } as never)
         if (Array.isArray(rows)) {
