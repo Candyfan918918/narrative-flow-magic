@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SubscribeRouteImport } from './routes/subscribe'
@@ -20,6 +21,7 @@ import { Route as RoomRouteImport } from './routes/room'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as RelationshipsRouteImport } from './routes/relationships'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PreferencesRouteImport } from './routes/preferences'
 import { Route as MirrorRouteImport } from './routes/mirror'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -72,6 +74,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
   path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrustRoute = TrustRouteImport.update({
   id: '/trust',
   path: '/trust',
@@ -120,6 +127,11 @@ const RelationshipsRoute = RelationshipsRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreferencesRoute = PreferencesRouteImport.update({
+  id: '/preferences',
+  path: '/preferences',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MirrorRoute = MirrorRouteImport.update({
@@ -380,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/methodology': typeof MethodologyRoute
   '/mirror': typeof MirrorRoute
+  '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
@@ -390,6 +403,7 @@ export interface FileRoutesByFullPath {
   '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/welcome': typeof WelcomeRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -438,6 +452,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/methodology': typeof MethodologyRoute
   '/mirror': typeof MirrorRoute
+  '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
@@ -448,6 +463,7 @@ export interface FileRoutesByTo {
   '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/welcome': typeof WelcomeRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -498,6 +514,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/methodology': typeof MethodologyRoute
   '/mirror': typeof MirrorRoute
+  '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
   '/relationships': typeof RelationshipsRoute
   '/report': typeof ReportRoute
@@ -508,6 +525,7 @@ export interface FileRoutesById {
   '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/welcome': typeof WelcomeRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -558,6 +576,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/methodology'
     | '/mirror'
+    | '/preferences'
     | '/privacy'
     | '/relationships'
     | '/report'
@@ -568,6 +587,7 @@ export interface FileRouteTypes {
     | '/subscribe'
     | '/terms'
     | '/trust'
+    | '/unsubscribe'
     | '/welcome'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -616,6 +636,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/methodology'
     | '/mirror'
+    | '/preferences'
     | '/privacy'
     | '/relationships'
     | '/report'
@@ -626,6 +647,7 @@ export interface FileRouteTypes {
     | '/subscribe'
     | '/terms'
     | '/trust'
+    | '/unsubscribe'
     | '/welcome'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -675,6 +697,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/methodology'
     | '/mirror'
+    | '/preferences'
     | '/privacy'
     | '/relationships'
     | '/report'
@@ -685,6 +708,7 @@ export interface FileRouteTypes {
     | '/subscribe'
     | '/terms'
     | '/trust'
+    | '/unsubscribe'
     | '/welcome'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -735,6 +759,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   MethodologyRoute: typeof MethodologyRoute
   MirrorRoute: typeof MirrorRoute
+  PreferencesRoute: typeof PreferencesRoute
   PrivacyRoute: typeof PrivacyRoute
   RelationshipsRoute: typeof RelationshipsRoute
   ReportRoute: typeof ReportRoute
@@ -745,6 +770,7 @@ export interface RootRouteChildren {
   SubscribeRoute: typeof SubscribeRouteWithChildren
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   WelcomeRoute: typeof WelcomeRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -773,6 +799,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trust': {
@@ -843,6 +876,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preferences': {
+      id: '/preferences'
+      path: '/preferences'
+      fullPath: '/preferences'
+      preLoaderRoute: typeof PreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mirror': {
@@ -1243,6 +1283,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   MethodologyRoute: MethodologyRoute,
   MirrorRoute: MirrorRoute,
+  PreferencesRoute: PreferencesRoute,
   PrivacyRoute: PrivacyRoute,
   RelationshipsRoute: RelationshipsRoute,
   ReportRoute: ReportRoute,
@@ -1253,6 +1294,7 @@ const rootRouteChildren: RootRouteChildren = {
   SubscribeRoute: SubscribeRouteWithChildren,
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   WelcomeRoute: WelcomeRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
