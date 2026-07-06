@@ -1,13 +1,15 @@
 // Server-side entitlement checks. The client NEVER decides Mirror access —
-// it asks this endpoint. Owner demo email is always entitled. Everyone
-// else needs an active row in `subscriptions`.
+// it asks this endpoint. Every signed-in user needs an active/trialing row
+// in `subscriptions`; anonymous users are never entitled. No account is
+// special-cased — the former owner-demo bypass has been retired.
 import { createServerFn } from '@tanstack/react-start'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
-import { isOwnerDemoEmail } from './require-real-user'
 
 export type MirrorEntitlement = {
   entitled: boolean
   demoAccount: boolean
+  // 'demo' is retained in the union for type compatibility with existing
+  // consumers but is never returned by this handler.
   reason: 'demo' | 'active_subscription' | 'no_subscription' | 'anonymous'
 }
 
@@ -17,9 +19,6 @@ export const getMirrorEntitlement = createServerFn({ method: 'GET' })
     const claims = context.claims as { is_anonymous?: boolean; email?: string } | undefined
     if (claims?.is_anonymous) {
       return { entitled: false, demoAccount: false, reason: 'anonymous' }
-    }
-    if (isOwnerDemoEmail(claims?.email)) {
-      return { entitled: true, demoAccount: true, reason: 'demo' }
     }
     const now = new Date().toISOString()
     const { data } = await context.supabase
@@ -37,3 +36,4 @@ export const getMirrorEntitlement = createServerFn({ method: 'GET' })
       reason: active ? 'active_subscription' : 'no_subscription',
     }
   })
+
