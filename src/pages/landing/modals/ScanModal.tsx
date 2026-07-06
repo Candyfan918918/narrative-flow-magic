@@ -40,7 +40,7 @@ type ScanTurn =
   | { done?: false; line?: string; prompt?: string; card?: ScanCard }
   | { done: true; score?: number | string; signature?: string; read?: string; factors?: string[] }
 
-type QA = { prompt: string; answer: string }
+type QA = { prompt: string; answer: string; type?: ScanCard['type'] }
 type Result = {
   score: number
   label: string
