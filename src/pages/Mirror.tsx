@@ -1337,7 +1337,7 @@ export function MirrorPage() {
               <ActionPill tone="primary" onClick={() => setShareTarget({ p: mostRecent, source: 'hero' })} ariaLabel="Share this card">
                 ↗ share
               </ActionPill>
-              {list.length > 1 && (
+              {list.length > 1 && (isEntitled || isExample) && (
                 <ActionPill onClick={() => setOpenCard(list[Math.floor(Math.random() * list.length)])} ariaLabel="Draw another">
                   🎴 draw another
                 </ActionPill>
