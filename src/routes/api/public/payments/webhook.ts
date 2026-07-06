@@ -20,7 +20,18 @@ function productIdFrom(item: any): string {
 
 async function handleCreated(sub: any, env: StripeEnv) {
   const userId = sub.metadata?.userId;
-  if (!userId) { console.error('No userId in metadata'); return; }
+  if (!userId) {
+    // No userId in metadata means this subscription was created outside our
+    // checkout flow (e.g. Stripe dashboard). We can't associate it with a
+    // user, so log loudly and skip — dashboard-created subs need to be
+    // reconciled manually.
+    console.error('[stripe webhook] subscription missing metadata.userId', {
+      subscription_id: sub.id,
+      customer: sub.customer,
+      env,
+    });
+    return;
+  }
   const item = sub.items?.data?.[0];
   const periodStart = item?.current_period_start ?? sub.current_period_start;
   const periodEnd = item?.current_period_end ?? sub.current_period_end;
