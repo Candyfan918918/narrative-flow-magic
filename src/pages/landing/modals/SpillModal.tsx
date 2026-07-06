@@ -64,6 +64,32 @@ function extractJSON<T>(raw: string): T {
   return JSON.parse(m[0]) as T
 }
 
+const REFLECT_FALLBACK = "ok so — stripped down, this has been weighing on you for a while, and saying it out loud is the first time it's been outside your own head. that about right?"
+
+function sanitizeReflect(raw: string): string {
+  let text = (raw || '').replace(/```json/gi, '').replace(/```/g, '').trim()
+  const m = text.match(/\{[\s\S]*\}/)
+  if (m) {
+    try {
+      const obj = JSON.parse(m[0]) as Record<string, unknown>
+      if (obj && typeof obj === 'object') {
+        const pick = (k: string) => (typeof obj[k] === 'string' ? (obj[k] as string) : '')
+        let picked = pick('stripped_down_reflection') || pick('reflection') || pick('read')
+        if (!picked) {
+          for (const v of Object.values(obj)) {
+            if (typeof v === 'string' && v.trim()) { picked = v; break }
+          }
+        }
+        if (picked) text = picked
+      }
+    } catch { /* not json, keep text */ }
+  }
+  text = text.trim()
+  if (!text) return REFLECT_FALLBACK
+  if (text.includes('```') || text.startsWith('{')) return REFLECT_FALLBACK
+  return text
+}
+
 function mergeDraft(d: Draft, u: Partial<Draft> & { arc?: Arc } | undefined): Draft {
   const base: Draft = d || { pillar: null, tags: [], anchor: null, emotional_core: null, the_real_thing: null, named_and_landed: false }
   const up = u || {}
@@ -271,10 +297,11 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       const convo = allMsgs.filter((m): m is Extract<Msg, { role: 'user' }> => m.role === 'user').map(m => m.text).join(' / ')
       const real = mergedDraft.the_real_thing || ''
       const prompt = 'Say the whole thing back to them, centered on the real thing, in their words, relaxed and warm, lowercase, starting "ok so — stripped down, ". keep it to 1-2 sentences. end with "that about right?" no advice, no diagnosis, no preamble.'
-      const raw = await callComplete('their words: ' + convo + '\nthe real thing underneath: ' + real + '\n\n' + prompt)
-      summary = (raw || '').trim()
+      const reflectSystem = 'You are THE SPILL on Shutap — the user\'s closest friend, lowercase, warm, texty. Reply in PLAIN PROSE ONLY. Never output JSON, code fences, backticks, keys, or braces.'
+      const raw = await callComplete('their words: ' + convo + '\nthe real thing underneath: ' + real + '\n\n' + prompt, reflectSystem)
+      summary = sanitizeReflect(raw)
     } catch {
-      summary = "ok so — stripped down, this has been weighing on you for a while, and saying it out loud is the first time it's been outside your own head. that about right?"
+      summary = REFLECT_FALLBACK
     }
     setReflectSummary(summary)
     setThinking(false)
