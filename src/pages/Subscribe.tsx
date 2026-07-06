@@ -102,7 +102,7 @@ export function SubscribePage() {
           open the full mirror
         </div>
         <div style={{ color: '#caaebb', fontSize: 14.5, lineHeight: 1.55, marginBottom: 18 }}>
-          {plan.label} · {plan.price} · 7 days free
+          {plan.label} · {plan.price} · 14 days free · founders' pricing
         </div>
         {alreadySubbed ? (
           <div style={{ background: 'rgba(255,255,255,.04)', border: '.5px solid rgba(247,232,240,.16)', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
