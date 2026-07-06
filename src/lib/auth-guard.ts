@@ -4,6 +4,7 @@
 // sessions get their intent captured and are redirected to /welcome; the
 // welcome flow resumes the intent after login.
 import { supabase } from '@/integrations/supabase/client'
+import { getRouterRef } from '@/lib/router-ref'
 
 export type PendingIntent =
   | { kind: 'spill' }
