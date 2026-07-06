@@ -40,7 +40,7 @@ type ScanTurn =
   | { done?: false; line?: string; prompt?: string; card?: ScanCard }
   | { done: true; score?: number | string; signature?: string; read?: string; factors?: string[] }
 
-type QA = { prompt: string; answer: string }
+type QA = { prompt: string; answer: string; type?: ScanCard['type'] }
 type Result = {
   score: number
   label: string
@@ -77,13 +77,15 @@ function scrubPII(text: string): string {
 async function callScanAI(qa: QA[], aliasName: string | null): Promise<ScanTurn> {
   const transcript = qa.map((x, i) => (i + 1) + '. ' + x.prompt + ' -> ' + x.answer).join('\n') || '(nothing yet)'
   const n = qa.length
+  const hasText = qa.some(x => x.type === 'text')
   const finishHint = n >= 11
     ? 'You are deep enough - reflect the core back and finish with the result now.'
     : n >= 7
       ? 'Only finish if you have TRULY reached the emotional core (the fear/need/grief underneath) and it landed for them. If you are still on feelings or facts, go one layer DEEPER instead.'
       : 'Do NOT finish yet - you are still near the surface. dig.'
   // Verbatim from Landing.dc.html openScan() sys builder (line 1526).
-  const sys = "You are THE SCAN on Shutap - a quick, intuitive read of how heavy someone's situation is RIGHT NOW, scored 0-999. You are a warm, perceptive, FUNNY friend - caring, a little cheeky, never clinical, never a dry form. lowercase, texty.\n\nYou run an ADAPTIVE check: each step you design the NEXT input card, REACTING specifically to what they just said (name it, take their side, a gentle joke when it fits). VARY the input type EVERY step - never repeat the same kind twice in a row, and lean on the tactile widgets (spectrum, rank, rate, multi) far more than plain choice so it stays playful, hands-on and alive. ~9-12 cards - go the distance; do NOT stop at the surface; keep going until you reach the bottom of their heart, then finish.\n\nDIG LIKE THEIR CLOSEST FRIEND - this is the whole point. each card goes ONE LAYER DEEPER than the last: what happened -> the feeling -> the feeling UNDER that feeling -> the fear or need or grief at the very bottom (what they are most scared is true, what they actually need and are not getting, the thing they have not said out loud). when you sense the real thing, NAME it back to them tenderly and check if that is it. never settle for their first, tidiest answer - push, warmly, like someone who refuses to let them stay on the surface.\n\nCARD TYPES (pick what truly fits the question):\n- choice   -> one pick. fields: options:[4-7 short strings, an emoji is nice]\n- multi    -> pick several. fields: options:[5-9 strings], max:int\n- rate     -> a 0-10 slider. fields: min_label, max_label\n- spectrum -> drag a handle between two extremes. fields: left, right\n- rank     -> drag to order. fields: items:[4-6 short strings]\n- text     -> a few words. fields: placeholder\n\nReturn STRICT JSON, exactly ONE of:\n{\"line\":\"<short warm/funny reaction to their last answer, or a welcoming opener>\",\"prompt\":\"<the question, short, specific>\",\"card\":{\"type\":\"...\", ...fields}}\nOR when you have a real read:\n{\"done\":true,\"score\":<int 0-999>,\"signature\":\"<3-4 word title, Title Case>\",\"read\":\"<2 warm sentences that NAME the real thing at the bottom of their heart - the core fear or need underneath - specific to them, tender, a little funny>\",\"factors\":[\"<2-4 word driver>\",\"<...>\"]}\n\nSCORE BANDS (use the WHOLE range; judge by recency, how stuck/looping it is, body load, isolation, stakes): 0-199 barely landed / settling . 200-399 sitting with it . 400-599 weighing on you . 600-799 heavy and loud . 800-999 consuming, urgent.\n\n" + (aliasName ? ('the user goes by "' + aliasName + '" - you can use their name warmly.\n') : '') + "\n=== what they have told you ===\n" + transcript + "\n\n" + finishHint + "\noutput ONLY the JSON."
+  const sys = "You are THE SCAN on Shutap - a quick, intuitive read of how heavy someone's situation is RIGHT NOW, scored 0-999. You are a warm, perceptive, FUNNY friend - caring, a little cheeky, never clinical, never a dry form. lowercase, texty.\n\nYou run an ADAPTIVE check: each step you design the NEXT input card, REACTING specifically to what they just said (name it, take their side, a gentle joke when it fits). VARY the input type EVERY step - never repeat the same kind twice in a row, and lean on the tactile widgets (spectrum, rank, rate, multi) far more than plain choice so it stays playful, hands-on and alive. ~9-12 cards - go the distance; do NOT stop at the surface; keep going until you reach the bottom of their heart, then finish. HARD RULE: card 1 or card 2 MUST be a free-text card asking what actually happened, in their own words (type 'text', e.g. prompt \"what's going on - tell me in your own words?\", placeholder \"whatever it is, just say it...\"). you cannot read someone you haven't heard.\n\nDIG LIKE THEIR CLOSEST FRIEND - this is the whole point. each card goes ONE LAYER DEEPER than the last: what happened -> the feeling -> the feeling UNDER that feeling -> the fear or need or grief at the very bottom (what they are most scared is true, what they actually need and are not getting, the thing they have not said out loud). when you sense the real thing, NAME it back to them tenderly and check if that is it. never settle for their first, tidiest answer - push, warmly, like someone who refuses to let them stay on the surface.\n\nCARD TYPES (pick what truly fits the question):\n- choice   -> one pick. fields: options:[4-7 short strings, an emoji is nice]\n- multi    -> pick several. fields: options:[5-9 strings], max:int\n- rate     -> a 0-10 slider. fields: min_label, max_label\n- spectrum -> drag a handle between two extremes. fields: left, right\n- rank     -> drag to order. fields: items:[4-6 short strings]\n- text     -> a few words. fields: placeholder\n\nReturn STRICT JSON, exactly ONE of:\n{\"line\":\"<short warm/funny reaction to their last answer, or a welcoming opener>\",\"prompt\":\"<the question, short, specific>\",\"card\":{\"type\":\"...\", ...fields}}\nOR when you have a real read:\n{\"done\":true,\"score\":<int 0-999>,\"signature\":\"<3-4 word title, Title Case>\",\"read\":\"<2 warm sentences that NAME the real thing at the bottom of their heart - the core fear or need underneath - specific to them, tender, a little funny>\",\"factors\":[\"<2-4 word driver>\",\"<...>\"]}\nNEVER return the done/score object unless the transcript contains at least one free-text answer describing what happened. if you are about to finish without one, ask a text card first.\n\nSCORE BANDS (use the WHOLE range; judge by recency, how stuck/looping it is, body load, isolation, stakes): 0-199 barely landed / settling . 200-399 sitting with it . 400-599 weighing on you . 600-799 heavy and loud . 800-999 consuming, urgent.\n\n" + (aliasName ? ('the user goes by "' + aliasName + '" - you can use their name warmly.\n') : '') + "\n=== what they have told you ===\n" + transcript + "\n\n" + finishHint + (n >= 1 && !hasText ? "\nIMPORTANT: you still have NO free-text answer from them. your next card MUST be type 'text' asking what actually happened." : '') + "\noutput ONLY the JSON."
+
 
   const res = await fetch('/api/complete', {
     method: 'POST',
@@ -104,7 +106,7 @@ async function callScanAI(qa: QA[], aliasName: string | null): Promise<ScanTurn>
 }
 
 // Fallback deck — verbatim from Landing.dc.html scanFallbackCard (~1657).
-function scanFallback(n: number): ScanTurn {
+function scanFallback(n: number, hasText: boolean): ScanTurn {
   const seq: ScanTurn[] = [
     { line: "ok, i'm here. let's get a real read on you - no wrong answers, take your time.", prompt: "what's this mostly about?", card: { type: 'choice', options: ['love / someone i love', 'family', 'a friend', 'work', 'me, internally', 'something else'] } },
     { line: "okay. tell me the shape of it -", prompt: 'what actually happened? a few words.', card: { type: 'text', placeholder: 'the gist of it...' } },
@@ -116,6 +118,7 @@ function scanFallback(n: number): ScanTurn {
     { line: 'and this part matters -', prompt: 'have you said any of this out loud?', card: { type: 'choice', options: ['not to anyone', 'to one person', 'to a few people', 'everyone knows but me'] } },
     { line: "last thing, then i'll read you -", prompt: 'what would actually help right now?', card: { type: 'multi', options: ['to be heard', 'some clarity', "to know i'm not wrong", 'to feel less alone', 'for it to change', 'to let it go'], max: 2 } },
   ]
+  if (!hasText && n >= 1 && n < seq.length) return seq[1]
   if (n >= seq.length) return { done: true, score: 520, signature: 'Carrying It Quietly', read: "you're holding something real right now - not a five-alarm fire, but it's there, and it's yours. saying it out loud was the right move.", factors: ['still looping', 'not said out loud'] }
   return seq[n]
 }
@@ -342,6 +345,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   // fetch next card whenever phase transitions to loading
   const fetchNext = useCallback(async () => {
     setPhase('loading')
+    const hasText = qaRef.current.some(x => x.type === 'text')
     let res: ScanTurn
     try {
       let aliasName: string | null = null
@@ -351,7 +355,15 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       } catch { /* ignore */ }
       res = await callScanAI(qaRef.current, aliasName)
     } catch {
-      res = scanFallback(qaRef.current.length)
+      res = scanFallback(qaRef.current.length, hasText)
+    }
+    // Guard: never finish before we've heard them in their own words.
+    if ('done' in res && res.done && !hasText && qaRef.current.length < 11) {
+      res = {
+        line: "wait — before i read you, say it in your own words.",
+        prompt: "what actually happened?",
+        card: { type: 'text', placeholder: 'whatever it is, just say it…' },
+      }
     }
     if ('done' in res && res.done) {
       const score = Math.max(0, Math.min(999, parseInt(String(res.score), 10) || 400))
@@ -386,7 +398,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
 
   const submitAnswer = useCallback((answer: string) => {
     if (!current) return
-    setQA(prev => [...prev, { prompt: current.prompt, answer }])
+    setQA(prev => [...prev, { prompt: current.prompt, answer, type: current.card.type }])
     setCurrent(null)
     setPhase('loading')
   }, [current])
