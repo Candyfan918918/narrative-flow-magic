@@ -508,11 +508,11 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div role="button" onClick={() => void runCompose('heard')} style={{ cursor: 'pointer', padding: 16, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 14, textAlign: 'center', transition: '.15s' }}>
                     <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', color: '#f7b8d4', marginBottom: 6 }}>just to be heard</div>
-                    <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0' }}>sit with me. you don\u2019t have to fix anything.</div>
+                    <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0' }}>sit with me. you don’t have to fix anything.</div>
                   </div>
                   <div role="button" onClick={() => void runCompose('advice')} style={{ cursor: 'pointer', padding: 16, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 14, textAlign: 'center', transition: '.15s' }}>
                     <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', color: '#a8d4a9', marginBottom: 6 }}>open to advice</div>
-                    <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0' }}>the room can share what it\u2019d do.</div>
+                    <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0' }}>the room can share what it’d do.</div>
                   </div>
                 </div>
               </div>
@@ -532,7 +532,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         {phase === 'preview' && composed && (
           <div ref={bodyRef} style={{ flex: 1, overflowY: 'auto', padding: '26px 22px 24px', maxWidth: 580, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#e7548a' }}>preview · in your words</div>
-            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, lineHeight: 1.55, color: '#c4a0b2' }}>nothing\u2019s posted yet. type right over anything to fix it, or tell me what to change below — then pick where it lives.</div>
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#c4a0b2' }}>nothing’s posted yet — this is your draft. tap the title or the story to edit it directly, or type an instruction below and i’ll rewrite it. when it reads right, keep it private in your journal or post it to a room.</div>
             {editNote && (
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#a8d4a9' }}>
                 {eyeSVG(18)}<span>{editNote}</span>
