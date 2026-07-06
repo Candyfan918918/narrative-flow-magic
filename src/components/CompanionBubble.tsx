@@ -1,5 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useServerFn } from '@tanstack/react-start'
 import { EyeMark } from './EyeMark'
+import { getDueCheckin } from '@/lib/checkins.functions'
+import { supabase } from '@/integrations/supabase/client'
 
 /* The companion: a draggable, semi-transparent pink circle with the brand eyes
    (no pill, no label). Tap (without dragging) opens the Ask flow; drag to
@@ -14,6 +17,23 @@ export function CompanionBubble({
   const ref = useRef<HTMLDivElement>(null)
   const onOpenRef = useRef(onOpen)
   useEffect(() => { onOpenRef.current = onOpen }, [onOpen])
+  const fetchDue = useServerFn(getDueCheckin)
+  const [hasDue, setHasDue] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { data: sess } = await supabase.auth.getSession()
+        const u = sess.session?.user as { is_anonymous?: boolean } | undefined
+        const real = !!sess.session && !u?.is_anonymous
+        if (!real) return
+        const d = await fetchDue()
+        if (!cancelled && d) setHasDue(true)
+      } catch { /* fail silent */ }
+    })()
+    return () => { cancelled = true }
+  }, [fetchDue])
 
   useEffect(() => {
     const el = ref.current
@@ -138,6 +158,23 @@ export function CompanionBubble({
       <div style={{ pointerEvents: 'none', display: 'inline-flex', transform: 'translateX(-2px)' }}>
         <EyeMark size={34} />
       </div>
+      {hasDue && (
+        <span
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            background: '#e7548a',
+            boxShadow: '0 0 0 2px rgba(46,13,26,.9)',
+            animation: 'pulse 2.4s infinite',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
     </div>
   )
 }

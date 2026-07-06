@@ -7,12 +7,17 @@ import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { EyeMark } from './EyeMark'
 import { runCompanion } from '@/lib/agents/companion.functions'
+import { getDueCheckin, recordCheckinResponse, snoozeCheckin } from '@/lib/checkins.functions'
+import { supabase } from '@/integrations/supabase/client'
 
 const NEWSREADER = "'Newsreader', Georgia, serif"
 const SORA = "'Sora', system-ui, sans-serif"
 
 type AskRoom = { id: string; title: string; alias: string; emoji: string }
 type Turn = { role: 'user' | 'assistant'; content: string }
+type BeatKind = 'trajectory' | 'action' | 'resolution' | 'feeling'
+type Beat = { title: string; chips: { value: string; label: string }[]; kind: BeatKind }
+type DueCheckin = { id: string; type: string; beat: Beat | null }
 
 export function CompanionComposer({ open, onClose, onSpill, onScan }: {
   open: boolean
@@ -22,20 +27,77 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
 }) {
   const navigate = useNavigate()
   const ask = useServerFn(runCompanion)
+  const fetchDue = useServerFn(getDueCheckin)
+  const submitCheckin = useServerFn(recordCheckinResponse)
+  const snoozeFn = useServerFn(snoozeCheckin)
   const inputRef = useRef<HTMLInputElement>(null)
   const [reply, setReply] = useState<string>('')
   const [rooms, setRooms] = useState<AskRoom[]>([])
   const [busy, setBusy] = useState(false)
   const [history, setHistory] = useState<Turn[]>([])
+  const [due, setDue] = useState<DueCheckin | null>(null)
+  const [noteOpen, setNoteOpen] = useState(false)
+  const [note, setNote] = useState('')
+  const [checkinBusy, setCheckinBusy] = useState(false)
+  const [checkinAck, setCheckinAck] = useState<string>('')
 
   useEffect(() => {
-    if (open) {
-      setReply('')
-      setRooms([])
-      setHistory([])
-      queueMicrotask(() => inputRef.current?.focus())
+    if (!open) return
+    setReply('')
+    setRooms([])
+    setHistory([])
+    setDue(null)
+    setNoteOpen(false)
+    setNote('')
+    setCheckinAck('')
+    queueMicrotask(() => inputRef.current?.focus())
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { data: sess } = await supabase.auth.getSession()
+        const u = sess.session?.user as { is_anonymous?: boolean } | undefined
+        const real = !!sess.session && !u?.is_anonymous
+        if (!real) return
+        const d = await fetchDue()
+        if (cancelled) return
+        if (d && d.beat) setDue(d as DueCheckin)
+      } catch { /* fail silent */ }
+    })()
+    return () => { cancelled = true }
+  }, [open, fetchDue])
+
+  const onChip = useCallback(async (value: string) => {
+    if (!due || !due.beat || checkinBusy) return
+    setCheckinBusy(true)
+    const kind = due.beat.kind
+    const clean = note.trim().slice(0, 2000)
+    const payload: Record<string, unknown> = { checkin_id: due.id }
+    if (kind === 'trajectory') payload.trajectory = value
+    else if (kind === 'action') payload.action = value
+    else if (kind === 'resolution') payload.resolution = value
+    else if (kind === 'feeling') payload.feeling_tap = value
+    if (clean) payload.clean_text = clean
+    try {
+      await submitCheckin({ data: payload as never })
+      setDue(null)
+      setNoteOpen(false)
+      setNote('')
+      setCheckinAck("noted 🤍 — i'll check on you again.")
+    } catch {
+      setDue(null)
+    } finally {
+      setCheckinBusy(false)
     }
-  }, [open])
+  }, [due, note, checkinBusy, submitCheckin])
+
+  const onSnooze = useCallback(async () => {
+    if (!due) return
+    const id = due.id
+    setDue(null)
+    setNoteOpen(false)
+    setNote('')
+    try { await snoozeFn({ data: { id } }) } catch { /* fail silent */ }
+  }, [due, snoozeFn])
 
   const send = useCallback(async () => {
     const v = (inputRef.current?.value || '').trim()
@@ -78,6 +140,57 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
           </div>
           <div onClick={onClose} role="button" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', cursor: 'pointer', flex: 'none' }}>close</div>
         </div>
+        {due && due.beat && (
+          <div style={{ marginBottom: 14, background: 'rgba(231,84,138,.08)', border: '.5px solid rgba(231,84,138,.28)', borderRadius: 16, padding: '14px 15px' }}>
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14.5, color: '#f7e8f0', lineHeight: 1.5, marginBottom: 12 }}>
+              {due.beat.title}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+              {due.beat.chips.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  onClick={() => onChip(c.value)}
+                  disabled={checkinBusy}
+                  style={{ fontFamily: SORA, fontWeight: 600, fontSize: 12.5, padding: '7px 13px', borderRadius: 999, border: '1px solid rgba(231,84,138,.35)', background: 'rgba(231,84,138,.14)', color: '#f7e8f0', cursor: checkinBusy ? 'wait' : 'pointer', opacity: checkinBusy ? 0.6 : 1, transition: 'background .15s' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(231,84,138,.28)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(231,84,138,.14)' }}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+            {!noteOpen ? (
+              <div
+                role="button"
+                onClick={() => setNoteOpen(true)}
+                style={{ display: 'inline-block', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#caaebb', cursor: 'pointer', marginRight: 14 }}
+              >
+                add a note — optional
+              </div>
+            ) : (
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value.slice(0, 2000))}
+                placeholder="add a note — optional"
+                rows={2}
+                style={{ display: 'block', width: '100%', marginTop: 4, marginBottom: 8, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 10, padding: '8px 10px', color: '#f7e8f0', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, outline: 'none', resize: 'vertical' }}
+              />
+            )}
+            <div
+              role="button"
+              onClick={onSnooze}
+              style={{ display: 'inline-block', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c', cursor: 'pointer' }}
+            >
+              not now
+            </div>
+          </div>
+        )}
+        {checkinAck && !due && (
+          <div style={{ marginBottom: 14, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#f7b8d4', lineHeight: 1.5 }}>
+            {checkinAck}
+          </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 14, padding: '12px 14px' }}>
           <input
             ref={inputRef}
