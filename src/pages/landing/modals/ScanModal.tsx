@@ -345,6 +345,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   // fetch next card whenever phase transitions to loading
   const fetchNext = useCallback(async () => {
     setPhase('loading')
+    const hasText = qaRef.current.some(x => x.type === 'text')
     let res: ScanTurn
     try {
       let aliasName: string | null = null
@@ -354,7 +355,15 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       } catch { /* ignore */ }
       res = await callScanAI(qaRef.current, aliasName)
     } catch {
-      res = scanFallback(qaRef.current.length)
+      res = scanFallback(qaRef.current.length, hasText)
+    }
+    // Guard: never finish before we've heard them in their own words.
+    if ('done' in res && res.done && !hasText && qaRef.current.length < 11) {
+      res = {
+        line: "wait — before i read you, say it in your own words.",
+        prompt: "what actually happened?",
+        card: { type: 'text', placeholder: 'whatever it is, just say it…' },
+      }
     }
     if ('done' in res && res.done) {
       const score = Math.max(0, Math.min(999, parseInt(String(res.score), 10) || 400))
