@@ -398,7 +398,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
 
   const submitAnswer = useCallback((answer: string) => {
     if (!current) return
-    setQA(prev => [...prev, { prompt: current.prompt, answer }])
+    setQA(prev => [...prev, { prompt: current.prompt, answer, type: current.card.type }])
     setCurrent(null)
     setPhase('loading')
   }, [current])
