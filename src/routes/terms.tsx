@@ -148,6 +148,22 @@ function TermsPage() {
         arbitration commitment.
       </p>
 
+      <h3>subscriptions &amp; billing</h3>
+      <p>
+        Mirror is a paid subscription at the prices shown at checkout. New subscriptions include a
+        <b> 14-day free trial</b> that requires a valid payment method up front; at the end of the
+        trial the subscription <b>converts automatically</b> to a paid subscription and your card is
+        charged unless you cancel before the trial ends. Subscriptions <b>renew automatically</b> at
+        the end of each billing period (monthly or annual) at the then-current price for your plan.
+        You can <b>cancel anytime</b> from the billing portal linked in your profile; cancellation
+        takes effect at the <b>end of your current billing period</b> and you keep access until
+        then. Amounts already paid for the current or any past billing periods are
+        <b> non-refundable</b>, except where a refund is required by applicable law.
+        &ldquo;Founders&apos; pricing&rdquo; is honored for as long as your subscription remains
+        continuously active; if it lapses or is canceled, resubscribing may be at the then-current
+        standard price.
+      </p>
+
       <h3>changes</h3>
       <p>
         We may update these terms; material changes will be notified and re-accepted with a new
