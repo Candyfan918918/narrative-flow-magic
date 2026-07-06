@@ -18,12 +18,16 @@ export function CompanionBubble({
     const el = ref.current
     if (!el) return
 
-    // restore saved position
+    // restore saved position (clamped to current viewport so a stale
+    // localStorage entry from a larger window can't strand the bubble off-screen)
     try {
       const p = JSON.parse(localStorage.getItem('shutap_bubble') || 'null')
-      if (p) {
-        el.style.left = p.x + 'px'
-        el.style.top = p.y + 'px'
+      if (p && typeof p.x === 'number' && typeof p.y === 'number') {
+        const sz = el.offsetWidth || 58
+        const nx = Math.max(8, Math.min(window.innerWidth - sz - 8, p.x))
+        const ny = Math.max(8, Math.min(window.innerHeight - sz - 8, p.y))
+        el.style.left = nx + 'px'
+        el.style.top = ny + 'px'
         el.style.bottom = 'auto'
       }
     } catch {
@@ -78,13 +82,25 @@ export function CompanionBubble({
       }
     }
 
+    const onResize = () => {
+      const sz = el.offsetWidth || 58
+      const r = el.getBoundingClientRect()
+      const nx = Math.max(8, Math.min(window.innerWidth - sz - 8, r.left))
+      const ny = Math.max(8, Math.min(window.innerHeight - sz - 8, r.top))
+      el.style.left = nx + 'px'
+      el.style.top = ny + 'px'
+      el.style.bottom = 'auto'
+    }
+
     el.addEventListener('pointerdown', down)
     window.addEventListener('pointermove', move, { passive: false })
     window.addEventListener('pointerup', up)
+    window.addEventListener('resize', onResize)
     return () => {
       el.removeEventListener('pointerdown', down)
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
+      window.removeEventListener('resize', onResize)
     }
   }, [])
 
