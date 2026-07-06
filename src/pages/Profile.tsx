@@ -507,3 +507,77 @@ function btn(color: string): React.CSSProperties {
     cursor: 'pointer',
   }
 }
+
+function planLabelFor(priceId: string | null): string {
+  if (priceId === 'mirror_monthly') return 'monthly · $6/mo'
+  if (priceId === 'mirror_annual') return 'annual · $49/yr'
+  return priceId ?? 'unknown plan'
+}
+
+function BillingCard({
+  billing,
+  onOpenPortal,
+  portalBusy,
+  navigate,
+}: {
+  billing: BillingStatus | undefined
+  onOpenPortal: () => void
+  portalBusy: boolean
+  navigate: (path: string) => void
+}) {
+  if (billing === undefined) {
+    return <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#9e7a8c' }}>loading…</div>
+  }
+  if (billing === null) {
+    return (
+      <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15, color: '#0b080f' }}>
+          you're on the free tier.
+        </div>
+        <div>
+          <button onClick={() => navigate('/subscribe?plan=annual')} style={btn('#c1216b')}>open the full mirror →</button>
+        </div>
+      </div>
+    )
+  }
+  const end = billing.currentPeriodEnd ? new Date(billing.currentPeriodEnd) : null
+  const endStr = end ? end.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : null
+  const statusLabel =
+    billing.status === 'trialing' ? 'trialing'
+    : billing.status === 'active' && billing.cancelAtPeriodEnd ? 'canceling'
+    : billing.status === 'active' ? 'active'
+    : billing.status === 'past_due' ? 'payment failed'
+    : billing.status === 'canceled' && billing.isActive ? 'canceled (grace period)'
+    : billing.status
+  const statusColor =
+    billing.status === 'past_due' ? '#c87c4a'
+    : billing.cancelAtPeriodEnd || billing.status === 'canceled' ? '#9e7a8c'
+    : '#5B8A5E'
+  return (
+    <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+        <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: statusColor, background: statusColor + '18', padding: '3px 8px', borderRadius: 999 }}>
+          {statusLabel}
+        </span>
+        <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15, color: '#0b080f' }}>
+          {planLabelFor(billing.priceId)}
+        </span>
+      </div>
+      {endStr && (
+        <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13.5, color: '#6b4a5c' }}>
+          {billing.status === 'trialing' ? `trial ends ${endStr}`
+            : billing.cancelAtPeriodEnd || billing.status === 'canceled' ? `access ends ${endStr}`
+            : billing.status === 'past_due' ? `payment retrying · access until ${endStr}`
+            : `renews ${endStr}`}
+        </div>
+      )}
+      <div>
+        {billing.hasCustomer && (
+          <button onClick={onOpenPortal} disabled={portalBusy} style={btn('#c1216b')}>
+            {portalBusy ? 'opening…' : 'manage billing →'}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
