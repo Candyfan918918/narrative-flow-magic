@@ -90,54 +90,43 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
 
     const [
       totalReal, newSignups7, newSignups30,
-      dauEvents, wauEvents, mauEvents,
       totalVisits, visits7, visits30, revisits30,
-      convertedGuests, providerRows, recentSignins,
-      countryRows, eventNames, eventCounts7, eventCounts30,
+      convertedGuests, recentSignins,
+      activeUsersRes, providerRowsRes, countryRowsRes, eventRowsRes,
     ] = await Promise.all([
       supabaseAdmin.from('profiles').select('user_id', { count: 'exact', head: true }).eq('is_anonymous', false),
       supabaseAdmin.from('profiles').select('user_id', { count: 'exact', head: true }).eq('is_anonymous', false).gte('signup_at', d7),
       supabaseAdmin.from('profiles').select('user_id', { count: 'exact', head: true }).eq('is_anonymous', false).gte('signup_at', d30),
-      supabaseAdmin.from('events').select('user_id').not('user_id', 'is', null).gte('ts', d1),
-      supabaseAdmin.from('events').select('user_id').not('user_id', 'is', null).gte('ts', d7),
-      supabaseAdmin.from('events').select('user_id').not('user_id', 'is', null).gte('ts', d30),
       supabaseAdmin.from('visits').select('id', { count: 'exact', head: true }),
       supabaseAdmin.from('visits').select('id', { count: 'exact', head: true }).gte('started_at', d7),
       supabaseAdmin.from('visits').select('id', { count: 'exact', head: true }).gte('started_at', d30),
       supabaseAdmin.from('visits').select('id', { count: 'exact', head: true }).gte('started_at', d30).eq('is_revisit', true),
       supabaseAdmin.from('events').select('user_id', { count: 'exact', head: true }).eq('name', 'sign_up'),
-      supabaseAdmin.from('profiles').select('provider').eq('is_anonymous', false),
       supabaseAdmin.from('profiles').select('user_id, email, full_name, first_name, last_name, provider, last_login_at').eq('is_anonymous', false).not('last_login_at', 'is', null).order('last_login_at', { ascending: false }).limit(20),
-      supabaseAdmin.from('visits').select('country').gte('started_at', d30).not('country', 'is', null),
-      supabaseAdmin.from('events').select('name').gte('ts', d30),
-      supabaseAdmin.from('events').select('name').gte('ts', d7),
-      supabaseAdmin.from('events').select('name').gte('ts', d30),
+      supabaseAdmin.rpc('admin_active_users' as never),
+      supabaseAdmin.rpc('admin_provider_counts' as never),
+      supabaseAdmin.rpc('admin_country_counts' as never),
+      supabaseAdmin.rpc('admin_event_counts' as never),
     ])
 
-    const uniq = (rows: { data: Array<{ user_id: string | null }> | null }) => {
-      const s = new Set<string>()
-      for (const r of rows.data ?? []) if (r.user_id) s.add(r.user_id)
-      return s.size
-    }
-    const tally = <T extends string>(rows: { data: Array<Record<string, unknown>> | null }, key: T) => {
-      const m: Record<string, number> = {}
-      for (const r of rows.data ?? []) {
-        const v = (r[key] as string | null) ?? '—'
-        m[v] = (m[v] ?? 0) + 1
-      }
-      return m
+    const activeRow = (Array.isArray(activeUsersRes.data) ? activeUsersRes.data[0] : activeUsersRes.data) as
+      | { dau?: number | string; wau?: number | string; mau?: number | string } | null
+    const dau = Number(activeRow?.dau ?? 0)
+    const wau = Number(activeRow?.wau ?? 0)
+    const mau = Number(activeRow?.mau ?? 0)
+
+    const providers: Record<string, number> = {}
+    for (const r of ((providerRowsRes.data ?? []) as Array<{ provider: string | null; cnt: number | string }>)) {
+      providers[r.provider ?? '—'] = Number(r.cnt)
     }
 
-    const providers = tally(providerRows as never, 'provider')
-    const countries = tally(countryRows as never, 'country')
-    const topCountries = Object.entries(countries).sort((a, b) => b[1] - a[1]).slice(0, 10)
+    const countryRows = ((countryRowsRes.data ?? []) as Array<{ country: string; cnt: number | string }>)
+    const topCountries: Array<[string, number]> = countryRows.slice(0, 10).map((r) => [r.country, Number(r.cnt)])
 
-    const events7 = tally(eventCounts7 as never, 'name')
-    const events30 = tally(eventCounts30 as never, 'name')
-    const eventKeys = Array.from(new Set([...Object.keys(events7), ...Object.keys(events30)])).sort()
-    const eventTable = eventKeys.map((n) => ({ name: n, d7: events7[n] ?? 0, d30: events30[n] ?? 0 }))
+    const eventTable = ((eventRowsRes.data ?? []) as Array<{ name: string; d7: number | string; d30: number | string }>)
+      .map((r) => ({ name: r.name, d7: Number(r.d7), d30: Number(r.d30) }))
+      .sort((a, b) => a.name.localeCompare(b.name))
 
-    void eventNames
     const visits30Total = visits30.count ?? 0
     const revisits = revisits30.count ?? 0
     const newVisits = Math.max(0, visits30Total - revisits)
@@ -150,11 +139,7 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
         new_30d: newSignups30.count ?? 0,
         guest_converted: convertedGuests.count ?? 0,
       },
-      activity: {
-        dau: uniq(dauEvents as never),
-        wau: uniq(wauEvents as never),
-        mau: uniq(mauEvents as never),
-      },
+      activity: { dau, wau, mau },
       visits: {
         total: totalVisits.count ?? 0,
         d7: visits7.count ?? 0,
@@ -172,6 +157,7 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
       }>,
     }
   })
+
 
 export const adminListEvents = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
