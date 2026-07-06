@@ -237,7 +237,13 @@ function RootComponent() {
       <GlobalHeader />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <CompanionBubble onOpen={() => navigate('/#ask')} />
+      <CompanionBubble onOpen={() => {
+        if (window.location.pathname === '/') {
+          window.location.hash = 'ask'
+        } else {
+          navigate('/#ask')
+        }
+      }} />
     </QueryClientProvider>
   );
 }
