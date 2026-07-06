@@ -423,6 +423,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         else navigate('/profile')
       }, 850)
     } catch (e) {
+      console.error('[spill save]', e)
       const msg = e instanceof Error ? e.message : String(e)
       if (msg.includes('sign_in_required')) {
         try {

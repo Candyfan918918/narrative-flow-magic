@@ -326,6 +326,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   const [result, setResult] = useState<Result | null>(null)
   const [shareOpen, setShareOpen] = useState(false)
   const [displayScore, setDisplayScore] = useState(0)
+  const [saveNote, setSaveNote] = useState<string | null>(null)
   const qaRef = useRef<QA[]>([])
   qaRef.current = qa
 
@@ -333,7 +334,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   useEffect(() => {
     if (!open) return
     document.body.style.overflow = 'hidden'
-    setQA([]); setResult(null); setShareOpen(false); setDisplayScore(0)
+    setQA([]); setResult(null); setShareOpen(false); setDisplayScore(0); setSaveNote(null)
     setPhase('loading'); setCurrent(null)
     return () => { document.body.style.overflow = '' }
   }, [open])
@@ -428,7 +429,18 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
         if (isPublic && res?.room_id) navigate(`/stream#room-${res.room_id}`)
         else navigate('/profile')
       }, 550)
-    } catch {
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      console.error('[scan save]', e)
+      if (msg.includes('sign_in_required')) {
+        try {
+          sessionStorage.setItem('shutap_pending_save', JSON.stringify(payload))
+          sessionStorage.setItem('shutap_pending_intent', 'scan')
+        } catch { /* noop */ }
+        navigate('/welcome')
+        return
+      }
+      setSaveNote("couldn't save — " + msg)
       setPhase('result')
     }
   }, [result, save, navigate])
@@ -509,6 +521,9 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
             <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, color: '#c4a0b2', lineHeight: 1.55 }}>{result.sub}</div>
           </div>
           <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14.5, color: '#9e7a8c', textAlign: 'center' }}>this is your read. keep it just for you, or let a room hold your number too.</div>
+          {saveNote && (
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#a8d4a9', textAlign: 'center' }}>{saveNote}</div>
+          )}
           <div role="button" onClick={() => setShareOpen(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 14, background: 'linear-gradient(120deg,#ff7eb3,#c1216b)', borderRadius: 14, cursor: 'pointer' }}>
             <span style={{ fontSize: 15, color: '#fff' }}>＋</span>
             <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 14, color: '#fff' }}>share your score</span>
