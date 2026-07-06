@@ -5,6 +5,8 @@
    Every caller already has a deterministic fallback, so a failed/absent
    backend never breaks the UI — complete() throws and the caller catches. */
 
+import { supabase } from '@/integrations/supabase/client'
+
 export interface CompleteMessage {
   role: 'user' | 'assistant'
   content: string
@@ -15,9 +17,11 @@ export async function complete(opts: {
   system?: string
   maxTokens?: number
 }): Promise<string> {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
   const res = await fetch('/api/complete', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify(opts),
   })
   if (!res.ok) throw new Error(`complete failed: ${res.status}`)
