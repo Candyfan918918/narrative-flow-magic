@@ -44,7 +44,9 @@ export async function requireRealUser(intent: PendingIntent): Promise<boolean> {
   const u = data.session?.user as { is_anonymous?: boolean } | undefined
   if (data.session && !u?.is_anonymous) return true
   saveIntent(intent)
-  window.location.assign('/welcome')
+  const router = getRouterRef()
+  if (router) router.navigate({ to: '/welcome' })
+  else window.location.assign('/welcome')
   return false
 }
 
