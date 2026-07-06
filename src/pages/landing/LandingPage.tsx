@@ -12,6 +12,7 @@ import { ScanModal } from './modals/ScanModal'
 import { MirrorTeaser } from './sections/MirrorTeaser'
 import { CompanionComposer } from '@/components/CompanionComposer'
 import { saveSituation } from '@/lib/situations.functions'
+import { requireRealUser, saveIntent } from '@/lib/auth-guard'
 import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
 import type { Room } from '@/data/types'
@@ -126,13 +127,11 @@ export function LandingNativePage() {
   const gridRooms = liveRooms.slice(0, 4)
 
   const openSpill = useCallback(async () => {
-    const { requireRealUser } = await import('@/lib/auth-guard')
     if (!(await requireRealUser({ kind: 'spill' }))) return
     setSpillOpen(true)
   }, [])
   const closeSpill = useCallback(() => { setSpillOpen(false) }, [])
   const openScan = useCallback(async () => {
-    const { requireRealUser } = await import('@/lib/auth-guard')
     if (!(await requireRealUser({ kind: 'scan' }))) return
     setScanOpen(true)
   }, [])
@@ -160,7 +159,6 @@ export function LandingNativePage() {
       const real = !!sess.session && !u?.is_anonymous
       history.replaceState(null, '', window.location.pathname + window.location.search)
       if (!real) {
-        const { saveIntent } = await import('@/lib/auth-guard')
         saveIntent(h === '#scan' ? { kind: 'scan' } : { kind: 'spill' })
         window.location.assign('/welcome')
         return
