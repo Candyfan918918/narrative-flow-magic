@@ -1,14 +1,14 @@
 // Nightly Mirror evolution job — recomputes depth, trend_dir, ruin state.
-// Called by pg_cron via the apikey-protected public hook.
+// Called by pg_cron via the x-cron-secret-protected public hook.
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/api/public/hooks/mirror-evolution')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const apikey = request.headers.get('apikey')
-        const expected = process.env.SUPABASE_PUBLISHABLE_KEY
-        if (!expected || apikey !== expected) {
+        const provided = request.headers.get('x-cron-secret') ?? ''
+        const expected = process.env.CRON_SECRET ?? ''
+        if (!expected || provided.length !== expected.length || provided !== expected) {
           return new Response('Unauthorized', { status: 401 })
         }
         const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
