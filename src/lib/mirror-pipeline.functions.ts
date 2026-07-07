@@ -234,16 +234,14 @@ export async function runIngestMirrorEvent(args: {
         patternId = (inserted as { id: string }).id
         // generate a polished punch (replaces burn) — persisted; rendering is DB-read
         try {
-          const punch = await runMirrorPunch({
-            data: {
-              name: (inserted as { name: string }).name,
-              district,
-              count: 1,
-              depth: 1,
-              sources: initialSources as Record<string, number>,
-              trend: initialTrend,
-              insight: reading.trait.insight,
-            },
+          const punch = await runMirrorPunchCore({
+            name: (inserted as { name: string }).name,
+            district,
+            count: 1,
+            depth: 1,
+            sources: initialSources as Record<string, number>,
+            trend: initialTrend,
+            insight: reading.trait.insight,
           })
           await supabase
             .from('mirror_patterns')
