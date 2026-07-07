@@ -203,12 +203,29 @@ export function RoomDetail({
   useEffect(() => {
     track('room_open', { target: `room:${room.id}` })
     const start = Date.now()
+    // 15s browse signal — fire once per room per session
+    const browseKey = 'shutap_browsed_' + room.id
+    let browseTimer: ReturnType<typeof setTimeout> | null = null
+    try {
+      if (typeof sessionStorage !== 'undefined' && !sessionStorage.getItem(browseKey)) {
+        browseTimer = setTimeout(() => {
+          try { sessionStorage.setItem(browseKey, '1') } catch { /* ignore */ }
+          fireMirror({
+            source: 'browse',
+            ref_id: room.id,
+            raw_text: (room.title || '').slice(0, 200),
+            district_hint: pillarToDistrict(room.pillar),
+          })
+        }, 15000)
+      }
+    } catch { /* ignore */ }
     return () => {
+      if (browseTimer) clearTimeout(browseTimer)
       const sec = Math.round((Date.now() - start) / 1000)
       const type = sec < 4 ? 'room_bounce' : sec >= 20 ? 'room_dwell_long' : 'room_dwell'
       track(type, { target: `room:${room.id}`, sec })
     }
-  }, [room.id])
+  }, [room.id, room.title, room.pillar])
 
   // ── room structured data (SEO) + page title ──
   useEffect(() => {
