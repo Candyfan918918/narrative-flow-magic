@@ -37,19 +37,25 @@ function keywordCrisis(text: string): CrisisResult | null {
 
 const GuardInput = z.object({ clean_text: z.string().min(1).max(8000) })
 
+// Plain server-side function. Call directly from other server handlers to
+// avoid nesting createServerFn calls through the RPC resolver.
+export async function runClassifyCrisis(cleanText: string): Promise<CrisisResult> {
+  const text = String(cleanText ?? '').slice(0, 8000)
+  if (!text) return { crisis: false, category: 'none', severity: 'low' }
+  const hard = keywordCrisis(text)
+  if (hard) return hard
+
+  const llm = await callAgent({
+    system: GUARD_PROMPT,
+    messages: [{ role: 'user', content: text }],
+    maxTokens: 80,
+  })
+  const parsed = tryParseJson<CrisisResult>(llm.text)
+  if (parsed && typeof parsed.crisis === 'boolean') return parsed
+  // graceful no-flag if AI offline
+  return { crisis: false, category: 'none', severity: 'low' }
+}
+
 export const classifyCrisis = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => GuardInput.parse(data))
-  .handler(async ({ data }): Promise<CrisisResult> => {
-    const hard = keywordCrisis(data.clean_text)
-    if (hard) return hard
-
-    const llm = await callAgent({
-      system: GUARD_PROMPT,
-      messages: [{ role: 'user', content: data.clean_text }],
-      maxTokens: 80,
-    })
-    const parsed = tryParseJson<CrisisResult>(llm.text)
-    if (parsed && typeof parsed.crisis === 'boolean') return parsed
-    // graceful no-flag if AI offline
-    return { crisis: false, category: 'none', severity: 'low' }
-  })
+  .handler(async ({ data }): Promise<CrisisResult> => runClassifyCrisis(data.clean_text))

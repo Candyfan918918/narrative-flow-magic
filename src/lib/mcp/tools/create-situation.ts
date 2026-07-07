@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { scrubText } from "@/lib/agents/scrubber.functions";
-import { classifyCrisis } from "@/lib/agents/guard.functions";
+import { runScrub } from "@/lib/agents/scrubber.functions";
+import { runClassifyCrisis } from "@/lib/agents/guard.functions";
 
 function supabaseForUser(ctx: ToolContext) {
   return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
@@ -54,10 +54,10 @@ export default defineTool({
     let forcePrivate = false;
     let crisisFlag = false;
     try {
-      const scrub = await scrubText({ data: { raw: clean_text } });
+      const scrub = await runScrub(clean_text);
       textToInsert = scrub.clean_text && scrub.clean_text.length > 0 ? scrub.clean_text : clean_text;
       try {
-        const guard = await classifyCrisis({ data: { clean_text: textToInsert } });
+        const guard = await runClassifyCrisis(textToInsert);
         if (guard.crisis) {
           crisisFlag = true;
           forcePrivate = true;

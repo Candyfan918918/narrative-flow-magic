@@ -4,8 +4,8 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 
-import { scrubText } from './scrubber.functions'
-import { classifyCrisis } from './guard.functions'
+import { runScrub } from './scrubber.functions'
+import { runClassifyCrisis } from './guard.functions'
 import { scanIntensity, bandFor } from './scan.functions'
 import { findMatches } from './matcher.functions'
 import { runCompanion } from './companion.functions'
@@ -38,10 +38,10 @@ export const runSpill = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => SpillInput.parse(data))
   .handler(async ({ data, context }): Promise<SpillPayoff> => {
     // 1. Scrubber
-    const scrub = await scrubText({ data: { raw: data.raw } })
+    const scrub = await runScrub(data.raw)
 
     // 2. Guard
-    const guard = await classifyCrisis({ data: { clean_text: scrub.clean_text } })
+    const guard = await runClassifyCrisis(scrub.clean_text)
 
     if (guard.crisis) {
       // Persona drops; no Scan reveal, no matcher, no payoff gamification.
@@ -143,8 +143,10 @@ export const runSpill = createServerFn({ method: 'POST' })
     // 5c. Mirror ingest — fire-and-forget; never blocks the spill payoff.
     if (sit?.id) {
       try {
-        const { ingestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
-        void ingestMirrorEvent({
+        const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
+        void runIngestMirrorEvent({
+          supabase: context.supabase,
+          userId: context.userId,
           data: {
             source: 'spill',
             ref_id: sit.id,

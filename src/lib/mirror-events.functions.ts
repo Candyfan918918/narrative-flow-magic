@@ -3,9 +3,8 @@
 // real ingest pipeline so all paths go through the same scrub/embed/match.
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { requireRealUser } from './require-real-user'
-import { ingestMirrorEvent } from '@/lib/mirror-pipeline.functions'
+import { runIngestMirrorEvent } from '@/lib/mirror-pipeline.functions'
 
 const Input = z.object({
   source: z.enum(['likes', 'follows', 'browse', 'scan']),
@@ -17,7 +16,11 @@ const Input = z.object({
 export const recordMirrorEvent = createServerFn({ method: 'POST' })
   .middleware([requireRealUser])
   .inputValidator((d: unknown) => Input.parse(d))
-  .handler(async ({ data }) => {
-    await ingestMirrorEvent({ data })
+  .handler(async ({ data, context }) => {
+    await runIngestMirrorEvent({
+      supabase: context.supabase,
+      userId: context.userId,
+      data,
+    })
     return { ok: true as const }
   })
