@@ -4,6 +4,7 @@
    Not wired as the default route yet — see src/pages/Landing.tsx (`?native=1` opt-in). */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from '@/compat/router'
+import { useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { ONBOARDING_FRAMES } from './data/onboarding'
 import { FALLBACK_ROOMS, type LandingRoom } from './data/rooms'
@@ -111,13 +112,18 @@ function useLiveRooms(): LandingRoom[] {
 
 export function LandingNativePage() {
   const navigate = useNavigate()
+  const router = useRouter()
   const save = useServerFn(saveSituation)
   const [onbOpen, setOnbOpen] = useState<boolean>(false)
   const [hydrated, setHydrated] = useState(false)
   useEffect(() => {
     setHydrated(true)
     try { if (!localStorage.getItem('shutap_onb_seen')) setOnbOpen(true) } catch { /* noop */ }
-  }, [])
+    // Preload the /welcome route chunk so Spill/Scan CTAs feel instant for
+    // anonymous visitors — the sign-in page is ssr:false and otherwise
+    // downloads on click.
+    void router.preloadRoute({ to: '/welcome' }).catch(() => {})
+  }, [router])
   const [onbIdx, setOnbIdx] = useState(0)
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
