@@ -4,6 +4,6 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 // Preserve any query params (e.g. ?token=...) when forwarding to the real route.
 export const Route = createFileRoute('/unsubscribe')({
   beforeLoad: ({ search }) => {
-    throw redirect({ to: '/email/unsubscribe', search })
+    throw redirect({ to: '/email/unsubscribe', search: search as never })
   },
 })
