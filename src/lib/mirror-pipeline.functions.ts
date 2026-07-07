@@ -149,16 +149,14 @@ export async function runIngestMirrorEvent(args: {
       // refresh punch on depth-tier jumps so the hero line evolves
       if (nextDepth > beforeDepth) {
         try {
-          const punch = await runMirrorPunch({
-            data: {
-              name: p.name,
-              district: p.district,
-              count: nextCount,
-              depth: nextDepth,
-              sources: nextSources as Record<string, number>,
-              trend: nextTrend,
-              insight: p.insight ?? '',
-            },
+          const punch = await runMirrorPunchCore({
+            name: p.name,
+            district: p.district,
+            count: nextCount,
+            depth: nextDepth,
+            sources: nextSources as Record<string, number>,
+            trend: nextTrend,
+            insight: p.insight ?? '',
           })
           update.punch = punch.punch
           update.record = punch.record
