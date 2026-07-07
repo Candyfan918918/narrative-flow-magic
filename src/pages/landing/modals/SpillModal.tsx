@@ -174,7 +174,7 @@ function scrubPII(text: string): { clean: string; changes: Array<{ type: string;
 // Append a just-published room to localStorage['shutap_user_situations'] so
 // StreamPage / RoomPage hash lookups can find and open it. De-dupes by id,
 // newest first, capped at 50.
-function appendUserRoom(r: {
+export function appendUserRoom(r: {
   id: string
   title: string
   body: string
