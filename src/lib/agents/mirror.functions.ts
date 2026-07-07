@@ -198,22 +198,27 @@ const CrossInput = z.object({
   ).min(2),
 })
 
+export async function runMirrorCrossReadCore(
+  input: z.infer<typeof CrossInput>,
+): Promise<MirrorCrossOut> {
+  const data = CrossInput.parse(input)
+  const lines = data.patterns
+    .map((p) => `- ${p.name} [${p.district}] count=${p.count} depth=${p.depth} ${p.trend_dir}`)
+    .join('\n')
+  const llm = await callAgent({
+    system: CROSS_PROMPT,
+    messages: [{ role: 'user', content: `roster:\n${lines}` }],
+    maxTokens: 260,
+  })
+  const parsed = tryParseJson<MirrorCrossOut>(llm.text)
+  return {
+    sees: sanitizePunch(parsed?.sees ?? '', 200) || 'three rooms, same draft.',
+    throughline: sanitizePunch(parsed?.throughline ?? '', 220) || 'the patterns rhyme.',
+    record: (parsed?.record || 'noticed, filed.').toLowerCase().slice(0, 32),
+  }
+}
+
 export const runMirrorCrossRead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => CrossInput.parse(d))
-  .handler(async ({ data }): Promise<MirrorCrossOut> => {
-    const lines = data.patterns
-      .map((p) => `- ${p.name} [${p.district}] count=${p.count} depth=${p.depth} ${p.trend_dir}`)
-      .join('\n')
-    const llm = await callAgent({
-      system: CROSS_PROMPT,
-      messages: [{ role: 'user', content: `roster:\n${lines}` }],
-      maxTokens: 260,
-    })
-    const parsed = tryParseJson<MirrorCrossOut>(llm.text)
-    return {
-      sees: sanitizePunch(parsed?.sees ?? '', 200) || 'three rooms, same draft.',
-      throughline: sanitizePunch(parsed?.throughline ?? '', 220) || 'the patterns rhyme.',
-      record: (parsed?.record || 'noticed, filed.').toLowerCase().slice(0, 32),
-    }
-  })
+  .handler(async ({ data }): Promise<MirrorCrossOut> => runMirrorCrossReadCore(data))
