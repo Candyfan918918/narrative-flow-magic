@@ -144,7 +144,7 @@ const UpdateInput = z.object({
   title: z.string().max(140).nullable().optional(),
   body: z.string().max(8000).nullable().optional(),
   clean_text: z.string().max(8000).optional(),
-  pillar: Pillar.optional(),
+  pillar: OptionalTolerantPillar,
   tags: z.array(z.string().max(40)).max(12).optional(),
   is_public: z.boolean().optional(),
   status: z.enum(['open', 'in_progress', 'resolved', 'avoided', 'worse', 'abandoned']).optional(),
