@@ -37,16 +37,45 @@ export function clearIntent(): void {
   try { sessionStorage.removeItem(INTENT_KEY) } catch { /* noop */ }
 }
 
-/** Returns true if a real signed-in user is present. Otherwise captures the
- *  intent and redirects to /welcome. */
-export async function requireRealUser(intent: PendingIntent): Promise<boolean> {
-  const { data } = await supabase.auth.getSession()
-  const u = data.session?.user as { is_anonymous?: boolean } | undefined
-  if (data.session && !u?.is_anonymous) return true
-  saveIntent(intent)
+// Module-level cache of whether we have a real (non-anonymous) signed-in user.
+// null = unknown. Refreshed by onAuthStateChange so subsequent CTA clicks
+// decide synchronously without awaiting getSession.
+let cachedHasRealUser: boolean | null = null
+
+if (typeof window !== 'undefined') {
+  void supabase.auth.getSession().then(({ data }) => {
+    const u = data.session?.user as { is_anonymous?: boolean } | undefined
+    cachedHasRealUser = !!data.session && !u?.is_anonymous
+  }).catch(() => { /* leave as null */ })
+  supabase.auth.onAuthStateChange((_evt, session) => {
+    const u = session?.user as { is_anonymous?: boolean } | undefined
+    cachedHasRealUser = !!session && !u?.is_anonymous
+  })
+}
+
+function navigateToWelcome(): void {
   const router = getRouterRef()
   if (router) router.navigate({ to: '/welcome' })
   else window.location.assign('/welcome')
+}
+
+/** Returns true if a real signed-in user is present. Otherwise captures the
+ *  intent and redirects to /welcome. Uses a cached session flag so the common
+ *  anonymous path is synchronous (no awaited network round-trip). */
+export async function requireRealUser(intent: PendingIntent): Promise<boolean> {
+  if (cachedHasRealUser === false) {
+    saveIntent(intent)
+    navigateToWelcome()
+    return false
+  }
+  if (cachedHasRealUser === true) return true
+  const { data } = await supabase.auth.getSession()
+  const u = data.session?.user as { is_anonymous?: boolean } | undefined
+  const real = !!data.session && !u?.is_anonymous
+  cachedHasRealUser = real
+  if (real) return true
+  saveIntent(intent)
+  navigateToWelcome()
   return false
 }
 
