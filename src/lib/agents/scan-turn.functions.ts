@@ -5,8 +5,8 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { callAgent, tryParseJson } from './gateway'
-import { scrubText } from './scrubber.functions'
-import { classifyCrisis } from './guard.functions'
+import { runScrub } from './scrubber.functions'
+import { runClassifyCrisis } from './guard.functions'
 
 const CardType = z.enum(['choice', 'multi', 'rate', 'spectrum', 'rank', 'text'])
 const TurnInput = z.object({
