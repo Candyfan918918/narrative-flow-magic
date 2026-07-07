@@ -50,39 +50,49 @@ function regexScrub(raw: string): { text: string; replacements: ScrubReplacement
 
 const ScrubInput = z.object({ raw: z.string().min(1).max(8000) })
 
+// Plain server-side function. Call this directly from other server handlers
+// (server functions, server routes, MCP tools) to avoid nesting createServerFn
+// calls through the RPC resolver — which fails with "Server function info not
+// found" when this wrapper isn't imported by any client bundle.
+export async function runScrub(raw: string): Promise<ScrubResult> {
+  const clamped = String(raw ?? '').slice(0, 8000)
+  if (!clamped) {
+    return { clean_text: '', replacements: [], notice: '' }
+  }
+  // Step 1: regex pass
+  const first = regexScrub(clamped)
+
+  // Step 2: LLM pass for names + locations
+  const llm = await callAgent({
+    system: SCRUBBER_PROMPT,
+    messages: [{ role: 'user', content: first.text }],
+    maxTokens: 800,
+  })
+
+  const parsed = tryParseJson<ScrubResult>(llm.text)
+  // Guard: LLM must not erase non-empty input. An empty/whitespace-only
+  // clean_text for non-empty input is treated as a scrubber failure — we
+  // fall back to the regex-scrubbed text rather than persisting "".
+  if (parsed && typeof parsed.clean_text === 'string' && parsed.clean_text.trim().length > 0) {
+    // Union both passes' replacements
+    const all = [...first.replacements, ...(parsed.replacements ?? [])]
+    return {
+      clean_text: parsed.clean_text,
+      replacements: all,
+      notice: parsed.notice || "heads up — I tidied a couple of identifying bits so your real name never shows 🔒",
+    }
+  }
+
+  // Graceful fallback: keep regex-scrubbed text, no LLM substitution
+  return {
+    clean_text: first.text,
+    replacements: first.replacements,
+    notice: first.replacements.length
+      ? "heads up — I swapped out a couple of identifying bits so your real name never shows 🔒"
+      : "kept your words as-is — nothing identifying caught my eye 🔒",
+  }
+}
+
 export const scrubText = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => ScrubInput.parse(data))
-  .handler(async ({ data }): Promise<ScrubResult> => {
-    // Step 1: regex pass
-    const first = regexScrub(data.raw)
-
-    // Step 2: LLM pass for names + locations
-    const llm = await callAgent({
-      system: SCRUBBER_PROMPT,
-      messages: [{ role: 'user', content: first.text }],
-      maxTokens: 800,
-    })
-
-    const parsed = tryParseJson<ScrubResult>(llm.text)
-    // Guard: LLM must not erase non-empty input. An empty/whitespace-only
-    // clean_text for non-empty input is treated as a scrubber failure — we
-    // fall back to the regex-scrubbed text rather than persisting "".
-    if (parsed && typeof parsed.clean_text === 'string' && parsed.clean_text.trim().length > 0) {
-      // Union both passes' replacements
-      const all = [...first.replacements, ...(parsed.replacements ?? [])]
-      return {
-        clean_text: parsed.clean_text,
-        replacements: all,
-        notice: parsed.notice || "heads up — I tidied a couple of identifying bits so your real name never shows 🔒",
-      }
-    }
-
-    // Graceful fallback: keep regex-scrubbed text, no LLM substitution
-    return {
-      clean_text: first.text,
-      replacements: first.replacements,
-      notice: first.replacements.length
-        ? "heads up — I swapped out a couple of identifying bits so your real name never shows 🔒"
-        : "kept your words as-is — nothing identifying caught my eye 🔒",
-    }
-  })
+  .handler(async ({ data }): Promise<ScrubResult> => runScrub(data.raw))
