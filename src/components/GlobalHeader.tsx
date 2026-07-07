@@ -110,10 +110,6 @@ export function GlobalHeader() {
         top: 0,
         zIndex: 40,
         background: barBg,
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
-        transform: 'translateZ(0)',
-        willChange: 'transform',
         borderBottom: barBorder,
       }}
     >
