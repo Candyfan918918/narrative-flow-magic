@@ -42,9 +42,19 @@ export const getSituation = createServerFn({ method: 'GET' })
 
 // ---------- save (scan / journal / spill) ----------
 
+const PILLAR_VALUES = ['relationships', 'marriage', 'family', 'career'] as const
+const TolerantPillar = z.preprocess(
+  (v) => (typeof v === 'string' && (PILLAR_VALUES as readonly string[]).includes(v) ? v : 'relationships'),
+  z.enum(PILLAR_VALUES),
+)
+const OptionalTolerantPillar = z.preprocess(
+  (v) => (v === undefined ? undefined : typeof v === 'string' && (PILLAR_VALUES as readonly string[]).includes(v) ? v : 'relationships'),
+  z.enum(PILLAR_VALUES).optional(),
+)
+
 const SaveInput = z.object({
   kind: z.enum(['scan', 'spill']).nullable().optional(),
-  pillar: Pillar.default('relationships'),
+  pillar: TolerantPillar.default('relationships'),
   clean_text: z.string().max(8000).default(''),
   title: z.string().max(140).nullable().optional(),
   body: z.string().max(8000).nullable().optional(),
