@@ -9,7 +9,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
-import { scrubText } from './agents/scrubber.functions'
+import { runScrub } from './agents/scrubber.functions'
 import { embedText, toVectorLiteral } from './agents/embeddings.server'
 import { runMirrorReading, runMirrorPunch } from './agents/mirror.functions'
 import {
