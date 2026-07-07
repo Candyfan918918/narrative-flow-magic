@@ -14,7 +14,10 @@ export async function callAgent(opts: {
   const maxTokens = Math.min(Math.max(opts.maxTokens ?? 1500, 64), 4096)
   const lovableKey = process.env.LOVABLE_API_KEY
   if (!lovableKey) return { text: '', error: 'no AI key' }
-  const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-2.5-pro'
+  // Default to Flash: 2.5-Pro spends hidden reasoning tokens against
+  // maxOutputTokens and truncates our small structured JSON responses,
+  // which sent every Mirror reading/punch call into the fallback path.
+  const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-2.5-flash'
   try {
     const gateway = createLovableAiGatewayProvider(lovableKey)
     const result = await generateText({
