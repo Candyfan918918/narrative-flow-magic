@@ -351,7 +351,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         title: scrubPII(String(j.title || '').trim()).clean,
         body: scrubPII(String(j.body || '').trim()).clean,
         tags: Array.isArray(j.tags) ? j.tags.slice(0, 5) : (draft.tags || []),
-        pillar: draft.pillar,
+        pillar: normalizePillar(draft.pillar),
         edit_summary: typeof j.edit_summary === 'string' ? j.edit_summary.trim() : '',
       }
     } catch {
