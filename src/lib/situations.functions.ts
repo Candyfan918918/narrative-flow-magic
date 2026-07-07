@@ -153,6 +153,27 @@ export const saveSituation = createServerFn({ method: 'POST' })
     })()
 
     const [, roomId] = await Promise.all([embedTask, roomTask])
+
+    // Mirror ingest — fire-and-forget; never blocks the save payoff.
+    try {
+      const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
+      const pillar = data.pillar
+      const district_hint =
+        pillar === 'career' ? 'career'
+          : pillar === 'family' ? 'family'
+          : 'love'
+      void runIngestMirrorEvent({
+        supabase: context.supabase,
+        userId: context.userId,
+        data: {
+          source: data.kind === 'scan' ? 'scan' : 'spill',
+          ref_id: sit.id,
+          raw_text: insertRow.clean_text || insertRow.body || '',
+          district_hint,
+        },
+      })
+    } catch { /* never block the user flow */ }
+
     return { id: sit.id, is_public: sit.is_public, room_id: roomId }
   })
 
