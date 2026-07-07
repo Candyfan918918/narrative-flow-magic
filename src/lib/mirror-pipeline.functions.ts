@@ -84,13 +84,14 @@ export async function runIngestMirrorEvent(args: {
 
     // idempotency: skip if we already ingested this (user, source, ref_id)
     {
-      const { data: existing } = await supabase
+      const { data: existing, error: existingErr } = await supabase
         .from('mirror_signals')
         .select('id, pattern_id')
         .eq('user_id', userId)
         .eq('source', data.source)
         .eq('ref_id', data.ref_id)
         .maybeSingle()
+      if (existingErr) console.error('[mirror-ingest] dedupe select', existingErr)
       if (existing) return { ok: true, pattern_id: (existing.pattern_id as string) ?? null }
     }
 
@@ -111,12 +112,13 @@ export async function runIngestMirrorEvent(args: {
     // 3. match nearest existing pattern for THIS user
     let matched: { id: string; similarity: number } | null = null
     if (vecLiteral) {
-      const { data: hits } = await supabase.rpc('match_user_patterns', {
+      const { data: hits, error: rpcErr } = await supabase.rpc('match_user_patterns', {
         p_user: userId,
         q: vecLiteral as unknown as never,
         match_count: 1,
         similarity_floor: 0.78,
       })
+      if (rpcErr) console.error('[mirror-ingest] match_user_patterns', rpcErr)
       if (Array.isArray(hits) && hits[0]) matched = { id: hits[0].id, similarity: hits[0].similarity }
     }
 
@@ -124,11 +126,12 @@ export async function runIngestMirrorEvent(args: {
 
     if (matched) {
       // ---- DEEPEN ----
-      const { data: row } = await supabase
+      const { data: row, error: rowErr } = await supabase
         .from('mirror_patterns')
         .select('id, user_id, name, district, count, depth, trend, sources, embedding, insight, last_seen')
         .eq('id', matched.id)
         .single()
+      if (rowErr) console.error('[mirror-ingest] deepen select', rowErr)
       if (!row) return { ok: true, pattern_id: null }
       const p = row as unknown as PatternRow
       const nextSources = { ...(p.sources ?? {}) } as Record<SourceT, number>
@@ -162,24 +165,27 @@ export async function runIngestMirrorEvent(args: {
           update.record = punch.record
         } catch { /* keep existing punch */ }
       }
-      await supabase.from('mirror_patterns').update(update as never).eq('id', matched.id)
+      const { error: updErr } = await supabase.from('mirror_patterns').update(update as never).eq('id', matched.id)
+      if (updErr) console.error('[mirror-ingest] deepen update', updErr)
       patternId = matched.id
     } else {
       // ---- CRYSTALLIZE (respect active cap) ----
-      const { count: activeCount } = await supabase
+      const { count: activeCount, error: countErr } = await supabase
         .from('mirror_patterns')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', userId)
         .eq('state', 'active')
+      if (countErr) console.error('[mirror-ingest] active-count', countErr)
       if ((activeCount ?? 0) >= ACTIVE_CAP) {
         // at cap; record the signal unattached so the cross-read still sees it
-        await supabase.from('mirror_signals').insert({
+        const { error: sigErr } = await supabase.from('mirror_signals').insert({
           user_id: userId,
           source: data.source,
           ref_id: data.ref_id,
           text_scrubbed: cleaned,
           embedding: vecLiteral as never,
         } as never)
+        if (sigErr) console.error('[mirror-ingest] cap-hit signal insert', sigErr)
         return { ok: true, pattern_id: null }
       }
       let reading
@@ -193,13 +199,14 @@ export async function runIngestMirrorEvent(args: {
       }
       if (!reading) {
         // reading failed — still record provenance so the signal isn't lost.
-        await supabase.from('mirror_signals').insert({
+        const { error: sigErr } = await supabase.from('mirror_signals').insert({
           user_id: userId,
           source: data.source,
           ref_id: data.ref_id,
           text_scrubbed: cleaned,
           embedding: vecLiteral as never,
         } as never)
+        if (sigErr) console.error('[mirror-ingest] no-reading signal insert', sigErr)
         return { ok: true, pattern_id: null }
       }
       const district = normalizeDistrict(reading.trait.district)
@@ -225,11 +232,12 @@ export async function runIngestMirrorEvent(args: {
         sources: initialSources,
         embedding: vecLiteral as never,
       }
-      const { data: inserted } = await supabase
+      const { data: inserted, error: insErr } = await supabase
         .from('mirror_patterns')
         .insert(insertRow as never)
         .select('id, name, district, count, depth, sources, trend, insight')
         .single()
+      if (insErr) console.error('[mirror-ingest] crystallize insert', insErr)
       if (inserted) {
         patternId = (inserted as { id: string }).id
         // generate a polished punch (replaces burn) — persisted; rendering is DB-read
@@ -243,16 +251,17 @@ export async function runIngestMirrorEvent(args: {
             trend: initialTrend,
             insight: reading.trait.insight,
           })
-          await supabase
+          const { error: punchErr } = await supabase
             .from('mirror_patterns')
             .update({ punch: punch.punch, record: punch.record } as never)
             .eq('id', patternId)
+          if (punchErr) console.error('[mirror-ingest] punch update', punchErr)
         } catch { /* keep crystallization burn */ }
       }
     }
 
     // append provenance
-    await supabase.from('mirror_signals').insert({
+    const { error: provErr } = await supabase.from('mirror_signals').insert({
       user_id: userId,
       pattern_id: patternId,
       source: data.source,
@@ -260,6 +269,7 @@ export async function runIngestMirrorEvent(args: {
       text_scrubbed: cleaned,
       embedding: vecLiteral as never,
     } as never)
+    if (provErr) console.error('[mirror-ingest] provenance insert', provErr)
 
     return { ok: true, pattern_id: patternId }
 }

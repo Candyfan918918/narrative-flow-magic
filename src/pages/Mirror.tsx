@@ -1053,7 +1053,7 @@ export function MirrorPage() {
   const isEntitled = !!entitlement?.entitled
 
   const mineList = (mine ?? []) as unknown as MirrorPatternView[]
-  const isForming = mineList.length < 2
+  const isForming = mineList.length < 1
 
   // Demo/seed content is ONLY fetched for the owner demo account (RULE 6).
   const { data: demo } = useQuery({
