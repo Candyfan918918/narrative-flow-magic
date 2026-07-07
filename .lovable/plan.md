@@ -1,17 +1,39 @@
-The companion bubble currently only lives on the landing page. You want it present and functional on every page, and you want the eye visually centered inside the circle (it's currently sitting too far right).
+## What the data shows
 
-Plan:
+I measured the actual production site and checked the database:
 
-1. Make the bubble global
-   - Add `<CompanionBubble />` to `src/routes/__root.tsx` inside `RootComponent`, after `<Outlet />` so it floats above every route.
-   - Remove the existing `<CompanionBubble onOpen={() => setComposerOpen(true)} />` from `src/pages/landing/LandingPage.tsx` to avoid a duplicate on the home page.
+- **Homepage TTFB: 126ms.** `/welcome`: 63ms. `/about`: 63ms. These are fast.
+- **Database is healthy.** Slowest write query averages 3.6ms; slowest read averages 0.5ms. Nothing is choking Postgres.
+- **Backend status: healthy.**
 
-2. Wire a single onOpen behavior
-   - Tapping the bubble anywhere navigates to `/#ask` so the home page's existing intent-hash handler opens the companion composer (works whether you're already on `/` or on another route).
+So the live site (`shutap.com` / `shutap.lovable.app`) is not slow. The slowness you're feeling is somewhere else.
 
-3. Visually center the eye
-   - In `src/components/CompanionBubble.tsx`, nudge the inner EyeMark wrapper left by ~2px (e.g. `transform: 'translateX(-2px)'`) because the brand mark's visual weight sits slightly right of the SVG's geometric center, which is what you observed as "too far right" in the 58px circle.
+## What IS slow
 
-4. Verify
-   - Typecheck with `bunx tsgo --noEmit`.
-   - Spot-check in the preview that the bubble appears on `/mirror` and other routes, that only one bubble renders on `/`, and that the eye looks centered in the circle.
+The **editor preview iframe** (the panel you're staring at while building) is throwing SSR errors on every request. Server logs show this repeating:
+
+```
+Error: h3 swallowed SSR error: {"status":500,"unhandled":true,"message":"HTTPError"}
+Error: transport was disconnected, cannot call "fetchModule"
+   at async eval (/dev-server/src/router.tsx:6:31)
+```
+
+Translation: the in-editor dev server is crashing during server-side render, retrying, and reloading modules. Every navigation in the preview eats that recovery time. This does not affect real users on the published site — only you, in the editor.
+
+## Likely cause
+
+The Vite dev server got into a bad state after recent restarts (`.env.development changed, restarting server...` right before the error burst). The transport dropped mid-request and the server entry can't reload `src/router.tsx` cleanly. This is a preview-runtime issue, not a code bug in the pages themselves.
+
+## Recommended fix (order)
+
+1. **Restart the preview sandbox.** Almost always clears the "transport was disconnected" / stuck-module state. I can do this from build mode.
+2. **If it comes back after the restart,** we look for a real cause — most commonly a route file with a top-level throw or a bad import. I'd grep for module-init failures and check `src/router.tsx` + recently-changed route files.
+3. **Ignore the "all pages loading slow" symptom on the published site** — the numbers say it isn't real there. If real users are reporting it, tell me and I'll re-measure from a different angle (JS bundle size, LCP, TanStack Query waterfalls).
+
+## What I will NOT do
+
+- No route/page rewrites. The pages are fine.
+- No DB indexes or migrations. DB is fine.
+- No compute upgrade recommendation. It won't help this.
+
+Approve and I'll restart the preview sandbox and re-check the logs.
