@@ -72,13 +72,25 @@ export const saveSituation = createServerFn({ method: 'POST' })
   .middleware([requireRealUser])
   .inputValidator((d: unknown) => SaveInput.parse(d))
   .handler(async ({ data, context }) => {
-    // re-scrub text + body
-    const cleanScrub = data.clean_text
-      ? await runScrub(data.clean_text)
-      : { clean_text: '', notice: '' }
-    const bodyScrub = data.body
-      ? await runScrub(data.body)
-      : { clean_text: data.body ?? '', notice: '' }
+    // re-scrub text + body — dedupe when identical (spill flow sends the
+    // same string in both fields), else run concurrently.
+    const sameText = (data.body ?? '') === (data.clean_text ?? '')
+    let cleanScrub: { clean_text: string; notice?: string }
+    let bodyScrub: { clean_text: string; notice?: string }
+    if (sameText) {
+      const s = data.clean_text
+        ? await runScrub(data.clean_text)
+        : { clean_text: '', notice: '' }
+      cleanScrub = s
+      bodyScrub = data.body ? s : { clean_text: data.body ?? '', notice: '' }
+    } else {
+      const [c, b] = await Promise.all([
+        data.clean_text ? runScrub(data.clean_text) : Promise.resolve({ clean_text: '', notice: '' }),
+        data.body ? runScrub(data.body) : Promise.resolve({ clean_text: data.body ?? '', notice: '' }),
+      ])
+      cleanScrub = c
+      bodyScrub = b
+    }
 
     const insertRow = {
       alias_id: context.userId,
@@ -102,38 +114,45 @@ export const saveSituation = createServerFn({ method: 'POST' })
       .single()
     if (error || !sit) throw new Error(error?.message ?? 'save failed')
 
-    // Embed for cosine matching (fail-soft, non-blocking semantics).
-    try {
-      const { embedText, toVectorLiteral } = await import('./agents/embeddings.server')
-      const vec = await embedText(insertRow.clean_text || insertRow.body || '')
-      if (vec) {
-        await context.supabase
-          .from('situations')
-          .update({ embedding: toVectorLiteral(vec) } as never)
-          .eq('id', sit.id)
-      }
-    } catch { /* non-blocking */ }
+    // Run embedding + room creation concurrently — both only need sit.id
+    // and are independent. Keep fail-soft semantics.
+    const embedTask = (async () => {
+      try {
+        const { embedText, toVectorLiteral } = await import('./agents/embeddings.server')
+        const vec = await embedText(insertRow.clean_text || insertRow.body || '')
+        if (vec) {
+          await context.supabase
+            .from('situations')
+            .update({ embedding: toVectorLiteral(vec) } as never)
+            .eq('id', sit.id)
+        }
+      } catch { /* non-blocking */ }
+    })()
 
-    let roomId: string | null = sit.room_id
-    if (data.is_public && !roomId) {
-      // Resolve the CURRENT alias from public.aliases — never trust client-supplied alias/emoji.
-      const aliasRow = await context.supabase
-        .from('aliases')
-        .select('display_name, emoji')
-        .eq('user_id', context.userId)
-        .maybeSingle()
-      const displayName = (aliasRow.data as { display_name?: string } | null)?.display_name ?? 'someone'
-      const emoji = (aliasRow.data as { emoji?: string } | null)?.emoji ?? '🩷'
-      roomId = await upsertRoomForSituation(context.supabase, sit.id, {
-        author_id: context.userId,
-        alias: displayName,
-        emoji,
-        title: data.title ?? deriveTitle(insertRow.body || insertRow.clean_text),
-        body: insertRow.body || insertRow.clean_text,
-        support: 'heard',
-        hall: hallFromBand(data.scan_band),
-      })
-    }
+    const roomTask = (async (): Promise<string | null> => {
+      let roomId: string | null = sit.room_id
+      if (data.is_public && !roomId) {
+        const aliasRow = await context.supabase
+          .from('aliases')
+          .select('display_name, emoji')
+          .eq('user_id', context.userId)
+          .maybeSingle()
+        const displayName = (aliasRow.data as { display_name?: string } | null)?.display_name ?? 'someone'
+        const emoji = (aliasRow.data as { emoji?: string } | null)?.emoji ?? '🩷'
+        roomId = await upsertRoomForSituation(context.supabase, sit.id, {
+          author_id: context.userId,
+          alias: displayName,
+          emoji,
+          title: data.title ?? deriveTitle(insertRow.body || insertRow.clean_text),
+          body: insertRow.body || insertRow.clean_text,
+          support: 'heard',
+          hall: hallFromBand(data.scan_band),
+        })
+      }
+      return roomId
+    })()
+
+    const [, roomId] = await Promise.all([embedTask, roomTask])
     return { id: sit.id, is_public: sit.is_public, room_id: roomId }
   })
 
@@ -167,13 +186,19 @@ export const updateSituation = createServerFn({ method: 'POST' })
     if (data.pillar !== undefined) patch.pillar = data.pillar
     if (data.tags !== undefined) patch.tags = data.tags
     if (data.status !== undefined) patch.status = data.status
-    if (data.body !== undefined) {
+    if (data.body !== undefined && data.clean_text !== undefined && data.body === data.clean_text) {
       const s = data.body ? await runScrub(data.body) : { clean_text: '' }
       patch.body = s.clean_text || data.body || null
-    }
-    if (data.clean_text !== undefined) {
-      const s = await runScrub(data.clean_text)
       patch.clean_text = s.clean_text || data.clean_text
+    } else {
+      if (data.body !== undefined) {
+        const s = data.body ? await runScrub(data.body) : { clean_text: '' }
+        patch.body = s.clean_text || data.body || null
+      }
+      if (data.clean_text !== undefined) {
+        const s = await runScrub(data.clean_text)
+        patch.clean_text = s.clean_text || data.clean_text
+      }
     }
     if (data.is_public !== undefined) patch.is_public = data.is_public
 
