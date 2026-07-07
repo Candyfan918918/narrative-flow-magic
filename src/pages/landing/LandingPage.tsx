@@ -216,8 +216,19 @@ export function LandingNativePage() {
           sessionStorage.setItem(SYNCED_KEY, JSON.stringify(synced))
         } catch { /* ignore */ }
         sessionStorage.removeItem('shutap_pending_save')
-        if (res?.room_id) navigate(`/stream#room-${res.room_id}`)
-        else if (res?.id) navigate('/profile')
+        if (res?.room_id) {
+          try {
+            const { appendUserRoom } = await import('./modals/SpillModal')
+            appendUserRoom({
+              id: res.room_id,
+              title: payload.title ?? 'your situation',
+              body: (payload.body ?? payload.clean_text ?? '') as string,
+              support: 'heard',
+              pillar: (normalized.pillar ?? null) as string | null,
+            })
+          } catch { /* noop */ }
+          navigate(`/stream#room-${res.room_id}`)
+        } else if (res?.id) navigate('/profile')
       } catch { /* leave payload for retry */ }
     })()
     return () => { cancelled = true }
