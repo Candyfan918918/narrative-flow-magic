@@ -60,64 +60,69 @@ const ReadingInput = z.object({
   district_hint: z.string().optional(),
 })
 
+export async function runMirrorReadingCore(
+  input: z.infer<typeof ReadingInput>,
+): Promise<MirrorReadingOut> {
+  const data = ReadingInput.parse(input)
+  const district = normalizeDistrict(data.district_hint)
+  // crisis check — drop the persona to plain support register; do not crystallize
+  const guard = await runClassifyCrisis(data.scrubbed_text)
+  if (guard.crisis) {
+    return {
+      burn: '',
+      read: '',
+      filed: '',
+      trait: {
+        name: 'Pattern Forming',
+        emoji: '🤍',
+        rarity: 'common',
+        district,
+        insight: 'paused — support register active.',
+      },
+    }
+  }
+  const user = `behavior fragment:
+${data.scrubbed_text}
+district hint: ${district}`
+  const llm = await callAgent({
+    system: READING_PROMPT,
+    messages: [{ role: 'user', content: user }],
+    maxTokens: 400,
+  })
+  const parsed = tryParseJson<MirrorReadingOut>(llm.text)
+  if (!parsed?.trait?.name) {
+    return {
+      burn: fallbackPunch(district),
+      read: '',
+      filed: fallbackRecord(),
+      trait: {
+        name: 'New Pattern',
+        emoji: '✨',
+        rarity: 'common',
+        district,
+        insight: 'observed once. watching.',
+      },
+    }
+  }
+  const sanitizedDistrict = normalizeDistrict(parsed.trait.district)
+  return {
+    burn: sanitizePunch(parsed.burn ?? '') || fallbackPunch(sanitizedDistrict),
+    read: sanitizePunch(parsed.read ?? '', 220) || '',
+    filed: (parsed.filed || fallbackRecord()).toLowerCase().slice(0, 32),
+    trait: {
+      name: sanitizeName(parsed.trait.name),
+      emoji: sanitizeEmoji(parsed.trait.emoji, sanitizedDistrict),
+      rarity: normalizeRarity(parsed.trait.rarity),
+      district: sanitizedDistrict,
+      insight: (parsed.trait.insight || '').toLowerCase().slice(0, 100),
+    },
+  }
+}
+
 export const runMirrorReading = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => ReadingInput.parse(d))
-  .handler(async ({ data }): Promise<MirrorReadingOut> => {
-    const district = normalizeDistrict(data.district_hint)
-    // crisis check — drop the persona to plain support register; do not crystallize
-    const guard = await runClassifyCrisis(data.scrubbed_text)
-    if (guard.crisis) {
-      return {
-        burn: '',
-        read: '',
-        filed: '',
-        trait: {
-          name: 'Pattern Forming',
-          emoji: '🤍',
-          rarity: 'common',
-          district,
-          insight: 'paused — support register active.',
-        },
-      }
-    }
-    const user = `behavior fragment:
-${data.scrubbed_text}
-district hint: ${district}`
-    const llm = await callAgent({
-      system: READING_PROMPT,
-      messages: [{ role: 'user', content: user }],
-      maxTokens: 400,
-    })
-    const parsed = tryParseJson<MirrorReadingOut>(llm.text)
-    if (!parsed?.trait?.name) {
-      return {
-        burn: fallbackPunch(district),
-        read: '',
-        filed: fallbackRecord(),
-        trait: {
-          name: 'New Pattern',
-          emoji: '✨',
-          rarity: 'common',
-          district,
-          insight: 'observed once. watching.',
-        },
-      }
-    }
-    const sanitizedDistrict = normalizeDistrict(parsed.trait.district)
-    return {
-      burn: sanitizePunch(parsed.burn ?? '') || fallbackPunch(sanitizedDistrict),
-      read: sanitizePunch(parsed.read ?? '', 220) || '',
-      filed: (parsed.filed || fallbackRecord()).toLowerCase().slice(0, 32),
-      trait: {
-        name: sanitizeName(parsed.trait.name),
-        emoji: sanitizeEmoji(parsed.trait.emoji, sanitizedDistrict),
-        rarity: normalizeRarity(parsed.trait.rarity),
-        district: sanitizedDistrict,
-        insight: (parsed.trait.insight || '').toLowerCase().slice(0, 100),
-      },
-    }
-  })
+  .handler(async ({ data }): Promise<MirrorReadingOut> => runMirrorReadingCore(data))
 
 // ---------- MirrorPunch: pattern row → hero line ----------
 
