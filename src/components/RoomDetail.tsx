@@ -520,6 +520,12 @@ export function RoomDetail({
                     toast(nowActive ? 'reaction added.' : 'reaction withdrawn.')
                     if (nowActive) {
                       track('react', { target: `room:${room.id}`, kind: rx.k })
+                      fireMirror({
+                        source: 'likes',
+                        ref_id: room.id,
+                        raw_text: (room.title || room.body || '').slice(0, 200),
+                        district_hint: pillarToDistrict(room.pillar),
+                      })
                       offerShare()
                     }
                   }}
