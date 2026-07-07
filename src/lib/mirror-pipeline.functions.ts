@@ -11,7 +11,7 @@ import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { runScrub } from './agents/scrubber.functions'
 import { embedText, toVectorLiteral } from './agents/embeddings.server'
-import { runMirrorReading, runMirrorPunch } from './agents/mirror.functions'
+import { runMirrorReadingCore, runMirrorPunchCore } from './agents/mirror.functions'
 import {
   type District,
   normalizeDistrict,
