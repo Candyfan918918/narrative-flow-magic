@@ -9,5 +9,8 @@ export const Route = createFileRoute('/welcome')({
       { children: 'html,body{background:#1a0a12}' },
     ],
   }),
+  headers: () => ({
+    'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+  }),
   component: WelcomeNativePage,
 })
