@@ -6,7 +6,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { callAgent, tryParseJson } from './gateway'
-import { classifyCrisis } from './guard.functions'
+import { runClassifyCrisis } from './guard.functions'
 import {
   type District,
   type Rarity,
