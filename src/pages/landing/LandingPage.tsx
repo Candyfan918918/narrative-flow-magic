@@ -416,8 +416,8 @@ export function LandingNativePage() {
               a pseudonymous place to vent about relationships, marriage, family, and work — and see what actually happened next for people who lived your exact thing.
             </p>
             <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.65, color: '#6b4a5c', margin: '0 0 24px', maxWidth: '52ch' }}>
-              <span onClick={openSpill} className="prose-link">spill it</span> — one question at a time, the companion helps you find the words. or{' '}
-              <span onClick={openScan} className="prose-link">scan it</span> — sixty seconds of questions, a private read saved just for you.
+              <span onClick={openSpill} onPointerEnter={preloadWelcome} className="prose-link">spill it</span> — one question at a time, the companion helps you find the words. or{' '}
+              <span onClick={openScan} onPointerEnter={preloadWelcome} className="prose-link">scan it</span> — sixty seconds of questions, a private read saved just for you.
             </p>
             <FaqRow q="is this anonymous?" a="pseudonymous. you get a persistent alias — something like 🦉 Quiet Indonesian Owl — generated the first time you sit down. your real name is never attached to anything, anywhere, including us." />
             <FaqRow q="what happens when i vent?" a="you open a room. people who've lived your exact situation respond, relate, and share what actually happened next for them. your story, your rules — you stay in control of what's shown." />
