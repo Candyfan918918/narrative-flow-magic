@@ -68,12 +68,19 @@ function trendDir(trend: number[]): 'rising' | 'steady' | 'cooling' | 'dormant' 
   return 'steady'
 }
 
-export const ingestMirrorEvent = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => IngestInput.parse(d))
-  .handler(async ({ data, context }): Promise<{ ok: true; pattern_id: string | null }> => {
-    const userId = context.userId
-    const supabase = context.supabase
+export type IngestMirrorInput = z.infer<typeof IngestInput>
+
+// Plain server-side function. Call directly from other server handlers
+// (server functions, server routes) passing the authenticated Supabase
+// client + userId, to avoid nesting createServerFn calls through the RPC
+// resolver (which fails with "Server function info not found" when this
+// wrapper isn't imported by any client bundle).
+export async function runIngestMirrorEvent(args: {
+  supabase: any
+  userId: string
+  data: IngestMirrorInput
+}): Promise<{ ok: true; pattern_id: string | null }> {
+  const { supabase, userId, data } = args
 
     // idempotency: skip if we already ingested this (user, source, ref_id)
     {
@@ -91,7 +98,7 @@ export const ingestMirrorEvent = createServerFn({ method: 'POST' })
     let cleaned = ''
     if (data.raw_text.trim()) {
       try {
-        const s = await scrubText({ data: { raw: data.raw_text.slice(0, 4000) } })
+        const s = await runScrub(data.raw_text.slice(0, 4000))
         cleaned = s.clean_text ?? ''
       } catch { cleaned = data.raw_text.slice(0, 4000) }
     }
@@ -251,6 +258,13 @@ export const ingestMirrorEvent = createServerFn({ method: 'POST' })
     } as never)
 
     return { ok: true, pattern_id: patternId }
+}
+
+export const ingestMirrorEvent = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => IngestInput.parse(d))
+  .handler(async ({ data, context }): Promise<{ ok: true; pattern_id: string | null }> => {
+    return runIngestMirrorEvent({ supabase: context.supabase, userId: context.userId, data })
   })
 
 // ----- read helpers used by render layer -----
