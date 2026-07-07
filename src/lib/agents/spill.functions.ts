@@ -38,10 +38,10 @@ export const runSpill = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => SpillInput.parse(data))
   .handler(async ({ data, context }): Promise<SpillPayoff> => {
     // 1. Scrubber
-    const scrub = await scrubText({ data: { raw: data.raw } })
+    const scrub = await runScrub(data.raw)
 
     // 2. Guard
-    const guard = await classifyCrisis({ data: { clean_text: scrub.clean_text } })
+    const guard = await runClassifyCrisis(scrub.clean_text)
 
     if (guard.crisis) {
       // Persona drops; no Scan reveal, no matcher, no payoff gamification.
