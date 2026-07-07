@@ -439,6 +439,19 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
         return
       }
       const res = await save({ data: payload as never })
+      if (isPublic && res?.room_id) {
+        appendUserRoom({
+          id: res.room_id,
+          title,
+          body,
+          support: 'heard',
+          pillar,
+          kind: 'scan',
+          initial_scan: result.score,
+          scan_band: band,
+          scan_signature: result.label,
+        })
+      }
       setTimeout(() => {
         if (isPublic && res?.room_id) navigate(`/stream#room-${res.room_id}`)
         else navigate('/profile')
