@@ -383,6 +383,15 @@ export function WelcomeNativePage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div style={{ width: '100%', maxWidth: 420 }}>
 
+          {checking && (
+            <div className="wstep" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center' }}>
+              <EyeMark />
+              <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 18, color: SOFT }}>
+                one sec — setting up your room…
+              </div>
+            </div>
+          )}
+
           {step === 'auth' && (
             <div className="wstep" style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
               <div style={{ textAlign: 'center' }}>
