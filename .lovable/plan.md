@@ -1,33 +1,52 @@
-## Problem
+## Root causes confirmed
 
-Client-side navigation `/` → `/welcome` still feels laggy on cold hits because the `/welcome` route chunk is large. `WelcomeNative.tsx` (~567 lines) statically imports server-fn modules used only in later ceremony steps (`recordLegalAcceptance`, `upsertMyAlias`, `randomAliasParts`, `getMyAlias`, `sendWelcomeEmail`), so all of that ships in the initial chunk even though a fresh visitor only ever sees the "auth" step first.
+- **RLS is fine.** `mirror_patterns` and `mirror_signals` already have owner-scoped INSERT/UPDATE/SELECT policies against `auth.uid()`. No migration needed.
+- The three code bugs (fire-and-forget death, swallowed errors, forming threshold) match the report. Backfill is missing.
 
-SSR is intentionally NOT being flipped in this change — client-side `router.navigate` renders from already-loaded JS, so SSR wouldn't affect the click path, and prior measurement showed SSR added ~200ms TTFB on the direct-load path. That decision is deferred until the `cf-cache-status` check on the published site.
+## Files to change
 
-## Fix (frontend-only, no backend changes, no SSR change)
+### 1. `src/lib/situations.functions.ts`
+- `saveSituation`: replace `void runIngestMirrorEvent(...)` with `await runIngestMirrorEvent(...)` wrapped in `try/catch` that `console.error('[mirror-ingest] saveSituation', err)`. Keeps user-facing save resilient.
+- `createComment`: same treatment for its `runIngestMirrorEvent` call (source `'comments'`).
 
-1. **Split `WelcomeNative` by step.** Extract each ceremony step into its own module so later steps become separate chunks fetched only when reached:
-   - `src/pages/welcome/AuthStep.tsx` — signed-out UI (Google, Apple, email). Only imports `supabase` and `lovable`. Eagerly imported.
-   - `src/pages/welcome/AgeStep.tsx` — 18+ gate + `recordLegalAcceptance` server-fn import. Lazy.
-   - `src/pages/welcome/AliasStep.tsx` — alias mint / re-roll + `upsertMyAlias`, `randomAliasParts`, `getMyAlias`, `sendWelcomeEmail`. Lazy.
-   - `src/pages/welcome/WelcomeEnterStep.tsx` — final "enter" screen. Lazy.
-   - `WelcomeNative.tsx` becomes a thin orchestrator that owns `step`, shared state (email, dob, alias parts, etc.), and renders each step via `React.lazy` + `<Suspense fallback={…lightweight skeleton…}>`.
+### 2. `src/lib/agents/spill.functions.ts`
+- Step 5c: replace `void runIngestMirrorEvent(...)` with awaited `try/catch` + `console.error('[mirror-ingest] spill', err)`. Never rethrow.
 
-   Effect: initial `/welcome` chunk drops to the auth-step surface + four `import(...)` stubs. `alias`, `legal`, `welcome-email` chunks are fetched only after the user actually signs in and advances.
+### 3. `src/lib/mirror-pipeline.functions.ts`
+Add error visibility across `runIngestMirrorEvent`:
+- Every `.insert()` / `.update()` on `mirror_patterns` and `mirror_signals` (deepen update, crystallize insert, punch update, cap-hit signals insert, no-reading signals insert, final provenance insert) captures `{ error }` and `console.error('[mirror-ingest] <op>', error)` on failure.
+- The idempotency `select().maybeSingle()` also logs on error (but keeps existing return).
+- No behavioral change on success paths.
 
-2. **Keep the previous turn's polish unchanged**: `router.preloadRoute('/welcome')` on landing-page mount + `onPointerEnter`/`onFocus` on the Spill/Scan CTAs, plus the "opening…" pending state and the cached `requireRealUser` fast path. These become more effective with a smaller initial chunk.
+### 4. `src/pages/Mirror.tsx`
+- Change `const isForming = mineList.length < 2` → `mineList.length < 1`. Cross-read gate (`mineList.length >= 2`) stays.
 
-3. **Do NOT change `ssr: false` on `/welcome`.** That call is deferred until the `cf-cache-status` measurement on the published site.
+### 5. New file `src/lib/mirror-backfill.functions.ts`
+- `backfillMyMirror` — `createServerFn({ method: 'POST' })` with `requireSupabaseAuth`, no input.
+- Loads via `context.supabase`:
+  - user's `situations` where `deleted_at IS NULL`, selecting `id, pillar, kind, clean_text, body, title`, ordered `created_at asc`, limit 50.
+  - user's `comment_records` (that's the comments table per schema), selecting `id, situation_id, clean_text` (or body field), ordered ascending, limit 50.
+- For each row, look up `mirror_signals` by `(user_id, source, ref_id)` — skip if present (also, the pipeline is already idempotent, so this is belt-and-suspenders; can just let the pipeline dedupe).
+- Sequentially call `runIngestMirrorEvent({ supabase, userId, data: { source, ref_id, raw_text, district_hint } })`:
+  - situation with `kind === 'scan'` → source `'scan'`, otherwise `'spill'`
+  - comment → source `'comments'`
+  - `district_hint` mapped from pillar exactly like `saveSituation` (`career` → `career`, `family` → `family`, `marriage` → `love`, else `love`).
+- Overall cap: 50 total items per invocation (situations first, then comments until 50).
+- Return `{ processed, remaining }` so the UI can show progress or re-invoke.
 
-## Files touched
+### 6. `src/pages/Mirror.tsx` — backfill trigger
+**Chosen trigger: explicit "Reflect my history" button in the Forming state** (not auto-on-load), because:
+- awaited ingest of up to 50 items runs multiple LLM calls per item → could take 30–60s; auto-firing on every Mirror mount would spam the gateway and stall the page.
+- gives the user a clear cause→effect ("I clicked, my mirror filled").
+- avoids double-triggering across tabs/refreshes.
 
-- `src/pages/WelcomeNative.tsx` — reduced to orchestrator: `step` state + shared step props + `Suspense` + `React.lazy` per step. `AuthStep` eagerly imported so first paint doesn't Suspense.
-- New: `src/pages/welcome/AuthStep.tsx`, `AgeStep.tsx`, `AliasStep.tsx`, `WelcomeEnterStep.tsx` — one per step; each owns its previously-inline UI and its own server-fn imports.
-- No changes to `src/routes/welcome.tsx`, routes, cron, server functions, or auth flow.
+Implementation: in the Forming block, when a signed-in user has 0 patterns, render a button "Reflect my history" that calls `backfillMyMirror` via `useServerFn`, shows a pending spinner, then re-runs the `listMirrorPatterns` query on success. Disable + hide the button afterward.
 
-## Verification
+## No DB migrations
+Existing RLS covers the writes. Bug 2 will surface any latent policy issue via console once logging lands; if a real failure appears after this fix, we address it in a follow-up migration.
 
-- Network panel on a hard-reload of `/` then Spill click: initial `/welcome` route chunk is materially smaller than before; `alias`/`legal`/`welcome-email` chunks only appear after the user signs in.
-- Ceremony flow (auth → age → alias → welcome) still works end-to-end, including alias persistence and welcome-email send.
-- Signed-in real user Spill flow (opens `SpillModal` directly on the landing page) still works — no regression.
-- No visible flash between step transitions (Suspense fallback matches the page background / step scaffold).
+## Verification (after build mode)
+1. Publish a spill as an auth'd user → confirm `mirror_signals` row + a `mirror_patterns` row (`is_demo=false`, `punch` set).
+2. Mirror page renders the single pattern (no forming state).
+3. Click "Reflect my history" on an account with existing situations/comments → rows accumulate and depth increases.
+4. No "Server function info not found" in responses.
