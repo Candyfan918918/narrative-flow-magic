@@ -1,38 +1,33 @@
 ## Problem
 
-Clicking the "Spill it" (and "Scan it") CTAs on `/` feels like nothing happens — the user clicked three times before anything visible occurred. Two things combine:
+Client-side navigation `/` → `/welcome` still feels laggy on cold hits because the `/welcome` route chunk is large. `WelcomeNative.tsx` (~567 lines) statically imports server-fn modules used only in later ceremony steps (`recordLegalAcceptance`, `upsertMyAlias`, `randomAliasParts`, `getMyAlias`, `sendWelcomeEmail`), so all of that ships in the initial chunk even though a fresh visitor only ever sees the "auth" step first.
 
-1. The click handler `await`s `supabase.auth.getSession()` before doing anything visible, then calls `router.navigate({ to: '/welcome' })`. No visual feedback is given during that gap.
-2. `/welcome` is `ssr:false` and heavy. The preload only starts inside a `useEffect` after hydration, so if the user clicks before hydration + preload finishes, the browser still has to download and parse the chunk on click.
+SSR is intentionally NOT being flipped in this change — client-side `router.navigate` renders from already-loaded JS, so SSR wouldn't affect the click path, and prior measurement showed SSR added ~200ms TTFB on the direct-load path. That decision is deferred until the `cf-cache-status` check on the published site.
 
-Net effect: on cold hits the button appears dead for ~1–2s.
+## Fix (frontend-only, no backend changes, no SSR change)
 
-## Fix
+1. **Split `WelcomeNative` by step.** Extract each ceremony step into its own module so later steps become separate chunks fetched only when reached:
+   - `src/pages/welcome/AuthStep.tsx` — signed-out UI (Google, Apple, email). Only imports `supabase` and `lovable`. Eagerly imported.
+   - `src/pages/welcome/AgeStep.tsx` — 18+ gate + `recordLegalAcceptance` server-fn import. Lazy.
+   - `src/pages/welcome/AliasStep.tsx` — alias mint / re-roll + `upsertMyAlias`, `randomAliasParts`, `getMyAlias`, `sendWelcomeEmail`. Lazy.
+   - `src/pages/welcome/WelcomeEnterStep.tsx` — final "enter" screen. Lazy.
+   - `WelcomeNative.tsx` becomes a thin orchestrator that owns `step`, shared state (email, dob, alias parts, etc.), and renders each step via `React.lazy` + `<Suspense fallback={…lightweight skeleton…}>`.
 
-Keep this UI/frontend-only. No backend changes.
+   Effect: initial `/welcome` chunk drops to the auth-step surface + four `import(...)` stubs. `alias`, `legal`, `welcome-email` chunks are fetched only after the user actually signs in and advances.
 
-1. **Preload `/welcome` earlier and more aggressively** in `src/pages/landing/LandingPage.tsx`:
-   - Fire `router.preloadRoute({ to: '/welcome' })` immediately on mount (already done) AND on `pointerenter` / `focus` of each Spill/Scan CTA (button + the inline `spill it` / `scan it` prose links). Hover/focus preload is a well-worn TanStack pattern and cuts the last mile of latency.
+2. **Keep the previous turn's polish unchanged**: `router.preloadRoute('/welcome')` on landing-page mount + `onPointerEnter`/`onFocus` on the Spill/Scan CTAs, plus the "opening…" pending state and the cached `requireRealUser` fast path. These become more effective with a smaller initial chunk.
 
-2. **Give instant click feedback** in the CTA button handlers:
-   - Add a `pendingCta: 'spill' | 'scan' | null` state.
-   - In `openSpill` / `openScan`, set `pendingCta` synchronously BEFORE the `await requireRealUser(...)` call, and clear it in a `finally`.
-   - While `pendingCta` matches, render the button in a "…" / dim + disabled state so the click is visibly registered even if navigation takes a beat.
-
-3. **Remove the awaited round-trip for the common anonymous case** by adding a tiny cached-session helper next to `requireRealUser` in `src/lib/auth-guard.ts`:
-   - Cache the last known `{ hasRealUser: boolean }` in a module-level variable, populated on first `getSession()` and refreshed by a single `supabase.auth.onAuthStateChange` subscription set up on module import (browser-only).
-   - `requireRealUser` first checks the cache: if we already know the user is anonymous/missing, it saves the intent and calls `router.navigate({ to: '/welcome' })` synchronously — no `await`. If the cache is empty (first call), it falls back to today's `await getSession()` path.
-   - This makes the second and subsequent CTA clicks instant, and the first click still gets the visual pending state from step 2.
-
-4. **No changes** to `/welcome`, the auth flow, cron jobs, or any server function. Modal open logic for real signed-in users is unchanged.
+3. **Do NOT change `ssr: false` on `/welcome`.** That call is deferred until the `cf-cache-status` measurement on the published site.
 
 ## Files touched
 
-- `src/pages/landing/LandingPage.tsx` — add `pendingCta` state, wire `onPointerEnter` / `onFocus` preloading on Spill/Scan buttons and prose links, show pending state.
-- `src/lib/auth-guard.ts` — add cached session state + `onAuthStateChange` subscription; make `requireRealUser` synchronous when the cache says the user is anonymous.
+- `src/pages/WelcomeNative.tsx` — reduced to orchestrator: `step` state + shared step props + `Suspense` + `React.lazy` per step. `AuthStep` eagerly imported so first paint doesn't Suspense.
+- New: `src/pages/welcome/AuthStep.tsx`, `AgeStep.tsx`, `AliasStep.tsx`, `WelcomeEnterStep.tsx` — one per step; each owns its previously-inline UI and its own server-fn imports.
+- No changes to `src/routes/welcome.tsx`, routes, cron, server functions, or auth flow.
 
 ## Verification
 
-- Load `/`, wait for hydration, click "Spill it": button visibly enters pending state, `/welcome` opens with no perceptible download delay.
-- Hard reload `/`, click "Spill it" immediately (before hydration effect could preload): pending state appears on click; navigation still completes.
-- Signed-in real user: clicking "Spill it" still opens the `SpillModal` (no regression).
+- Network panel on a hard-reload of `/` then Spill click: initial `/welcome` route chunk is materially smaller than before; `alias`/`legal`/`welcome-email` chunks only appear after the user signs in.
+- Ceremony flow (auth → age → alias → welcome) still works end-to-end, including alias persistence and welcome-email send.
+- Signed-in real user Spill flow (opens `SpillModal` directly on the landing page) still works — no regression.
+- No visible flash between step transitions (Suspense fallback matches the page background / step scaffold).
