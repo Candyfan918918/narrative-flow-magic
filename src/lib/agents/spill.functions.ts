@@ -143,8 +143,10 @@ export const runSpill = createServerFn({ method: 'POST' })
     // 5c. Mirror ingest — fire-and-forget; never blocks the spill payoff.
     if (sit?.id) {
       try {
-        const { ingestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
-        void ingestMirrorEvent({
+        const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
+        void runIngestMirrorEvent({
+          supabase: context.supabase,
+          userId: context.userId,
           data: {
             source: 'spill',
             ref_id: sit.id,
