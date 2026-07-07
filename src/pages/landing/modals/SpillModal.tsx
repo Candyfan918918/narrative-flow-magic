@@ -35,6 +35,10 @@ const OPENERS: Array<[string, string]> = [
 ]
 
 type Pillar = 'relationships' | 'marriage' | 'family' | 'career' | null
+const PILLARS = ['relationships', 'marriage', 'family', 'career'] as const
+function normalizePillar(p: unknown): Pillar {
+  return typeof p === 'string' && (PILLARS as readonly string[]).includes(p) ? (p as Pillar) : null
+}
 type Arc = { what_happened?: string|null; frequency?: string|null; feeling?: string|null; why?: string|null; talked_to_them?: string|null; other_attempts?: string|null; plan?: string|null }
 type Draft = { pillar: Pillar; tags: string[]; anchor: string|null; emotional_core: string|null; the_real_thing: string|null; named_and_landed: boolean; arc?: Arc }
 type Msg = { role: 'user'; text: string } | { role: 'companion'; say: string[]; hasQ: boolean }
