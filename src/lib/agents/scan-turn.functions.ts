@@ -65,8 +65,8 @@ export const scanTurn = createServerFn({ method: 'POST' })
 
     // Scrub + crisis-check any free-text answer
     if (data.last_text && data.last_text.length > 1) {
-      const scrub = await scrubText({ data: { raw: data.last_text } })
-      const guard = await classifyCrisis({ data: { clean_text: scrub.clean_text } })
+      const scrub = await runScrub(data.last_text)
+      const guard = await runClassifyCrisis(scrub.clean_text)
       if (guard.crisis) {
         return {
           done: true,
