@@ -360,7 +360,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         title: (first?.text || 'my situation').replace(/\s+/g, ' ').slice(0, 72),
         body: convo,
         tags: (draft.tags || []).slice(0, 5),
-        pillar: draft.pillar,
+        pillar: normalizePillar(draft.pillar),
         edit_summary: '',
       }
     }
