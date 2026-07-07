@@ -4,7 +4,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { requireRealUser } from './require-real-user'
-import { scrubText } from './agents/scrubber.functions'
+import { runScrub } from './agents/scrubber.functions'
 
 const Pillar = z.enum(['relationships', 'marriage', 'family', 'career'])
 const Hall = z.enum(['healing', 'brave', 'relatable', 'loving'])
