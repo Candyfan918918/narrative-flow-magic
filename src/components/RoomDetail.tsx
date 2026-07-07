@@ -23,7 +23,12 @@ function pillarToDistrict(pillar: string | null | undefined): MirrorDistrict | u
   if (pillar === 'marriage' || pillar === 'relationships') return 'love'
   return undefined
 }
-function fireMirror(input: Parameters<typeof recordMirrorEvent>[0]['data']) {
+function fireMirror(input: {
+  source: 'likes' | 'follows' | 'browse' | 'scan'
+  ref_id: string
+  raw_text?: string
+  district_hint?: MirrorDistrict
+}) {
   try { void recordMirrorEvent({ data: input }) } catch { /* never block */ }
 }
 
