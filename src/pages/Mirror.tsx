@@ -1089,6 +1089,23 @@ export function MirrorPage() {
   const list = showDemo || autoDemo ? demoList : mineList
   const isExample = autoDemo || showDemo
 
+  // Backfill: turn the user's existing situations/comments into mirror signals.
+  // The pipeline is idempotent, so we re-invoke until remaining === 0.
+  const isSignedIn = !!entitlement && entitlement.reason !== 'anonymous'
+  const queryClient = useQueryClient()
+  const doBackfill = useServerFn(backfillMyMirror)
+  const backfillMut = useMutation({
+    mutationFn: () => doBackfill(),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ['mirror-patterns', 'me'] })
+      if (res && res.remaining > 0) {
+        // chain the next batch; same pending UI stays on
+        setTimeout(() => backfillMut.mutate(), 0)
+      }
+    },
+    onError: (err) => console.error('[mirror-backfill] client', err),
+  })
+
   // keyframes injection (idempotent). Fonts come from <link> in __root.tsx.
   useEffect(() => {
     if (document.getElementById('mirror-kf')) return
