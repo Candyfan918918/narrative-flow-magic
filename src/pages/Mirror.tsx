@@ -1302,6 +1302,9 @@ export function MirrorPage() {
             onPreview={() => setShowDemo(true)}
             hasDemo={demoList.length > 0}
             previewing={false}
+            showBackfill={isSignedIn}
+            backfillPending={backfillMut.isPending}
+            onBackfill={() => backfillMut.mutate()}
           />
         )}
 
