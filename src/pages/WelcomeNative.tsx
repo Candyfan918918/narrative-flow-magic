@@ -105,6 +105,7 @@ export function WelcomeNativePage() {
     let cancelled = false
     const isAnon = (u: unknown) => Boolean((u as { is_anonymous?: boolean } | undefined)?.is_anonymous)
     const advanceForRealUser = async () => {
+      setChecking(true)
       // Fire legal acceptance in parallel with alias lookup — it's a
       // fire-and-forget write and blocking on it costs a full round-trip.
       void recordLegalAcceptance({ data: {} }).catch(() => {})
@@ -120,10 +121,12 @@ export function WelcomeNativePage() {
             display_name: existing.display_name,
           })
           setStep('welcome')
+          setChecking(false)
         } else {
           setStep('age')
+          setChecking(false)
         }
-      } catch { if (!cancelled) setStep('age') }
+      } catch { if (!cancelled) { setStep('age'); setChecking(false) } }
     }
     const run = async () => {
       const { data } = await supabase.auth.getSession()
