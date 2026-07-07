@@ -448,6 +448,15 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         void trackEvent('spill_created', props)
         void trackEvent('spill_submitted', props)
       } catch { /* noop */ }
+      if (isPublic && res?.room_id) {
+        appendUserRoom({
+          id: res.room_id,
+          title: liveTitle,
+          body: liveBody,
+          support: supportMode,
+          pillar: payload.pillar,
+        })
+      }
       setTimeout(() => {
         if (isPublic && res?.room_id) navigate(`/stream#room-${res.room_id}`)
         else navigate('/profile')
