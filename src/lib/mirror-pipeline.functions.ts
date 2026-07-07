@@ -78,7 +78,7 @@ function trendDir(trend: number[]): 'rising' | 'steady' | 'cooling' | 'dormant' 
   return 'steady'
 }
 
-export type IngestMirrorInput = z.infer<typeof IngestInput>
+export type IngestMirrorInput = z.input<typeof IngestInput>
 
 // ---------- PHASE 1 — durable enqueue ----------
 
