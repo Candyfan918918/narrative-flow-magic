@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { scrubText } from "@/lib/agents/scrubber.functions";
-import { classifyCrisis } from "@/lib/agents/guard.functions";
+import { runScrub } from "@/lib/agents/scrubber.functions";
+import { runClassifyCrisis } from "@/lib/agents/guard.functions";
 
 function supabaseForUser(ctx: ToolContext) {
   return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
