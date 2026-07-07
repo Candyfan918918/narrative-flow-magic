@@ -184,16 +184,24 @@ export async function runIngestMirrorEvent(args: {
       }
       let reading
       try {
-        reading = await runMirrorReading({
-          data: {
-            scrubbed_text: cleaned || `signal of type ${data.source}`,
-            district_hint: data.district_hint,
-          },
+        reading = await runMirrorReadingCore({
+          scrubbed_text: cleaned || `signal of type ${data.source}`,
+          district_hint: data.district_hint,
         })
       } catch {
         reading = null
       }
-      if (!reading) return { ok: true, pattern_id: null }
+      if (!reading) {
+        // reading failed — still record provenance so the signal isn't lost.
+        await supabase.from('mirror_signals').insert({
+          user_id: userId,
+          source: data.source,
+          ref_id: data.ref_id,
+          text_scrubbed: cleaned,
+          embedding: vecLiteral as never,
+        } as never)
+        return { ok: true, pattern_id: null }
+      }
       const district = normalizeDistrict(reading.trait.district)
       const initialSources: Record<SourceT, number> = {
         spill: 0, scan: 0, comments: 0, likes: 0, follows: 0, browse: 0,
