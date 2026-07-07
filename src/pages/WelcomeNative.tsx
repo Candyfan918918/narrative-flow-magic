@@ -95,6 +95,7 @@ export function WelcomeNativePage() {
   const [birth, setBirth] = useState({ day: 1, month: 1, year: maxYear - 12 })
 
   const [alias, setAliasState] = useState<{ emotion: string; nation: string; creature: string; emoji: string; display_name: string }>(() => ({ ...randomAliasParts() }))
+  const [checking, setChecking] = useState(false)
   const emoji = useMemo(() => CREATURES.find((c) => c.n === alias.creature)?.e ?? alias.emoji, [alias])
 
   // On mount: only skip past the auth step when a REAL (non-anonymous) user
@@ -104,6 +105,7 @@ export function WelcomeNativePage() {
     let cancelled = false
     const isAnon = (u: unknown) => Boolean((u as { is_anonymous?: boolean } | undefined)?.is_anonymous)
     const advanceForRealUser = async () => {
+      setChecking(true)
       // Fire legal acceptance in parallel with alias lookup — it's a
       // fire-and-forget write and blocking on it costs a full round-trip.
       void recordLegalAcceptance({ data: {} }).catch(() => {})
@@ -119,10 +121,12 @@ export function WelcomeNativePage() {
             display_name: existing.display_name,
           })
           setStep('welcome')
+          setChecking(false)
         } else {
           setStep('age')
+          setChecking(false)
         }
-      } catch { if (!cancelled) setStep('age') }
+      } catch { if (!cancelled) { setStep('age'); setChecking(false) } }
     }
     const run = async () => {
       const { data } = await supabase.auth.getSession()
@@ -378,6 +382,15 @@ export function WelcomeNativePage() {
       `}</style>
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div style={{ width: '100%', maxWidth: 420 }}>
+
+          {checking && (
+            <div className="wstep" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center' }}>
+              <EyeMark />
+              <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 18, color: SOFT }}>
+                one sec — setting up your room…
+              </div>
+            </div>
+          )}
 
           {step === 'auth' && (
             <div className="wstep" style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
