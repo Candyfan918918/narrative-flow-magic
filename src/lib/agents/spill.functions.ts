@@ -140,11 +140,11 @@ export const runSpill = createServerFn({ method: 'POST' })
       })
     }
 
-    // 5c. Mirror ingest — fire-and-forget; never blocks the spill payoff.
+    // 5c. Mirror ingest — awaited so serverless doesn't kill the pending promise.
     if (sit?.id) {
       try {
         const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
-        void runIngestMirrorEvent({
+        await runIngestMirrorEvent({
           supabase: context.supabase,
           userId: context.userId,
           data: {
@@ -157,7 +157,7 @@ export const runSpill = createServerFn({ method: 'POST' })
               : 'love',
           },
         })
-      } catch { /* never block the user flow */ }
+      } catch (err) { console.error('[mirror-ingest] spill', err) }
     }
 
     // 6. Companion — active felt-heard

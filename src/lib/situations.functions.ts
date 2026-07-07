@@ -154,7 +154,7 @@ export const saveSituation = createServerFn({ method: 'POST' })
 
     const [, roomId] = await Promise.all([embedTask, roomTask])
 
-    // Mirror ingest — fire-and-forget; never blocks the save payoff.
+    // Mirror ingest — awaited so serverless doesn't kill the pending promise.
     try {
       const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
       const pillar = data.pillar
@@ -162,7 +162,7 @@ export const saveSituation = createServerFn({ method: 'POST' })
         pillar === 'career' ? 'career'
           : pillar === 'family' ? 'family'
           : 'love'
-      void runIngestMirrorEvent({
+      await runIngestMirrorEvent({
         supabase: context.supabase,
         userId: context.userId,
         data: {
@@ -172,7 +172,7 @@ export const saveSituation = createServerFn({ method: 'POST' })
           district_hint,
         },
       })
-    } catch { /* never block the user flow */ }
+    } catch (err) { console.error('[mirror-ingest] saveSituation', err) }
 
     return { id: sit.id, is_public: sit.is_public, room_id: roomId }
   })
@@ -417,11 +417,11 @@ export const createComment = createServerFn({ method: 'POST' })
       }
     } catch { /* non-blocking */ }
 
-    // Mirror ingest — a comment IS a behavior signal.
+    // Mirror ingest — a comment IS a behavior signal (awaited).
     try {
       if (row?.id) {
         const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
-        void runIngestMirrorEvent({
+        await runIngestMirrorEvent({
           supabase: context.supabase,
           userId: context.userId,
           data: {
@@ -432,7 +432,7 @@ export const createComment = createServerFn({ method: 'POST' })
           },
         })
       }
-    } catch { /* non-blocking */ }
+    } catch (err) { console.error('[mirror-ingest] createComment', err) }
     return row
   })
 

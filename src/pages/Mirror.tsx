@@ -5,7 +5,7 @@
 // always rendered first, then animations play over it.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation } from '@/compat/router'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
 
@@ -13,6 +13,7 @@ import {
   listMirrorPatterns,
   listDemoPatterns,
 } from '@/lib/mirror-pipeline.functions'
+import { backfillMyMirror } from '@/lib/mirror-backfill.functions'
 import { getMirrorEntitlement } from '@/lib/entitlements.functions'
 import { getStripeEnvironment } from '@/lib/stripe'
 import { runMirrorCrossRead } from '@/lib/agents/mirror.functions'
@@ -980,12 +981,15 @@ function DetailOverlay({
 // the channel pills match the Scan share card exactly.
 
 /* ─────────────── forming state ─────────────── */
-function Forming({ onSpill, onScan, onPreview, hasDemo, previewing }: {
+function Forming({ onSpill, onScan, onPreview, hasDemo, previewing, onBackfill, backfillPending, showBackfill }: {
   onSpill: () => void
   onScan: () => void
   onPreview: () => void
   hasDemo: boolean
   previewing: boolean
+  onBackfill?: () => void
+  backfillPending?: boolean
+  showBackfill?: boolean
 }) {
   const pill = (bg: string, color: string) => ({
     background: bg, color, border: 0, borderRadius: 999,
@@ -1011,6 +1015,19 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing }: {
         <button onClick={onScan} style={pill('transparent', '#ffd479')}>
           <span style={{ borderBottom: 'none' }}>✨ scan →</span>
         </button>
+        {showBackfill && onBackfill && (
+          <button
+            onClick={onBackfill}
+            disabled={backfillPending}
+            style={{
+              background: 'transparent', color: GOLD,
+              border: `.5px solid ${GOLD}66`, borderRadius: 999,
+              padding: '11px 22px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
+              fontSize: 13, cursor: backfillPending ? 'wait' : 'pointer',
+              opacity: backfillPending ? 0.7 : 1,
+            }}
+          >{backfillPending ? 'reflecting your history…' : 'reflect my history ✦'}</button>
+        )}
         {hasDemo && (
           <button onClick={onPreview} style={{
             background: 'transparent', color: GOLD,
@@ -1053,7 +1070,7 @@ export function MirrorPage() {
   const isEntitled = !!entitlement?.entitled
 
   const mineList = (mine ?? []) as unknown as MirrorPatternView[]
-  const isForming = mineList.length < 2
+  const isForming = mineList.length < 1
 
   // Demo/seed content is ONLY fetched for the owner demo account (RULE 6).
   const { data: demo } = useQuery({
@@ -1071,6 +1088,23 @@ export function MirrorPage() {
   const autoDemo = isForming && isDemoAccount && demoList.length > 0
   const list = showDemo || autoDemo ? demoList : mineList
   const isExample = autoDemo || showDemo
+
+  // Backfill: turn the user's existing situations/comments into mirror signals.
+  // The pipeline is idempotent, so we re-invoke until remaining === 0.
+  const isSignedIn = !!entitlement && entitlement.reason !== 'anonymous'
+  const queryClient = useQueryClient()
+  const doBackfill = useServerFn(backfillMyMirror)
+  const backfillMut = useMutation({
+    mutationFn: () => doBackfill(),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ['mirror-patterns', 'me'] })
+      if (res && res.remaining > 0) {
+        // chain the next batch; same pending UI stays on
+        setTimeout(() => backfillMut.mutate(), 0)
+      }
+    },
+    onError: (err) => console.error('[mirror-backfill] client', err),
+  })
 
   // keyframes injection (idempotent). Fonts come from <link> in __root.tsx.
   useEffect(() => {
@@ -1268,6 +1302,9 @@ export function MirrorPage() {
             onPreview={() => setShowDemo(true)}
             hasDemo={demoList.length > 0}
             previewing={false}
+            showBackfill={isSignedIn}
+            backfillPending={backfillMut.isPending}
+            onBackfill={() => backfillMut.mutate()}
           />
         )}
 
