@@ -374,8 +374,10 @@ export const createComment = createServerFn({ method: 'POST' })
     // Mirror ingest — a comment IS a behavior signal.
     try {
       if (row?.id) {
-        const { ingestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
-        void ingestMirrorEvent({
+        const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
+        void runIngestMirrorEvent({
+          supabase: context.supabase,
+          userId: context.userId,
           data: {
             source: 'comments',
             ref_id: row.id as string,
