@@ -148,28 +148,33 @@ const PunchInput = z.object({
   insight: z.string().optional(),
 })
 
-export const runMirrorPunch = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => PunchInput.parse(d))
-  .handler(async ({ data }): Promise<MirrorPunchOut> => {
-    const district = normalizeDistrict(data.district)
-    const top = Object.entries(data.sources ?? {}).sort((a, b) => b[1] - a[1])[0]
-    const user = `pattern: ${data.name}
+export async function runMirrorPunchCore(
+  input: z.infer<typeof PunchInput>,
+): Promise<MirrorPunchOut> {
+  const data = PunchInput.parse(input)
+  const district = normalizeDistrict(data.district)
+  const top = Object.entries(data.sources ?? {}).sort((a, b) => b[1] - a[1])[0]
+  const user = `pattern: ${data.name}
 district: ${district}
 count: ${data.count}  depth: ${data.depth}
 top source: ${top ? `${top[0]} (${top[1]})` : 'mixed'}
 trend last 7: ${(data.trend ?? []).join(',')}
 insight: ${data.insight ?? ''}`
-    const llm = await callAgent({
-      system: PUNCH_PROMPT,
-      messages: [{ role: 'user', content: user }],
-      maxTokens: 200,
-    })
-    const parsed = tryParseJson<MirrorPunchOut>(llm.text)
-    const punch = sanitizePunch(parsed?.punch ?? '') || fallbackPunch(district)
-    const record = (parsed?.record || fallbackRecord()).toLowerCase().slice(0, 32)
-    return { punch, record }
+  const llm = await callAgent({
+    system: PUNCH_PROMPT,
+    messages: [{ role: 'user', content: user }],
+    maxTokens: 200,
   })
+  const parsed = tryParseJson<MirrorPunchOut>(llm.text)
+  const punch = sanitizePunch(parsed?.punch ?? '') || fallbackPunch(district)
+  const record = (parsed?.record || fallbackRecord()).toLowerCase().slice(0, 32)
+  return { punch, record }
+}
+
+export const runMirrorPunch = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => PunchInput.parse(d))
+  .handler(async ({ data }): Promise<MirrorPunchOut> => runMirrorPunchCore(data))
 
 // ---------- MirrorCrossRead: roster → synthesis ----------
 
