@@ -99,7 +99,7 @@ function sanitizeReflect(raw: string): string {
 function mergeDraft(d: Draft, u: Partial<Draft> & { arc?: Arc } | undefined): Draft {
   const base: Draft = d || { pillar: null, tags: [], anchor: null, emotional_core: null, the_real_thing: null, named_and_landed: false }
   const up = u || {}
-  if (up.pillar) base.pillar = up.pillar
+  { const p = normalizePillar(up.pillar); if (p) base.pillar = p }
   if (up.anchor) base.anchor = up.anchor
   if (up.emotional_core) base.emotional_core = up.emotional_core
   if (up.the_real_thing) base.the_real_thing = up.the_real_thing
