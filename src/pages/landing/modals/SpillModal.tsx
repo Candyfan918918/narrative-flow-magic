@@ -568,7 +568,12 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         {phase === 'preview' && composed && (
           <div ref={bodyRef} style={{ flex: 1, overflowY: 'auto', padding: '26px 22px 24px', maxWidth: 580, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#e7548a' }}>preview · in your words</div>
-            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#c4a0b2' }}>nothing’s posted yet — this is your draft. tap the title or the story to edit it directly, or type an instruction below and i’ll rewrite it. when it reads right, keep it private in your journal or post it to a room.</div>
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#c4a0b2' }}>here’s your story — cleaned up a little, but still yours; did i keep it true? type right over anything to fix it, or tell me what to change below — then pick where it lives.</div>
+            {composed.edit_summary && (
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c' }}>
+                {eyeSVG(16)}<span>{composed.edit_summary}</span>
+              </div>
+            )}
             {editNote && (
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#a8d4a9' }}>
                 {eyeSVG(18)}<span>{editNote}</span>
