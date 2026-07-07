@@ -1,5 +1,6 @@
 /* Final "enter" step. Lazy-loaded — routes user to their pending intent
  * or the default stream. */
+import { useEffect, useRef, useState } from 'react'
 import { getRouterRef } from '@/lib/router-ref'
 import { EyeMark, primaryBtn, SOFT, TEXT } from './shared'
 
@@ -7,7 +8,20 @@ export interface WelcomeEnterStepProps {
   displayName: string
 }
 
+const PENDING_KEYS = ['shutap_pending_intent', 'shutap_pending_save', 'shutap_pending_comment'] as const
+
+function hasPendingAction() {
+  try {
+    return PENDING_KEYS.some((key) => !!sessionStorage.getItem(key))
+  } catch {
+    return false
+  }
+}
+
 export function WelcomeEnterStep({ displayName }: WelcomeEnterStepProps) {
+  const [resuming, setResuming] = useState(false)
+  const resumedRef = useRef(false)
+
   const enterRoom = () => {
     const router = getRouterRef()
     const goPath = (to: string) => { if (router) router.navigate({ to }); else window.location.replace(to) }
@@ -52,6 +66,14 @@ export function WelcomeEnterStep({ displayName }: WelcomeEnterStepProps) {
     goPath('/stream')
   }
 
+  useEffect(() => {
+    if (resumedRef.current) return
+    if (!hasPendingAction()) return
+    resumedRef.current = true
+    setResuming(true)
+    enterRoom()
+  }, [])
+
   return (
     <div className="wstep" style={{ display: 'flex', flexDirection: 'column', gap: 24, textAlign: 'center' }}>
       <EyeMark />
@@ -69,7 +91,13 @@ export function WelcomeEnterStep({ displayName }: WelcomeEnterStepProps) {
           when you're ready, tap the eye anytime. i'll be here.
         </div>
       </div>
-      <button style={primaryBtn} onClick={enterRoom}>enter the room →</button>
+      {resuming ? (
+        <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 16, color: SOFT }}>
+          taking you back to your story…
+        </div>
+      ) : (
+        <button style={primaryBtn} onClick={enterRoom}>enter the room →</button>
+      )}
     </div>
   )
 }
