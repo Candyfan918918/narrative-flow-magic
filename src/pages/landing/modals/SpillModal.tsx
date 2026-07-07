@@ -38,7 +38,7 @@ type Pillar = 'relationships' | 'marriage' | 'family' | 'career' | null
 type Arc = { what_happened?: string|null; frequency?: string|null; feeling?: string|null; why?: string|null; talked_to_them?: string|null; other_attempts?: string|null; plan?: string|null }
 type Draft = { pillar: Pillar; tags: string[]; anchor: string|null; emotional_core: string|null; the_real_thing: string|null; named_and_landed: boolean; arc?: Arc }
 type Msg = { role: 'user'; text: string } | { role: 'companion'; say: string[]; hasQ: boolean }
-type Composed = { title: string; body: string; tags: string[]; pillar: Pillar }
+type Composed = { title: string; body: string; tags: string[]; pillar: Pillar; edit_summary?: string }
 type Phase = 'chat' | 'reflect' | 'support' | 'compose' | 'preview' | 'publishing' | 'saving-journal'
 
 async function callComplete(userText: string, system?: string): Promise<string> {
