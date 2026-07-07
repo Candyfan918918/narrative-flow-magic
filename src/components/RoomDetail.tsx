@@ -560,6 +560,12 @@ export function RoomDetail({
                 setRelated(true)
                 toast("added. the room knows you're there.")
                 track('relate', { target: `room:${room.id}` })
+                fireMirror({
+                  source: 'likes',
+                  ref_id: room.id,
+                  raw_text: (room.title || room.body || '').slice(0, 200),
+                  district_hint: pillarToDistrict(room.pillar),
+                })
                 offerShare()
               }}
             >
