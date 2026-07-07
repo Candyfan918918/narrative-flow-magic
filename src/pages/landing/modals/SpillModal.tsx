@@ -423,7 +423,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     }
     const payload = {
       kind: 'spill' as const,
-      pillar: (c.pillar || 'relationships') as 'relationships' | 'marriage' | 'family' | 'career',
+      pillar: (normalizePillar(c.pillar) ?? 'relationships') as 'relationships' | 'marriage' | 'family' | 'career',
       clean_text: liveBody,
       title: liveTitle || 'your situation',
       body: liveBody,
