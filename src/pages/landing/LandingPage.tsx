@@ -128,18 +128,33 @@ export function LandingNativePage() {
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
   const [composerOpen, setComposerOpen] = useState(false)
+  const [pendingCta, setPendingCta] = useState<null | 'spill' | 'scan'>(null)
   const liveRooms = useLiveRooms()
   const featured = liveRooms[0]
   const gridRooms = liveRooms.slice(0, 4)
 
+  const preloadWelcome = useCallback(() => {
+    void router.preloadRoute({ to: '/welcome' }).catch(() => {})
+  }, [router])
+
   const openSpill = useCallback(async () => {
-    if (!(await requireRealUser({ kind: 'spill' }))) return
-    setSpillOpen(true)
+    setPendingCta('spill')
+    try {
+      if (!(await requireRealUser({ kind: 'spill' }))) return
+      setSpillOpen(true)
+    } finally {
+      setPendingCta(null)
+    }
   }, [])
   const closeSpill = useCallback(() => { setSpillOpen(false) }, [])
   const openScan = useCallback(async () => {
-    if (!(await requireRealUser({ kind: 'scan' }))) return
-    setScanOpen(true)
+    setPendingCta('scan')
+    try {
+      if (!(await requireRealUser({ kind: 'scan' }))) return
+      setScanOpen(true)
+    } finally {
+      setPendingCta(null)
+    }
   }, [])
   const closeScan = useCallback(() => { setScanOpen(false) }, [])
   const openMirror = useCallback(() => { navigate('/mirror') }, [navigate])
@@ -255,14 +270,14 @@ export function LandingNativePage() {
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, maxWidth: 480 }}>
-                <button type="button" onClick={openSpill} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8, background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', padding: '18px 18px 16px', borderRadius: 18, cursor: 'pointer', transition: '.18s', border: 'none', boxShadow: '0 12px 28px -12px rgba(193,33,107,.55)' }}>
+                <button type="button" onClick={openSpill} onPointerEnter={preloadWelcome} onFocus={preloadWelcome} disabled={pendingCta === 'spill'} aria-busy={pendingCta === 'spill'} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8, background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', padding: '18px 18px 16px', borderRadius: 18, cursor: pendingCta === 'spill' ? 'progress' : 'pointer', transition: '.18s', border: 'none', boxShadow: '0 12px 28px -12px rgba(193,33,107,.55)', opacity: pendingCta === 'spill' ? 0.75 : 1 }}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 16, letterSpacing: '-.01em' }}>spill it</div>
+                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 16, letterSpacing: '-.01em' }}>{pendingCta === 'spill' ? 'opening…' : 'spill it'}</div>
                   <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: 'rgba(255,255,255,.85)', lineHeight: 1.4 }}>tell your story — opens a room the world can sit in.</div>
                 </button>
-                <button type="button" onClick={openScan} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8, background: '#fff', color: '#0b080f', padding: '18px 18px 16px', borderRadius: 18, cursor: 'pointer', transition: '.18s', border: '1.5px solid rgba(231,84,138,.28)' }}>
+                <button type="button" onClick={openScan} onPointerEnter={preloadWelcome} onFocus={preloadWelcome} disabled={pendingCta === 'scan'} aria-busy={pendingCta === 'scan'} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8, background: '#fff', color: '#0b080f', padding: '18px 18px 16px', borderRadius: 18, cursor: pendingCta === 'scan' ? 'progress' : 'pointer', transition: '.18s', border: '1.5px solid rgba(231,84,138,.28)', opacity: pendingCta === 'scan' ? 0.75 : 1 }}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="#e7548a" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M12 3a9 9 0 1 0 9 9" /><path d="M12 12l5-5" /><circle cx={12} cy={12} r={1.6} fill="#e7548a" stroke="none" /></svg>
-                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 16, letterSpacing: '-.01em', color: '#c1216b' }}>scan it</div>
+                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 16, letterSpacing: '-.01em', color: '#c1216b' }}>{pendingCta === 'scan' ? 'opening…' : 'scan it'}</div>
                   <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#6b4a5c', lineHeight: 1.4 }}>60-second read — get a private intensity score.</div>
                 </button>
               </div>
@@ -401,8 +416,8 @@ export function LandingNativePage() {
               a pseudonymous place to vent about relationships, marriage, family, and work — and see what actually happened next for people who lived your exact thing.
             </p>
             <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.65, color: '#6b4a5c', margin: '0 0 24px', maxWidth: '52ch' }}>
-              <span onClick={openSpill} className="prose-link">spill it</span> — one question at a time, the companion helps you find the words. or{' '}
-              <span onClick={openScan} className="prose-link">scan it</span> — sixty seconds of questions, a private read saved just for you.
+              <span onClick={openSpill} onPointerEnter={preloadWelcome} className="prose-link">spill it</span> — one question at a time, the companion helps you find the words. or{' '}
+              <span onClick={openScan} onPointerEnter={preloadWelcome} className="prose-link">scan it</span> — sixty seconds of questions, a private read saved just for you.
             </p>
             <FaqRow q="is this anonymous?" a="pseudonymous. you get a persistent alias — something like 🦉 Quiet Indonesian Owl — generated the first time you sit down. your real name is never attached to anything, anywhere, including us." />
             <FaqRow q="what happens when i vent?" a="you open a room. people who've lived your exact situation respond, relate, and share what actually happened next for them. your story, your rules — you stay in control of what's shown." />
