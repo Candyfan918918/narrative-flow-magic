@@ -171,6 +171,55 @@ function scrubPII(text: string): { clean: string; changes: Array<{ type: string;
   return { clean: t.trim(), changes }
 }
 
+// Append a just-published room to localStorage['shutap_user_situations'] so
+// StreamPage / RoomPage hash lookups can find and open it. De-dupes by id,
+// newest first, capped at 50.
+function appendUserRoom(r: {
+  id: string
+  title: string
+  body: string
+  support: 'heard' | 'advice'
+  pillar: string | null
+  alias?: string
+  emoji?: string
+}) {
+  if (typeof window === 'undefined') return
+  try {
+    let alias = r.alias
+    let emoji = r.emoji
+    if (!alias || !emoji) {
+      try {
+        const cached = localStorage.getItem('shutap_alias')
+        if (cached) {
+          const a = JSON.parse(cached) as { name?: string; emoji?: string }
+          if (!alias && a?.name) alias = a.name
+          if (!emoji && a?.emoji) emoji = a.emoji
+        }
+      } catch { /* noop */ }
+    }
+    const entry: Record<string, unknown> = {
+      id: r.id,
+      title: r.title,
+      body: r.body,
+      support: r.support,
+      kind: 'spill',
+      pillar: r.pillar,
+      hall: 'healing',
+      hours: 'just now',
+      relates: 0,
+      sitting: 1,
+      reactions: { heard: 0, same: 0, strong: 0, time: 0, brave: 0 },
+    }
+    if (alias) entry.alias = alias
+    if (emoji) entry.emoji = emoji
+    const raw = localStorage.getItem('shutap_user_situations')
+    const arr = raw ? (JSON.parse(raw) as Array<{ id?: string }>) : []
+    const deduped = Array.isArray(arr) ? arr.filter(x => x && x.id !== r.id) : []
+    const next = [entry, ...deduped].slice(0, 50)
+    localStorage.setItem('shutap_user_situations', JSON.stringify(next))
+  } catch { /* noop */ }
+}
+
 function eyeSVG(size = 32) {
   // Backwards-compat wrapper: renders the canonical brand EyeMark.
   return (
