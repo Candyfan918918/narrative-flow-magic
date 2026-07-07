@@ -54,10 +54,10 @@ export default defineTool({
     let forcePrivate = false;
     let crisisFlag = false;
     try {
-      const scrub = await scrubText({ data: { raw: clean_text } });
+      const scrub = await runScrub(clean_text);
       textToInsert = scrub.clean_text && scrub.clean_text.length > 0 ? scrub.clean_text : clean_text;
       try {
-        const guard = await classifyCrisis({ data: { clean_text: textToInsert } });
+        const guard = await runClassifyCrisis(textToInsert);
         if (guard.crisis) {
           crisisFlag = true;
           forcePrivate = true;
