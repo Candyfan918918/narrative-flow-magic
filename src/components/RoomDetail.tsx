@@ -13,6 +13,19 @@ import { createComment } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { ActionPill } from './ShareChannels'
 import { requireRealUser, type PendingIntent } from '@/lib/auth-guard'
+import { recordMirrorEvent } from '@/lib/mirror-events.functions'
+
+type MirrorDistrict = 'self' | 'career' | 'love' | 'family' | 'social'
+function pillarToDistrict(pillar: string | null | undefined): MirrorDistrict | undefined {
+  if (!pillar) return undefined
+  if (pillar === 'career') return 'career'
+  if (pillar === 'family') return 'family'
+  if (pillar === 'marriage' || pillar === 'relationships') return 'love'
+  return undefined
+}
+function fireMirror(input: Parameters<typeof recordMirrorEvent>[0]['data']) {
+  try { void recordMirrorEvent({ data: input }) } catch { /* never block */ }
+}
 
 const PENDING_COMMENT_KEY = 'shutap_pending_comment'
 
