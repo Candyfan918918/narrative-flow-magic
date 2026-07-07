@@ -66,7 +66,7 @@ export const runMirrorReading = createServerFn({ method: 'POST' })
   .handler(async ({ data }): Promise<MirrorReadingOut> => {
     const district = normalizeDistrict(data.district_hint)
     // crisis check — drop the persona to plain support register; do not crystallize
-    const guard = await classifyCrisis({ data: { clean_text: data.scrubbed_text } })
+    const guard = await runClassifyCrisis(data.scrubbed_text)
     if (guard.crisis) {
       return {
         burn: '',
