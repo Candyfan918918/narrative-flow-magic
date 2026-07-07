@@ -186,13 +186,19 @@ export const updateSituation = createServerFn({ method: 'POST' })
     if (data.pillar !== undefined) patch.pillar = data.pillar
     if (data.tags !== undefined) patch.tags = data.tags
     if (data.status !== undefined) patch.status = data.status
-    if (data.body !== undefined) {
+    if (data.body !== undefined && data.clean_text !== undefined && data.body === data.clean_text) {
       const s = data.body ? await runScrub(data.body) : { clean_text: '' }
       patch.body = s.clean_text || data.body || null
-    }
-    if (data.clean_text !== undefined) {
-      const s = await runScrub(data.clean_text)
       patch.clean_text = s.clean_text || data.clean_text
+    } else {
+      if (data.body !== undefined) {
+        const s = data.body ? await runScrub(data.body) : { clean_text: '' }
+        patch.body = s.clean_text || data.body || null
+      }
+      if (data.clean_text !== undefined) {
+        const s = await runScrub(data.clean_text)
+        patch.clean_text = s.clean_text || data.clean_text
+      }
     }
     if (data.is_public !== undefined) patch.is_public = data.is_public
 
