@@ -205,7 +205,8 @@ export function LandingNativePage() {
       if (!sess.session || cancelled) return
       try {
         const payload = JSON.parse(raw) as { id?: string; pillar?: string | null; title?: string | null; body?: string | null; clean_text?: string | null }
-        const res = await save({ data: payload as never })
+        const normalized = { ...payload, pillar: pillarMap(payload.pillar) }
+        const res = await save({ data: normalized as never })
         try {
           const cur = sessionStorage.getItem(SYNCED_KEY)
           const synced = cur ? JSON.parse(cur) as Record<string, string> : {}

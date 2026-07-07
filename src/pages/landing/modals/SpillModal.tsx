@@ -35,6 +35,10 @@ const OPENERS: Array<[string, string]> = [
 ]
 
 type Pillar = 'relationships' | 'marriage' | 'family' | 'career' | null
+const PILLARS = ['relationships', 'marriage', 'family', 'career'] as const
+function normalizePillar(p: unknown): Pillar {
+  return typeof p === 'string' && (PILLARS as readonly string[]).includes(p) ? (p as Pillar) : null
+}
 type Arc = { what_happened?: string|null; frequency?: string|null; feeling?: string|null; why?: string|null; talked_to_them?: string|null; other_attempts?: string|null; plan?: string|null }
 type Draft = { pillar: Pillar; tags: string[]; anchor: string|null; emotional_core: string|null; the_real_thing: string|null; named_and_landed: boolean; arc?: Arc }
 type Msg = { role: 'user'; text: string } | { role: 'companion'; say: string[]; hasQ: boolean }
@@ -95,7 +99,7 @@ function sanitizeReflect(raw: string): string {
 function mergeDraft(d: Draft, u: Partial<Draft> & { arc?: Arc } | undefined): Draft {
   const base: Draft = d || { pillar: null, tags: [], anchor: null, emotional_core: null, the_real_thing: null, named_and_landed: false }
   const up = u || {}
-  if (up.pillar) base.pillar = up.pillar
+  { const p = normalizePillar(up.pillar); if (p) base.pillar = p }
   if (up.anchor) base.anchor = up.anchor
   if (up.emotional_core) base.emotional_core = up.emotional_core
   if (up.the_real_thing) base.the_real_thing = up.the_real_thing
@@ -347,7 +351,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         title: scrubPII(String(j.title || '').trim()).clean,
         body: scrubPII(String(j.body || '').trim()).clean,
         tags: Array.isArray(j.tags) ? j.tags.slice(0, 5) : (draft.tags || []),
-        pillar: draft.pillar,
+        pillar: normalizePillar(draft.pillar),
         edit_summary: typeof j.edit_summary === 'string' ? j.edit_summary.trim() : '',
       }
     } catch {
@@ -356,7 +360,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         title: (first?.text || 'my situation').replace(/\s+/g, ' ').slice(0, 72),
         body: convo,
         tags: (draft.tags || []).slice(0, 5),
-        pillar: draft.pillar,
+        pillar: normalizePillar(draft.pillar),
         edit_summary: '',
       }
     }
@@ -419,7 +423,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     }
     const payload = {
       kind: 'spill' as const,
-      pillar: (c.pillar || 'relationships') as 'relationships' | 'marriage' | 'family' | 'career',
+      pillar: (normalizePillar(c.pillar) ?? 'relationships') as 'relationships' | 'marriage' | 'family' | 'career',
       clean_text: liveBody,
       title: liveTitle || 'your situation',
       body: liveBody,
@@ -581,7 +585,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
             )}
             <div style={{ background: 'rgba(255,255,255,.035)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 18, padding: '20px 20px 18px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'Inter', fontWeight: 500, fontSize: 12.5, color: '#9e7a8c', marginBottom: 12 }}>
-                🩷 you <span style={{ opacity: .5 }}>· {composed.pillar || 'your story'}</span>
+                🩷 you <span style={{ opacity: .5 }}>· {normalizePillar(composed.pillar) || 'your story'}</span>
               </div>
               <div
                 ref={titleElRef}
