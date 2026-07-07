@@ -13,6 +13,24 @@ import { createComment } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { ActionPill } from './ShareChannels'
 import { requireRealUser, type PendingIntent } from '@/lib/auth-guard'
+import { recordMirrorEvent } from '@/lib/mirror-events.functions'
+
+type MirrorDistrict = 'self' | 'career' | 'love' | 'family' | 'social'
+function pillarToDistrict(pillar: string | null | undefined): MirrorDistrict | undefined {
+  if (!pillar) return undefined
+  if (pillar === 'career') return 'career'
+  if (pillar === 'family') return 'family'
+  if (pillar === 'marriage' || pillar === 'relationships') return 'love'
+  return undefined
+}
+function fireMirror(input: {
+  source: 'likes' | 'follows' | 'browse' | 'scan'
+  ref_id: string
+  raw_text?: string
+  district_hint?: MirrorDistrict
+}) {
+  try { void recordMirrorEvent({ data: input }) } catch { /* never block */ }
+}
 
 const PENDING_COMMENT_KEY = 'shutap_pending_comment'
 
@@ -185,12 +203,29 @@ export function RoomDetail({
   useEffect(() => {
     track('room_open', { target: `room:${room.id}` })
     const start = Date.now()
+    // 15s browse signal — fire once per room per session
+    const browseKey = 'shutap_browsed_' + room.id
+    let browseTimer: ReturnType<typeof setTimeout> | null = null
+    try {
+      if (typeof sessionStorage !== 'undefined' && !sessionStorage.getItem(browseKey)) {
+        browseTimer = setTimeout(() => {
+          try { sessionStorage.setItem(browseKey, '1') } catch { /* ignore */ }
+          fireMirror({
+            source: 'browse',
+            ref_id: room.id,
+            raw_text: (room.title || '').slice(0, 200),
+            district_hint: pillarToDistrict(room.pillar),
+          })
+        }, 15000)
+      }
+    } catch { /* ignore */ }
     return () => {
+      if (browseTimer) clearTimeout(browseTimer)
       const sec = Math.round((Date.now() - start) / 1000)
       const type = sec < 4 ? 'room_bounce' : sec >= 20 ? 'room_dwell_long' : 'room_dwell'
       track(type, { target: `room:${room.id}`, sec })
     }
-  }, [room.id])
+  }, [room.id, room.title, room.pillar])
 
   // ── room structured data (SEO) + page title ──
   useEffect(() => {
@@ -485,6 +520,12 @@ export function RoomDetail({
                     toast(nowActive ? 'reaction added.' : 'reaction withdrawn.')
                     if (nowActive) {
                       track('react', { target: `room:${room.id}`, kind: rx.k })
+                      fireMirror({
+                        source: 'likes',
+                        ref_id: room.id,
+                        raw_text: (room.title || room.body || '').slice(0, 200),
+                        district_hint: pillarToDistrict(room.pillar),
+                      })
                       offerShare()
                     }
                   }}
@@ -519,6 +560,12 @@ export function RoomDetail({
                 setRelated(true)
                 toast("added. the room knows you're there.")
                 track('relate', { target: `room:${room.id}` })
+                fireMirror({
+                  source: 'likes',
+                  ref_id: room.id,
+                  raw_text: (room.title || room.body || '').slice(0, 200),
+                  district_hint: pillarToDistrict(room.pillar),
+                })
                 offerShare()
               }}
             >

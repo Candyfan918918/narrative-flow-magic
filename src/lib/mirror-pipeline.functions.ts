@@ -11,7 +11,7 @@ import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { runScrub } from './agents/scrubber.functions'
 import { embedText, toVectorLiteral } from './agents/embeddings.server'
-import { runMirrorReading, runMirrorPunch } from './agents/mirror.functions'
+import { runMirrorReadingCore, runMirrorPunchCore } from './agents/mirror.functions'
 import {
   type District,
   normalizeDistrict,
@@ -149,16 +149,14 @@ export async function runIngestMirrorEvent(args: {
       // refresh punch on depth-tier jumps so the hero line evolves
       if (nextDepth > beforeDepth) {
         try {
-          const punch = await runMirrorPunch({
-            data: {
-              name: p.name,
-              district: p.district,
-              count: nextCount,
-              depth: nextDepth,
-              sources: nextSources as Record<string, number>,
-              trend: nextTrend,
-              insight: p.insight ?? '',
-            },
+          const punch = await runMirrorPunchCore({
+            name: p.name,
+            district: p.district,
+            count: nextCount,
+            depth: nextDepth,
+            sources: nextSources as Record<string, number>,
+            trend: nextTrend,
+            insight: p.insight ?? '',
           })
           update.punch = punch.punch
           update.record = punch.record
@@ -186,16 +184,24 @@ export async function runIngestMirrorEvent(args: {
       }
       let reading
       try {
-        reading = await runMirrorReading({
-          data: {
-            scrubbed_text: cleaned || `signal of type ${data.source}`,
-            district_hint: data.district_hint,
-          },
+        reading = await runMirrorReadingCore({
+          scrubbed_text: cleaned || `signal of type ${data.source}`,
+          district_hint: data.district_hint,
         })
       } catch {
         reading = null
       }
-      if (!reading) return { ok: true, pattern_id: null }
+      if (!reading) {
+        // reading failed — still record provenance so the signal isn't lost.
+        await supabase.from('mirror_signals').insert({
+          user_id: userId,
+          source: data.source,
+          ref_id: data.ref_id,
+          text_scrubbed: cleaned,
+          embedding: vecLiteral as never,
+        } as never)
+        return { ok: true, pattern_id: null }
+      }
       const district = normalizeDistrict(reading.trait.district)
       const initialSources: Record<SourceT, number> = {
         spill: 0, scan: 0, comments: 0, likes: 0, follows: 0, browse: 0,
@@ -228,16 +234,14 @@ export async function runIngestMirrorEvent(args: {
         patternId = (inserted as { id: string }).id
         // generate a polished punch (replaces burn) — persisted; rendering is DB-read
         try {
-          const punch = await runMirrorPunch({
-            data: {
-              name: (inserted as { name: string }).name,
-              district,
-              count: 1,
-              depth: 1,
-              sources: initialSources as Record<string, number>,
-              trend: initialTrend,
-              insight: reading.trait.insight,
-            },
+          const punch = await runMirrorPunchCore({
+            name: (inserted as { name: string }).name,
+            district,
+            count: 1,
+            depth: 1,
+            sources: initialSources as Record<string, number>,
+            trend: initialTrend,
+            insight: reading.trait.insight,
           })
           await supabase
             .from('mirror_patterns')

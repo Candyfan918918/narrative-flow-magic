@@ -60,64 +60,69 @@ const ReadingInput = z.object({
   district_hint: z.string().optional(),
 })
 
+export async function runMirrorReadingCore(
+  input: z.infer<typeof ReadingInput>,
+): Promise<MirrorReadingOut> {
+  const data = ReadingInput.parse(input)
+  const district = normalizeDistrict(data.district_hint)
+  // crisis check — drop the persona to plain support register; do not crystallize
+  const guard = await runClassifyCrisis(data.scrubbed_text)
+  if (guard.crisis) {
+    return {
+      burn: '',
+      read: '',
+      filed: '',
+      trait: {
+        name: 'Pattern Forming',
+        emoji: '🤍',
+        rarity: 'common',
+        district,
+        insight: 'paused — support register active.',
+      },
+    }
+  }
+  const user = `behavior fragment:
+${data.scrubbed_text}
+district hint: ${district}`
+  const llm = await callAgent({
+    system: READING_PROMPT,
+    messages: [{ role: 'user', content: user }],
+    maxTokens: 400,
+  })
+  const parsed = tryParseJson<MirrorReadingOut>(llm.text)
+  if (!parsed?.trait?.name) {
+    return {
+      burn: fallbackPunch(district),
+      read: '',
+      filed: fallbackRecord(),
+      trait: {
+        name: 'New Pattern',
+        emoji: '✨',
+        rarity: 'common',
+        district,
+        insight: 'observed once. watching.',
+      },
+    }
+  }
+  const sanitizedDistrict = normalizeDistrict(parsed.trait.district)
+  return {
+    burn: sanitizePunch(parsed.burn ?? '') || fallbackPunch(sanitizedDistrict),
+    read: sanitizePunch(parsed.read ?? '', 220) || '',
+    filed: (parsed.filed || fallbackRecord()).toLowerCase().slice(0, 32),
+    trait: {
+      name: sanitizeName(parsed.trait.name),
+      emoji: sanitizeEmoji(parsed.trait.emoji, sanitizedDistrict),
+      rarity: normalizeRarity(parsed.trait.rarity),
+      district: sanitizedDistrict,
+      insight: (parsed.trait.insight || '').toLowerCase().slice(0, 100),
+    },
+  }
+}
+
 export const runMirrorReading = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => ReadingInput.parse(d))
-  .handler(async ({ data }): Promise<MirrorReadingOut> => {
-    const district = normalizeDistrict(data.district_hint)
-    // crisis check — drop the persona to plain support register; do not crystallize
-    const guard = await runClassifyCrisis(data.scrubbed_text)
-    if (guard.crisis) {
-      return {
-        burn: '',
-        read: '',
-        filed: '',
-        trait: {
-          name: 'Pattern Forming',
-          emoji: '🤍',
-          rarity: 'common',
-          district,
-          insight: 'paused — support register active.',
-        },
-      }
-    }
-    const user = `behavior fragment:
-${data.scrubbed_text}
-district hint: ${district}`
-    const llm = await callAgent({
-      system: READING_PROMPT,
-      messages: [{ role: 'user', content: user }],
-      maxTokens: 400,
-    })
-    const parsed = tryParseJson<MirrorReadingOut>(llm.text)
-    if (!parsed?.trait?.name) {
-      return {
-        burn: fallbackPunch(district),
-        read: '',
-        filed: fallbackRecord(),
-        trait: {
-          name: 'New Pattern',
-          emoji: '✨',
-          rarity: 'common',
-          district,
-          insight: 'observed once. watching.',
-        },
-      }
-    }
-    const sanitizedDistrict = normalizeDistrict(parsed.trait.district)
-    return {
-      burn: sanitizePunch(parsed.burn ?? '') || fallbackPunch(sanitizedDistrict),
-      read: sanitizePunch(parsed.read ?? '', 220) || '',
-      filed: (parsed.filed || fallbackRecord()).toLowerCase().slice(0, 32),
-      trait: {
-        name: sanitizeName(parsed.trait.name),
-        emoji: sanitizeEmoji(parsed.trait.emoji, sanitizedDistrict),
-        rarity: normalizeRarity(parsed.trait.rarity),
-        district: sanitizedDistrict,
-        insight: (parsed.trait.insight || '').toLowerCase().slice(0, 100),
-      },
-    }
-  })
+  .handler(async ({ data }): Promise<MirrorReadingOut> => runMirrorReadingCore(data))
 
 // ---------- MirrorPunch: pattern row → hero line ----------
 
@@ -143,28 +148,33 @@ const PunchInput = z.object({
   insight: z.string().optional(),
 })
 
-export const runMirrorPunch = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => PunchInput.parse(d))
-  .handler(async ({ data }): Promise<MirrorPunchOut> => {
-    const district = normalizeDistrict(data.district)
-    const top = Object.entries(data.sources ?? {}).sort((a, b) => b[1] - a[1])[0]
-    const user = `pattern: ${data.name}
+export async function runMirrorPunchCore(
+  input: z.infer<typeof PunchInput>,
+): Promise<MirrorPunchOut> {
+  const data = PunchInput.parse(input)
+  const district = normalizeDistrict(data.district)
+  const top = Object.entries(data.sources ?? {}).sort((a, b) => b[1] - a[1])[0]
+  const user = `pattern: ${data.name}
 district: ${district}
 count: ${data.count}  depth: ${data.depth}
 top source: ${top ? `${top[0]} (${top[1]})` : 'mixed'}
 trend last 7: ${(data.trend ?? []).join(',')}
 insight: ${data.insight ?? ''}`
-    const llm = await callAgent({
-      system: PUNCH_PROMPT,
-      messages: [{ role: 'user', content: user }],
-      maxTokens: 200,
-    })
-    const parsed = tryParseJson<MirrorPunchOut>(llm.text)
-    const punch = sanitizePunch(parsed?.punch ?? '') || fallbackPunch(district)
-    const record = (parsed?.record || fallbackRecord()).toLowerCase().slice(0, 32)
-    return { punch, record }
+  const llm = await callAgent({
+    system: PUNCH_PROMPT,
+    messages: [{ role: 'user', content: user }],
+    maxTokens: 200,
   })
+  const parsed = tryParseJson<MirrorPunchOut>(llm.text)
+  const punch = sanitizePunch(parsed?.punch ?? '') || fallbackPunch(district)
+  const record = (parsed?.record || fallbackRecord()).toLowerCase().slice(0, 32)
+  return { punch, record }
+}
+
+export const runMirrorPunch = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => PunchInput.parse(d))
+  .handler(async ({ data }): Promise<MirrorPunchOut> => runMirrorPunchCore(data))
 
 // ---------- MirrorCrossRead: roster → synthesis ----------
 
@@ -188,22 +198,27 @@ const CrossInput = z.object({
   ).min(2),
 })
 
+export async function runMirrorCrossReadCore(
+  input: z.infer<typeof CrossInput>,
+): Promise<MirrorCrossOut> {
+  const data = CrossInput.parse(input)
+  const lines = data.patterns
+    .map((p) => `- ${p.name} [${p.district}] count=${p.count} depth=${p.depth} ${p.trend_dir}`)
+    .join('\n')
+  const llm = await callAgent({
+    system: CROSS_PROMPT,
+    messages: [{ role: 'user', content: `roster:\n${lines}` }],
+    maxTokens: 260,
+  })
+  const parsed = tryParseJson<MirrorCrossOut>(llm.text)
+  return {
+    sees: sanitizePunch(parsed?.sees ?? '', 200) || 'three rooms, same draft.',
+    throughline: sanitizePunch(parsed?.throughline ?? '', 220) || 'the patterns rhyme.',
+    record: (parsed?.record || 'noticed, filed.').toLowerCase().slice(0, 32),
+  }
+}
+
 export const runMirrorCrossRead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => CrossInput.parse(d))
-  .handler(async ({ data }): Promise<MirrorCrossOut> => {
-    const lines = data.patterns
-      .map((p) => `- ${p.name} [${p.district}] count=${p.count} depth=${p.depth} ${p.trend_dir}`)
-      .join('\n')
-    const llm = await callAgent({
-      system: CROSS_PROMPT,
-      messages: [{ role: 'user', content: `roster:\n${lines}` }],
-      maxTokens: 260,
-    })
-    const parsed = tryParseJson<MirrorCrossOut>(llm.text)
-    return {
-      sees: sanitizePunch(parsed?.sees ?? '', 200) || 'three rooms, same draft.',
-      throughline: sanitizePunch(parsed?.throughline ?? '', 220) || 'the patterns rhyme.',
-      record: (parsed?.record || 'noticed, filed.').toLowerCase().slice(0, 32),
-    }
-  })
+  .handler(async ({ data }): Promise<MirrorCrossOut> => runMirrorCrossReadCore(data))
