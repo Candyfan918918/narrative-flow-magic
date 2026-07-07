@@ -118,7 +118,7 @@ export function StreamPage() {
   // Honor /stream#room-<id> deep links from the spill publish flow
   useEffect(() => {
     if (!hash) return
-    const m = hash.match(/^#room-(.+)$/)
+    const m = hash.replace(/^#/, '').match(/^room-(.+)$/)
     if (!m) return
     const id = decodeURIComponent(m[1])
     const r = rooms.find((x) => x.id === id)
