@@ -4,6 +4,7 @@
    Not wired as the default route yet — see src/pages/Landing.tsx (`?native=1` opt-in). */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from '@/compat/router'
+import { useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { ONBOARDING_FRAMES } from './data/onboarding'
 import { FALLBACK_ROOMS, type LandingRoom } from './data/rooms'
