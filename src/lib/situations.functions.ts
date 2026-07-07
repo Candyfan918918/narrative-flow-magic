@@ -74,10 +74,10 @@ export const saveSituation = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     // re-scrub text + body
     const cleanScrub = data.clean_text
-      ? await scrubText({ data: { raw: data.clean_text } })
+      ? await runScrub(data.clean_text)
       : { clean_text: '', notice: '' }
     const bodyScrub = data.body
-      ? await scrubText({ data: { raw: data.body } })
+      ? await runScrub(data.body)
       : { clean_text: data.body ?? '', notice: '' }
 
     const insertRow = {
@@ -168,11 +168,11 @@ export const updateSituation = createServerFn({ method: 'POST' })
     if (data.tags !== undefined) patch.tags = data.tags
     if (data.status !== undefined) patch.status = data.status
     if (data.body !== undefined) {
-      const s = data.body ? await scrubText({ data: { raw: data.body } }) : { clean_text: '' }
+      const s = data.body ? await runScrub(data.body) : { clean_text: '' }
       patch.body = s.clean_text || data.body || null
     }
     if (data.clean_text !== undefined) {
-      const s = await scrubText({ data: { raw: data.clean_text } })
+      const s = await runScrub(data.clean_text)
       patch.clean_text = s.clean_text || data.clean_text
     }
     if (data.is_public !== undefined) patch.is_public = data.is_public
@@ -273,7 +273,7 @@ ${data.transcript}
       }
     }
     // re-scrub
-    const s = await scrubText({ data: { raw: parsed.body } })
+    const s = await runScrub(parsed.body)
     return {
       title: parsed.title?.slice(0, 140) ?? deriveTitle(parsed.body),
       body: s.clean_text || parsed.body,
@@ -311,7 +311,7 @@ return JSON: { "title": "...", "body": "...", "needs_info": "<question>|null" }`
     if (parsed.needs_info) {
       return { title: data.currentTitle ?? '', body: data.currentBody, needs_info: parsed.needs_info }
     }
-    const s = await scrubText({ data: { raw: parsed.body } })
+    const s = await runScrub(parsed.body)
     return {
       title: parsed.title?.slice(0, 140) ?? data.currentTitle ?? '',
       body: s.clean_text || parsed.body,
@@ -342,7 +342,7 @@ export const createComment = createServerFn({ method: 'POST' })
     z.object({ roomId: z.string().uuid(), text: z.string().min(1).max(2000) }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const s = await scrubText({ data: { raw: data.text } })
+    const s = await runScrub(data.text)
     const { data: row, error } = await context.supabase
       .from('comments')
       .insert({
@@ -394,7 +394,7 @@ export const updateComment = createServerFn({ method: 'POST' })
     z.object({ id: z.string().uuid(), text: z.string().min(1).max(2000) }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const s = await scrubText({ data: { raw: data.text } })
+    const s = await runScrub(data.text)
     const { error } = await context.supabase
       .from('comments')
       .update({ clean_text: s.clean_text || data.text, edited: true } as never)
