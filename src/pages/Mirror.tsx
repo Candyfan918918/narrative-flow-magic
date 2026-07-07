@@ -980,12 +980,15 @@ function DetailOverlay({
 // the channel pills match the Scan share card exactly.
 
 /* ─────────────── forming state ─────────────── */
-function Forming({ onSpill, onScan, onPreview, hasDemo, previewing }: {
+function Forming({ onSpill, onScan, onPreview, hasDemo, previewing, onBackfill, backfillPending, showBackfill }: {
   onSpill: () => void
   onScan: () => void
   onPreview: () => void
   hasDemo: boolean
   previewing: boolean
+  onBackfill?: () => void
+  backfillPending?: boolean
+  showBackfill?: boolean
 }) {
   const pill = (bg: string, color: string) => ({
     background: bg, color, border: 0, borderRadius: 999,
@@ -1011,6 +1014,19 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing }: {
         <button onClick={onScan} style={pill('transparent', '#ffd479')}>
           <span style={{ borderBottom: 'none' }}>✨ scan →</span>
         </button>
+        {showBackfill && onBackfill && (
+          <button
+            onClick={onBackfill}
+            disabled={backfillPending}
+            style={{
+              background: 'transparent', color: GOLD,
+              border: `.5px solid ${GOLD}66`, borderRadius: 999,
+              padding: '11px 22px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
+              fontSize: 13, cursor: backfillPending ? 'wait' : 'pointer',
+              opacity: backfillPending ? 0.7 : 1,
+            }}
+          >{backfillPending ? 'reflecting your history…' : 'reflect my history ✦'}</button>
+        )}
         {hasDemo && (
           <button onClick={onPreview} style={{
             background: 'transparent', color: GOLD,
