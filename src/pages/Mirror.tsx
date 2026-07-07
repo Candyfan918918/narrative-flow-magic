@@ -5,7 +5,7 @@
 // always rendered first, then animations play over it.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation } from '@/compat/router'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
 
@@ -13,6 +13,7 @@ import {
   listMirrorPatterns,
   listDemoPatterns,
 } from '@/lib/mirror-pipeline.functions'
+import { backfillMyMirror } from '@/lib/mirror-backfill.functions'
 import { getMirrorEntitlement } from '@/lib/entitlements.functions'
 import { getStripeEnvironment } from '@/lib/stripe'
 import { runMirrorCrossRead } from '@/lib/agents/mirror.functions'
