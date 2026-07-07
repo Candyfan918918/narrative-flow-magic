@@ -61,7 +61,9 @@ export function GlobalHeader() {
   const inkStrong = dark ? '#f7e8f0' : '#0b080f'
   const inkMuted = dark ? '#c4a0b2' : '#6b4a5c'
   const inkActive = dark ? '#f7e8f0' : '#0b080f'
-  const barBg = dark ? 'rgba(16,8,16,.82)' : 'rgba(253,240,245,.88)'
+  // Opaque on purpose — a translucent bar + backdrop-filter re-samples the
+  // animated gradient on /welcome every frame and produces visible banding.
+  const barBg = dark ? '#100810' : '#fdf0f5'
   const barBorder = dark ? '.5px solid rgba(255,255,255,.08)' : '.5px solid rgba(11,8,15,.07)'
   const pillBg = dark ? 'rgba(255,255,255,.04)' : '#fff'
   const pillBorder = dark ? '.5px solid rgba(255,255,255,.10)' : '.5px solid rgba(11,8,15,.12)'
@@ -108,10 +110,6 @@ export function GlobalHeader() {
         top: 0,
         zIndex: 40,
         background: barBg,
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
-        transform: 'translateZ(0)',
-        willChange: 'transform',
         borderBottom: barBorder,
       }}
     >
