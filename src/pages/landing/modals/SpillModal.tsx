@@ -182,6 +182,10 @@ export function appendUserRoom(r: {
   pillar: string | null
   alias?: string
   emoji?: string
+  kind?: 'spill' | 'scan'
+  initial_scan?: number | null
+  scan_band?: string | null
+  scan_signature?: string | null
 }) {
   if (typeof window === 'undefined') return
   try {
@@ -202,7 +206,7 @@ export function appendUserRoom(r: {
       title: r.title,
       body: r.body,
       support: r.support,
-      kind: 'spill',
+      kind: r.kind ?? 'spill',
       pillar: r.pillar,
       hall: 'healing',
       hours: 'just now',
@@ -212,6 +216,9 @@ export function appendUserRoom(r: {
     }
     if (alias) entry.alias = alias
     if (emoji) entry.emoji = emoji
+    if (r.initial_scan !== undefined && r.initial_scan !== null) entry.initial_scan = r.initial_scan
+    if (r.scan_band !== undefined && r.scan_band !== null) entry.scan_band = r.scan_band
+    if (r.scan_signature !== undefined && r.scan_signature !== null) entry.scan_signature = r.scan_signature
     const raw = localStorage.getItem('shutap_user_situations')
     const arr = raw ? (JSON.parse(raw) as Array<{ id?: string }>) : []
     const deduped = Array.isArray(arr) ? arr.filter(x => x && x.id !== r.id) : []
