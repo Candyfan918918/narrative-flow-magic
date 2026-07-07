@@ -1,11 +1,18 @@
-// Mirror collection pipeline. One fire-and-forget server fn the rest of
-// the app calls when a user emits a signal (spill / scan / comment / like /
-// follow / browse). Idempotent on (user_id, source, ref_id).
+// Mirror collection pipeline. Two-phase so callers can guarantee durable
+// signal persistence without paying LLM latency.
 //
-//   event -> scrub -> embed -> match against THIS user's mirror_patterns
-//     match    -> deepen (sources++, count, depth, trend, last_seen)
-//     no match -> reading -> insert new pattern (cap 40 active)
-//   -> punch (persist, never blank) -> append mirror_signals row
+//   PHASE 1 — enqueue (fast, awaited by callers):
+//     upsert a mirror_signals row (pattern_id NULL). This is one cheap insert.
+//
+//   PHASE 2 — crystallize (slow, best-effort):
+//     scrub (optional) -> embed -> match against THIS user's mirror_patterns
+//       match    -> deepen (sources++, count, depth, trend, last_seen)
+//       no match -> reading -> insert new pattern (cap 40 active) -> punch
+//     -> UPDATE the mirror_signals row: set pattern_id + embedding.
+//
+// If phase 2 dies (serverless freeze, crash), the enqueued row survives with
+// pattern_id NULL and the nightly sweep in
+// src/routes/api/public/hooks/mirror-evolution.ts picks it up.
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
@@ -27,6 +34,10 @@ const IngestInput = z.object({
   ref_id: z.string().min(1).max(120),
   raw_text: z.string().max(8000).default(''),
   district_hint: z.string().optional(),
+  // Callers pass pre_scrubbed=true when raw_text already went through
+  // runScrub (saveSituation, createComment, spill) so phase 2 can skip the
+  // duplicate LLM scrub round-trip.
+  pre_scrubbed: z.boolean().optional().default(false),
 })
 
 type PatternRow = {
@@ -52,7 +63,6 @@ function depthFor(count: number): number {
 }
 
 function pushTrend(trend: number[]): number[] {
-  // simple weekly-bucket increment of the latest slot.
   const arr = (Array.isArray(trend) && trend.length === 7 ? [...trend] : [0, 0, 0, 0, 0, 0, 0]).map(Number)
   arr[6] = (arr[6] ?? 0) + 1
   return arr
@@ -68,71 +78,119 @@ function trendDir(trend: number[]): 'rising' | 'steady' | 'cooling' | 'dormant' 
   return 'steady'
 }
 
-export type IngestMirrorInput = z.infer<typeof IngestInput>
+export type IngestMirrorInput = z.input<typeof IngestInput>
 
-// Plain server-side function. Call directly from other server handlers
-// (server functions, server routes) passing the authenticated Supabase
-// client + userId, to avoid nesting createServerFn calls through the RPC
-// resolver (which fails with "Server function info not found" when this
-// wrapper isn't imported by any client bundle).
-export async function runIngestMirrorEvent(args: {
+// ---------- PHASE 1 — durable enqueue ----------
+
+type EnqueueResult = {
+  signal_id: string | null
+  pattern_id: string | null
+  alreadyLinked: boolean
+}
+
+async function enqueueMirrorSignal(args: {
   supabase: any
   userId: string
   data: IngestMirrorInput
-}): Promise<{ ok: true; pattern_id: string | null }> {
+}): Promise<EnqueueResult> {
   const { supabase, userId, data } = args
 
-    // idempotency: skip if we already ingested this (user, source, ref_id)
-    {
-      const { data: existing, error: existingErr } = await supabase
-        .from('mirror_signals')
-        .select('id, pattern_id')
-        .eq('user_id', userId)
-        .eq('source', data.source)
-        .eq('ref_id', data.ref_id)
-        .maybeSingle()
-      if (existingErr) console.error('[mirror-ingest] dedupe select', existingErr)
-      if (existing) return { ok: true, pattern_id: (existing.pattern_id as string) ?? null }
+  const { data: existing, error: exErr } = await supabase
+    .from('mirror_signals')
+    .select('id, pattern_id')
+    .eq('user_id', userId)
+    .eq('source', data.source)
+    .eq('ref_id', data.ref_id)
+    .maybeSingle()
+  if (exErr) console.error('[mirror-ingest] enqueue select', exErr)
+  if (existing?.pattern_id) {
+    return { signal_id: existing.id as string, pattern_id: existing.pattern_id as string, alreadyLinked: true }
+  }
+  if (existing) {
+    return { signal_id: existing.id as string, pattern_id: null, alreadyLinked: false }
+  }
+
+  const { data: ins, error: insErr } = await supabase
+    .from('mirror_signals')
+    .insert({
+      user_id: userId,
+      source: data.source,
+      ref_id: data.ref_id,
+      text_scrubbed: data.raw_text ?? '',
+      pattern_id: null,
+    } as never)
+    .select('id')
+    .single()
+  if (insErr) {
+    // Concurrent insert may have won the unique constraint — re-select.
+    console.error('[mirror-ingest] enqueue insert', insErr)
+    const { data: after } = await supabase
+      .from('mirror_signals')
+      .select('id, pattern_id')
+      .eq('user_id', userId)
+      .eq('source', data.source)
+      .eq('ref_id', data.ref_id)
+      .maybeSingle()
+    if (after) {
+      return {
+        signal_id: after.id as string,
+        pattern_id: (after.pattern_id as string) ?? null,
+        alreadyLinked: !!after.pattern_id,
+      }
     }
+    return { signal_id: null, pattern_id: null, alreadyLinked: false }
+  }
+  return { signal_id: (ins as { id: string }).id, pattern_id: null, alreadyLinked: false }
+}
 
-    // 1. scrub (cheap regex+LLM; text may be empty for browse/follow signals)
-    let cleaned = ''
-    if (data.raw_text.trim()) {
-      try {
-        const s = await runScrub(data.raw_text.slice(0, 4000))
-        cleaned = s.clean_text ?? ''
-      } catch { cleaned = data.raw_text.slice(0, 4000) }
-    }
+// ---------- PHASE 2 — crystallize (best-effort) ----------
 
-    // 2. embed (fail-soft)
-    const embeddingText = cleaned || `${data.source} signal`
-    const vec = await embedText(embeddingText)
-    const vecLiteral = vec ? toVectorLiteral(vec) : null
+export async function crystallizeMirrorSignal(args: {
+  supabase: any
+  userId: string
+  signal_id: string
+  data: IngestMirrorInput
+}): Promise<{ pattern_id: string | null }> {
+  const { supabase, userId, signal_id, data } = args
 
-    // 3. match nearest existing pattern for THIS user
-    let matched: { id: string; similarity: number } | null = null
-    if (vecLiteral) {
-      const { data: hits, error: rpcErr } = await supabase.rpc('match_user_patterns', {
-        p_user: userId,
-        q: vecLiteral as unknown as never,
-        match_count: 1,
-        similarity_floor: 0.78,
-      })
-      if (rpcErr) console.error('[mirror-ingest] match_user_patterns', rpcErr)
-      if (Array.isArray(hits) && hits[0]) matched = { id: hits[0].id, similarity: hits[0].similarity }
-    }
+  // 1. scrub — skip if caller already scrubbed
+  let cleaned = data.raw_text ?? ''
+  if (!data.pre_scrubbed && cleaned.trim()) {
+    try {
+      const s = await runScrub(cleaned.slice(0, 4000))
+      cleaned = s.clean_text ?? cleaned
+    } catch { /* keep pre-scrubbed / raw */ }
+  }
 
-    let patternId: string | null = null
+  // 2. embed (fail-soft)
+  const embeddingText = cleaned || `${data.source} signal`
+  const vec = await embedText(embeddingText)
+  const vecLiteral = vec ? toVectorLiteral(vec) : null
 
-    if (matched) {
-      // ---- DEEPEN ----
-      const { data: row, error: rowErr } = await supabase
-        .from('mirror_patterns')
-        .select('id, user_id, name, district, count, depth, trend, sources, embedding, insight, last_seen')
-        .eq('id', matched.id)
-        .single()
-      if (rowErr) console.error('[mirror-ingest] deepen select', rowErr)
-      if (!row) return { ok: true, pattern_id: null }
+  // 3. match nearest existing pattern for THIS user
+  let matched: { id: string; similarity: number } | null = null
+  if (vecLiteral) {
+    const { data: hits, error: rpcErr } = await supabase.rpc('match_user_patterns', {
+      p_user: userId,
+      q: vecLiteral as unknown as never,
+      match_count: 1,
+      similarity_floor: 0.78,
+    })
+    if (rpcErr) console.error('[mirror-ingest] match_user_patterns', rpcErr)
+    if (Array.isArray(hits) && hits[0]) matched = { id: hits[0].id, similarity: hits[0].similarity }
+  }
+
+  let patternId: string | null = null
+
+  if (matched) {
+    // ---- DEEPEN ----
+    const { data: row, error: rowErr } = await supabase
+      .from('mirror_patterns')
+      .select('id, user_id, name, district, count, depth, trend, sources, embedding, insight, last_seen')
+      .eq('id', matched.id)
+      .single()
+    if (rowErr) console.error('[mirror-ingest] deepen select', rowErr)
+    if (row) {
       const p = row as unknown as PatternRow
       const nextSources = { ...(p.sources ?? {}) } as Record<SourceT, number>
       nextSources[data.source] = (nextSources[data.source] ?? 0) + 1
@@ -149,7 +207,6 @@ export async function runIngestMirrorEvent(args: {
         last_seen: new Date().toISOString(),
         state: 'active',
       }
-      // refresh punch on depth-tier jumps so the hero line evolves
       if (nextDepth > beforeDepth) {
         try {
           const punch = await runMirrorPunchCore({
@@ -168,111 +225,195 @@ export async function runIngestMirrorEvent(args: {
       const { error: updErr } = await supabase.from('mirror_patterns').update(update as never).eq('id', matched.id)
       if (updErr) console.error('[mirror-ingest] deepen update', updErr)
       patternId = matched.id
-    } else {
-      // ---- CRYSTALLIZE (respect active cap) ----
-      const { count: activeCount, error: countErr } = await supabase
-        .from('mirror_patterns')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .eq('state', 'active')
-      if (countErr) console.error('[mirror-ingest] active-count', countErr)
-      if ((activeCount ?? 0) >= ACTIVE_CAP) {
-        // at cap; record the signal unattached so the cross-read still sees it
-        const { error: sigErr } = await supabase.from('mirror_signals').insert({
-          user_id: userId,
-          source: data.source,
-          ref_id: data.ref_id,
-          text_scrubbed: cleaned,
-          embedding: vecLiteral as never,
-        } as never)
-        if (sigErr) console.error('[mirror-ingest] cap-hit signal insert', sigErr)
-        return { ok: true, pattern_id: null }
-      }
-      let reading
-      try {
-        reading = await runMirrorReadingCore({
-          scrubbed_text: cleaned || `signal of type ${data.source}`,
-          district_hint: data.district_hint,
-        })
-      } catch {
-        reading = null
-      }
-      if (!reading) {
-        // reading failed — still record provenance so the signal isn't lost.
-        const { error: sigErr } = await supabase.from('mirror_signals').insert({
-          user_id: userId,
-          source: data.source,
-          ref_id: data.ref_id,
-          text_scrubbed: cleaned,
-          embedding: vecLiteral as never,
-        } as never)
-        if (sigErr) console.error('[mirror-ingest] no-reading signal insert', sigErr)
-        return { ok: true, pattern_id: null }
-      }
-      const district = normalizeDistrict(reading.trait.district)
-      const initialSources: Record<SourceT, number> = {
-        spill: 0, scan: 0, comments: 0, likes: 0, follows: 0, browse: 0,
-      }
-      initialSources[data.source] = 1
-      const initialTrend = [0, 0, 0, 0, 0, 0, 1]
-      const insertRow: Record<string, unknown> = {
-        user_id: userId,
-        is_demo: false,
-        name: reading.trait.name,
-        emoji: reading.trait.emoji,
-        district,
-        rarity: reading.trait.rarity,
-        insight: reading.trait.insight,
-        punch: reading.burn,
-        record: reading.filed,
-        count: 1,
-        depth: 1,
-        trend: initialTrend,
-        trend_dir: 'rising',
-        sources: initialSources,
-        embedding: vecLiteral as never,
-      }
-      const { data: inserted, error: insErr } = await supabase
-        .from('mirror_patterns')
-        .insert(insertRow as never)
-        .select('id, name, district, count, depth, sources, trend, insight')
-        .single()
-      if (insErr) console.error('[mirror-ingest] crystallize insert', insErr)
-      if (inserted) {
-        patternId = (inserted as { id: string }).id
-        // generate a polished punch (replaces burn) — persisted; rendering is DB-read
-        try {
-          const punch = await runMirrorPunchCore({
-            name: (inserted as { name: string }).name,
-            district,
-            count: 1,
-            depth: 1,
-            sources: initialSources as Record<string, number>,
-            trend: initialTrend,
-            insight: reading.trait.insight,
-          })
-          const { error: punchErr } = await supabase
-            .from('mirror_patterns')
-            .update({ punch: punch.punch, record: punch.record } as never)
-            .eq('id', patternId)
-          if (punchErr) console.error('[mirror-ingest] punch update', punchErr)
-        } catch { /* keep crystallization burn */ }
-      }
     }
-
-    // append provenance
-    const { error: provErr } = await supabase.from('mirror_signals').insert({
+  } else {
+    // ---- CRYSTALLIZE (respect active cap) ----
+    const { count: activeCount, error: countErr } = await supabase
+      .from('mirror_patterns')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('state', 'active')
+    if (countErr) console.error('[mirror-ingest] active-count', countErr)
+    if ((activeCount ?? 0) >= ACTIVE_CAP) {
+      // at cap; leave the signal unattached, provenance already stored
+      await finalizeSignal(supabase, signal_id, null, cleaned, vecLiteral)
+      return { pattern_id: null }
+    }
+    let reading
+    try {
+      reading = await runMirrorReadingCore({
+        scrubbed_text: cleaned || `signal of type ${data.source}`,
+        district_hint: data.district_hint,
+      })
+    } catch { reading = null }
+    if (!reading) {
+      await finalizeSignal(supabase, signal_id, null, cleaned, vecLiteral)
+      return { pattern_id: null }
+    }
+    const district = normalizeDistrict(reading.trait.district)
+    const initialSources: Record<SourceT, number> = {
+      spill: 0, scan: 0, comments: 0, likes: 0, follows: 0, browse: 0,
+    }
+    initialSources[data.source] = 1
+    const initialTrend = [0, 0, 0, 0, 0, 0, 1]
+    const insertRow: Record<string, unknown> = {
       user_id: userId,
-      pattern_id: patternId,
-      source: data.source,
-      ref_id: data.ref_id,
-      text_scrubbed: cleaned,
+      is_demo: false,
+      name: reading.trait.name,
+      emoji: reading.trait.emoji,
+      district,
+      rarity: reading.trait.rarity,
+      insight: reading.trait.insight,
+      punch: reading.burn,
+      record: reading.filed,
+      count: 1,
+      depth: 1,
+      trend: initialTrend,
+      trend_dir: 'rising',
+      sources: initialSources,
       embedding: vecLiteral as never,
-    } as never)
-    if (provErr) console.error('[mirror-ingest] provenance insert', provErr)
+    }
+    const { data: inserted, error: insErr } = await supabase
+      .from('mirror_patterns')
+      .insert(insertRow as never)
+      .select('id, name, district, count, depth, sources, trend, insight')
+      .single()
+    if (insErr) console.error('[mirror-ingest] crystallize insert', insErr)
+    if (inserted) {
+      patternId = (inserted as { id: string }).id
+      try {
+        const punch = await runMirrorPunchCore({
+          name: (inserted as { name: string }).name,
+          district,
+          count: 1,
+          depth: 1,
+          sources: initialSources as Record<string, number>,
+          trend: initialTrend,
+          insight: reading.trait.insight,
+        })
+        const { error: punchErr } = await supabase
+          .from('mirror_patterns')
+          .update({ punch: punch.punch, record: punch.record } as never)
+          .eq('id', patternId)
+        if (punchErr) console.error('[mirror-ingest] punch update', punchErr)
+      } catch { /* keep crystallization burn */ }
+    }
+  }
 
-    return { ok: true, pattern_id: patternId }
+  // Attach the signal to the resolved pattern.
+  await finalizeSignal(supabase, signal_id, patternId, cleaned, vecLiteral)
+  return { pattern_id: patternId }
 }
+
+async function finalizeSignal(
+  supabase: any,
+  signal_id: string,
+  pattern_id: string | null,
+  text_scrubbed: string,
+  vecLiteral: string | null,
+) {
+  const update: Record<string, unknown> = { pattern_id, text_scrubbed }
+  if (vecLiteral) update.embedding = vecLiteral as unknown as never
+  const { error } = await supabase
+    .from('mirror_signals')
+    .update(update as never)
+    .eq('id', signal_id)
+  if (error) console.error('[mirror-ingest] signal finalize', error)
+}
+
+// ---------- Public callers ----------
+
+// Fast, durable path: awaits phase 1 only; crystallization happens
+// in-request but is not awaited by the caller. Publish latency is bounded
+// by one INSERT, and the signal survives even if the runtime freezes.
+export async function ingestMirrorSignal(args: {
+  supabase: any
+  userId: string
+  data: IngestMirrorInput
+}): Promise<{ ok: true; signal_id: string | null; pattern_id: string | null }> {
+  const enq = await enqueueMirrorSignal(args)
+  if (enq.alreadyLinked || !enq.signal_id) {
+    return { ok: true, signal_id: enq.signal_id, pattern_id: enq.pattern_id }
+  }
+  // best-effort; nightly sweep catches signals whose crystallize never lands.
+  void crystallizeMirrorSignal({
+    supabase: args.supabase,
+    userId: args.userId,
+    signal_id: enq.signal_id,
+    data: args.data,
+  }).catch((err) => console.error('[mirror-ingest] crystallize (bg)', err))
+  return { ok: true, signal_id: enq.signal_id, pattern_id: null }
+}
+
+// Full-await path: enqueue + crystallize before returning. Used by
+// recordMirrorEvent (browser-initiated likes/browse/etc.) and the backfill,
+// where the caller already accepts the full LLM latency.
+export async function runIngestMirrorEvent(args: {
+  supabase: any
+  userId: string
+  data: IngestMirrorInput
+}): Promise<{ ok: true; pattern_id: string | null }> {
+  const enq = await enqueueMirrorSignal(args)
+  if (enq.alreadyLinked || !enq.signal_id) {
+    return { ok: true, pattern_id: enq.pattern_id }
+  }
+  const res = await crystallizeMirrorSignal({
+    supabase: args.supabase,
+    userId: args.userId,
+    signal_id: enq.signal_id,
+    data: args.data,
+  })
+  return { ok: true, pattern_id: res.pattern_id }
+}
+
+// Nightly sweep entry point — runs crystallize for orphaned mirror_signals
+// rows (pattern_id NULL, older than the grace window). Caller passes a
+// service-role client since there is no user session under pg_cron; every
+// operation stays scoped to the signal's own user_id.
+export async function sweepOrphanMirrorSignals(args: {
+  supabase: any
+  olderThanMinutes?: number
+  limit?: number
+}): Promise<{ swept: number; linked: number }> {
+  const olderThan = args.olderThanMinutes ?? 10
+  const limit = Math.min(Math.max(args.limit ?? 50, 1), 200)
+  const cutoff = new Date(Date.now() - olderThan * 60_000).toISOString()
+
+  const { data: rows, error } = await args.supabase
+    .from('mirror_signals')
+    .select('id, user_id, source, ref_id, text_scrubbed')
+    .is('pattern_id', null)
+    .lt('created_at', cutoff)
+    .order('created_at', { ascending: true })
+    .limit(limit)
+  if (error) {
+    console.error('[mirror-sweep] select orphans', error)
+    return { swept: 0, linked: 0 }
+  }
+
+  let linked = 0
+  for (const r of (rows ?? []) as Array<{ id: string; user_id: string; source: SourceT; ref_id: string; text_scrubbed: string }>) {
+    try {
+      const res = await crystallizeMirrorSignal({
+        supabase: args.supabase,
+        userId: r.user_id,
+        signal_id: r.id,
+        data: {
+          source: r.source,
+          ref_id: r.ref_id,
+          raw_text: r.text_scrubbed ?? '',
+          pre_scrubbed: true,
+        },
+      })
+      if (res.pattern_id) linked++
+    } catch (err) {
+      console.error('[mirror-sweep] crystallize', r.id, err)
+    }
+  }
+  return { swept: (rows ?? []).length, linked }
+}
+
+// ---------- server-fn wrappers ----------
 
 export const ingestMirrorEvent = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
@@ -296,14 +437,10 @@ export const listMirrorPatterns = createServerFn({ method: 'GET' })
     return data ?? []
   })
 
-// Demo/seed patterns are retired. This endpoint is kept exported so existing
-// imports don't break, but it unconditionally returns [] for every caller —
-// no account (including the former owner-demo account) receives seeded
-// patterns. Any is_demo=true rows in the database are left in place but are
-// unreachable via this API.
+// Demo/seed patterns are retired. Kept exported so existing imports don't
+// break, but unconditionally returns []; is_demo=true rows are unreachable.
 export const listDemoPatterns = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     return [] as never[]
   })
-

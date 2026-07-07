@@ -140,11 +140,11 @@ export const runSpill = createServerFn({ method: 'POST' })
       })
     }
 
-    // 5c. Mirror ingest — awaited so serverless doesn't kill the pending promise.
+    // 5c. Mirror ingest — enqueue-first (awaits durable INSERT only).
     if (sit?.id) {
       try {
-        const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
-        await runIngestMirrorEvent({
+        const { ingestMirrorSignal } = await import('@/lib/mirror-pipeline.functions')
+        await ingestMirrorSignal({
           supabase: context.supabase,
           userId: context.userId,
           data: {
@@ -155,6 +155,7 @@ export const runSpill = createServerFn({ method: 'POST' })
               : data.pillar === 'family' ? 'family'
               : data.pillar === 'marriage' ? 'love'
               : 'love',
+            pre_scrubbed: true,
           },
         })
       } catch (err) { console.error('[mirror-ingest] spill', err) }

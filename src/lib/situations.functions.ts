@@ -154,15 +154,17 @@ export const saveSituation = createServerFn({ method: 'POST' })
 
     const [, roomId] = await Promise.all([embedTask, roomTask])
 
-    // Mirror ingest — awaited so serverless doesn't kill the pending promise.
+    // Mirror ingest — enqueue-first: awaits the durable INSERT only.
+    // Crystallization runs in-request but not awaited; nightly sweep
+    // rescues any signal whose crystallize doesn't finish.
     try {
-      const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
+      const { ingestMirrorSignal } = await import('@/lib/mirror-pipeline.functions')
       const pillar = data.pillar
       const district_hint =
         pillar === 'career' ? 'career'
           : pillar === 'family' ? 'family'
           : 'love'
-      await runIngestMirrorEvent({
+      await ingestMirrorSignal({
         supabase: context.supabase,
         userId: context.userId,
         data: {
@@ -170,6 +172,7 @@ export const saveSituation = createServerFn({ method: 'POST' })
           ref_id: sit.id,
           raw_text: insertRow.clean_text || insertRow.body || '',
           district_hint,
+          pre_scrubbed: true,
         },
       })
     } catch (err) { console.error('[mirror-ingest] saveSituation', err) }
@@ -417,11 +420,11 @@ export const createComment = createServerFn({ method: 'POST' })
       }
     } catch { /* non-blocking */ }
 
-    // Mirror ingest — a comment IS a behavior signal (awaited).
+    // Mirror ingest — enqueue-first (awaits durable INSERT only).
     try {
       if (row?.id) {
-        const { runIngestMirrorEvent } = await import('@/lib/mirror-pipeline.functions')
-        await runIngestMirrorEvent({
+        const { ingestMirrorSignal } = await import('@/lib/mirror-pipeline.functions')
+        await ingestMirrorSignal({
           supabase: context.supabase,
           userId: context.userId,
           data: {
@@ -429,6 +432,7 @@ export const createComment = createServerFn({ method: 'POST' })
             ref_id: row.id as string,
             raw_text: (row as { clean_text: string }).clean_text ?? '',
             district_hint: 'social',
+            pre_scrubbed: true,
           },
         })
       }
