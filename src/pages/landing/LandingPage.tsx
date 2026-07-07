@@ -128,18 +128,33 @@ export function LandingNativePage() {
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
   const [composerOpen, setComposerOpen] = useState(false)
+  const [pendingCta, setPendingCta] = useState<null | 'spill' | 'scan'>(null)
   const liveRooms = useLiveRooms()
   const featured = liveRooms[0]
   const gridRooms = liveRooms.slice(0, 4)
 
+  const preloadWelcome = useCallback(() => {
+    void router.preloadRoute({ to: '/welcome' }).catch(() => {})
+  }, [router])
+
   const openSpill = useCallback(async () => {
-    if (!(await requireRealUser({ kind: 'spill' }))) return
-    setSpillOpen(true)
+    setPendingCta('spill')
+    try {
+      if (!(await requireRealUser({ kind: 'spill' }))) return
+      setSpillOpen(true)
+    } finally {
+      setPendingCta(null)
+    }
   }, [])
   const closeSpill = useCallback(() => { setSpillOpen(false) }, [])
   const openScan = useCallback(async () => {
-    if (!(await requireRealUser({ kind: 'scan' }))) return
-    setScanOpen(true)
+    setPendingCta('scan')
+    try {
+      if (!(await requireRealUser({ kind: 'scan' }))) return
+      setScanOpen(true)
+    } finally {
+      setPendingCta(null)
+    }
   }, [])
   const closeScan = useCallback(() => { setScanOpen(false) }, [])
   const openMirror = useCallback(() => { navigate('/mirror') }, [navigate])
