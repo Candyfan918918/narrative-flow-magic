@@ -95,6 +95,7 @@ export function WelcomeNativePage() {
   const [birth, setBirth] = useState({ day: 1, month: 1, year: maxYear - 12 })
 
   const [alias, setAliasState] = useState<{ emotion: string; nation: string; creature: string; emoji: string; display_name: string }>(() => ({ ...randomAliasParts() }))
+  const [checking, setChecking] = useState(false)
   const emoji = useMemo(() => CREATURES.find((c) => c.n === alias.creature)?.e ?? alias.emoji, [alias])
 
   // On mount: only skip past the auth step when a REAL (non-anonymous) user
