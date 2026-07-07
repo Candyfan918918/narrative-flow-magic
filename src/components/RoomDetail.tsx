@@ -117,19 +117,38 @@ export function RoomDetail({
       setScanShareOpen(true)
       return
     }
-    if (!window.ShutapShare) return
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shutap.com'
-    window.ShutapShare.manual({
-      trigger: 'manual_room',
-      kind: 'generic',
-      headline: '“' + room.title + '”',
-      companion: 'sharing this room — de-identified. only the headline and a link travel, never the full story.',
-      caption: '“' + room.title + '” — a room on Shutap. someone in here has lived your exact thing →',
-      url: origin + '/room?id=' + room.id,
-      loopLabel: 'take yours →',
-      privacy: 'only the headline + link leave — never the full story.',
-    })
+    const url = origin + '/room?id=' + room.id
+    const text = '“' + room.title + '” — a room on Shutap. someone in here has lived your exact thing →'
+    if (window.ShutapShare) {
+      window.ShutapShare.manual({
+        trigger: 'manual_room',
+        kind: 'generic',
+        headline: '“' + room.title + '”',
+        companion: 'sharing this room — de-identified. only the headline and a link travel, never the full story.',
+        caption: text,
+        url,
+        loopLabel: 'take yours →',
+        privacy: 'only the headline + link leave — never the full story.',
+      })
+      return
+    }
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'a room on Shutap', text, url })
+      } catch {
+        // user cancelled or share unavailable — no toast
+      }
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(text + ' ' + url)
+      toast('link copied — only the headline + link travel, never the full story.')
+    } catch {
+      toast('couldn’t copy the link — you can still share it from the address bar.')
+    }
   }
+
 
   // ── AI-guided comment nudge + starters (with deterministic fallback) ──
   useEffect(() => {
