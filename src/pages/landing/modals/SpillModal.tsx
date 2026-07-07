@@ -38,7 +38,7 @@ type Pillar = 'relationships' | 'marriage' | 'family' | 'career' | null
 type Arc = { what_happened?: string|null; frequency?: string|null; feeling?: string|null; why?: string|null; talked_to_them?: string|null; other_attempts?: string|null; plan?: string|null }
 type Draft = { pillar: Pillar; tags: string[]; anchor: string|null; emotional_core: string|null; the_real_thing: string|null; named_and_landed: boolean; arc?: Arc }
 type Msg = { role: 'user'; text: string } | { role: 'companion'; say: string[]; hasQ: boolean }
-type Composed = { title: string; body: string; tags: string[]; pillar: Pillar }
+type Composed = { title: string; body: string; tags: string[]; pillar: Pillar; edit_summary?: string }
 type Phase = 'chat' | 'reflect' | 'support' | 'compose' | 'preview' | 'publishing' | 'saving-journal'
 
 async function callComplete(userText: string, system?: string): Promise<string> {
@@ -314,18 +314,41 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
   const runCompose = useCallback(async (mode: 'heard' | 'advice') => {
     setSupportMode(mode)
     setPhase('compose')
-    const convo = msgs.filter((m): m is Extract<Msg, { role: 'user' }> => m.role === 'user').map(m => m.text).join('\n')
+    // Build the interview skeleton: each companion question paired with the
+    // user's next answer, in order. This is the spine the composer threads
+    // into a narrative (not a Q&A dump).
+    const pairs: Array<{ q: string; a: string }> = []
+    for (let i = 0; i < msgs.length; i++) {
+      const m = msgs[i]
+      if (m.role !== 'companion') continue
+      const q = (m.say || []).join(' ').trim()
+      const next = msgs[i + 1]
+      if (next && next.role === 'user') pairs.push({ q, a: (next.text || '').trim() })
+    }
+    const convo = pairs.map(p => p.a).filter(Boolean).join('\n')
+    const skeleton = pairs
+      .map((p, i) => `Q${i + 1} (companion asked): ${p.q}\nA${i + 1} (they answered): ${p.a}`)
+      .join('\n\n')
     let c: Composed
     try {
       const prompt =
-        'You are THE SPILL on Shutap. Compose the user\u2019s OWN post from the words they just gave you \u2014 a public-ready story in THEIR voice. AUTHENTICITY IS THE PRODUCT: keep their slang, cadence, capitalization, profanity, the messy-real texture, their order of events. every sentence must be traceable to something they actually said. do NOT sanitize it into clean generic prose; do NOT invent any event, name, motive, quote, or detail they didn\u2019t give; do NOT soften or sharpen what happened. title = their own hook, tightened (lowercase ok). body = 2\u20136 short paragraphs, first person.\n\ntheir words (already anonymized \u2014 keep it that way):\n"""' + convo + '"""\n\nthe thing that mattered most: ' + (draft.the_real_thing || draft.emotional_core || '') + '\n\nreturn STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"]}'
+        'You are THE SPILL on Shutap. Compose the user\u2019s intake into a public-ready post that will open their Room \u2014 a full-sentence NARRATIVE in THEIR voice, NOT a transcript or Q&A dump. Use the question\u2192answer order below as the LOGICAL SPINE (what happened \u2192 what led to it \u2192 what it cost \u2192 how it feels) and thread the answers into ONE smooth chronological story a stranger can follow.\n\n' +
+        'THE 80/20 RULE \u2014 LANGUAGE, NOT CONTENT.\n' +
+        '~80% stays THEIRS: their account, specifics, emotional beats, voice, idiom, capitalization, profanity; the meaning is EXACTLY what they said.\n' +
+        'Up to ~20% is polish AT THE LANGUAGE LEVEL ONLY: grammar, spelling, smoothing choppy phrasing, connective transitions between beats, cutting filler.\n\n' +
+        'HARD LINE: improve HOW it\u2019s said, never WHAT is said. NEVER add a fact, event, person, motive, quote, or feeling they didn\u2019t give. NEVER make it more dramatic than they lived it. NEVER put words in the other party\u2019s mouth. If a smoother sentence would imply something they didn\u2019t say, don\u2019t write it.\n\n' +
+        'title = their own hook, tightened to ONE line (lowercase ok). body = 2\u20135 short first-person paragraphs. edit_summary = one plain line naming the kind of polish applied (e.g. "fixed grammar and smoothed the order; no details added"). Do NOT list what you added \u2014 you added nothing.\n\n' +
+        'the interview (already anonymized \u2014 keep it that way):\n"""\n' + skeleton + '\n"""\n\n' +
+        'the thing that mattered most to them: ' + (draft.the_real_thing || draft.emotional_core || '(not stated)') + '\n\n' +
+        'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"..."}'
       const raw = await callComplete(prompt)
-      const j = extractJSON<{ title?: string; body?: string; tags?: string[] }>(raw)
+      const j = extractJSON<{ title?: string; body?: string; tags?: string[]; edit_summary?: string }>(raw)
       c = {
         title: scrubPII(String(j.title || '').trim()).clean,
         body: scrubPII(String(j.body || '').trim()).clean,
         tags: Array.isArray(j.tags) ? j.tags.slice(0, 5) : (draft.tags || []),
         pillar: draft.pillar,
+        edit_summary: typeof j.edit_summary === 'string' ? j.edit_summary.trim() : '',
       }
     } catch {
       const first = msgs.find(m => m.role === 'user') as Extract<Msg, { role: 'user' }> | undefined
@@ -334,6 +357,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         body: convo,
         tags: (draft.tags || []).slice(0, 5),
         pillar: draft.pillar,
+        edit_summary: '',
       }
     }
     setComposed(c)
@@ -544,7 +568,12 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         {phase === 'preview' && composed && (
           <div ref={bodyRef} style={{ flex: 1, overflowY: 'auto', padding: '26px 22px 24px', maxWidth: 580, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#e7548a' }}>preview · in your words</div>
-            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#c4a0b2' }}>nothing’s posted yet — this is your draft. tap the title or the story to edit it directly, or type an instruction below and i’ll rewrite it. when it reads right, keep it private in your journal or post it to a room.</div>
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#c4a0b2' }}>here’s your story — cleaned up a little, but still yours; did i keep it true? type right over anything to fix it, or tell me what to change below — then pick where it lives.</div>
+            {composed.edit_summary && (
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c' }}>
+                {eyeSVG(16)}<span>{composed.edit_summary}</span>
+              </div>
+            )}
             {editNote && (
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#a8d4a9' }}>
                 {eyeSVG(18)}<span>{editNote}</span>
