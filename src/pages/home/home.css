@@ -10,7 +10,24 @@ html.home-scroll-snap {
 }
 .home-chapter {
   scroll-snap-align: start;
+  position: relative;
+  overflow: hidden;
 }
+
+/* Giant decorative watermark word behind chapter content */
+.home-watermark {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(96px, 16vw, 260px);
+  line-height: 1;
+  letter-spacing: -.06em;
+  white-space: nowrap;
+}
+.home-chapter > * { position: relative; z-index: 1; }
 
 /* hero word reveal */
 .home-word-wrap {
