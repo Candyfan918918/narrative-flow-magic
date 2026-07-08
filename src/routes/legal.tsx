@@ -86,7 +86,7 @@ function LegalHub() {
     >
       <p>
         shutap is 18+, pseudonymous, and not a medical or legal service. these documents lay out
-        the ground rules and how we protect you. pick the one you need \u2014 or read them all.
+        the ground rules and how we protect you. pick the one you need — or read them all.
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 10, margin: "20px 0 4px" }}>
         {ITEMS.map((c) => (
