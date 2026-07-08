@@ -250,6 +250,7 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
       <div style={{ marginTop: 14, fontFamily: SORA, fontWeight: 700, fontSize: 9, letterSpacing: '.24em', color: 'rgba(255,255,255,.28)', textAlign: 'center' }}>
         SHUTAP · THE MIRROR · DEMO
       </div>
+      {card.decor}
     </div>
   )
 }
