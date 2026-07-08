@@ -381,9 +381,11 @@ function TrendChart({ trend, color, animate }: { trend: number[]; color: string;
 }
 
 /* ─────────────── signal bar ─────────────── */
-function SignalBar({ sources, animate }: { sources: Record<string, number>; animate: boolean }) {
+function SignalBar({ sources, animate, totalOverride }: { sources: Record<string, number>; animate: boolean; totalOverride?: number }) {
   const order = ['spill', 'scan', 'comments', 'likes', 'follows', 'browse']
-  const total = order.reduce((a, k) => a + Number(sources?.[k] ?? 0), 0)
+  const bandTotal = order.reduce((a, k) => a + Number(sources?.[k] ?? 0), 0)
+  const total = totalOverride ?? bandTotal
+
   return (
     <div>
       <div style={{
@@ -392,7 +394,8 @@ function SignalBar({ sources, animate }: { sources: Record<string, number>; anim
       }}>
         {order.map((k, i) => {
           const v = Number(sources?.[k] ?? 0)
-          const pct = total > 0 ? (v / total) * 100 : 0
+          const pct = bandTotal > 0 ? (v / bandTotal) * 100 : 0
+
           return (
             <div key={k} style={{
               width: animate ? '0%' : `${pct}%`,
@@ -448,8 +451,9 @@ function CountTick({ value, animate, style }: { value: number; animate: boolean;
 
 /* ─────────────── the big tarot card ─────────────── */
 function TarotCard({
-  p, animate, innerRef,
-}: { p: MirrorPatternView; animate: boolean; innerRef?: React.Ref<HTMLDivElement> }) {
+  p, animate, innerRef, totalSignalsOverride,
+}: { p: MirrorPatternView; animate: boolean; innerRef?: React.Ref<HTMLDivElement>; totalSignalsOverride?: number }) {
+
   const color = p.state === 'ruin' ? RUIN_MOSS : DISTRICT_COLOR[p.district]
   const isLegendary = p.rarity === 'legendary' && p.state !== 'ruin'
   const isRuin = p.state === 'ruin'
@@ -561,7 +565,7 @@ function TarotCard({
 
       {/* signal bar */}
       <div style={{ position: 'relative', margin: '2px 0 10px' }}>
-        <SignalBar sources={p.sources ?? {}} animate={animate} />
+        <SignalBar sources={p.sources ?? {}} animate={animate} totalOverride={totalSignalsOverride} />
       </div>
 
       {/* readout row */}
@@ -575,12 +579,13 @@ function TarotCard({
             fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 30,
             color, lineHeight: 1, letterSpacing: '-.02em',
           }}>
-            <CountTick value={p.count} animate={animate} />
+            <CountTick value={totalSignalsOverride ?? p.count} animate={animate} />
           </div>
           <div style={{
             marginTop: 4, fontFamily: "'Sora',sans-serif", fontSize: 10,
             color: MUTED_3, letterSpacing: '.18em', textTransform: 'uppercase',
-          }}>all-time signals</div>
+          }}>{totalSignalsOverride != null ? 'all-time signals · you' : 'all-time signals'}</div>
+
         </div>
         <div style={{ textAlign: 'right' }}>
           <span style={{
@@ -1145,8 +1150,22 @@ export function MirrorPage() {
     document.head.appendChild(s)
   }, [])
 
-  // daily-first reveal
-  const mostRecent = list[0] ?? null
+  // Headline picks the most recent pattern whose signals come from the
+  // user's own expressed behavior (spill / scan / comments) first —
+  // passive browse/likes/follows are only used as fallback so a room the
+  // user merely viewed can't hijack the reading.
+  const OWN_SOURCES = ['spill', 'scan', 'comments'] as const
+  function ownSignalCount(p: MirrorPatternView): number {
+    const s = p.sources ?? {}
+    return OWN_SOURCES.reduce((a, k) => a + Number(s[k] ?? 0), 0)
+  }
+  const ownAuthored = list.filter((p) => ownSignalCount(p) > 0)
+  const mostRecent = (ownAuthored[0] ?? list[0]) ?? null
+
+  // Aggregate across the whole roster — these numbers show that the mirror
+  // is growing with the user, not the per-pattern counter.
+  const aggregateSignals = list.reduce((a, p) => a + Number(p.count ?? 0), 0)
+
   const [revealing, setRevealing] = useState(false)
   const [animateHero, setAnimateHero] = useState(false)
   const [heroTick, setHeroTick] = useState(0)
@@ -1365,7 +1384,7 @@ export function MirrorPage() {
                 } as React.CSSProperties}
               >
                 <div ref={heroRef} style={{ position: 'relative' }}>
-                  <TarotCard p={mostRecent} animate={animateHero} />
+                  <TarotCard p={mostRecent} animate={animateHero} totalSignalsOverride={aggregateSignals} />
                   {revealing && <DeckBack onDone={() => setRevealing(false)} />}
                 </div>
               </div>

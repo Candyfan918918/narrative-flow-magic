@@ -55,12 +55,13 @@ type PatternRow = {
 }
 
 function depthFor(count: number): number {
-  if (count < 10) return 1
-  if (count < 25) return 2
-  if (count < 60) return 3
-  if (count < 120) return 4
+  if (count < 3) return 1
+  if (count < 7) return 2
+  if (count < 15) return 3
+  if (count < 30) return 4
   return 5
 }
+
 
 function pushTrend(trend: number[]): number[] {
   const arr = (Array.isArray(trend) && trend.length === 7 ? [...trend] : [0, 0, 0, 0, 0, 0, 0]).map(Number)
@@ -174,7 +175,7 @@ export async function crystallizeMirrorSignal(args: {
       p_user: userId,
       q: vecLiteral as unknown as never,
       match_count: 1,
-      similarity_floor: 0.78,
+      similarity_floor: 0.72,
     })
     if (rpcErr) console.error('[mirror-ingest] match_user_patterns', rpcErr)
     if (Array.isArray(hits) && hits[0]) matched = { id: hits[0].id, similarity: hits[0].similarity }
@@ -207,21 +208,23 @@ export async function crystallizeMirrorSignal(args: {
         last_seen: new Date().toISOString(),
         state: 'active',
       }
-      if (nextDepth > beforeDepth) {
-        try {
-          const punch = await runMirrorPunchCore({
-            name: p.name,
-            district: p.district,
-            count: nextCount,
-            depth: nextDepth,
-            sources: nextSources as Record<string, number>,
-            trend: nextTrend,
-            insight: p.insight ?? '',
-          })
-          update.punch = punch.punch
-          update.record = punch.record
-        } catch { /* keep existing punch */ }
-      }
+      // Always regenerate the hero line when a pattern deepens — the
+      // supportive prompt uses the fresh count/depth/sources numbers.
+      try {
+        const punch = await runMirrorPunchCore({
+          name: p.name,
+          district: p.district,
+          count: nextCount,
+          depth: nextDepth,
+          sources: nextSources as Record<string, number>,
+          trend: nextTrend,
+          insight: p.insight ?? '',
+        })
+        update.punch = punch.punch
+        update.record = punch.record
+      } catch { /* keep existing punch */ }
+      void beforeDepth
+
       const { error: updErr } = await supabase.from('mirror_patterns').update(update as never).eq('id', matched.id)
       if (updErr) console.error('[mirror-ingest] deepen update', updErr)
       patternId = matched.id
