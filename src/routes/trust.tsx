@@ -4,9 +4,9 @@ import { SITE_URL } from "@/lib/site";
 
 const PATH = "/trust";
 const TITLE =
-  "Trust & privacy at Shutap — pseudonymous by design, PII scrubbed before storage";
+  "Trust & privacy — pseudonymous by design | Shutap";
 const DESCRIPTION =
-  "How Shutap protects you: pseudonymity, automatic removal of personal identifiers before storage, what is and isn't public, and a fast takedown path.";
+  "How Shutap protects you: pseudonymity, automatic PII scrubbing before storage, what is and isn't public, and a fast takedown path.";
 const CAPSULE =
   "Shutap is pseudonymous by design. You post under an alias, and an automatic scrubber removes personal identifiers before anything is stored — only the scrubbed version is kept. Crisis messages are never public. Your real name is never shown.";
 const SECTIONS = [
