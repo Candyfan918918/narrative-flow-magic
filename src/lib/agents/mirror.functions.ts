@@ -158,16 +158,22 @@ export async function runMirrorPunchCore(
   const data = PunchInput.parse(input)
   const district = normalizeDistrict(data.district)
   const top = Object.entries(data.sources ?? {}).sort((a, b) => b[1] - a[1])[0]
+  const excerpts = (data.excerpts ?? [])
+    .filter((s) => typeof s === 'string' && s.trim().length > 0)
+    .slice(0, 3)
+    .map((s, i) => `  ${i + 1}. "${s.trim().replace(/\s+/g, ' ').slice(0, 200)}"`)
+    .join('\n')
   const user = `pattern: ${data.name}
 district: ${district}
 count: ${data.count}  depth: ${data.depth}
 top source: ${top ? `${top[0]} (${top[1]})` : 'mixed'}
 trend last 7: ${(data.trend ?? []).join(',')}
-insight: ${data.insight ?? ''}`
+insight: ${data.insight ?? ''}
+recent excerpts of what the user actually shared${excerpts ? `:\n${excerpts}` : ': (none)'}`
   const llm = await callAgent({
     system: PUNCH_PROMPT,
     messages: [{ role: 'user', content: user }],
-    maxTokens: 200,
+    maxTokens: 240,
   })
   const parsed = tryParseJson<MirrorPunchOut>(llm.text)
   const punch = sanitizePunch(parsed?.punch ?? '') || fallbackPunch(district)
