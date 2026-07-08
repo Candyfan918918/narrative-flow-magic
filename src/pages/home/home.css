@@ -132,9 +132,10 @@ html.home-scroll-snap {
 
 /* Immersive homepage — kill any inherited underline on links/CTAs. The
  * design has zero underlined text; the global prose/link rules must not
- * bleed into the injected reference markup. Scoped so other pages keep
- * their existing link styling. */
-:where([data-hdr], main a, main a:hover, main a:focus, main a:visited,
-       [data-strip] a, [data-strip] a *, [data-comp="root"] a) {
-  text-decoration: none !important;
-}
+ * bleed into the injected reference markup. Scoped to .home-immersive
+ * so other pages keep their existing link styling. */
+.home-immersive a,
+.home-immersive a:hover,
+.home-immersive a:focus,
+.home-immersive a:visited,
+.home-immersive summary { text-decoration: none !important; }
