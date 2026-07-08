@@ -182,9 +182,9 @@ export function HomePage() {
   }, [navigate, save])
 
   return (
-    <div className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
+    <div ref={rootRef} className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
       <CursorTrail />
-      <div ref={rootRef} />
+      <HomeImmersive restHtml={restHtml} />
       <SpillModal open={spillOpen} onClose={() => setSpillOpen(false)} />
       <ScanModal open={scanOpen} onClose={() => setScanOpen(false)} />
     </div>
