@@ -10,7 +10,7 @@ export function Hero() {
               </div>
               {' '}
               <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
-                <div data-heroinner="" style={{ maxWidth: '1560px', margin: '0 auto', width: '100%', position: 'relative', willChange: 'transform,opacity' }}>
+                <div data-heroinner="" style={{ maxWidth: '1560px', margin: '0 auto', width: '100%', position: 'relative', willChange: 'transform,opacity', paddingBottom: 'clamp(80px,10vh,110px)' }}>
                   {' '}
                   <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(18px,3vh,40px)' }}>
                     {' '}
