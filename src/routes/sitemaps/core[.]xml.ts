@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { HUBS } from "@/lib/seo/hubs";
+import { VENT_TOPICS } from "@/lib/seo/venting-topics";
 import { renderUrlset, type SitemapEntry } from "@/lib/seo/sitemap";
 
 const entries: SitemapEntry[] = [
@@ -26,6 +27,11 @@ const entries: SitemapEntry[] = [
     path: `/is-it-normal/${h.slug}`,
     changefreq: "monthly" as const,
     priority: "0.7",
+  })),
+  ...VENT_TOPICS.map((t) => ({
+    path: `/vent/${t.slug}`,
+    changefreq: "weekly" as const,
+    priority: "0.8",
   })),
 ];
 

@@ -1,0 +1,119 @@
+/* Immersive homepage — motion & layout tokens. */
+
+:root {
+  --home-ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --home-ease-dial: cubic-bezier(.16, 1, .3, 1);
+}
+
+html.home-scroll-snap {
+  scroll-snap-type: y proximity;
+}
+.home-chapter {
+  scroll-snap-align: start;
+}
+
+/* hero word reveal */
+.home-word-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1;
+}
+.home-word {
+  display: inline-block;
+  transform: translateY(115%);
+  transition: transform .9s var(--home-ease-spring);
+}
+.home-word.in {
+  transform: translateY(0);
+}
+
+/* mascot breathe */
+@keyframes home-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+.home-mascot-breathe {
+  animation: home-breathe 4.6s ease-in-out infinite;
+  transform-origin: center 60%;
+  will-change: transform;
+}
+
+/* live pulsing dot */
+@keyframes home-livedot {
+  0% { box-shadow: 0 0 0 0 rgba(231, 84, 138, .55); }
+  70% { box-shadow: 0 0 0 10px rgba(231, 84, 138, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(231, 84, 138, 0); }
+}
+.home-livedot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #e7548a; display: inline-block;
+  animation: home-livedot 1.9s ease-out infinite;
+}
+.home-livedot.green {
+  background: #5DCAA5;
+  animation-name: home-greendot;
+}
+@keyframes home-greendot {
+  0% { box-shadow: 0 0 0 0 rgba(93, 202, 165, .55); }
+  70% { box-shadow: 0 0 0 8px rgba(93, 202, 165, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(93, 202, 165, 0); }
+}
+
+/* scroll indicator */
+@keyframes home-scrollline {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+  60% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  61% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+.home-scrollline {
+  width: 1px; height: 34px; background: #c1216b;
+  animation: home-scrollline 1.8s ease-in-out infinite;
+}
+
+/* demo card fade-up */
+@keyframes home-bubblein {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.home-bubble-in { animation: home-bubblein .5s ease-out both; }
+
+/* dot loader */
+@keyframes home-dot {
+  0%, 80%, 100% { opacity: .25; }
+  40% { opacity: 1; }
+}
+.home-dot { animation: home-dot 1.2s ease-in-out infinite; }
+
+/* rooms strip drift */
+@keyframes home-strip-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.home-strip-track {
+  display: inline-flex;
+  gap: 16px;
+  animation: home-strip-drift 55s linear infinite;
+  will-change: transform;
+}
+.home-strip-wrap:hover .home-strip-track,
+.home-strip-wrap.dragging .home-strip-track {
+  animation-play-state: paused;
+}
+
+/* reduced motion — kill all decorative motion */
+@media (prefers-reduced-motion: reduce) {
+  .home-mascot-breathe,
+  .home-livedot,
+  .home-scrollline,
+  .home-bubble-in,
+  .home-dot,
+  .home-strip-track {
+    animation: none !important;
+  }
+  .home-word {
+    transform: none !important;
+    transition: none !important;
+  }
+}
