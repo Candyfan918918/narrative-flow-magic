@@ -28,20 +28,71 @@ const ADMIN_NAV: { to: string; label: string }[] = [
   { to: '/admin/relate-queue', label: 'relate queue' },
 ]
 
+function parseRgb(s: string): [number, number, number, number] | null {
+  const m = s.match(/rgba?\(([^)]+)\)/i)
+  if (!m) return null
+  const parts = m[1].split(',').map((p) => parseFloat(p.trim()))
+  if (parts.length < 3) return null
+  const [r, g, b, a = 1] = parts
+  return [r, g, b, a]
+}
+
+function luminance(r: number, g: number, b: number) {
+  const toLin = (c: number) => {
+    const s = c / 255
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4)
+  }
+  return 0.2126 * toLin(r) + 0.7152 * toLin(g) + 0.0722 * toLin(b)
+}
+
+function sampleVariantBehindHeader(headerEl: HTMLElement | null): Variant | null {
+  if (typeof window === 'undefined' || !headerEl) return null
+  const rect = headerEl.getBoundingClientRect()
+  const x = Math.max(4, Math.min(window.innerWidth - 4, window.innerWidth / 2))
+  const y = Math.max(1, rect.bottom + 6)
+  // Temporarily let the header pass-through so we don't pick itself.
+  const prevPE = headerEl.style.pointerEvents
+  headerEl.style.pointerEvents = 'none'
+  const el = document.elementFromPoint(x, y) as HTMLElement | null
+  headerEl.style.pointerEvents = prevPE
+  let node: HTMLElement | null = el
+  while (node && node !== document.body) {
+    const cs = getComputedStyle(node)
+    const rgba = parseRgb(cs.backgroundColor)
+    const bgImg = cs.backgroundImage
+    if (rgba && rgba[3] > 0.1) {
+      return luminance(rgba[0], rgba[1], rgba[2]) < 0.35 ? 'dark' : 'light'
+    }
+    if (bgImg && bgImg !== 'none') {
+      // Assume gradients/images are dark unless the color is also opaque light.
+      return 'dark'
+    }
+    node = node.parentElement
+  }
+  const bodyBg = parseRgb(getComputedStyle(document.body).backgroundColor)
+  if (bodyBg && bodyBg[3] > 0.1) {
+    return luminance(bodyBg[0], bodyBg[1], bodyBg[2]) < 0.35 ? 'dark' : 'light'
+  }
+  return null
+}
+
 export function GlobalHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
-  const variant = variantFor(pathname)
+  const routeVariant = variantFor(pathname)
+  const [variant, setVariant] = useState<Variant>(routeVariant)
   const dark = variant === 'dark'
   const navigate = useNavigate()
   const { alias } = useCurrentAlias()
   const admin = useIsAdmin()
   const [menuOpen, setMenuOpen] = useState(false)
   const areaRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
   const isWelcome = pathname === '/welcome'
   const isAdminPath = pathname === '/admin' || pathname.startsWith('/admin/')
   // The immersive homepage ("/") ships with its own header inside the
   // reference markup; suppress the global one so we don't stack two bars.
   const isHome = pathname === '/'
+
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
