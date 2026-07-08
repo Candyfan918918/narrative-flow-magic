@@ -118,7 +118,8 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
     raf = requestAnimationFrame(loop)
     rafs[0] = raf
   }
-  raf = requestAnimationFrame(loop); rafs[0] = raf
+  idle(() => { raf = requestAnimationFrame(loop); rafs[0] = raf })
+
 
   /* ── word-level reveals ── */
   const splitWords = (el: Element) => {
