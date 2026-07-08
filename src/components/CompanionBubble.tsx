@@ -114,7 +114,6 @@ export function CompanionBubble({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        animation: 'pulse 4s infinite',
         touchAction: 'none',
         userSelect: 'none',
       }}
