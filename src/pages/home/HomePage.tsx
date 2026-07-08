@@ -93,14 +93,6 @@ export function HomePage() {
   }, [pendingCta])
 
   // Mount the immersive motion/interactivity onto the native React DOM.
-  const [restHtml] = useState(() => {
-    const rooms = (SHUTAP_SEED.rooms || []).map((r) => ({
-      emoji: r.emoji, alias: r.alias, hours: r.hours, title: r.title,
-      sitting: (r as unknown as { sitting?: number }).sitting ?? 0,
-      relates: (r as unknown as { relates?: number }).relates ?? 0,
-    }))
-    return IMMERSIVE_REST_HTML.replace('<!--ROOMS-->', renderRoomsMarkup(rooms))
-  })
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
