@@ -234,15 +234,19 @@ function RootComponent() {
       <GlobalHeader />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      {!isHome && (
-        <CompanionBubble onOpen={() => {
-          if (window.location.pathname === '/') {
-            window.location.hash = 'ask'
+      <CompanionBubble onOpen={() => {
+        if (window.location.pathname === '/') {
+          const trigger = document.querySelector('[data-comp-action="open"]') as HTMLElement | null
+          if (trigger) {
+            trigger.dispatchEvent(new MouseEvent('click', { bubbles: true }))
           } else {
-            navigate('/#ask')
+            window.location.hash = 'ask'
           }
-        }} />
-      )}
+        } else {
+          navigate('/#ask')
+        }
+      }} />
+
     </QueryClientProvider>
   );
 }
