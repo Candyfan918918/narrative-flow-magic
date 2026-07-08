@@ -20,7 +20,7 @@ import { Chapter03Mirror } from './chapters/Chapter03Mirror'
 import { RoomsStrip } from './RoomsStrip'
 import { HomeFAQ } from './HomeFAQ'
 import { Link } from '@tanstack/react-router'
-import { Words } from '@/components/motion'
+import { Words, Reveal } from '@/components/motion'
 import './home.css'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -247,19 +247,25 @@ export function HomePage() {
           className="home-chapter"
           style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '96px 22px', textAlign: 'center' }}
         >
-          <div style={{ maxWidth: 900, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22 }}>
-            <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 18, color: '#9e7a8c' }}>ready when you are.</div>
-            <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(44px,8vw,110px)', letterSpacing: '-.04em', lineHeight: 1, margin: 0 }}>
-              say it <em style={{ fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>here.</em>
-            </h2>
-            <button
-              type="button"
-              onClick={openSpill}
-              style={{ background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', border: 0, padding: '16px 32px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 15, cursor: 'pointer' }}
-            >
-              join shutap →
-            </button>
-          </div>
+          <Reveal fx="zoom">
+            <div style={{ maxWidth: 900, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22 }}>
+              <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 18, color: '#9e7a8c' }}>ready when you are.</div>
+              <Words
+                as="h2"
+                stagger={45}
+                style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(44px,8vw,110px)', letterSpacing: '-.05em', lineHeight: 1, margin: 0 }}
+              >
+                say it <em style={{ fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>here.</em>
+              </Words>
+              <button
+                type="button"
+                onClick={openSpill}
+                style={{ background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', border: 0, padding: '16px 32px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 15, cursor: 'pointer' }}
+              >
+                join shutap →
+              </button>
+            </div>
+          </Reveal>
         </section>
 
         <HomeFooter />

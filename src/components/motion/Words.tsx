@@ -18,6 +18,7 @@ type WordsProps = {
   as?: keyof React.JSX.IntrinsicElements
   className?: string
   style?: CSSProperties
+  stagger?: number
 }
 
 // useLayoutEffect writes a warning on the server; fall back to useEffect there.
@@ -26,7 +27,7 @@ const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : use
 /** Walk the tree, replacing string leaves with word spans. Whitespace kept.
  * Nested elements (<em>, gradient spans, etc.) are preserved with their
  * styling — we recurse into their children. */
-function splitNode(node: ReactNode, counter: { n: number }): ReactNode {
+function splitNode(node: ReactNode, stagger: number, counter: { n: number }): ReactNode {
   if (node === null || node === undefined || typeof node === 'boolean') return node
   if (typeof node === 'string' || typeof node === 'number') {
     const text = String(node)
@@ -39,7 +40,7 @@ function splitNode(node: ReactNode, counter: { n: number }): ReactNode {
         <span
           key={'w' + idx}
           className="mo-word"
-          style={{ transitionDelay: `${idx * 15}ms` }}
+          style={{ transitionDelay: `${idx * stagger}ms` }}
         >
           {p}
         </span>
@@ -48,12 +49,12 @@ function splitNode(node: ReactNode, counter: { n: number }): ReactNode {
   }
   if (Array.isArray(node)) {
     return Children.map(node, (c, i) => (
-      <React.Fragment key={i}>{splitNode(c, counter)}</React.Fragment>
+      <React.Fragment key={i}>{splitNode(c, stagger, counter)}</React.Fragment>
     ))
   }
   if (isValidElement(node)) {
     const el = node as React.ReactElement<{ children?: ReactNode }>
-    return cloneElement(el, undefined, splitNode(el.props.children, counter))
+    return cloneElement(el, undefined, splitNode(el.props.children, stagger, counter))
   }
   return node
 }
@@ -71,7 +72,8 @@ function flatten(n: ReactNode): string {
 
 /** Word-by-word spring reveal for a heading. Pass-through wrapper — the
  * rendered element uses `as` (default 'span') so a wrapped H1 stays an H1. */
-export function Words({ children, as, className, style }: WordsProps) {
+export function Words({ children, as, className, style, stagger }: WordsProps) {
+  const wordStagger = stagger ?? 15
   const reduce = useReducedMotion()
   const ref = useRef<HTMLElement | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -118,6 +120,6 @@ export function Words({ children, as, className, style }: WordsProps) {
   return React.createElement(
     Tag,
     { className: cls, style, ref, 'aria-label': label || undefined },
-    splitNode(children, { n: 0 }),
+    splitNode(children, wordStagger, { n: 0 }),
   )
 }
