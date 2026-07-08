@@ -13,6 +13,9 @@ import digestHtml from './designs/digest.html?raw'
 import milestoneHtml from './designs/milestone.html?raw'
 import popularTodayHtml from './designs/popular-today.html?raw'
 import hallUpdatesHtml from './designs/hall-updates.html?raw'
+import mirrorReceiptHtml from './designs/mirror-receipt.html?raw'
+import mirrorCancelledHtml from './designs/mirror-cancelled.html?raw'
+import mirrorTrialEndingHtml from './designs/mirror-trial-ending.html?raw'
 
 import type { EmailClass, IdentityId } from './identities'
 
