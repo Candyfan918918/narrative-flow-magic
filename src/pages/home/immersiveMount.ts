@@ -383,26 +383,3 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
   }
 }
 
-export function renderRoomsMarkup(rooms: Array<{ emoji: string; alias: string; hours: string; title: string; sitting: number; relates: number }>): string {
-  const eight = rooms.slice(0, 8)
-  const list = eight.concat(eight)
-  return list.map((r) => `
-    <a href="/stream" data-link="/stream" data-hover draggable="false" style="flex:none;width:340px;background:#fff;border:1px solid rgba(11,8,15,.08);border-radius:22px;padding:24px;color:inherit;text-decoration:none;display:flex;flex-direction:column;gap:14px;transition:transform .25s,box-shadow .25s;box-shadow:0 6px 18px -12px rgba(60,10,30,.25)">
-      <div style="display:flex;align-items:center;gap:9px">
-        <span style="width:30px;height:30px;border-radius:50%;background:#f7e8f0;display:grid;place-items:center;font-size:16px;flex:none">${escapeHtml(r.emoji)}</span>
-        <span style="font-family:'Newsreader',serif;font-style:italic;font-size:13.5px;color:#9e7a8c">${escapeHtml(r.alias)}</span>
-        <span style="margin-left:auto;font-family:'Newsreader',serif;font-style:italic;font-size:12px;color:#9e7a8c">${escapeHtml(r.hours)} ago</span>
-      </div>
-      <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:17px;line-height:1.3;letter-spacing:-.01em;color:#0b080f;flex:1">${escapeHtml(r.title)}</div>
-      <div style="display:flex;align-items:center;gap:12px;font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:#6b4a5c">
-        <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#5DCAA5;animation:breathe 2.8s ease-in-out infinite;display:block"></span>${r.sitting} sitting in</span>
-        <span>🫂 ${r.relates} relate</span>
-        <span style="margin-left:auto;color:#c1216b;font-family:'Sora',sans-serif;font-weight:700;font-style:normal;font-size:12.5px">enter →</span>
-      </div>
-    </a>
-  `).join('')
-}
-
-function escapeHtml(s: string): string {
-  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string))
-}
