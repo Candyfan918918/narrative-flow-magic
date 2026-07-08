@@ -111,13 +111,24 @@ district hint: ${district}`
     }
   }
   const sanitizedDistrict = normalizeDistrict(parsed.trait.district)
+  // Name guardrail — reject shaming/judgmental names (e.g. "Self-flagging
+  // Recognition") and accusatory emoji (🚩, 👎, etc.). Fall back to a
+  // neutral supportive name rather than persisting a harsh one.
+  const rawName = String(parsed.trait.name ?? '')
+  const safeName = rejectsAdviceOrClinical(rawName)
+    ? 'Pattern Forming'
+    : sanitizeName(rawName)
+  const rawEmoji = String(parsed.trait.emoji ?? '')
+  const safeEmoji = ACCUSATORY_NAME_EMOJI.has(rawEmoji.trim())
+    ? sanitizeEmoji('', sanitizedDistrict)
+    : sanitizeEmoji(rawEmoji, sanitizedDistrict)
   return {
     burn: sanitizePunch(parsed.burn ?? '') || fallbackPunch(sanitizedDistrict),
     read: sanitizePunch(parsed.read ?? '', 220) || '',
     filed: (parsed.filed || fallbackRecord()).toLowerCase().slice(0, 32),
     trait: {
-      name: sanitizeName(parsed.trait.name),
-      emoji: sanitizeEmoji(parsed.trait.emoji, sanitizedDistrict),
+      name: safeName,
+      emoji: safeEmoji,
       rarity: normalizeRarity(parsed.trait.rarity),
       district: sanitizedDistrict,
       insight: (parsed.trait.insight || '').toLowerCase().slice(0, 100),
