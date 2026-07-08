@@ -270,8 +270,10 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
     }
     activate(0)
     const mVis = vis(mcs[0].closest('section'))
-    const iv = setInterval(() => { if (!mVis.v) return; mi = (mi + 1) % mcs.length; activate(mi) }, 5200)
-    intervals.push(iv)
+    idle(() => {
+      const iv = setInterval(() => { if (!mVis.v) return; mi = (mi + 1) % mcs.length; activate(mi) }, 5200)
+      intervals.push(iv)
+    })
   }
 
   /* ── card tilt ── */
