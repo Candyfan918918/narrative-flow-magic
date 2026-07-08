@@ -236,7 +236,7 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
       }, 6500)
       sched(runScan, 12200)
     }
-    runScan()
+    idle(runScan)
   }
 
   /* ── 03 mirror ── */
