@@ -188,6 +188,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
             ) : (
               <a
                 href="/welcome"
+                ref={joinRef}
                 role="button"
                 onClick={(e) => {
                   // Preserve returnTo; still allow real anchor to navigate
