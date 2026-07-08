@@ -79,6 +79,40 @@ function trendDir(trend: number[]): 'rising' | 'steady' | 'cooling' | 'dormant' 
   return 'steady'
 }
 
+// Fetch up to 3 recent scrubbed excerpts for a pattern so the punch prompt
+// can anchor the hero line in what the user actually said. Includes the
+// current cleaned text (if any) as the freshest excerpt.
+async function recentPatternExcerpts(
+  supabase: any,
+  patternId: string,
+  currentText: string,
+): Promise<string[]> {
+  const out: string[] = []
+  const seen = new Set<string>()
+  const push = (s: string | null | undefined) => {
+    const t = (s ?? '').trim()
+    if (!t) return
+    const key = t.slice(0, 80).toLowerCase()
+    if (seen.has(key)) return
+    seen.add(key)
+    out.push(t.slice(0, 400))
+  }
+  push(currentText)
+  try {
+    const { data } = await supabase
+      .from('mirror_signals')
+      .select('text_scrubbed')
+      .eq('pattern_id', patternId)
+      .order('created_at', { ascending: false })
+      .limit(6)
+    for (const r of (data ?? []) as Array<{ text_scrubbed: string | null }>) {
+      push(r.text_scrubbed)
+      if (out.length >= 3) break
+    }
+  } catch { /* fail-soft */ }
+  return out.slice(0, 3)
+}
+
 export type IngestMirrorInput = z.input<typeof IngestInput>
 
 // ---------- PHASE 1 — durable enqueue ----------
