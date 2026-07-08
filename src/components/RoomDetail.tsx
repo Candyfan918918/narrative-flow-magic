@@ -34,20 +34,6 @@ function fireMirror(input: {
 
 const PENDING_COMMENT_KEY = 'shutap_pending_comment'
 
-const badgeStyle = (support: string): React.CSSProperties => ({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 5,
-  background: support === 'heard' ? 'rgba(231,84,138,.08)' : 'rgba(91,138,94,.10)',
-  color: support === 'heard' ? '#c1216b' : '#3a6b3c',
-  border: '.5px solid ' + (support === 'heard' ? 'rgba(193,33,107,.18)' : 'rgba(91,138,94,.22)'),
-  borderRadius: 999,
-  padding: '5px 12px',
-  fontFamily: 'Sora,sans-serif',
-  fontWeight: 600,
-  fontSize: 10.5,
-  letterSpacing: '.05em',
-})
 
 const BAND_COLOR: Record<string, string> = {
   settling: '#5B8A5E',
@@ -368,59 +354,101 @@ export function RoomDetail({
           ← back to rooms
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap', marginBottom: 14 }}>
-          {isScan ? (
-            <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 10, letterSpacing: '.14em', color: scanAccent, background: scanAccent + '15', border: '.5px solid ' + scanAccent + '30', padding: '4px 10px', borderRadius: 999 }}>
-              SCAN · {BAND_LABEL[(room.scan_band || 'sitting') as keyof typeof BAND_LABEL]}
-            </span>
-          ) : (
-            <span style={badgeStyle(room.support)}>{room.support === 'heard' ? 'looking to be heard' : 'open to advice'}</span>
-          )}
-          <span style={{ fontSize: 12.5, color: '#9e7a8c', fontFamily: 'Newsreader,serif', fontStyle: 'italic' }}>{room.hours} ago</span>
-        </div>
-
         {isScan ? (
-          /* --- SCAN SCORE CARD HERO --- */
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, marginBottom: 18 }}>
-            <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 88, lineHeight: 1, letterSpacing: '-.04em', color: scanAccent }}>
-              {room.initial_scan}
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap', marginBottom: 14 }}>
+              <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 10, letterSpacing: '.14em', color: scanAccent, background: scanAccent + '15', border: '.5px solid ' + scanAccent + '30', padding: '4px 10px', borderRadius: 999 }}>
+                SCAN · {BAND_LABEL[(room.scan_band || 'sitting') as keyof typeof BAND_LABEL]}
+              </span>
+              <span style={{ fontSize: 12.5, color: '#9e7a8c', fontFamily: 'Newsreader,serif', fontStyle: 'italic' }}>{room.hours} ago</span>
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <h2 style={{ fontFamily: 'Cormorant Garamond,Newsreader,serif', fontStyle: 'italic', fontWeight: 500, fontSize: 'clamp(22px,4vw,30px)', lineHeight: 1.15, margin: 0, color: '#2e1a26' }}>
-                {room.scan_signature || room.title}
-              </h2>
-              {room.pillar && (
-                <div style={{ marginTop: 10, display: 'inline-block', fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase', color: '#6b4a5c', background: '#f7e8f0', padding: '3px 10px', borderRadius: 999 }}>
-                  {room.pillar}
-                </div>
-              )}
+            {/* --- SCAN SCORE CARD HERO --- */}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, marginBottom: 18 }}>
+              <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 88, lineHeight: 1, letterSpacing: '-.04em', color: scanAccent }}>
+                {room.initial_scan}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h2 style={{ fontFamily: 'Cormorant Garamond,Newsreader,serif', fontStyle: 'italic', fontWeight: 500, fontSize: 'clamp(22px,4vw,30px)', lineHeight: 1.15, margin: 0, color: '#2e1a26' }}>
+                  {room.scan_signature || room.title}
+                </h2>
+                {room.pillar && (
+                  <div style={{ marginTop: 10, display: 'inline-block', fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase', color: '#6b4a5c', background: '#f7e8f0', padding: '3px 10px', borderRadius: 999 }}>
+                    {room.pillar}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+              <span style={{ width: 28, height: 28, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 16, flex: 'none' }}>
+                {room.emoji}
+              </span>
+              <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, color: '#6b4a5c' }}>{room.alias}</span>
+            </div>
+          </>
         ) : (
-          <h2
+          /* --- CINEMATIC STORY COVER --- */
+          <div
             style={{
-              fontFamily: 'Sora,sans-serif',
-              fontWeight: 700,
-              fontSize: 'clamp(20px,4vw,26px)',
-              lineHeight: 1.2,
-              margin: '0 0 14px',
-              color: '#0b080f',
-              letterSpacing: '-.01em',
+              position: 'relative',
+              background: 'linear-gradient(165deg,#2e0d1a,#140a10 65%)',
+              borderRadius: 26,
+              padding: '34px 30px 30px',
+              marginBottom: 30,
+              overflow: 'hidden',
+              boxShadow: '0 40px 90px -40px rgba(60,10,30,.65)',
             }}
           >
-            {room.title}
-          </h2>
+            <div style={{ position: 'absolute', width: 340, height: 340, left: '70%', top: 0, background: 'radial-gradient(circle,rgba(231,84,138,.24),transparent 64%)', transform: 'translate(-50%,-50%)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', right: '-2%', bottom: '-46%', fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 'clamp(200px,34vw,380px)', lineHeight: 1, color: 'rgba(231,84,138,.09)', pointerEvents: 'none', userSelect: 'none' }}>”</div>
+            <div style={{ position: 'absolute', top: 0, left: '12%', right: '12%', height: 1.5, background: 'linear-gradient(90deg,transparent,#e7548a,#f7b8d4,transparent)', opacity: 0.5, pointerEvents: 'none' }} />
+            <div style={{ position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap', marginBottom: 18 }}>
+                <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 11, letterSpacing: '.24em', textTransform: 'uppercase', color: '#f7b8d4' }}>the room is holding —</span>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '5px 13px',
+                    borderRadius: 999,
+                    fontFamily: 'Sora,sans-serif',
+                    fontWeight: 600,
+                    fontSize: 10.5,
+                    letterSpacing: '.05em',
+                    background: room.support === 'heard' ? 'rgba(231,84,138,.14)' : 'rgba(91,138,94,.18)',
+                    color: room.support === 'heard' ? '#f7b8d4' : '#a9d4ac',
+                    border: '.5px solid ' + (room.support === 'heard' ? 'rgba(247,184,212,.28)' : 'rgba(169,212,172,.30)'),
+                  }}
+                >
+                  {room.support === 'heard' ? 'looking to be heard' : 'open to advice'}
+                </span>
+                <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13, color: '#9e7a8c' }}>{room.hours} ago</span>
+              </div>
+              <h1
+                style={{
+                  fontFamily: 'Sora,sans-serif',
+                  fontWeight: 800,
+                  fontSize: 'clamp(28px,6vw,50px)',
+                  lineHeight: 1.02,
+                  margin: '0 0 22px',
+                  color: '#f7e8f0',
+                  letterSpacing: '-.045em',
+                }}
+              >
+                {room.title}
+              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(231,84,138,.2)', display: 'grid', placeItems: 'center', fontSize: 19, flex: 'none' }}>{room.emoji}</span>
+                <div>
+                  <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14.5, color: '#f7b8d4' }}>{room.alias}</div>
+                  <div style={{ fontSize: 11.5, color: '#9e7a8c', fontFamily: 'Newsreader,serif', fontStyle: 'italic' }}>teller · this is their account of it</div>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-          <span style={{ width: 28, height: 28, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 16, flex: 'none' }}>
-            {room.emoji}
-          </span>
-          <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, color: '#6b4a5c' }}>{room.alias}</span>
-        </div>
-
         {(room.body || room.clean_text) && (
-          <p style={{ fontFamily: 'Newsreader,serif', fontSize: 17, lineHeight: 1.65, color: '#2e1a26', margin: '0 0 26px', whiteSpace: 'pre-line' }}>
+          <p style={{ fontFamily: 'Newsreader,serif', fontSize: 18.5, lineHeight: 1.72, color: '#2e1a26', margin: '0 0 28px', whiteSpace: 'pre-line' }}>
             {room.body || room.clean_text}
           </p>
         )}
