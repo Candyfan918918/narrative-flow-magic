@@ -18,6 +18,7 @@ type WordsProps = {
   as?: keyof React.JSX.IntrinsicElements
   className?: string
   style?: CSSProperties
+  stagger?: number
 }
 
 // useLayoutEffect writes a warning on the server; fall back to useEffect there.
