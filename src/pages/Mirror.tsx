@@ -451,8 +451,9 @@ function CountTick({ value, animate, style }: { value: number; animate: boolean;
 
 /* ─────────────── the big tarot card ─────────────── */
 function TarotCard({
-  p, animate, innerRef,
-}: { p: MirrorPatternView; animate: boolean; innerRef?: React.Ref<HTMLDivElement> }) {
+  p, animate, innerRef, totalSignalsOverride,
+}: { p: MirrorPatternView; animate: boolean; innerRef?: React.Ref<HTMLDivElement>; totalSignalsOverride?: number }) {
+
   const color = p.state === 'ruin' ? RUIN_MOSS : DISTRICT_COLOR[p.district]
   const isLegendary = p.rarity === 'legendary' && p.state !== 'ruin'
   const isRuin = p.state === 'ruin'
