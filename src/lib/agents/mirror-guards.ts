@@ -52,10 +52,23 @@ const CLINICAL_TOKENS = [
   'codependent', 'codependency', 'gaslighting',
 ]
 
+const SHAMING_TOKENS = [
+  "haven't moved", 'have not moved', 'not moved an inch', 'not moved',
+  'you never', 'you always', 'pretended', 'you swore off', 'you swore',
+  'you failed', "didn't even", 'did not even',
+  'weaponize', 'flinch', 'flinched', 'shame on', 'pathetic',
+  'not mysterious', 'coward', 'lazy', 'scared with',
+]
+
 export function rejectsAdviceOrClinical(text: string): boolean {
   const t = (text || '').toLowerCase()
-  return ADVICE_TOKENS.some((k) => t.includes(k)) || CLINICAL_TOKENS.some((k) => t.includes(k))
+  return (
+    ADVICE_TOKENS.some((k) => t.includes(k)) ||
+    CLINICAL_TOKENS.some((k) => t.includes(k)) ||
+    SHAMING_TOKENS.some((k) => t.includes(k))
+  )
 }
+
 
 const EMOJI_RE = /\p{Extended_Pictographic}/gu
 
