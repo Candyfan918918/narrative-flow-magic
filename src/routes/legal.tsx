@@ -29,14 +29,6 @@ const OTHERS = [
   { href: "/faq", label: "FAQ" },
 ];
 
-const OTHERS = [
-  { href: "/terms", label: "Terms" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/guidelines", label: "Community guidelines" },
-  { href: "/safety", label: "Safety" },
-  { href: "/ai-disclosure", label: "AI disclosure" },
-  { href: "/faq", label: "FAQ" },
-];
 
 export const Route = createFileRoute("/legal")({
   head: () => ({
