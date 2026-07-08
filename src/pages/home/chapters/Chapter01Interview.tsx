@@ -88,29 +88,29 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
     <section
       ref={ref}
       className="home-chapter"
-      style={{ background: '#fdf0f5', minHeight: '96vh', padding: 'clamp(90px,12vh,150px) 22px', display: 'flex', alignItems: 'center' }}
+      style={{ position: 'relative', background: '#fdf0f5', minHeight: '96vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}
     >
-      <span aria-hidden className="home-watermark" style={{ right: '3%', top: '5%', color: 'rgba(231,84,138,.07)' }}>spill</span>
       <div
         style={{
-          maxWidth: 1100,
+          maxWidth: 1280,
           margin: '0 auto',
           width: '100%',
           display: 'grid',
-          gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)',
-          gap: 56,
+          gridTemplateColumns: '1.1fr 1fr',
+          gap: 'clamp(34px,6vw,90px)',
+          padding: 'clamp(90px,12vh,150px) clamp(20px,4vw,32px)',
           alignItems: 'center',
         }}
         className="home-grid-2"
       >
         <div>
-          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 18 }}>
+          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 22 }}>
             chapter 01 — spill it
           </div>
-          <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: 1.05, letterSpacing: '-.03em', margin: '0 0 20px', color: '#0b080f' }}>
+          <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: 1.08, letterSpacing: '-.04em', margin: '0 0 24px', color: '#0b080f' }}>
             say the thing you can't say <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', fontWeight: 400 }}>anywhere else.</em>
           </h2>
-          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 19, lineHeight: 1.6, color: '#4a3040', maxWidth: '46ch', margin: '0 0 28px' }}>
+          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(16px,1.4vw,20px)', lineHeight: 1.6, color: '#4a3040', maxWidth: '44ch', margin: '0 0 32px' }}>
             tell your story — it opens a room the world can sit in. people who've lived your exact thing show up, relate, and tell you what actually happened next.
           </p>
           <button
@@ -118,16 +118,18 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
             ref={magneticCta}
             onClick={onCtaSpill}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 10,
               background: '#0b080f',
               color: '#fff',
               border: 0,
-              padding: '14px 22px',
+              padding: '16px 30px',
               borderRadius: 999,
               fontFamily: SORA,
               fontWeight: 700,
-              fontSize: 14,
+              fontSize: 15,
               cursor: 'pointer',
-              letterSpacing: '-.005em',
             }}
           >
             open a room →
@@ -141,23 +143,21 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
               width: 'min(380px, 100%)',
               background: 'linear-gradient(160deg, #2e0d1a, #1a0a12)',
               borderRadius: 24,
-              padding: 20,
+              padding: 24,
               color: '#f7e8f0',
-              boxShadow: '0 32px 60px -30px rgba(60,10,30,.6)',
-              border: '.5px solid rgba(255,255,255,.06)',
+              boxShadow: '0 40px 90px -40px rgba(60,10,30,.65)',
+              border: '1px solid rgba(255,255,255,.1)',
               position: 'relative',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-                  <EyeMark size={24} />
-                </span>
-                <span style={{ fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: '#f7b8d4' }}>
-                  spilling it
-                </span>
-              </div>
-              <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.4)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 16 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', flex: 'none' }}>
+                <EyeMark size={24} />
+              </span>
+              <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 13, color: '#fff' }}>
+                spilling it
+              </span>
+              <span style={{ marginLeft: 'auto', fontFamily: NEWS, fontStyle: 'italic', fontSize: 12, color: '#9e7a8c' }}>
                 the interview · sample
               </span>
             </div>
@@ -166,21 +166,21 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
               {timeline.slice(0, shown).map((s, i) => {
                 if (s.kind === 'chip') {
                   return (
-                    <div key={i} className="home-bubble-in" style={{ alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(93,202,165,.12)', color: '#5DCAA5', border: '.5px solid rgba(93,202,165,.4)', borderRadius: 999, padding: '8px 14px', fontFamily: SORA, fontWeight: 600, fontSize: 12 }}>
-                      <span className="home-livedot green" />
+                    <div key={i} className="home-bubble-in" style={{ alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(93,202,165,.12)', color: '#5DCAA5', border: '.5px solid rgba(93,202,165,.4)', borderRadius: 999, padding: '7px 15px', fontFamily: SORA, fontWeight: 700, fontSize: 12, marginTop: 4 }}>
+                      <span className="home-breathe-dot" style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5' }} />
                       {s.text}
                     </div>
                   )
                 }
                 if (s.kind === 'companion') {
                   return (
-                    <div key={i} className="home-bubble-in" style={{ alignSelf: 'flex-start', maxWidth: '82%', background: 'rgba(255,255,255,.06)', border: '.5px solid rgba(255,255,255,.08)', borderRadius: 16, padding: '10px 14px', fontFamily: NEWS, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0', lineHeight: 1.45 }}>
+                    <div key={i} className="home-bubble-in" style={{ alignSelf: 'flex-start', maxWidth: '88%', background: 'rgba(255,255,255,.07)', color: '#e9dce4', borderRadius: '16px 16px 16px 5px', padding: '10px 14px', fontFamily: NEWS, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.5 }}>
                       {s.text}
                     </div>
                   )
                 }
                 return (
-                  <div key={i} className="home-bubble-in" style={{ alignSelf: 'flex-end', maxWidth: '82%', background: '#e7548a', color: '#fff', borderRadius: 16, padding: '10px 14px', fontFamily: NEWS, fontStyle: 'italic', fontSize: 14, lineHeight: 1.45 }}>
+                  <div key={i} className="home-bubble-in" style={{ alignSelf: 'flex-end', maxWidth: '88%', background: '#e7548a', color: '#fff', borderRadius: '16px 16px 5px 16px', padding: '10px 14px', fontFamily: NEWS, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.5 }}>
                     {s.text}
                   </div>
                 )

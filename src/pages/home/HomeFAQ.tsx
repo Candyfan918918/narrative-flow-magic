@@ -24,35 +24,39 @@ export const HOME_FAQ: Array<{ q: string; a: string }> = [
 
 export function HomeFAQ({ onOpenSpill, onOpenScan }: { onOpenSpill: () => void; onOpenScan: () => void }) {
   return (
-    <section style={{ background: '#fdf0f5', padding: '96px 22px' }}>
+    <section style={{ position: 'relative', background: '#fdf0f5', padding: 'clamp(46px,7vh,80px) 22px clamp(36px,5vh,60px)' }}>
       <div style={{ maxWidth: 740, margin: '0 auto' }}>
-        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.22em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 16 }}>
+        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 14 }}>
           what is shutap
         </div>
-        <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(28px,3.6vw,44px)', letterSpacing: '-.03em', lineHeight: 1.05, margin: '0 0 22px' }}>
+        <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(26px,3.4vw,44px)', letterSpacing: '-.03em', lineHeight: 1.08, margin: '0 0 16px', color: '#0b080f' }}>
           questions, <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', fontWeight: 400 }}>answered.</em>
         </h2>
-        <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 18, color: '#4a3040', lineHeight: 1.6, margin: '0 0 12px' }}>
+        <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, color: '#2e1a26', lineHeight: 1.65, margin: '0 0 10px', maxWidth: '52ch' }}>
           a pseudonymous place to vent about relationships, marriage, family, and work — and see what actually happened next for people who lived your exact thing.
         </p>
-        <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 18, color: '#4a3040', lineHeight: 1.6, margin: '0 0 32px' }}>
-          <span onClick={onOpenSpill} style={{ color: '#c1216b', borderBottom: '1px solid rgba(193,33,107,.3)', cursor: 'pointer' }}>spill it</span> — one question at a time, the companion helps you find the words. or{' '}
-          <span onClick={onOpenScan} style={{ color: '#c1216b', borderBottom: '1px solid rgba(193,33,107,.3)', cursor: 'pointer' }}>scan it</span> — sixty seconds of questions, a private read saved just for you.
+        <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15.5, color: '#6b4a5c', lineHeight: 1.65, margin: '0 0 24px', maxWidth: '52ch' }}>
+          <span onClick={onOpenSpill} style={{ color: '#c1216b', cursor: 'pointer' }}>spill it</span> — one question at a time, the companion helps you find the words. or{' '}
+          <span onClick={onOpenScan} style={{ color: '#c1216b', cursor: 'pointer' }}>scan it</span> — sixty seconds of questions, a private read saved just for you.
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {HOME_FAQ.map((f) => (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {HOME_FAQ.map((f, i) => (
             <details
               key={f.q}
-              style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: '16px 18px' }}
+              style={{
+                borderTop: '.5px solid rgba(11,8,15,.08)',
+                borderBottom: i === HOME_FAQ.length - 1 ? '.5px solid rgba(11,8,15,.08)' : undefined,
+                padding: '15px 0',
+              }}
             >
-              <summary style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', listStyle: 'none', fontFamily: SORA, fontWeight: 700, fontSize: 16, color: '#0b080f' }}>
+              <summary style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', listStyle: 'none', fontFamily: SORA, fontWeight: 600, fontSize: 14, color: '#0b080f' }}>
                 <span>{f.q}</span>
-                <span aria-hidden style={{ fontFamily: SORA, fontWeight: 400, fontSize: 22, color: '#c1216b' }}>+</span>
+                <span aria-hidden style={{ color: '#e7548a', fontSize: 20, fontWeight: 300 }}>+</span>
               </summary>
-              <div style={{ marginTop: 12, fontFamily: NEWS, fontStyle: 'italic', fontSize: 15.5, color: '#4a3040', lineHeight: 1.6 }}>
+              <p style={{ marginTop: 10, fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, color: '#6b4a5c', lineHeight: 1.6, maxWidth: '52ch' }}>
                 {f.a}
-              </div>
+              </p>
             </details>
           ))}
         </div>

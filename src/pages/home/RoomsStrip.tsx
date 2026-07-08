@@ -112,18 +112,18 @@ export function RoomsStrip() {
   const doubled = useMemo(() => (cards.length > 0 ? [...cards, ...cards] : []), [cards])
 
   return (
-    <section style={{ background: '#fdf0f5', padding: '80px 0 60px' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 22px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 22 }}>
-        <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(24px,3vw,36px)', letterSpacing: '-.03em', margin: 0 }}>
+    <section style={{ position: 'relative', background: '#fdf0f5', padding: 'clamp(80px,11vh,130px) 0 clamp(56px,8vh,90px)', overflow: 'hidden' }}>
+      <div style={{ maxWidth: 1360, margin: '0 auto', padding: '0 30px 26px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+        <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(28px,3.6vw,54px)', letterSpacing: '-.04em', margin: 0, color: '#0b080f' }}>
           rooms open <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', fontWeight: 400 }}>right now.</em>
         </h2>
-        <Link to="/stream" style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', textDecoration: 'none', fontSize: 15 }}>
+        <Link to="/stream" style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', textDecoration: 'none', fontSize: 16 }}>
           all rooms →
         </Link>
       </div>
 
       {cards.length === 0 ? (
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 22px' }}>
+        <div style={{ maxWidth: 1360, margin: '0 auto', padding: '0 30px' }}>
           <p style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#9e7a8c', fontSize: 15 }}>rooms are forming.</p>
         </div>
       ) : (
@@ -132,7 +132,7 @@ export function RoomsStrip() {
           className={`home-strip-wrap${dragging ? ' dragging' : ''}`}
           style={{ overflowX: 'auto', overflowY: 'hidden', cursor: dragging ? 'grabbing' : 'grab', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
         >
-          <div className={reduce ? '' : 'home-strip-track'} style={{ display: 'inline-flex', gap: 16, padding: '4px 22px' }}>
+          <div className={reduce ? '' : 'home-strip-track'} style={{ display: 'inline-flex', gap: 18, padding: '6px 30px 22px' }}>
             {(reduce ? cards : doubled).map((c, i) => (
               <RoomCard key={`${c.id}-${i}`} card={c} isDragging={() => draggingRef.current} />
             ))}
@@ -150,45 +150,46 @@ function RoomCard({ card: c, isDragging }: { card: Card; isDragging: () => boole
       ref={rc.ref}
       style={{
         position: 'relative',
-        width: 340,
         flex: 'none',
-        borderRadius: 18,
-        boxShadow: '0 10px 28px -22px rgba(60,10,30,.28)',
+        width: 340,
+        borderRadius: 22,
+        boxShadow: '0 6px 18px -12px rgba(60,10,30,.25)',
       }}
     >
       <Link
         to="/stream"
         hash={`room-${c.id}`}
+        draggable={false}
         style={{
-          display: 'block',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14,
           width: '100%',
           background: '#fff',
-          borderRadius: 18,
-          padding: 18,
+          borderRadius: 22,
+          padding: 24,
           textDecoration: 'none',
-          color: '#0b080f',
-          border: '.5px solid rgba(11,8,15,.06)',
+          color: 'inherit',
+          border: '1px solid rgba(11,8,15,.08)',
           position: 'relative',
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <span style={{ width: 36, height: 36, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg,#f7e8f0,#f060a0)', fontSize: 18 }}>{c.emoji}</span>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#4a3040' }}>{c.alias}</span>
-            <span style={{ fontFamily: 'Inter', fontSize: 11, color: '#9e7a8c' }}>{c.hours}</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+          <span style={{ width: 30, height: 30, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 16, flex: 'none' }}>{c.emoji}</span>
+          <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: '#9e7a8c' }}>{c.alias}</span>
+          <span style={{ marginLeft: 'auto', fontFamily: NEWS, fontStyle: 'italic', fontSize: 12, color: '#9e7a8c' }}>{c.hours}</span>
         </div>
-        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 15, lineHeight: 1.35, color: '#0b080f', marginBottom: 14, minHeight: 60, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 17, lineHeight: 1.3, letterSpacing: '-.01em', color: '#0b080f', flex: 1 }}>
           {c.title}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: SORA, fontWeight: 600, fontSize: 11.5, color: '#6b4a5c' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <span className="home-livedot green" style={{ width: 6, height: 6 }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#6b4a5c' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            <span className="home-breathe-dot" style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5' }} />
             {c.sitting} sitting in
           </span>
           <span>🫂 {c.relates} relate</span>
-          <span style={{ color: '#c1216b', fontFamily: NEWS, fontStyle: 'italic' }}>enter →</span>
+          <span style={{ marginLeft: 'auto', color: '#c1216b', fontFamily: SORA, fontWeight: 700, fontStyle: 'normal', fontSize: 12.5 }}>enter →</span>
         </div>
       </Link>
       {rc.decor}

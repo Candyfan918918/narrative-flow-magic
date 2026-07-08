@@ -31,18 +31,18 @@ export function Chapter03Mirror() {
     <section
       ref={ref}
       className="home-chapter"
-      style={{ background: '#100c14', minHeight: '96vh', padding: 'clamp(90px,12vh,150px) 22px', display: 'flex', alignItems: 'center', color: '#f7e8f0' }}
+      style={{ position: 'relative', background: '#100c14', minHeight: '96vh', display: 'flex', alignItems: 'center', overflow: 'hidden', color: '#f7e8f0' }}
     >
-      <span aria-hidden className="home-watermark" style={{ right: '3%', top: '5%', color: 'rgba(233,192,106,.07)' }}>mirror</span>
-      <div className="home-grid-2" style={{ maxWidth: 1100, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'center' }}>
+      <div aria-hidden style={{ position: 'absolute', inset: 'auto 0 -20% 0', height: '60vh', background: 'radial-gradient(ellipse at 50% 100%, rgba(231,84,138,.12), transparent 65%)', pointerEvents: 'none' }} />
+      <div className="home-grid-2" style={{ maxWidth: 1280, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 'clamp(34px,6vw,90px)', padding: 'clamp(90px,12vh,150px) clamp(20px,4vw,32px)', alignItems: 'center' }}>
         <div>
-          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#e9c06a', marginBottom: 18 }}>
+          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#e9c06a', marginBottom: 22 }}>
             chapter 03 — the mirror ✦
           </div>
-          <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: 1.05, letterSpacing: '-.03em', margin: '0 0 20px', color: '#f7e8f0' }}>
+          <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: 1.08, letterSpacing: '-.04em', margin: '0 0 24px', color: '#f7e8f0' }}>
             your patterns, <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#f7b8d4', fontWeight: 400 }}>read as cards.</em>
           </h2>
-          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 19, lineHeight: 1.6, color: '#c4a0b2', maxWidth: '46ch', margin: '0 0 28px' }}>
+          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(16px,1.4vw,20px)', lineHeight: 1.6, color: '#caaebb', maxWidth: '44ch', margin: '0 0 32px' }}>
             the mirror reads across your rooms and deals what keeps coming back — how deep it runs, which way it's moving, and how far you've already come.
           </p>
           <button
@@ -50,14 +50,17 @@ export function Chapter03Mirror() {
             ref={magneticCta}
             onClick={() => navigate('/subscribe')}
             style={{
-              background: 'linear-gradient(135deg,#e9c06a,#c69a3d)',
-              color: '#1a0d16',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 10,
+              background: '#e9c06a',
+              color: '#100c14',
               border: 0,
-              padding: '14px 22px',
+              padding: '16px 30px',
               borderRadius: 999,
               fontFamily: SORA,
               fontWeight: 700,
-              fontSize: 14,
+              fontSize: 15,
               cursor: 'pointer',
             }}
           >
@@ -120,17 +123,24 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
     <div
       ref={card.ref}
       style={{
+        display: 'block',
         width: 'min(380px,92vw)',
         background: 'radial-gradient(125% 80% at 50% 0%, rgba(127,119,221,.18), #1c0d16 58%, #140810)',
-        border: '.5px solid rgba(233,192,106,.85)',
+        border: '1px solid rgba(233,192,106,.85)',
         borderRadius: 22,
-        padding: 18,
+        padding: 20,
         position: 'relative',
-        boxShadow: '0 32px 60px -30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06)',
+        overflow: 'hidden',
+        boxShadow: '0 40px 90px -34px rgba(0,0,0,.85), 0 0 0 1px rgba(233,192,106,.33), 0 0 38px -6px rgba(233,192,106,.4)',
       }}
     >
-      {/* top sheen */}
-      <div style={{ position: 'absolute', inset: '0 0 auto 0', height: 32, background: 'linear-gradient(180deg, rgba(255,255,255,.06), transparent)', borderRadius: '22px 22px 0 0', pointerEvents: 'none' }} />
+      {/* top glass sheen */}
+      <div style={{ position: 'absolute', inset: 0, borderRadius: 22, background: 'linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 18%, transparent 38%)', pointerEvents: 'none', zIndex: 2 }} />
+      {/* thin multicolor top line */}
+      <div style={{ position: 'absolute', top: 0, left: '12%', right: '12%', height: 1.5, background: 'linear-gradient(90deg, transparent, #7F77DD, #e7548a, #5B8A5E, transparent)', opacity: .4, pointerEvents: 'none', zIndex: 3 }} />
+      {/* inner hairline inset border */}
+      <div style={{ position: 'absolute', inset: 6, border: '.5px solid rgba(233,192,106,.5)', borderRadius: 16, pointerEvents: 'none', zIndex: 1 }} />
+      <div style={{ position: 'relative', zIndex: 3 }}>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
         <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e9c06a' }}>
@@ -250,8 +260,9 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
         </div>
       </div>
 
-      <div style={{ marginTop: 14, fontFamily: SORA, fontWeight: 700, fontSize: 9, letterSpacing: '.24em', color: 'rgba(255,255,255,.28)', textAlign: 'center' }}>
+      <div style={{ marginTop: 14, fontFamily: SORA, fontWeight: 700, fontSize: 9, letterSpacing: '.24em', color: 'rgba(255,255,255,.28)', textAlign: 'center', position: 'relative', zIndex: 3 }}>
         SHUTAP · THE MIRROR · DEMO
+      </div>
       </div>
       {card.decor}
     </div>

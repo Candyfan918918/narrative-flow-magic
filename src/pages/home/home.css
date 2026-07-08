@@ -14,20 +14,15 @@ html.home-scroll-snap {
   overflow: hidden;
 }
 
-/* Giant decorative watermark word behind chapter content */
-.home-watermark {
-  position: absolute;
-  z-index: 0;
-  pointer-events: none;
-  user-select: none;
-  font-family: 'Sora', system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(96px, 16vw, 260px);
-  line-height: 1;
-  letter-spacing: -.06em;
-  white-space: nowrap;
+/* Reference design has no giant chapter watermarks — suppress. */
+.home-watermark { display: none !important; }
+
+/* live "breathe" dot (matches ref @keyframes breathe) */
+@keyframes home-breathe-dot {
+  0%, 100% { opacity: .5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.25); }
 }
-.home-chapter > * { position: relative; z-index: 1; }
+.home-breathe-dot { animation: home-breathe-dot 2.8s ease-in-out infinite; display: inline-block; }
 
 /* hero word reveal */
 .home-word-wrap {
