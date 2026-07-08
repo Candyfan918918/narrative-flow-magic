@@ -5,6 +5,7 @@
 // Reduced-motion users see a static mark (all animations disabled in CSS).
 import { useEffect, useRef, useState } from 'react'
 import { EyeMark } from '@/components/brand/EyeMark'
+import { useReducedMotion as usePrefersReducedMotion } from '@/components/motion/useReducedMotion'
 
 export function HeroMascot({ size }: { size: number }) {
   const wrapRef = useRef<HTMLDivElement>(null)
