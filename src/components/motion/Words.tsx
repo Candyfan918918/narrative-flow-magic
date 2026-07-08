@@ -120,6 +120,6 @@ export function Words({ children, as, className, style, stagger }: WordsProps) {
   return React.createElement(
     Tag,
     { className: cls, style, ref, 'aria-label': label || undefined },
-    splitNode(children, { n: 0 }),
+    splitNode(children, wordStagger, { n: 0 }),
   )
 }
