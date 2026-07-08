@@ -254,16 +254,18 @@ export const updateSituation = createServerFn({ method: 'POST' })
         hall: hallFromBand(current.data.scan_band as string | null),
       })
     } else if (goingPrivate && roomId) {
-      await context.supabase.from('rooms').delete().eq('id', roomId).eq('author_id', context.userId)
+      // Ownership enforced by RLS (rooms delete own); explicit author_id
+      // filter would require SELECT (author_id) which is revoked.
+      await context.supabase.from('rooms').delete().eq('id', roomId)
       await context.supabase.from('situations').update({ room_id: null } as never).eq('id', data.id)
       await context.supabase.rpc('cancel_pending_checkins', { _situation_id: data.id })
       roomId = null
     } else if (roomId && (patch.title || patch.body)) {
-      // sync edits into linked room
+      // sync edits into linked room (RLS enforces ownership)
       const update: Record<string, unknown> = {}
       if (patch.title) update.title = patch.title
       if (patch.body) update.body = patch.body
-      await context.supabase.from('rooms').update(update as never).eq('id', roomId).eq('author_id', context.userId)
+      await context.supabase.from('rooms').update(update as never).eq('id', roomId)
     }
     return { id: data.id, is_public: data.is_public ?? current.data.is_public, room_id: roomId }
   })
