@@ -175,3 +175,13 @@ details > summary::marker {
 .hall-row:hover { transform: translateY(-2px); }
 .hall-tab:hover { border-color: #e7548a !important; }
 
+
+@keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(3%, 4%); }
+  66% { transform: translate(-3%, -2%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="animation: mq"], [style*="animation: drift"] { animation: none !important; }
+}
