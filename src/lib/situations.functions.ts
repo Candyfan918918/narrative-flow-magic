@@ -254,16 +254,18 @@ export const updateSituation = createServerFn({ method: 'POST' })
         hall: hallFromBand(current.data.scan_band as string | null),
       })
     } else if (goingPrivate && roomId) {
-      await context.supabase.from('rooms').delete().eq('id', roomId).eq('author_id', context.userId)
+      // Ownership enforced by RLS (rooms delete own); explicit author_id
+      // filter would require SELECT (author_id) which is revoked.
+      await context.supabase.from('rooms').delete().eq('id', roomId)
       await context.supabase.from('situations').update({ room_id: null } as never).eq('id', data.id)
       await context.supabase.rpc('cancel_pending_checkins', { _situation_id: data.id })
       roomId = null
     } else if (roomId && (patch.title || patch.body)) {
-      // sync edits into linked room
+      // sync edits into linked room (RLS enforces ownership)
       const update: Record<string, unknown> = {}
       if (patch.title) update.title = patch.title
       if (patch.body) update.body = patch.body
-      await context.supabase.from('rooms').update(update as never).eq('id', roomId).eq('author_id', context.userId)
+      await context.supabase.from('rooms').update(update as never).eq('id', roomId)
     }
     return { id: data.id, is_public: data.is_public ?? current.data.is_public, room_id: roomId }
   })
@@ -283,7 +285,8 @@ export const deleteSituation = createServerFn({ method: 'POST' })
       .update({ status: 'deleted', deleted_at: new Date().toISOString(), is_public: false } as never)
       .eq('id', data.id)
     if (current.room_id) {
-      await context.supabase.from('rooms').delete().eq('id', current.room_id).eq('author_id', context.userId)
+      // RLS enforces ownership (rooms delete own).
+      await context.supabase.from('rooms').delete().eq('id', current.room_id)
     }
     await context.supabase.rpc('cancel_pending_checkins', { _situation_id: data.id })
     return { id: data.id, ok: true }
@@ -374,7 +377,12 @@ export const listRoomComments = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ roomId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { data: rows, error } = await context.supabase
+    // Use service-role client to read alias_id server-side (revoked from
+    // authenticated role at the column-privilege level). We enrich each
+    // comment with is_mine + display_name + emoji and never return the
+    // raw alias_id to the client.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: rows, error } = await supabaseAdmin
       .from('comments')
       .select('id, alias_id, clean_text, edited, created_at')
       .eq('room_id', data.roomId)
@@ -382,7 +390,29 @@ export const listRoomComments = createServerFn({ method: 'GET' })
       .order('created_at', { ascending: true })
       .limit(200)
     if (error) throw new Error(error.message)
-    return rows ?? []
+    const list = (rows ?? []) as Array<{ id: string; alias_id: string; clean_text: string; edited: boolean; created_at: string }>
+    if (list.length === 0) return [] as Array<{ id: string; clean_text: string; edited: boolean; created_at: string; is_mine: boolean; display_name: string; emoji: string }>
+    const ids = Array.from(new Set(list.map((r) => r.alias_id)))
+    const { data: aliases } = await supabaseAdmin
+      .from('aliases')
+      .select('user_id, display_name, emoji')
+      .in('user_id', ids)
+    const aliasMap = new Map<string, { display_name: string; emoji: string }>()
+    for (const a of (aliases ?? []) as Array<{ user_id: string; display_name: string; emoji: string }>) {
+      aliasMap.set(a.user_id, { display_name: a.display_name, emoji: a.emoji })
+    }
+    return list.map((r) => {
+      const chip = aliasMap.get(r.alias_id)
+      return {
+        id: r.id,
+        clean_text: r.clean_text,
+        edited: r.edited,
+        created_at: r.created_at,
+        is_mine: r.alias_id === context.userId,
+        display_name: chip?.display_name ?? 'someone',
+        emoji: chip?.emoji ?? '🙂',
+      }
+    })
   })
 
 export const createComment = createServerFn({ method: 'POST' })
@@ -392,6 +422,8 @@ export const createComment = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     const s = await runScrub(data.text)
+    // Insert via authenticated client so RLS "owner inserts own comment"
+    // applies. Read-back omits alias_id (column revoked from authenticated).
     const { data: row, error } = await context.supabase
       .from('comments')
       .insert({
@@ -399,7 +431,7 @@ export const createComment = createServerFn({ method: 'POST' })
         alias_id: context.userId,
         clean_text: s.clean_text || data.text,
       })
-      .select('id, alias_id, clean_text, edited, created_at')
+      .select('id, clean_text, edited, created_at')
       .single()
     if (error) throw new Error(error.message)
 
@@ -447,11 +479,11 @@ export const updateComment = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     const s = await runScrub(data.text)
+    // Ownership enforced by RLS "owner updates own comment".
     const { error } = await context.supabase
       .from('comments')
       .update({ clean_text: s.clean_text || data.text, edited: true } as never)
       .eq('id', data.id)
-      .eq('alias_id', context.userId)
     if (error) throw new Error(error.message)
     return { id: data.id, ok: true }
   })
@@ -460,11 +492,11 @@ export const deleteComment = createServerFn({ method: 'POST' })
   .middleware([requireRealUser])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
+    // Soft-delete under RLS "owner updates own comment".
     const { error } = await context.supabase
       .from('comments')
       .update({ deleted_at: new Date().toISOString() } as never)
       .eq('id', data.id)
-      .eq('alias_id', context.userId)
     if (error) throw new Error(error.message)
     return { id: data.id, ok: true }
   })
