@@ -53,7 +53,7 @@ import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email.unsubscribe'
 import { Route as EmailPreferencesRouteImport } from './routes/email.preferences'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
-import { Route as AdminRelateQueueRouteImport } from './routes/admin.relate-queue'
+import { Route as AdminRelateQueueRouteImport } from './routes/admin_.relate-queue'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -291,9 +291,9 @@ const ApiCompleteRoute = ApiCompleteRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRelateQueueRoute = AdminRelateQueueRouteImport.update({
-  id: '/relate-queue',
-  path: '/relate-queue',
-  getParentRoute: () => AdminRoute,
+  id: '/admin_/relate-queue',
+  path: '/admin/relate-queue',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
   id: '/feedback',
@@ -548,7 +548,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/admin/feedback': typeof AdminFeedbackRoute
-  '/admin/relate-queue': typeof AdminRelateQueueRoute
+  '/admin_/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/email/preferences': typeof EmailPreferencesRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -737,7 +737,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/profile'
     | '/admin/feedback'
-    | '/admin/relate-queue'
+    | '/admin_/relate-queue'
     | '/api/complete'
     | '/email/preferences'
     | '/email/unsubscribe'
@@ -799,6 +799,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  AdminRelateQueueRoute: typeof AdminRelateQueueRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
   EmailPreferencesRoute: typeof EmailPreferencesRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
@@ -1128,12 +1129,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/relate-queue': {
-      id: '/admin/relate-queue'
-      path: '/relate-queue'
+    '/admin_/relate-queue': {
+      id: '/admin_/relate-queue'
+      path: '/admin/relate-queue'
       fullPath: '/admin/relate-queue'
       preLoaderRoute: typeof AdminRelateQueueRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/feedback': {
       id: '/admin/feedback'
@@ -1271,12 +1272,10 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface AdminRouteChildren {
   AdminFeedbackRoute: typeof AdminFeedbackRoute
-  AdminRelateQueueRoute: typeof AdminRelateQueueRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminFeedbackRoute: AdminFeedbackRoute,
-  AdminRelateQueueRoute: AdminRelateQueueRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -1340,6 +1339,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  AdminRelateQueueRoute: AdminRelateQueueRoute,
   ApiCompleteRoute: ApiCompleteRoute,
   EmailPreferencesRoute: EmailPreferencesRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
