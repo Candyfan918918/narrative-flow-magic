@@ -352,8 +352,10 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
   const live = q('[data-livecount]')
   if (live) {
     let n = parseInt(live.textContent || '31', 10) || 31
-    const iv = setInterval(() => { n = Math.max(24, Math.min(45, n + (Math.random() < 0.5 ? -1 : 1))); if (live) live.textContent = String(n) }, 4200)
-    intervals.push(iv)
+    idle(() => {
+      const iv = setInterval(() => { n = Math.max(24, Math.min(45, n + (Math.random() < 0.5 ? -1 : 1))); if (live) live.textContent = String(n) }, 4200)
+      intervals.push(iv)
+    })
   }
 
   /* ── companion sheet (bubble → sheet, canned reply) ── */
