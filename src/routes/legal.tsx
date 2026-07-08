@@ -1,34 +1,51 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ContentPage } from "@/components/seo/ContentPage";
+import { DocLayout } from "@/components/site/DocLayout";
 import { SITE_URL } from "@/lib/site";
 
 const URL = `${SITE_URL}/legal`;
 const TITLE = "Legal & policies — Shutap";
 const DESCRIPTION =
-  "Hub for Shutap's legal and policy documents: terms of service, privacy policy, community guidelines, safety, AI disclosure, and FAQ.";
-const CAPSULE =
-  "Shutap's legal and policy documents in one place. Read the terms, understand how your privacy is protected, see how the community stays safe, and learn how AI is used.";
+  "Hub for Shutap's legal and policy documents: terms of service, privacy policy, community guidelines, safety, AI disclosure, medical / legal disclaimer, and FAQ.";
 
-const SECTIONS = [
-  { heading: "Terms of Service", body: "The terms that govern your use of Shutap — what Shutap is and isn't, your content, AI use, eligibility (18+), and your rights. Read at /terms." },
-  { heading: "Privacy Policy", body: "How Shutap protects your privacy: pseudonymous by design, PII scrubbed before storage, no sale of your data, and full rights to access, export, and delete. Read at /privacy." },
-  { heading: "Community Guidelines", body: "How to keep Shutap a safe place to be honest: protect privacy, aim any sharpness at situations not people, and never post anything that harms someone. Read at /guidelines." },
-  { heading: "Safety", body: "Shutap is not a crisis service, but safety is built in. Crisis resources (988, Samaritans, findahelpline) and how the companion routes you to real help. Read at /safety." },
-  { heading: "AI Disclosure", body: "What the AI does and doesn't, that it can be wrong, and which models power the companion and Mirror. Read at /ai-disclosure." },
-  { heading: "Medical / Legal Disclaimer", body: "Formal and in-voice statement that Shutap doesn't provide medical, mental-health, crisis, or legal services or advice. Read at /disclaimer." },
-  { heading: "FAQ", body: "Common questions about what Shutap is, whether it's therapy (it isn't), pseudonymity, privacy, the Mirror, and data deletion. Read at /faq." },
+type Item = { href: string; label: string; sub: string };
+
+const ITEMS: Item[] = [
+  {
+    href: "/terms",
+    label: "Terms of Service",
+    sub: "what shutap is and isn\u2019t, your content, AI use, eligibility (18+), and your rights.",
+  },
+  {
+    href: "/privacy",
+    label: "Privacy Policy",
+    sub: "pseudonymous by design, identifiers scrubbed before storage, no sale of your data.",
+  },
+  {
+    href: "/guidelines",
+    label: "Community Guidelines",
+    sub: "how to keep shutap a safe place to be honest \u2014 the short version, in our voice.",
+  },
+  {
+    href: "/safety",
+    label: "Crisis & Safety",
+    sub: "we\u2019re not a crisis service. real, human help \u2014 right now.",
+  },
+  {
+    href: "/contact",
+    label: "Contact",
+    sub: "a real person reads every message \u2014 hello, privacy, safety, or legal.",
+  },
+  {
+    href: "/ai-disclosure",
+    label: "AI Disclosure",
+    sub: "what the ai is, that it can be wrong, and which models power it.",
+  },
+  {
+    href: "/disclaimer",
+    label: "Medical / Legal Disclaimer",
+    sub: "formal and in-voice: shutap doesn\u2019t provide medical, mental-health, or legal advice.",
+  },
 ];
-
-const OTHERS = [
-  { href: "/terms", label: "Terms" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/guidelines", label: "Community guidelines" },
-  { href: "/safety", label: "Safety" },
-  { href: "/ai-disclosure", label: "AI disclosure" },
-  { href: "/disclaimer", label: "Medical / legal disclaimer" },
-  { href: "/faq", label: "FAQ" },
-];
-
 
 export const Route = createFileRoute("/legal")({
   head: () => ({
@@ -57,12 +74,76 @@ export const Route = createFileRoute("/legal")({
       },
     ],
   }),
-  component: () => (
-    <ContentPage
-      h1="legal & policies"
-      capsule={CAPSULE}
-      sections={SECTIONS}
-      others={OTHERS}
-    />
-  ),
+  component: LegalHub,
 });
+
+function LegalHub() {
+  return (
+    <DocLayout
+      active="/legal"
+      title="Legal & policies"
+      subline="everything you need to know about how shutap works, in one place."
+    >
+      <p>
+        shutap is 18+, pseudonymous, and not a medical or legal service. these documents lay out
+        the ground rules and how we protect you. pick the one you need — or read them all.
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, margin: "20px 0 4px" }}>
+        {ITEMS.map((c) => (
+          <a
+            key={c.href}
+            href={c.href}
+            style={{
+              textDecoration: "none",
+              background: "#fff",
+              border: ".5px solid rgba(11,8,15,.1)",
+              borderRadius: 14,
+              padding: "15px 17px",
+              display: "block",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                justifyContent: "space-between",
+                gap: 14,
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "Sora,sans-serif",
+                  fontWeight: 700,
+                  fontSize: 14.5,
+                  color: "#0b080f",
+                }}
+              >
+                {c.label}
+              </div>
+              <div
+                style={{
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 13,
+                  color: "#c1216b",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                read →
+              </div>
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                lineHeight: 1.55,
+                color: "#6b4a5c",
+                marginTop: 4,
+              }}
+            >
+              {c.sub}
+            </div>
+          </a>
+        ))}
+      </div>
+    </DocLayout>
+  );
+}
