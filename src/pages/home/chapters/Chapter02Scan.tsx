@@ -1,6 +1,7 @@
 // Chapter 02 — "the scan · sample". 4-phase loop inside a 330px stage.
 import { useEffect, useRef, useState } from 'react'
 import { useOnScreen, usePrefersReducedMotion } from '../hero/Mascot'
+import { useReactiveCard } from '@/components/motion'
 import { EyeMark } from '@/components/brand/EyeMark'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -15,6 +16,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
   const [phase, setPhase] = useState<0 | 1 | 2 | 3>(reduce ? 3 : 0)
   const [dialProgress, setDialProgress] = useState(reduce ? 1 : 0)
   const [counter, setCounter] = useState(reduce ? 740 : 0)
+  const card = useReactiveCard({ glow: 'rgba(231,84,138,.55)' })
 
   useEffect(() => {
     if (reduce || !onScreen) return
@@ -90,6 +92,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div
+            ref={card.ref}
             style={{
               width: 'min(330px,88vw)',
               background: 'linear-gradient(170deg,#241226,#160b16)',
@@ -97,6 +100,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
               borderRadius: 24,
               padding: 18,
               boxShadow: '0 32px 60px -30px rgba(60,10,30,.6)',
+              position: 'relative',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
@@ -138,6 +142,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
             <div style={{ marginTop: 12, fontFamily: SORA, fontWeight: 700, fontSize: 9, letterSpacing: '.24em', color: 'rgba(255,255,255,.35)', textAlign: 'center' }}>
               SHUTAP · THE SCAN
             </div>
+            {card.decor}
           </div>
         </div>
       </div>

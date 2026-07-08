@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@/compat/router'
 import { useOnScreen, usePrefersReducedMotion } from '../hero/Mascot'
+import { useReactiveCard } from '@/components/motion'
 import { DEMO_DISTRICTS, DEMO_MIRROR_CAST, type DemoPattern } from '../mirrorCast'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -75,6 +76,7 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
   const [depthProgress, setDepthProgress] = useState(reduce ? 1 : 0)
   const [signalCount, setSignalCount] = useState(reduce ? pattern.signals : 0)
   const [trendProgress, setTrendProgress] = useState(reduce ? 1 : 0)
+  const card = useReactiveCard({ glow: 'rgba(233,192,106,.6)' })
 
   useEffect(() => {
     if (reduce) return
@@ -113,6 +115,7 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
 
   return (
     <div
+      ref={card.ref}
       style={{
         width: 'min(380px,92vw)',
         background: 'radial-gradient(125% 80% at 50% 0%, rgba(127,119,221,.18), #1c0d16 58%, #140810)',
@@ -247,6 +250,7 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
       <div style={{ marginTop: 14, fontFamily: SORA, fontWeight: 700, fontSize: 9, letterSpacing: '.24em', color: 'rgba(255,255,255,.28)', textAlign: 'center' }}>
         SHUTAP · THE MIRROR · DEMO
       </div>
+      {card.decor}
     </div>
   )
 }

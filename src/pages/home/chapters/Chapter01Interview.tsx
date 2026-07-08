@@ -3,6 +3,7 @@
 // data. Timings match the spec.
 import { useEffect, useRef, useState } from 'react'
 import { useOnScreen, usePrefersReducedMotion } from '../hero/Mascot'
+import { useReactiveCard } from '@/components/motion'
 
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
@@ -42,6 +43,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
   const reduce = usePrefersReducedMotion()
   const [timeline] = useState(buildTimeline)
   const [shown, setShown] = useState<number>(reduce ? timeline.length : 0)
+  const card = useReactiveCard({ glow: 'rgba(231,84,138,.55)' })
 
   useEffect(() => {
     if (reduce) return
@@ -129,6 +131,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div
+            ref={card.ref}
             style={{
               width: 'min(380px, 100%)',
               background: 'linear-gradient(160deg, #2e0d1a, #1a0a12)',
@@ -137,6 +140,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
               color: '#f7e8f0',
               boxShadow: '0 32px 60px -30px rgba(60,10,30,.6)',
               border: '.5px solid rgba(255,255,255,.06)',
+              position: 'relative',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -175,6 +179,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
                 )
               })}
             </div>
+            {card.decor}
           </div>
         </div>
       </div>
