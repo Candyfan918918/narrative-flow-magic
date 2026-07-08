@@ -3,6 +3,7 @@
 import { Link } from '@tanstack/react-router'
 
 import { SiteFooter } from '@/components/site/SiteFooter'
+import { Words } from '@/components/motion'
 
 const HALLS = [
   { slug: 'most-related', label: 'Most Related' },

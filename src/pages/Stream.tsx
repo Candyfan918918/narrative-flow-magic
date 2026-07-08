@@ -2,6 +2,7 @@
  * Renders seed rooms + user-published rooms from localStorage (the same
  * dynamic source the iframe used). Scan rooms render as score-card tiles. */
 import { useEffect, useMemo, useState } from 'react'
+import { Words } from '@/components/motion'
 import { useLocation, useNavigate } from '@/compat/router'
 
 import { RoomTile, type RoomTileData } from '../components/RoomTile'
