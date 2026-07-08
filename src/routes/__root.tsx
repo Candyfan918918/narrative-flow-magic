@@ -156,6 +156,8 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHome = pathname === '/';
 
   useEffect(() => {
     let mounted = true
