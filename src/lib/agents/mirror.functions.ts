@@ -131,13 +131,13 @@ export type MirrorPunchOut = { punch: string; record: string }
 
 const PUNCH_PROMPT = `${VOICE}
 
-given a pattern's name + analytics, write the HERO LINE for its card.
-weaponize one specific number from the analytics (depth, count, weeks, last_seen-days, top source). present tense, observational.
-output JSON: { "punch": "<= 140 chars, lowercase, the one line they read when the card opens>", "record": "<3-5 word stamp>" }
+given a pattern's name + analytics, write the HERO LINE for its card — the one supportive sentence the person reads when the card opens. it should make them feel gently understood.
+lean on one specific number from the analytics (count, depth, weeks, days since last_seen, top source) when it deepens the observation. present tense, warm, observational.
+output JSON: { "punch": "<= 140 chars, lowercase, one supportive line that names the pattern with tenderness>", "record": "<3-5 word tender stamp>" }
 
 examples:
-{"punch":"you scrolled three times to see who watched, and pretended you didn't.","record":"logged again."}
-{"punch":"42 spills, same opening line. the receipts are the script.","record":"caught in the loop."}`
+{"punch":"you\u2019ve returned to this 12 times — the caring underneath keeps showing up.","record":"held here."}
+{"punch":"42 spills in, the words keep coming — that\u2019s you making room for yourself.","record":"noticed, gently."}`
 
 const PunchInput = z.object({
   name: z.string(),
