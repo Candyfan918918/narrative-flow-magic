@@ -3,7 +3,7 @@ import { ContentPage } from "@/components/seo/ContentPage";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/how-it-works";
-const TITLE = "How Shutap works — real people, AI-guided, outcomes confirmed";
+const TITLE = "How Shutap works — real people, AI-guided | Shutap";
 const DESCRIPTION =
   "How stories on Shutap are written (real people, not AI-written), how outcomes get confirmed, and how sensitive topics are routed to real help.";
 const CAPSULE =
