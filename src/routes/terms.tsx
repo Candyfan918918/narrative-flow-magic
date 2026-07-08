@@ -103,14 +103,27 @@ function TermsPage() {
         removal of content about them.
       </p>
 
-      <h3>9. Assumption of risk.</h3>
+      <h3 id="refunds">9. Subscriptions, billing &amp; refunds.</h3>
+      <p>
+        Some features (the &ldquo;Mirror&rdquo;) require a paid subscription. Paid subscriptions
+        begin with a free trial; your payment method is collected up front and{' '}
+        <b>the first charge happens automatically when the trial ends</b> unless you cancel first.
+        Subscriptions renew automatically each billing period at the price shown at checkout (plus
+        any applicable taxes) until cancelled. You can cancel anytime from your profile or the
+        billing portal; cancellation takes effect at the end of the current billing period, and you
+        keep access until then. <b>Payments already made — for the current or past periods — are
+        not refunded</b>, except where a refund is required by applicable law. Venting, scanning,
+        and being heard remain free.
+      </p>
+
+      <h3>10. Assumption of risk.</h3>
       <p>
         Shutap involves user-generated emotional content and AI-generated responses. You understand
         and accept that such content may be upsetting, inaccurate, or unhelpful, and you use the
         service at your own risk.
       </p>
 
-      <h3>10. Disclaimers.</h3>
+      <h3>11. Disclaimers.</h3>
       <p>
         The service is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo; without
         warranties of any kind, express or implied, including fitness for a particular purpose and
@@ -118,7 +131,7 @@ function TermsPage() {
         needs.
       </p>
 
-      <h3>11. Limitation of liability.</h3>
+      <h3>12. Limitation of liability.</h3>
       <p>
         To the maximum extent permitted by law, Shutap and its operators will not be liable for any
         indirect, incidental, special, consequential, or punitive damages, or for any reliance on
@@ -126,16 +139,16 @@ function TermsPage() {
         amounts you paid us in the past 12 months or <b>US$100</b>.
       </p>
 
-      <h3>12. Indemnification.</h3>
+      <h3>13. Indemnification.</h3>
       <p>
         You agree to indemnify Shutap against claims arising from your content or your violation of
         these terms.
       </p>
 
-      <h3>13. Termination.</h3>
+      <h3>14. Termination.</h3>
       <p>You may delete your account anytime. We may suspend or terminate access for violations.</p>
 
-      <h3>14. Dispute resolution &amp; governing law.</h3>
+      <h3>15. Dispute resolution &amp; governing law.</h3>
       <p>
         Before filing any claim, you agree to first contact us at legal@shutap.com and try to
         resolve it informally for at least 30 days. Any dispute that cannot be resolved that way
@@ -147,14 +160,15 @@ function TermsPage() {
         arbitration is the state or federal courts located in Delaware.
       </p>
 
-      <h3>15. Changes.</h3>
+      <h3>16. Changes.</h3>
       <p>
         We may update these terms; material changes will be notified and re-accepted, with a new
         version stamp.
       </p>
 
-      <h3>16. Contact.</h3>
+      <h3>17. Contact.</h3>
       <p>legal@shutap.com.</p>
+
     </DocLayout>
   )
 }
