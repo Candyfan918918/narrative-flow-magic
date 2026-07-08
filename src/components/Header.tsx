@@ -15,6 +15,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
   const admin = useIsAdmin()
   const [menuOpen, setMenuOpen] = useState(false)
   const areaRef = useRef<HTMLDivElement>(null)
+  const joinRef = useMagnetic<HTMLAnchorElement>()
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
