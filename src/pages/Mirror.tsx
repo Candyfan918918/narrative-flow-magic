@@ -8,6 +8,7 @@ import { Link, useNavigate, useLocation } from '@/compat/router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
+import { Words, Reveal } from '@/components/motion'
 
 import {
   listMirrorPatterns,
@@ -1281,11 +1282,11 @@ export function MirrorPage() {
             }} />
             your most recent reading
           </div>
-          <h1 style={{
+          <Words as="h1" style={{
             margin: '8px auto 0', maxWidth: 760,
             fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontWeight: 500,
             fontSize: 'clamp(28px, 4.4vw, 40px)', lineHeight: 1.15, color: INK,
-          }}>the mirror remembers you better than you do.</h1>
+          }}>the mirror remembers you better than you do.</Words>
         </div>
 
         {isLoading && (
