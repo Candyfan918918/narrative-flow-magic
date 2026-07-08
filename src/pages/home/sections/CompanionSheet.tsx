@@ -4,21 +4,12 @@
 export function CompanionSheet() {
   return (
     <>
-      <div
-        data-comp-action="open"
-        role="button"
-        tabIndex={0}
-        aria-label="Ask the companion"
-        title="ask the companion"
-        style={{ position: 'fixed', left: 'calc(50% - 29px)', bottom: '24px', zIndex: 60, width: '58px', height: '58px', borderRadius: '50%', background: 'rgba(231,84,138,0.18)', backdropFilter: 'blur(4px)', boxShadow: '0 12px 30px -8px rgba(60,10,30,.35)', display: 'grid', placeItems: 'center', cursor: 'pointer', userSelect: 'none' }}
-      >
-        <svg viewBox="0 0 56 56" fill="none" style={{ width: '32px', height: '32px', display: 'block', pointerEvents: 'none' }}>
-          <rect x="15.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG2)" />
-          <rect x="29.25" y="16" width="11.5" height="24" rx="5.75" fill="url(#eyeG2)" />
-          <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG2)" />
-          <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG2)" />
-        </svg>
-      </div>
+      {/* Hidden open trigger — the global draggable CompanionBubble (rendered
+          in __root) fires a synthetic click on this element to open the sheet,
+          leaving the delegated immersiveMount listener untouched. */}
+      <span data-comp-action="open" aria-hidden style={{ display: 'none' }} />
+
+
 
       <div data-comp="root" style={{ position: 'fixed', inset: 0, zIndex: 90, display: 'none', alignItems: 'flex-end', justifyContent: 'center' }}>
         <div data-comp="back" style={{ position: 'absolute', inset: 0, background: 'rgba(10,6,14,.72)', backdropFilter: 'blur(8px)', opacity: 0, transition: 'opacity .3s' }} />
