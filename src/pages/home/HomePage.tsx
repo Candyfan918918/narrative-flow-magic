@@ -272,19 +272,6 @@ export function HomePage() {
   )
 }
 
-function HeroWord({ text, shown, delay, space }: { text: string; shown: boolean; delay: number; space: boolean }) {
-  return (
-    <span className="home-word-wrap" style={{ marginRight: space ? '0.28em' : 0 }}>
-      <span
-        className={`home-word${shown ? ' in' : ''}`}
-        style={{ transitionDelay: `${delay}ms` }}
-      >
-        {text}
-      </span>
-    </span>
-  )
-}
-
 export function HomeFooter() {
   return (
     <footer style={{ background: '#fdf0f5', borderTop: '.5px solid rgba(11,8,15,.06)', padding: '54px 22px 46px', color: '#6b4a5c', fontFamily: "'Inter',system-ui,sans-serif" }}>
