@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site";
 const PATH = "/marriage";
 const TITLE = "Marriage — real stories about married life | Shutap";
 const DESCRIPTION =
-  "Real, pseudonymous stories about marriage — resentment, repair, roommate energy, staying, leaving — and what actually happened next. You're not the only one.";
+  "Pseudonymous stories about marriage — resentment, repair, roommate energy, staying, leaving — and what actually happened next. You're not the only one.";
 const H1 = "marriage";
 const CAPSULE =
   "The long-haul stuff: roommate energy, resentment, repair, the question of leaving or staying. This is where people vent about their marriages — pseudonymously, honestly — and come back to share what actually happened next. If you're carrying something heavy, someone here has carried it too.";

@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site";
 const PATH = "/family";
 const TITLE = "Family — parents, siblings, in-laws: real stories | Shutap";
 const DESCRIPTION =
-  "Real, pseudonymous stories about family — parents, siblings, in-laws, the family group chat, the guilt — and what actually happened next. Someone here gets it.";
+  "Pseudonymous stories about family — parents, siblings, in-laws, group chats, the guilt — and what actually happened next. Someone here gets it.";
 const H1 = "family";
 const CAPSULE =
   "Parents, siblings, in-laws, the family group chat, the guilt that comes with all of it. This is where people vent about family — pseudonymously, honestly — and come back to share what actually happened next. Whatever the dynamic, someone here has lived it.";

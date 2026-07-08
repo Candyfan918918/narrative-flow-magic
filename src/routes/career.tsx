@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site";
 const PATH = "/career";
 const TITLE = "Career & work — real stories about work life | Shutap";
 const DESCRIPTION =
-  "Real, pseudonymous stories about work — bosses, burnout, money, the job you're supposed to be grateful for — and what actually happened next. You're not alone in it.";
+  "Pseudonymous stories about work — bosses, burnout, money, the job you're supposed to be grateful for — and what happened next. You're not alone in it.";
 const H1 = "career";
 const CAPSULE =
   "Work, money, bosses, burnout, the job everyone says you should be grateful for. This is where people vent about work — pseudonymously, honestly — and come back to share what actually happened next. Whatever's grinding you down, someone here has felt it.";

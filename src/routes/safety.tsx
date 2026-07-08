@@ -5,7 +5,7 @@ import { SITE_URL } from '@/lib/site'
 const URL = `${SITE_URL}/safety`
 const TITLE = 'Crisis & Safety — Shutap'
 const DESCRIPTION =
-  'shutap isn\u2019t a crisis service. if you\u2019re in crisis you deserve real human help now — 988 in the US, Samaritans in the UK, findahelpline.com anywhere.'
+  'Shutap isn\u2019t a crisis service. If you\u2019re in crisis you deserve real human help now — 988 in the US, Samaritans in the UK, findahelpline anywhere.'
 
 type Card = { name: string; action: string; href: string; external?: boolean }
 

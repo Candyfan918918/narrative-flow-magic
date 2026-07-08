@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site";
 const PATH = "/about";
 const TITLE = "About Shutap — pseudonymous venting with AI support";
 const DESCRIPTION =
-  "What Shutap is, who it's for, and how it differs from anonymous venting on Reddit or AITA. Pseudonymous, private by design, built around what actually happened next.";
+  "What Shutap is, who it's for, and how it differs from anonymous venting on Reddit or AITA. Pseudonymous, private by design, outcomes confirmed.";
 const CAPSULE =
   "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space. You post under a consistent alias — never your real name — about relationships, marriage, family, and work, and come back to share what actually happened next.";
 const SECTIONS = [

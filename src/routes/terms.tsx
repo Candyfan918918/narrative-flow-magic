@@ -5,7 +5,7 @@ import { SITE_URL } from '@/lib/site'
 const URL = `${SITE_URL}/terms`
 const TITLE = 'Terms of Service — Shutap'
 const DESCRIPTION =
-  'The terms for using Shutap, a pseudonymous peer-support community with an AI companion. What Shutap is and isn\u2019t, your content, AI use, arbitration, and liability cap.'
+  'Terms for using Shutap, a pseudonymous peer-support community with an AI companion — what Shutap is and isn\u2019t, your content, AI use, and liability.'
 
 export const Route = createFileRoute('/terms')({
   head: () => ({

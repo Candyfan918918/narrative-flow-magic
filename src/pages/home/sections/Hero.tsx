@@ -74,7 +74,7 @@ export function Hero() {
                 <div data-rv="zoom" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(14px,2.6vh,26px)', marginTop: 'clamp(18px,3.4vh,44px)' }}>
                   {' '}
                   <p style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: 'clamp(17px,1.6vw,21px)', lineHeight: '1.55', color: '#4a3040', maxWidth: '44ch', margin: '0', textAlign: 'center' }}>
-                    venting is free therapy — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
+                    some things you just need to say out loud — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
                   </p>
                   {' '}
                   <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
