@@ -72,7 +72,8 @@ function flatten(n: ReactNode): string {
 
 /** Word-by-word spring reveal for a heading. Pass-through wrapper — the
  * rendered element uses `as` (default 'span') so a wrapped H1 stays an H1. */
-export function Words({ children, as, className, style }: WordsProps) {
+export function Words({ children, as, className, style, stagger }: WordsProps) {
+  const wordStagger = stagger ?? 15
   const reduce = useReducedMotion()
   const ref = useRef<HTMLElement | null>(null)
   const [mounted, setMounted] = useState(false)
