@@ -285,7 +285,8 @@ export const deleteSituation = createServerFn({ method: 'POST' })
       .update({ status: 'deleted', deleted_at: new Date().toISOString(), is_public: false } as never)
       .eq('id', data.id)
     if (current.room_id) {
-      await context.supabase.from('rooms').delete().eq('id', current.room_id).eq('author_id', context.userId)
+      // RLS enforces ownership (rooms delete own).
+      await context.supabase.from('rooms').delete().eq('id', current.room_id)
     }
     await context.supabase.rpc('cancel_pending_checkins', { _situation_id: data.id })
     return { id: data.id, ok: true }
