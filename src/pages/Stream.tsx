@@ -10,8 +10,42 @@ import { RoomDetail } from '../components/RoomDetail'
 import { useToast } from '../components/Toast'
 import { SHUTAP_SEED } from '../data/seed'
 import type { Room } from '../data/types'
+import { NUDGES } from '../data/constants'
 import { listPillars } from '../lib/pillars.functions'
 import { useNoIndex } from '@/components/NoIndex'
+
+type FeedItem =
+  | { kind: 'room'; room: RoomTileData }
+  | { kind: 'nudge'; text: string; key: string }
+
+function NudgeTile({ text }: { text: string }) {
+  const [hover, setHover] = useState(false)
+  return (
+    <a
+      href="/#spill"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'block',
+        borderRadius: 20,
+        border: '1.5px dashed ' + (hover ? '#e7548a' : 'rgba(11,8,15,.16)'),
+        background: 'transparent',
+        padding: '20px 22px',
+        textDecoration: 'none',
+        color: 'inherit',
+        transition: 'border-color .2s',
+      }}
+    >
+      <div style={{ fontSize: 22, marginBottom: 10 }} aria-hidden>👁</div>
+      <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.5, color: '#2e1a26', marginBottom: 14 }}>
+        {text}
+      </div>
+      <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 12.5, color: '#c1216b', letterSpacing: '.02em' }}>
+        say something →
+      </div>
+    </a>
+  )
+}
 
 
 type Filter = 'all' | 'heard' | 'advice' | 'scan'
@@ -178,12 +212,8 @@ export function StreamPage() {
           })}
         </div>
 
-        {/* grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
-          {filtered.map((r) => (
-            <RoomTile key={r.id} room={r} onOpen={(room) => setOpen(room)} />
-          ))}
-        </div>
+        {/* waterfall */}
+        <WaterfallFeed filtered={filtered} onOpen={(room) => setOpen(room)} />
 
         {filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: '50px 0', fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#9e7a8c' }}>
@@ -207,6 +237,46 @@ export function StreamPage() {
       )}
 
       {ToastHost}
+    </div>
+  )
+}
+
+function WaterfallFeed({ filtered, onOpen }: { filtered: RoomTileData[]; onOpen: (r: RoomTileData) => void }) {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 720px)')
+    const upd = () => setIsMobile(mq.matches)
+    upd()
+    mq.addEventListener('change', upd)
+    return () => mq.removeEventListener('change', upd)
+  }, [])
+
+  // Weave nudges into slots 1 and 3
+  const items: FeedItem[] = []
+  let nudgeIx = 0
+  const nudgeSlots = new Set([1, 3])
+  for (const r of filtered) {
+    if (nudgeSlots.has(items.length) && nudgeIx < NUDGES.length) {
+      items.push({ kind: 'nudge', text: NUDGES[nudgeIx], key: 'nudge-' + nudgeIx })
+      nudgeIx++
+    }
+    items.push({ kind: 'room', room: r })
+  }
+
+  const render = (it: FeedItem) =>
+    it.kind === 'room'
+      ? <RoomTile key={it.room.id} room={it.room} onOpen={onOpen} />
+      : <NudgeTile key={it.key} text={it.text} />
+
+  if (isMobile) {
+    return <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>{items.map(render)}</div>
+  }
+  const left = items.filter((_, i) => i % 2 === 0)
+  const right = items.filter((_, i) => i % 2 === 1)
+  return (
+    <div style={{ display: 'flex', gap: 13, alignItems: 'flex-start' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13 }}>{left.map(render)}</div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13 }}>{right.map(render)}</div>
     </div>
   )
 }
