@@ -3,7 +3,6 @@ import { StreamPage } from '@/pages/Stream'
 import { SITE_URL } from '@/lib/site'
 
 export const Route = createFileRoute('/stream')({
-  ssr: false,
   head: () => ({
     meta: [
       { title: 'Stream — Shutap' },
