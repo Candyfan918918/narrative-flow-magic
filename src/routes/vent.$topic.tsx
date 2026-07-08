@@ -174,7 +174,7 @@ function VentTopicPage() {
         {/* Room cards */}
         {rooms.length > 0 ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 16 }}>
-            {rooms.map((r) => <VentRoomCard key={r.id} room={r} />)}
+            {rooms.map((r: Room) => <VentRoomCard key={r.id} room={r} />)}
           </div>
         ) : (
           <p style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#9e7a8c' }}>

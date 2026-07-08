@@ -284,7 +284,7 @@ export function HomePage() {
 
       <SpillModal open={spillOpen} onClose={closeSpill} />
       <ScanModal open={scanOpen} onClose={closeScan} />
-      <CompanionComposer open={composerOpen} onClose={() => setComposerOpen(false)} />
+      <CompanionComposer open={composerOpen} onClose={() => setComposerOpen(false)} onSpill={openSpill} onScan={openScan} />
     </div>
   )
 }
