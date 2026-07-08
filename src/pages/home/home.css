@@ -139,3 +139,25 @@ html.home-scroll-snap {
 .home-immersive a:focus,
 .home-immersive a:visited,
 .home-immersive summary { text-decoration: none !important; }
+
+/* Reference-parity homepage CSS (from the design file's <style> block).
+ * Scoped to .home-immersive so global body/a/html rules don't leak. */
+.home-immersive [data-strip]{scrollbar-width:none}
+.home-immersive [data-strip]::-webkit-scrollbar{display:none}
+.home-immersive .chgrid{max-width:1280px;margin:0 auto;width:100%;padding:clamp(90px,12vh,150px) clamp(20px,4vw,32px);display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(34px,6vw,90px);align-items:center}
+.home-immersive .chgrid.rev{grid-template-columns:1fr 1.1fr}
+@media (max-width:880px){
+  .home-immersive .chgrid,
+  .home-immersive .chgrid.rev{grid-template-columns:1fr;gap:30px;padding:clamp(56px,7vh,90px) 20px}
+  .home-immersive .chgrid [data-democard]{order:1}
+}
+@media (max-width:600px){.home-immersive [data-navlink]{display:none}}
+@media (pointer:coarse){.home-immersive [data-cur],.home-immersive [data-curdot]{display:none!important}}
+@keyframes eblink{0%,34%,40%,78%,84%,100%{transform:scaleY(1)}37%,81%{transform:scaleY(.08)}}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes mqr{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@keyframes breathe{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
+@keyframes drift{0%,100%{transform:translate(0,0)}33%{transform:translate(3%,4%)}66%{transform:translate(-3%,-2%)}}
+@keyframes spinSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes scrollHint{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{transform:translateY(0);opacity:0}}
