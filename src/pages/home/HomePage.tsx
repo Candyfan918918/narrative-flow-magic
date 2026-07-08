@@ -16,8 +16,11 @@ import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
 import { IMMERSIVE_HTML } from './immersiveTemplate'
 import { mountImmersive, renderRoomsMarkup } from './immersiveMount'
+import { mountHomeMotion } from './motionAdapter'
+import { CursorTrail } from '@/components/motion/CursorTrail'
 import { Link } from '@tanstack/react-router'
 import './home.css'
+import '@/components/motion/motion.css'
 
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
