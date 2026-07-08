@@ -15,7 +15,18 @@ const SECTIONS = [
   { heading: "Community Guidelines", body: "How to keep Shutap a safe place to be honest: protect privacy, aim any sharpness at situations not people, and never post anything that harms someone. Read at /guidelines." },
   { heading: "Safety", body: "Shutap is not a crisis service, but safety is built in. Crisis resources (988, Samaritans, findahelpline) and how the companion routes you to real help. Read at /safety." },
   { heading: "AI Disclosure", body: "What the AI does and doesn't, that it can be wrong, and which models power the companion and Mirror. Read at /ai-disclosure." },
+  { heading: "Medical / Legal Disclaimer", body: "Formal and in-voice statement that Shutap doesn't provide medical, mental-health, crisis, or legal services or advice. Read at /disclaimer." },
   { heading: "FAQ", body: "Common questions about what Shutap is, whether it's therapy (it isn't), pseudonymity, privacy, the Mirror, and data deletion. Read at /faq." },
+];
+
+const OTHERS = [
+  { href: "/terms", label: "Terms" },
+  { href: "/privacy", label: "Privacy" },
+  { href: "/guidelines", label: "Community guidelines" },
+  { href: "/safety", label: "Safety" },
+  { href: "/ai-disclosure", label: "AI disclosure" },
+  { href: "/disclaimer", label: "Medical / legal disclaimer" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 const OTHERS = [
