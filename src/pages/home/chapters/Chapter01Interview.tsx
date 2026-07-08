@@ -115,6 +115,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
           </p>
           <button
             type="button"
+            ref={magneticCta}
             onClick={onCtaSpill}
             style={{
               background: '#0b080f',
