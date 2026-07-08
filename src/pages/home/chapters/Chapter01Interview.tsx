@@ -90,6 +90,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
       className="home-chapter"
       style={{ background: '#fdf0f5', minHeight: '96vh', padding: 'clamp(90px,12vh,150px) 22px', display: 'flex', alignItems: 'center' }}
     >
+      <span aria-hidden className="home-watermark" style={{ right: '3%', top: '5%', color: 'rgba(231,84,138,.07)' }}>spill</span>
       <div
         style={{
           maxWidth: 1100,
