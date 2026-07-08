@@ -34,20 +34,6 @@ function fireMirror(input: {
 
 const PENDING_COMMENT_KEY = 'shutap_pending_comment'
 
-const badgeStyle = (support: string): React.CSSProperties => ({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 5,
-  background: support === 'heard' ? 'rgba(231,84,138,.08)' : 'rgba(91,138,94,.10)',
-  color: support === 'heard' ? '#c1216b' : '#3a6b3c',
-  border: '.5px solid ' + (support === 'heard' ? 'rgba(193,33,107,.18)' : 'rgba(91,138,94,.22)'),
-  borderRadius: 999,
-  padding: '5px 12px',
-  fontFamily: 'Sora,sans-serif',
-  fontWeight: 600,
-  fontSize: 10.5,
-  letterSpacing: '.05em',
-})
 
 const BAND_COLOR: Record<string, string> = {
   settling: '#5B8A5E',
