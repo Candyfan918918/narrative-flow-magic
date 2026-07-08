@@ -175,7 +175,7 @@ export async function crystallizeMirrorSignal(args: {
       p_user: userId,
       q: vecLiteral as unknown as never,
       match_count: 1,
-      similarity_floor: 0.78,
+      similarity_floor: 0.72,
     })
     if (rpcErr) console.error('[mirror-ingest] match_user_patterns', rpcErr)
     if (Array.isArray(hits) && hits[0]) matched = { id: hits[0].id, similarity: hits[0].similarity }
