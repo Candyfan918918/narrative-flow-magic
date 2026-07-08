@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site";
 const URL = `${SITE_URL}/legal`;
 const TITLE = "Legal & policies — Shutap";
 const DESCRIPTION =
-  "Hub for Shutap's legal and policy documents: terms of service, privacy policy, community guidelines, safety, AI disclosure, medical / legal disclaimer, and FAQ.";
+  "Hub for Shutap's legal and policy documents: terms, privacy, community guidelines, safety, AI disclosure, medical / legal disclaimer, and FAQ.";
 
 type Item = { href: string; label: string; sub: string };
 
