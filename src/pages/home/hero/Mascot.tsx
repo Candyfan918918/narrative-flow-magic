@@ -91,18 +91,9 @@ export function HeroMascot({ size }: { size: number }) {
   )
 }
 
-export function usePrefersReducedMotion() {
-  const [reduce, setReduce] = useState(false)
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReduce(mq.matches)
-    const h = () => setReduce(mq.matches)
-    mq.addEventListener?.('change', h)
-    return () => mq.removeEventListener?.('change', h)
-  }, [])
-  return reduce
-}
+// Re-export the shared motion hook so this module keeps its stable name
+// while the single implementation lives in src/components/motion.
+export { useReducedMotion as usePrefersReducedMotion } from '@/components/motion/useReducedMotion'
 
 // Small helper — IntersectionObserver hook returning "true when >=threshold visible".
 export function useOnScreen<T extends Element>(ref: React.RefObject<T | null>, threshold = 0.15) {
