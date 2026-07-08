@@ -39,6 +39,40 @@ export function CompanionBubble({
     const el = ref.current
     if (!el) return
 
+    const STORAGE_KEY = 'companion-bubble-pos-v1'
+
+    const clampAndApply = (x: number, y: number) => {
+      const sz = el.offsetWidth || 58
+      const nx = Math.max(8, Math.min(window.innerWidth - sz - 8, x))
+      const ny = Math.max(8, Math.min(window.innerHeight - sz - 8, y))
+      el.style.left = nx + 'px'
+      el.style.top = ny + 'px'
+      el.style.right = 'auto'
+      el.style.bottom = 'auto'
+      return { nx, ny }
+    }
+
+    // Restore persisted position
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (raw) {
+        const p = JSON.parse(raw) as { x: number; y: number }
+        if (typeof p.x === 'number' && typeof p.y === 'number') {
+          clampAndApply(p.x, p.y)
+        }
+      }
+    } catch { /* noop */ }
+
+    const onResize = () => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY)
+        if (!raw) return
+        const p = JSON.parse(raw) as { x: number; y: number }
+        clampAndApply(p.x, p.y)
+      } catch { /* noop */ }
+    }
+    window.addEventListener('resize', onResize)
+
     let dragging = false
     let moved = false
     let sx = 0
@@ -64,12 +98,7 @@ export function CompanionBubble({
       const dy = e.clientY - sy
       if (Math.abs(dx) > TAP_THRESHOLD || Math.abs(dy) > TAP_THRESHOLD) moved = true
       if (!moved) return
-      const sz = el.offsetWidth
-      const nx = Math.max(8, Math.min(window.innerWidth - sz - 8, ox + dx))
-      const ny = Math.max(8, Math.min(window.innerHeight - sz - 8, oy + dy))
-      el.style.left = nx + 'px'
-      el.style.top = ny + 'px'
-      el.style.bottom = 'auto'
+      clampAndApply(ox + dx, oy + dy)
       e.preventDefault()
     }
     const up = () => {
@@ -79,6 +108,12 @@ export function CompanionBubble({
       if (!moved) {
         // tap: no meaningful movement — fire onOpen
         try { onOpenRef.current() } catch { /* noop */ }
+      } else {
+        // persist final position
+        try {
+          const r = el.getBoundingClientRect()
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: r.left, y: r.top }))
+        } catch { /* noop */ }
       }
     }
 
@@ -89,8 +124,10 @@ export function CompanionBubble({
       el.removeEventListener('pointerdown', down)
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
+      window.removeEventListener('resize', onResize)
     }
   }, [])
+
 
   return (
     <div
