@@ -71,6 +71,8 @@ interface StoredRoom {
 }
 
 function loadUserRooms(): RoomTileData[] {
+  // SSR-safe: return [] on the server. User rooms hydrate after mount.
+  if (typeof window === 'undefined') return []
   try {
     const raw = localStorage.getItem('shutap_user_situations')
     if (!raw) return []
