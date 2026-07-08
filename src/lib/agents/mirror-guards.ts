@@ -112,27 +112,29 @@ export function sanitizePunch(text: string, maxLen = 140): string {
   return trimmed
 }
 
-// Authored fallbacks (never blank). One per district + a generic pool.
+// Authored fallbacks (never blank). Warm, supportive register — every line
+// should read like something a perceptive close friend would say that makes
+// you feel seen, never roasted.
 const PUNCH_FALLBACKS: Record<District, string[]> = {
   self: [
-    'you keep flinching at the same mirror.',
-    'the loop you swore off is the one you opened today.',
+    'you keep coming back to this — that\'s the work, quietly happening.',
+    'noticing the loop is already changing how it feels.',
   ],
   career: [
-    'you keep rehearsing the meeting instead of having it.',
-    'the deadline moves; the dread doesn\'t.',
+    'you\'re holding a lot; it makes sense the meeting feels loud.',
+    'the care you put into the work is why this one lands heavy.',
   ],
   love: [
-    'you waited 6 hours to answer a 4-second question.',
-    'the conversation you keep drafting is the one you\'ll never send.',
+    'the words are taking their time because they matter to you.',
+    'wanting to get it right is a form of love, even when it stalls.',
   ],
   family: [
-    'the same line, the same dinner, the same face.',
-    'you keep performing okay in a room that already knows.',
+    'you\'re carrying an old script tenderly, one dinner at a time.',
+    'showing up for that room takes more than the room ever sees.',
   ],
   social: [
-    'you scrolled three times to see who watched, and pretended you didn\'t.',
-    'the group chat that drained you got the longest reply.',
+    'you notice who noticed you — that\'s a soft, human thing.',
+    'the reply that took the longest is the one you cared about most.',
   ],
 }
 
@@ -142,6 +144,10 @@ export function fallbackPunch(district: District): string {
 }
 
 export function fallbackRecord(): string {
-  const pool = ['logged again.', 'caught in the loop.', 'noticed, filed.', 'still here.', 'observed.']
+  const pool = [
+    'noticed, gently.', 'held here.', 'seen, kept.',
+    'quietly logged.', 'witnessed.',
+  ]
   return pool[Math.floor(Math.random() * pool.length)]
 }
+
