@@ -61,6 +61,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
         color: '#f7e8f0',
       }}
     >
+      <span aria-hidden className="home-watermark" style={{ left: '3%', bottom: '6%', color: 'rgba(127,119,221,.08)' }}>scan</span>
       <div className="home-grid-2" style={{ maxWidth: 1100, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'center' }}>
         <div>
           <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#aaa3e8', marginBottom: 18 }}>
