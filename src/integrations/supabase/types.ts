@@ -306,13 +306,6 @@ export type Database = {
             referencedRelation: "rooms"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "comments_room_id_fkey"
-            columns: ["room_id"]
-            isOneToOne: false
-            referencedRelation: "rooms_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       crisis_events: {
@@ -857,13 +850,6 @@ export type Database = {
             referencedRelation: "rooms"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "room_reactions_room_id_fkey"
-            columns: ["room_id"]
-            isOneToOne: false
-            referencedRelation: "rooms_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       room_relates: {
@@ -888,13 +874,6 @@ export type Database = {
             columns: ["room_id"]
             isOneToOne: false
             referencedRelation: "rooms"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "room_relates_room_id_fkey"
-            columns: ["room_id"]
-            isOneToOne: false
-            referencedRelation: "rooms_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1055,13 +1034,6 @@ export type Database = {
             referencedRelation: "rooms"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "situations_room_id_fkey"
-            columns: ["room_id"]
-            isOneToOne: false
-            referencedRelation: "rooms_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       subscriptions: {
@@ -1204,87 +1176,7 @@ export type Database = {
       }
     }
     Views: {
-      comments_public: {
-        Row: {
-          clean_text: string | null
-          created_at: string | null
-          edited: boolean | null
-          id: string | null
-          room_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          clean_text?: string | null
-          created_at?: string | null
-          edited?: boolean | null
-          id?: string | null
-          room_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          clean_text?: string | null
-          created_at?: string | null
-          edited?: boolean | null
-          id?: string | null
-          room_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comments_room_id_fkey"
-            columns: ["room_id"]
-            isOneToOne: false
-            referencedRelation: "rooms"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comments_room_id_fkey"
-            columns: ["room_id"]
-            isOneToOne: false
-            referencedRelation: "rooms_public"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      rooms_public: {
-        Row: {
-          alias: string | null
-          body: string | null
-          created_at: string | null
-          emoji: string | null
-          hall: string | null
-          id: string | null
-          reflection: string | null
-          support: string | null
-          title: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          alias?: string | null
-          body?: string | null
-          created_at?: string | null
-          emoji?: string | null
-          hall?: string | null
-          id?: string | null
-          reflection?: string | null
-          support?: string | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          alias?: string | null
-          body?: string | null
-          created_at?: string | null
-          emoji?: string | null
-          hall?: string | null
-          id?: string | null
-          reflection?: string | null
-          support?: string | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       admin_active_users: {
