@@ -3,44 +3,47 @@ import type { ReactNode } from "react";
 
 /**
  * Minimal SSR-rendered shell for content/SEO pages.
- * Lowercase chrome per brand voice. No slang in nav/footer — that's evergreen UI.
+ * Blush design surface, Newsreader italic headings via child content.
+ * Lowercase chrome per brand voice.
  */
 export function SeoPage({ children }: { children: ReactNode }) {
+  const navLink = { fontFamily: "'Newsreader',serif" as const, fontStyle: 'italic' as const, fontSize: 14, color: '#6b4a5c', textDecoration: 'none' };
+  const footLink = { fontFamily: "'Newsreader',serif" as const, fontStyle: 'italic' as const, fontSize: 12.5, color: '#9e7a8c', textDecoration: 'none' };
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-6 py-4 text-sm">
-          <Link to="/" className="font-medium hover:text-foreground">shutap</Link>
-          <nav className="flex flex-wrap gap-4 text-muted-foreground">
-            <Link to="/relationships" className="hover:text-foreground">relationships</Link>
-            <Link to="/marriage" className="hover:text-foreground">marriage</Link>
-            <Link to="/family" className="hover:text-foreground">family</Link>
-            <Link to="/career" className="hover:text-foreground">career</Link>
-            <Link to="/faq" className="hover:text-foreground">faq</Link>
+    <div style={{ minHeight: '100vh', background: '#fdf0f5', color: '#0b080f' }}>
+      <header style={{ borderBottom: '.5px solid rgba(11,8,15,.08)' }}>
+        <div style={{ maxWidth: 780, margin: '0 auto', padding: '14px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <Link to="/" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 15, letterSpacing: '-.01em', color: '#0b080f', textDecoration: 'none' }}>shutap</Link>
+          <nav style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
+            <Link to="/relationships" style={navLink}>relationships</Link>
+            <Link to="/marriage" style={navLink}>marriage</Link>
+            <Link to="/family" style={navLink}>family</Link>
+            <Link to="/career" style={navLink}>career</Link>
+            <Link to="/faq" style={navLink}>faq</Link>
           </nav>
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-6 py-12">{children}</main>
+      <main style={{ maxWidth: 780, margin: '0 auto', padding: '32px 22px 80px' }}>{children}</main>
 
-      <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-3xl flex-col gap-3 px-6 py-6 text-xs text-muted-foreground">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <span>shutap. speak up.</span>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/about" className="hover:text-foreground">about</Link>
-              <Link to="/methodology" className="hover:text-foreground">methodology</Link>
-              <Link to="/trust" className="hover:text-foreground">trust</Link>
+      <footer style={{ borderTop: '.5px solid rgba(11,8,15,.08)' }}>
+        <div style={{ maxWidth: 780, margin: '0 auto', padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, color: '#6b4a5c' }}>shutap. speak up.</span>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <Link to="/about" style={footLink}>about</Link>
+              <Link to="/methodology" style={footLink}>methodology</Link>
+              <Link to="/trust" style={footLink}>trust</Link>
             </div>
           </div>
-          <div className="flex flex-wrap gap-4 border-t border-border pt-3">
-            <Link to="/terms" className="hover:text-foreground">terms</Link>
-            <Link to="/privacy" className="hover:text-foreground">privacy</Link>
-            <Link to="/guidelines" className="hover:text-foreground">guidelines</Link>
-            <Link to="/safety" className="hover:text-foreground">safety</Link>
-            <Link to="/ai-disclosure" className="hover:text-foreground">ai disclosure</Link>
-            <Link to="/report" className="hover:text-foreground">report</Link>
-            <Link to="/contact" className="hover:text-foreground">contact</Link>
+          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', paddingTop: 10, borderTop: '.5px solid rgba(11,8,15,.06)' }}>
+            <Link to="/terms" style={footLink}>terms</Link>
+            <Link to="/privacy" style={footLink}>privacy</Link>
+            <Link to="/guidelines" style={footLink}>guidelines</Link>
+            <Link to="/safety" style={footLink}>safety</Link>
+            <Link to="/ai-disclosure" style={footLink}>ai disclosure</Link>
+            <Link to="/report" style={footLink}>report</Link>
+            <Link to="/contact" style={footLink}>contact</Link>
           </div>
         </div>
       </footer>
