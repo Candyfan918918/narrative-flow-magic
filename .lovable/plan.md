@@ -1,33 +1,26 @@
-## Why there's no monthly option
+## Why the homepage still shows "join"
 
-`SubscribePage` (`src/pages/Subscribe.tsx`) already supports both plans — it reads `?plan=monthly` or `?plan=annual` from the URL and defaults to `annual` when the param is missing or invalid:
-
-```ts
-const planKey = (search.get('plan') === 'monthly' ? 'monthly' : 'annual')
-```
-
-Nothing in the app ever links to `/subscribe?plan=monthly`, and the page renders no toggle, so users always land on annual `$49.99/year` with no way to switch. Both prices exist in code (`mirror_monthly` = `$7.99/month`, `mirror_annual` = `$49.99/year`) and the checkout server fn accepts either.
+`GlobalHeader` correctly swaps to a profile chip when signed in — but on `/` it suppresses itself (`isHome`) and the homepage ships its own hard-coded header at `src/pages/home/sections/Header.tsx`. That header renders a static `<a href="/welcome">join →</a>` pill with no auth check, so it says "join" for everyone regardless of session state.
 
 ## Fix
 
-Add an inline **monthly ↔ annual** toggle at the top of the Subscribe page.
+Make the homepage header's right-side CTA auth-aware, mirroring `GlobalHeader`.
 
-### Changes — `src/pages/Subscribe.tsx` only
+### Changes
 
-1. Replace the derived-from-URL `planKey` with local state initialized from the URL param (still defaults to `annual`).
-2. Render a two-button pill selector above the summary line:
-   - `monthly · $7.99/mo`
-   - `annual · $49.99/yr` with a small "save ~48%" note
-   - Active button uses the existing pink treatment (`#e7548a`), inactive uses the muted border style already in the file.
-3. When the user toggles:
-   - update state,
-   - update the URL via `navigate('/subscribe?plan=<key>', { replace: true })` so refresh/back preserves choice and existing deep links still work,
-   - the `EmbeddedCheckoutProvider` is keyed on `plan.id` so Stripe rebuilds the checkout session with the new price. `fetchClientSecret` already reads the current `plan.id`, so no server-side changes are needed.
-4. Hide the toggle when `alreadySubbed` is true (portal path).
-5. Keep the existing summary line (`{plan.label} · {plan.price} · 14 days free · founders' pricing`) — it will reflect whichever plan is selected.
+1. **`src/pages/home/sections/Header.tsx`**
+   - Import `useCurrentAlias` from `@/hooks/use-current-alias` and `useState`/`useEffect` from React.
+   - Replace the static `<a data-link="/welcome">join →</a>` element with a small local `HomeHeaderCta` component:
+     - Reads `alias` from `useCurrentAlias()`. Also tracks a `ready` flag: on mount, call `supabase.auth.getSession()` and set `ready = true` once it resolves, so we don't flash "join" for a signed-in user during the SSR→client handoff (matches the guidance in `useAuthReady`).
+     - While `!ready`: render an invisible placeholder pill (same width/height ≈ 72×34) so header spacing doesn't jump.
+     - When `ready && alias`: render the profile chip — round gradient avatar with `alias.emoji` and the alias name — wrapped in a `<Link to="/profile">` (also add `data-link="/profile"` so the immersive mount's SPA nav handler picks it up).
+     - Otherwise: keep the existing "join →" pill, unchanged.
+   - Keep the surrounding `<nav>` and the `rooms` / `halls` links intact.
 
-### Out of scope
+2. No other files change. `useCurrentAlias` already subscribes to `onAuthStateChange` and refreshes on `SIGNED_IN` / `SIGNED_OUT`, so signing in on another tab or completing OAuth updates the pill live.
 
-- No changes to `payments.functions.ts`, Stripe products, or webhook handling.
-- No pricing changes.
-- No changes to how other pages link to `/subscribe` (the default remains annual for existing entry points; users can switch on-page).
+### Notes / out of scope
+
+- No dropdown menu on the homepage chip — clicking it just navigates to `/profile`. The full "spill / mirror / admin / sign out" menu remains on the global header used by every other route.
+- No changes to auth, sessions, or OAuth flow — this is purely a UI read of the existing session.
+- No styling changes to the pill/chip beyond matching the existing GlobalHeader look (gradient avatar + italic Newsreader name).

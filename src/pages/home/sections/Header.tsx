@@ -1,5 +1,101 @@
-/* Section: HomeHeader — byte-for-byte port of /tmp/bundle/template.html.  
- * Every data-* hook preserved verbatim so mountImmersive drives interactivity. */
+/* Section: HomeHeader — byte-for-byte port of /tmp/bundle/template.html.
+ * Every data-* hook preserved verbatim so mountImmersive drives interactivity.
+ * The right-side CTA is auth-aware: signed-in users see their profile chip,
+ * everyone else sees the "join →" pill. */
+import { useEffect, useState } from 'react'
+import { Link } from '@tanstack/react-router'
+import { supabase } from '@/integrations/supabase/client'
+import { useCurrentAlias } from '@/hooks/use-current-alias'
+
+function HomeHeaderCta() {
+  const { alias } = useCurrentAlias()
+  const [ready, setReady] = useState(false)
+  const [signedIn, setSignedIn] = useState(false)
+
+  useEffect(() => {
+    let mounted = true
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return
+      const u = data.session?.user
+      const anon = Boolean((u as { is_anonymous?: boolean } | undefined)?.is_anonymous)
+      setSignedIn(Boolean(u && !anon))
+      setReady(true)
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!mounted) return
+      const u = session?.user
+      const anon = Boolean((u as { is_anonymous?: boolean } | undefined)?.is_anonymous)
+      setSignedIn(Boolean(u && !anon))
+    })
+    return () => { mounted = false; sub.subscription.unsubscribe() }
+  }, [])
+
+  if (!ready) {
+    return <span aria-hidden style={{ display: 'inline-block', width: 88, height: 34 }} />
+  }
+
+  if (signedIn) {
+    return (
+      <Link
+        to="/profile"
+        data-link="/profile"
+        data-hover=""
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          background: '#fff',
+          border: '.5px solid rgba(11,8,15,.12)',
+          borderRadius: 999,
+          padding: '5px 12px 5px 5px',
+          color: '#0b080f',
+          textDecoration: 'none',
+        }}
+      >
+        <span
+          style={{
+            width: 26,
+            height: 26,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg,#f060a0,#890041)',
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: 14,
+            flex: 'none',
+          }}
+        >
+          {alias?.emoji || '🐣'}
+        </span>
+        <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13, color: '#0b080f' }}>
+          {alias?.name || 'you'}
+        </span>
+      </Link>
+    )
+  }
+
+  return (
+    <a
+      href="/welcome"
+      data-link="/welcome"
+      data-hover=""
+      data-mag=""
+      style={{
+        display: 'inline-block',
+        fontFamily: "'Sora',sans-serif",
+        fontWeight: '700',
+        fontSize: '13px',
+        color: '#fff',
+        background: '#0b080f',
+        borderRadius: '999px',
+        padding: '11px 22px',
+        transition: 'background .3s',
+      }}
+    >
+      join →
+    </a>
+  )
+}
+
 export function HomeHeader() {
   return (
     <>
@@ -45,9 +141,7 @@ export function HomeHeader() {
                     halls
                   </a>
                   {' '}
-                  <a href="/welcome" data-link="/welcome" data-hover="" data-mag="" style={{ display: 'inline-block', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '13px', color: '#fff', background: '#0b080f', borderRadius: '999px', padding: '11px 22px', transition: 'background .3s' }}>
-                    join →
-                  </a>
+                  <HomeHeaderCta />
                   {' '}
                 </nav>
                 {' '}
