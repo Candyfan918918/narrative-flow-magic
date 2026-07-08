@@ -5,7 +5,7 @@ import { SITE_URL } from '@/lib/site'
 const URL = `${SITE_URL}/privacy`
 const TITLE = 'Privacy Policy — Shutap'
 const DESCRIPTION =
-  'How shutap protects your privacy: pseudonymous by design, identifiers scrubbed before storage, AI processing via the Lovable AI Gateway with no training on your content, and full data rights.'
+  'How Shutap protects your privacy: pseudonymous by design, identifiers scrubbed before storage, AI via the Lovable AI Gateway, no training on your content.'
 
 export const Route = createFileRoute('/privacy')({
   head: () => ({
