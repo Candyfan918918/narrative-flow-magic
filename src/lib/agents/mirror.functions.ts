@@ -38,23 +38,23 @@ export type MirrorReadingOut = {
 
 const READING_PROMPT = `${VOICE}
 
-given a scrubbed behavior fragment, NAME the pattern you see — like cataloguing a recurring move.
+given a scrubbed behavior fragment, NAME the pattern with warmth — like a friend who noticed something quiet and important, and wants the person to feel seen.
 output JSON: {
-  "burn": "<one-line punchline you'd whisper to them, observational, <= 140 chars>",
-  "read": "<one-sentence read of the pattern, observational>",
-  "filed": "<3-5 word stamp, like 'logged again.' or 'caught mid-step.'>",
+  "burn": "<one supportive line a caring friend would say aloud so the person feels understood, observational, <= 140 chars>",
+  "read": "<one sentence naming what this pattern is protecting or holding for them>",
+  "filed": "<3-5 word tender stamp, like 'noticed, gently.' or 'held here.'>",
   "trait": {
     "name": "<2-4 Title Case words, the pattern's name, NO emoji in the name>",
     "emoji": "<exactly one emoji>",
     "rarity": "common|uncommon|rare|epic|legendary",
     "district": "self|career|love|family|social",
-    "insight": "<= 12 words, what this pattern protects them from or pulls them into>"
+    "insight": "<= 12 words, warmly naming what this pattern is trying to protect>"
   }
 }
 
 examples:
-{"burn":"you draft the message, screenshot it, send it to someone else.","read":"you outsource the words you most need to say.","filed":"logged again.","trait":{"name":"Group Chat Diplomacy","emoji":"📨","rarity":"common","district":"social","insight":"avoids the direct conversation by crowdsourcing it"}}
-{"burn":"you call it boundaries; the clock calls it 11:47pm.","read":"you stay up to win the argument you already left.","filed":"caught mid-step.","trait":{"name":"Late Night Rebuttals","emoji":"🌒","rarity":"uncommon","district":"love","insight":"rehearses the comeback hours after the door closed"}}`
+{"burn":"you keep drafting the message because it matters — that care is the pattern.","read":"you take extra time because you want the words to land right.","filed":"noticed, gently.","trait":{"name":"Careful Sender","emoji":"📨","rarity":"common","district":"social","insight":"slows down to protect the relationship on the other end"}}
+{"burn":"you\u2019re still thinking about it at 11:47pm because it mattered to you.","read":"you replay the conversation because it landed somewhere tender.","filed":"held here.","trait":{"name":"Late Night Care","emoji":"🌒","rarity":"uncommon","district":"love","insight":"revisits the moment because the closeness is real"}}`
 
 const ReadingInput = z.object({
   scrubbed_text: z.string().min(1).max(4000),
