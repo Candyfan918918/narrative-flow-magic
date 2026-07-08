@@ -292,14 +292,44 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
     }
   }
 
-  /* ── header ink over dark sections ── */
+  /* ── header ink over dark sections (luminance-sampled) ── */
   const brand = document.querySelector('[data-brandword]') as HTMLElement | null
   const navlinks = Array.from(document.querySelectorAll('[data-navlink]')) as HTMLElement[]
   const hdr = document.querySelector('[data-hdr]') as HTMLElement | null
-  const darkSecs = qa('section').filter((s) => { const bg = getComputedStyle(s).background; return bg.includes('16, 12, 20') || bg.includes('36, 29, 71') })
+  if (hdr) hdr.style.transition = 'background-color .3s ease, box-shadow .3s ease, color .3s ease'
+
+  const parseRgb = (s: string): [number, number, number, number] | null => {
+    const m = s.match(/rgba?\(([^)]+)\)/i); if (!m) return null
+    const p = m[1].split(',').map((x) => parseFloat(x.trim()))
+    if (p.length < 3) return null
+    const [r, g, b, a = 1] = p
+    return [r, g, b, a]
+  }
+  const lum = (r: number, g: number, b: number) => {
+    const t = (c: number) => { const s = c / 255; return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4) }
+    return 0.2126 * t(r) + 0.7152 * t(g) + 0.0722 * t(b)
+  }
+  const isDarkBehind = (): boolean => {
+    if (!hdr) return false
+    const rect = hdr.getBoundingClientRect()
+    const x = window.innerWidth / 2
+    const y = Math.max(1, rect.bottom + 6)
+    const prev = hdr.style.pointerEvents
+    hdr.style.pointerEvents = 'none'
+    let node = document.elementFromPoint(x, y) as HTMLElement | null
+    hdr.style.pointerEvents = prev
+    while (node && node !== document.body) {
+      const cs = getComputedStyle(node)
+      const rgba = parseRgb(cs.backgroundColor)
+      if (rgba && rgba[3] > 0.1) return lum(rgba[0], rgba[1], rgba[2]) < 0.35
+      if (cs.backgroundImage && cs.backgroundImage !== 'none') return true
+      node = node.parentElement
+    }
+    const bodyBg = parseRgb(getComputedStyle(document.body).backgroundColor)
+    return !!(bodyBg && bodyBg[3] > 0.1 && lum(bodyBg[0], bodyBg[1], bodyBg[2]) < 0.35)
+  }
   const onScroll = () => {
-    const probe = document.elementFromPoint(window.innerWidth / 2, 40)
-    const dark = !!(probe && darkSecs.some((s) => s.contains(probe)))
+    const dark = isDarkBehind()
     if (brand) brand.style.color = dark ? '#f7e8f0' : '#0b080f'
     navlinks.forEach((a) => { a.style.color = dark ? '#f7b8d4' : '#6b4a5c' })
     if (hdr) {
@@ -308,10 +338,18 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
         hdr.style.backdropFilter = 'blur(18px)'
         ;(hdr.style as any).webkitBackdropFilter = 'blur(18px)'
         hdr.style.boxShadow = dark ? '0 1px 0 rgba(255,255,255,.08)' : '0 1px 0 rgba(11,8,15,.07)'
-      } else { hdr.style.background = 'transparent'; hdr.style.backdropFilter = 'none'; (hdr.style as any).webkitBackdropFilter = 'none'; hdr.style.boxShadow = 'none' }
+      } else {
+        hdr.style.background = 'transparent'
+        hdr.style.backdropFilter = 'none'
+        ;(hdr.style as any).webkitBackdropFilter = 'none'
+        hdr.style.boxShadow = 'none'
+      }
     }
   }
   on(document, 'scroll', onScroll, { passive: true })
+  on(window, 'resize', onScroll)
+  onScroll()
+
 
   /* ── drag-scroll rooms strip ── */
   const strip = q('[data-strip]') as HTMLElement | null
