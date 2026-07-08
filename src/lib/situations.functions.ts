@@ -377,7 +377,12 @@ export const listRoomComments = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ roomId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { data: rows, error } = await context.supabase
+    // Use service-role client to read alias_id server-side (revoked from
+    // authenticated role at the column-privilege level). We enrich each
+    // comment with is_mine + display_name + emoji and never return the
+    // raw alias_id to the client.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: rows, error } = await supabaseAdmin
       .from('comments')
       .select('id, alias_id, clean_text, edited, created_at')
       .eq('room_id', data.roomId)
@@ -385,7 +390,29 @@ export const listRoomComments = createServerFn({ method: 'GET' })
       .order('created_at', { ascending: true })
       .limit(200)
     if (error) throw new Error(error.message)
-    return rows ?? []
+    const list = (rows ?? []) as Array<{ id: string; alias_id: string; clean_text: string; edited: boolean; created_at: string }>
+    if (list.length === 0) return [] as Array<{ id: string; clean_text: string; edited: boolean; created_at: string; is_mine: boolean; display_name: string; emoji: string }>
+    const ids = Array.from(new Set(list.map((r) => r.alias_id)))
+    const { data: aliases } = await supabaseAdmin
+      .from('aliases')
+      .select('user_id, display_name, emoji')
+      .in('user_id', ids)
+    const aliasMap = new Map<string, { display_name: string; emoji: string }>()
+    for (const a of (aliases ?? []) as Array<{ user_id: string; display_name: string; emoji: string }>) {
+      aliasMap.set(a.user_id, { display_name: a.display_name, emoji: a.emoji })
+    }
+    return list.map((r) => {
+      const chip = aliasMap.get(r.alias_id)
+      return {
+        id: r.id,
+        clean_text: r.clean_text,
+        edited: r.edited,
+        created_at: r.created_at,
+        is_mine: r.alias_id === context.userId,
+        display_name: chip?.display_name ?? 'someone',
+        emoji: chip?.emoji ?? '🙂',
+      }
+    })
   })
 
 export const createComment = createServerFn({ method: 'POST' })
@@ -395,6 +422,8 @@ export const createComment = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     const s = await runScrub(data.text)
+    // Insert via authenticated client so RLS "owner inserts own comment"
+    // applies. Read-back omits alias_id (column revoked from authenticated).
     const { data: row, error } = await context.supabase
       .from('comments')
       .insert({
@@ -402,7 +431,7 @@ export const createComment = createServerFn({ method: 'POST' })
         alias_id: context.userId,
         clean_text: s.clean_text || data.text,
       })
-      .select('id, alias_id, clean_text, edited, created_at')
+      .select('id, clean_text, edited, created_at')
       .single()
     if (error) throw new Error(error.message)
 
@@ -450,11 +479,11 @@ export const updateComment = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     const s = await runScrub(data.text)
+    // Ownership enforced by RLS "owner updates own comment".
     const { error } = await context.supabase
       .from('comments')
       .update({ clean_text: s.clean_text || data.text, edited: true } as never)
       .eq('id', data.id)
-      .eq('alias_id', context.userId)
     if (error) throw new Error(error.message)
     return { id: data.id, ok: true }
   })
@@ -463,11 +492,11 @@ export const deleteComment = createServerFn({ method: 'POST' })
   .middleware([requireRealUser])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
+    // Soft-delete under RLS "owner updates own comment".
     const { error } = await context.supabase
       .from('comments')
       .update({ deleted_at: new Date().toISOString() } as never)
       .eq('id', data.id)
-      .eq('alias_id', context.userId)
     if (error) throw new Error(error.message)
     return { id: data.id, ok: true }
   })
