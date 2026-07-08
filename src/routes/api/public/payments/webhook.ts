@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { createClient } from '@supabase/supabase-js';
 import { type StripeEnv, verifyWebhook } from '@/lib/stripe.server';
+import { formatEmailDate, formatStripeAmount, sendBillingEmail } from '@/lib/email/billing.server';
+
+const APP_ORIGIN = 'https://shutap.com';
 
 let _supabase: any = null;
 function getSupabase(): any {
