@@ -7,28 +7,28 @@ const TITLE = 'Contact — Shutap'
 const DESCRIPTION =
   'shutap is small on purpose. a real person reads every message. write us at hello@shutap.com, privacy@shutap.com, safety@shutap.com, or legal@shutap.com.'
 
-type Card = { label: string; email: string; sub: string }
+type Cbox = { email: string; label: string; sub: string }
 
-const CARDS: Card[] = [
+const CBOXES: Cbox[] = [
   {
-    label: 'general',
     email: 'hello@shutap.com',
-    sub: 'questions, feedback, or just saying hi.',
+    label: 'general',
+    sub: 'questions, feedback, \u201cwhat is this?\u201d \u2014 anything that doesn\u2019t fit below.',
   },
   {
-    label: 'privacy & your data',
     email: 'privacy@shutap.com',
-    sub: 'export or delete your account, GDPR/CCPA requests, anything about your data.',
+    label: 'privacy & your data',
+    sub: 'access, export, or delete your data; anything about how we handle it.',
   },
   {
-    label: 'safety & reports',
     email: 'safety@shutap.com',
-    sub: 'report a story, comment, or member. or a real-world safety concern about someone here.',
+    label: 'safety & reports',
+    sub: "report content or a person, or flag something that isn\u2019t safe.",
   },
   {
-    label: 'legal',
     email: 'legal@shutap.com',
-    sub: 'takedowns, legal process, terms questions, press.',
+    label: 'legal',
+    sub: 'takedown requests, legal process, and everything in Terms & Privacy.',
   },
 ]
 
@@ -54,107 +54,85 @@ function ContactPage() {
   return (
     <DocLayout
       active="/contact"
-      title="contact"
-      subline="shutap is small on purpose. a real person reads every message and writes back (usually within a couple of days)."
+      title="Contact"
+      subline="a real person reads every message — not a bot"
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {CARDS.map((c) => (
+      <p>
+        shutap is small on purpose. when you write in, a person reads it and writes back. pick the
+        box that fits, and we&rsquo;ll get to you — usually within a couple of days.
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, margin: '20px 0 4px' }}>
+        {CBOXES.map((c) => (
           <a
             key={c.email}
             href={`mailto:${c.email}`}
-            className="shutap-contact-card"
+            style={{
+              textDecoration: 'none',
+              background: '#fff',
+              border: '.5px solid rgba(11,8,15,.1)',
+              borderRadius: 14,
+              padding: '15px 17px',
+              display: 'block',
+            }}
           >
-            <div className="shutap-contact-row">
-              <span
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                justifyContent: 'space-between',
+                gap: 14,
+              }}
+            >
+              <div
                 style={{
                   fontFamily: 'Sora,sans-serif',
                   fontWeight: 700,
                   fontSize: 14.5,
                   color: '#0b080f',
-                  letterSpacing: '-.005em',
-                }}
-              >
-                {c.label}
-              </span>
-              <span
-                style={{
-                  fontFamily: 'Sora,sans-serif',
-                  fontWeight: 600,
-                  fontSize: 13.5,
-                  color: '#c1216b',
+                  flex: 'none',
                   whiteSpace: 'nowrap',
                 }}
               >
-                {c.email} <span aria-hidden style={{ marginLeft: 2 }}>→</span>
-              </span>
+                {c.label}
+              </div>
+              <div
+                style={{
+                  fontFamily: 'Inter,sans-serif',
+                  fontSize: 13,
+                  color: '#c1216b',
+                  flex: 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {c.email}
+              </div>
             </div>
-            <div
-              style={{
-                fontFamily: 'Inter,sans-serif',
-                fontSize: 13,
-                color: '#6b4a5c',
-                marginTop: 6,
-                lineHeight: 1.5,
-              }}
-            >
+            <div style={{ fontSize: 13, lineHeight: 1.55, color: '#6b4a5c', marginTop: 4 }}>
               {c.sub}
             </div>
           </a>
         ))}
       </div>
-
-      <p style={{ marginTop: 22 }}>
-        in an emergency, please don&apos;t email us — we can&apos;t respond in real time. use the{' '}
-        <a href="/safety">crisis lines →</a>
+      <p style={{ marginTop: 14 }}>
+        in an emergency, don&rsquo;t email us — we can&rsquo;t respond in real time. use the{' '}
+        <a
+          href="/safety"
+          style={{ color: '#a01a55', textDecoration: 'none', fontWeight: 600 }}
+        >
+          crisis lines →
+        </a>
       </p>
-
       <p
         style={{
+          marginTop: 16,
           fontFamily: 'Newsreader,serif',
           fontStyle: 'italic',
-          fontSize: 14,
           color: '#6b4a5c',
-          marginTop: 20,
         }}
       >
-        18+, pseudonymous, not a medical or legal service. please don&apos;t send anything that
-        could identify you or someone else unless it&apos;s necessary.
+        shutap is 18+, pseudonymous, and not a medical or legal service. please don&rsquo;t send us
+        anything that could identify you or someone else unless it&rsquo;s necessary. 🤍
       </p>
-      <style>{`
-        .shutap-contact-card {
-          display: block;
-          background: #fff;
-          border: .5px solid rgba(11,8,15,.08);
-          border-radius: 14px;
-          padding: 15px 17px;
-          text-decoration: none;
-          transition: transform .15s, border-color .15s, box-shadow .15s;
-        }
-        .shutap-contact-card:hover {
-          transform: translateY(-1px);
-          border-color: rgba(231,84,138,.5);
-          box-shadow: 0 12px 26px -20px rgba(80,10,45,.3);
-        }
-        .shutap-contact-card:focus-visible {
-          outline: 2px solid #e7548a;
-          outline-offset: 2px;
-          border-radius: 14px;
-        }
-        .shutap-contact-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          flex-wrap: nowrap;
-        }
-        @media (max-width: 420px) {
-          .shutap-contact-row {
-            flex-wrap: wrap;
-            gap: 4px 12px;
-          }
-        }
-      `}</style>
     </DocLayout>
   )
 }
-
