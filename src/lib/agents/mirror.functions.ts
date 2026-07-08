@@ -213,9 +213,10 @@ export async function runMirrorCrossReadCore(
   })
   const parsed = tryParseJson<MirrorCrossOut>(llm.text)
   return {
-    sees: sanitizePunch(parsed?.sees ?? '', 200) || 'three rooms, same draft.',
-    throughline: sanitizePunch(parsed?.throughline ?? '', 220) || 'the patterns rhyme.',
-    record: (parsed?.record || 'noticed, filed.').toLowerCase().slice(0, 32),
+    sees: sanitizePunch(parsed?.sees ?? '', 200) || 'the same tender thread runs through these.',
+    throughline: sanitizePunch(parsed?.throughline ?? '', 220) || 'these patterns are looking after something in you.',
+    record: (parsed?.record || 'noticed, gently.').toLowerCase().slice(0, 32),
+
   }
 }
 
