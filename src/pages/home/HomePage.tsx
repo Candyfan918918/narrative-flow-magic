@@ -14,10 +14,11 @@ import { saveSituation } from '@/lib/situations.functions'
 import { requireRealUser, saveIntent } from '@/lib/auth-guard'
 import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
-import { IMMERSIVE_HTML } from './immersiveTemplate'
+import { IMMERSIVE_REST_HTML } from './immersiveTemplate'
 import { mountImmersive, renderRoomsMarkup } from './immersiveMount'
 import { mountHomeMotion } from './motionAdapter'
 import { CursorTrail } from '@/components/motion/CursorTrail'
+import { HomeImmersive } from './HomeImmersive'
 import { Link } from '@tanstack/react-router'
 import './home.css'
 import '@/components/motion/motion.css'
@@ -33,7 +34,7 @@ export function HomeFooter() {
         <div style={{ display: 'inline-flex', gap: 14, fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.16em', textTransform: 'uppercase' }}>
           <Link to="/stream" style={{ color: '#6b4a5c', textDecoration: 'none' }}>rooms</Link>
           <Link to="/halls" style={{ color: '#6b4a5c', textDecoration: 'none' }}>halls</Link>
-          <Link to="/vent/family" style={{ color: '#6b4a5c', textDecoration: 'none' }}>topics</Link>
+          <Link to="/vent/$topic" params={{ topic: 'family' }} style={{ color: '#6b4a5c', textDecoration: 'none' }}>topics</Link>
         </div>
         <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: 'Inter', fontSize: 12, color: '#9e7a8c' }}>
           <Link to="/terms" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Terms</Link>
@@ -93,24 +94,31 @@ export function HomePage() {
     try { if (!(await requireRealUser({ kind: 'scan' }))) return; setScanOpen(true) } finally { setPendingCta(null) }
   }, [pendingCta])
 
-  // Mount the immersive template exactly once.
-  useEffect(() => {
-    const root = rootRef.current
-    if (!root) return
+  // Mount the immersive motion/interactivity onto the native React DOM.
+  const [restHtml] = useState(() => {
     const rooms = (SHUTAP_SEED.rooms || []).map((r) => ({
       emoji: r.emoji, alias: r.alias, hours: r.hours, title: r.title,
       sitting: (r as unknown as { sitting?: number }).sitting ?? 0,
       relates: (r as unknown as { relates?: number }).relates ?? 0,
     }))
-    root.innerHTML = IMMERSIVE_HTML.replace('<!--ROOMS-->', renderRoomsMarkup(rooms))
-    const dispose = mountImmersive(root, {
-      onCta: (k) => { if (k === 'spill') void openSpill(); else void openScan() },
-      onNav: (to) => navigate(to as never),
-      motion: 'full',
-      showPreloader: false,
+    return IMMERSIVE_REST_HTML.replace('<!--ROOMS-->', renderRoomsMarkup(rooms))
+  })
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    // Defer one microtask so RestInjector's useEffect has run and populated the DOM.
+    let disposeMount: (() => void) | undefined
+    let disposeMotion: (() => void) | undefined
+    const raf = requestAnimationFrame(() => {
+      disposeMount = mountImmersive(root, {
+        onCta: (k) => { if (k === 'spill') void openSpill(); else void openScan() },
+        onNav: (to) => navigate(to as never),
+        motion: 'full',
+        showPreloader: false,
+      })
+      disposeMotion = mountHomeMotion(root)
     })
-    const disposeMotion = mountHomeMotion(root)
-    return () => { disposeMotion(); dispose(); if (root) root.innerHTML = '' }
+    return () => { cancelAnimationFrame(raf); disposeMotion?.(); disposeMount?.() }
   }, [navigate, openSpill, openScan])
 
   // Scroll-snap: opt in on the homepage only.
@@ -174,9 +182,9 @@ export function HomePage() {
   }, [navigate, save])
 
   return (
-    <div className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
+    <div ref={rootRef} className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
       <CursorTrail />
-      <div ref={rootRef} />
+      <HomeImmersive restHtml={restHtml} />
       <SpillModal open={spillOpen} onClose={() => setSpillOpen(false)} />
       <ScanModal open={scanOpen} onClose={() => setScanOpen(false)} />
     </div>
