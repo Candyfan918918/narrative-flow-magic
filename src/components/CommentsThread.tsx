@@ -1,15 +1,14 @@
-// Auth-owned comments thread for a room. Renders comments with each
-// commenter's CURRENT alias resolved from public.aliases (not stale text).
-import { useEffect, useMemo, useState } from 'react'
+// Auth-owned comments thread for a room. The list server function returns
+// enriched rows (is_mine + display_name + emoji) so the raw alias_id (auth
+// user id) never reaches the browser, preserving pseudonymity.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
+import { useState } from 'react'
 import {
   listRoomComments,
   updateComment,
   deleteComment,
 } from '@/lib/situations.functions'
-import { resolveAliases } from '@/lib/alias.functions'
-import { supabase } from '@/integrations/supabase/client'
 
 function timeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime()
@@ -23,46 +22,18 @@ function timeAgo(iso: string): string {
 
 export function CommentsThread({ roomId }: { roomId: string }) {
   const qc = useQueryClient()
-  const [meId, setMeId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editDraft, setEditDraft] = useState('')
-
-  useEffect(() => {
-    let cancelled = false
-    supabase.auth.getUser().then(({ data }) => {
-      if (!cancelled) setMeId(data.user?.id ?? null)
-    })
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setMeId(session?.user?.id ?? null)
-    })
-    return () => {
-      cancelled = true
-      sub.subscription.unsubscribe()
-    }
-  }, [])
 
   const fetchComments = useServerFn(listRoomComments)
   const update = useServerFn(updateComment)
   const remove = useServerFn(deleteComment)
-  const resolve = useServerFn(resolveAliases)
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(roomId)
   const { data: comments = [] } = useQuery({
     queryKey: ['comments', roomId],
     queryFn: () => fetchComments({ data: { roomId } }),
     enabled: isUuid,
-  })
-
-  const commenterIds = useMemo(() => {
-    const s = new Set<string>()
-    for (const c of comments) if (c.alias_id) s.add(c.alias_id)
-    return Array.from(s)
-  }, [comments])
-
-  const { data: aliasMap = {} } = useQuery({
-    queryKey: ['alias-map', commenterIds.slice().sort().join(',')],
-    queryFn: () => resolve({ data: { userIds: commenterIds } }) as Promise<Record<string, { display_name: string; emoji: string }>>,
-    enabled: commenterIds.length > 0,
   })
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ['comments', roomId] })
@@ -103,11 +74,10 @@ export function CommentsThread({ roomId }: { roomId: string }) {
           </p>
         )}
         {comments.map((c) => {
-          const mine = meId && c.alias_id === meId
+          const mine = c.is_mine
           const editing = editingId === c.id
-          const chip = aliasMap[c.alias_id]
-          const who = mine ? 'you' : (chip?.display_name || 'someone')
-          const emoji = chip?.emoji || (mine ? '🩷' : '🙂')
+          const who = mine ? 'you' : (c.display_name || 'someone')
+          const emoji = c.emoji || (mine ? '🩷' : '🙂')
           return (
             <div
               key={c.id}
