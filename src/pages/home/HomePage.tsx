@@ -34,7 +34,7 @@ export function HomeFooter() {
         <div style={{ display: 'inline-flex', gap: 14, fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.16em', textTransform: 'uppercase' }}>
           <Link to="/stream" style={{ color: '#6b4a5c', textDecoration: 'none' }}>rooms</Link>
           <Link to="/halls" style={{ color: '#6b4a5c', textDecoration: 'none' }}>halls</Link>
-          <Link to="/vent/family" style={{ color: '#6b4a5c', textDecoration: 'none' }}>topics</Link>
+          <Link to="/vent/$topic" params={{ topic: 'family' }} style={{ color: '#6b4a5c', textDecoration: 'none' }}>topics</Link>
         </div>
         <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: 'Inter', fontSize: 12, color: '#9e7a8c' }}>
           <Link to="/terms" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Terms</Link>
