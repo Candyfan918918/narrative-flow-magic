@@ -10,8 +10,42 @@ import { RoomDetail } from '../components/RoomDetail'
 import { useToast } from '../components/Toast'
 import { SHUTAP_SEED } from '../data/seed'
 import type { Room } from '../data/types'
+import { NUDGES } from '../data/constants'
 import { listPillars } from '../lib/pillars.functions'
 import { useNoIndex } from '@/components/NoIndex'
+
+type FeedItem =
+  | { kind: 'room'; room: RoomTileData }
+  | { kind: 'nudge'; text: string; key: string }
+
+function NudgeTile({ text }: { text: string }) {
+  const [hover, setHover] = useState(false)
+  return (
+    <a
+      href="/#spill"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'block',
+        borderRadius: 20,
+        border: '1.5px dashed ' + (hover ? '#e7548a' : 'rgba(11,8,15,.16)'),
+        background: 'transparent',
+        padding: '20px 22px',
+        textDecoration: 'none',
+        color: 'inherit',
+        transition: 'border-color .2s',
+      }}
+    >
+      <div style={{ fontSize: 22, marginBottom: 10 }} aria-hidden>👁</div>
+      <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.5, color: '#2e1a26', marginBottom: 14 }}>
+        {text}
+      </div>
+      <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 12.5, color: '#c1216b', letterSpacing: '.02em' }}>
+        say something →
+      </div>
+    </a>
+  )
+}
 
 
 type Filter = 'all' | 'heard' | 'advice' | 'scan'
