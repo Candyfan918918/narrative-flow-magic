@@ -560,9 +560,9 @@ function BillingCard({
     : billing.status === 'canceled' && billing.isActive ? 'canceled (grace period)'
     : billing.status
   const statusColor =
-    billing.status === 'past_due' ? '#c87c4a'
+    billing.status === 'past_due' ? '#b3261e'
     : billing.cancelAtPeriodEnd || billing.status === 'canceled' ? '#9e7a8c'
-    : '#5B8A5E'
+    : '#c1216b'
   return (
     <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
