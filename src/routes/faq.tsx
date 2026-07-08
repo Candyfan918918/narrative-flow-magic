@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site";
 const PATH = "/faq";
 const URL = `${SITE_URL}/faq`;
 const TITLE =
-  "Shutap FAQ — is it therapy? is it anonymous? is my data safe?";
+  "Shutap FAQ — is it therapy, is it anonymous, is data safe?";
 const DESCRIPTION =
   "Answers about Shutap: what it is, how your privacy is protected, whether it's therapy (it isn't), who can see your stories, and how to delete your data.";
 const CAPSULE =
