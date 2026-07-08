@@ -394,7 +394,8 @@ function SignalBar({ sources, animate, totalOverride }: { sources: Record<string
       }}>
         {order.map((k, i) => {
           const v = Number(sources?.[k] ?? 0)
-          const pct = total > 0 ? (v / total) * 100 : 0
+          const pct = bandTotal > 0 ? (v / bandTotal) * 100 : 0
+
           return (
             <div key={k} style={{
               width: animate ? '0%' : `${pct}%`,
