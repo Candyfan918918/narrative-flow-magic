@@ -102,6 +102,32 @@ export function GlobalHeader() {
     return () => document.removeEventListener('click', onDoc)
   }, [])
 
+  // Adapt header chrome to whatever section is currently under it.
+  useEffect(() => {
+    if (isHome) return
+    let raf = 0
+    const sample = () => {
+      raf = 0
+      const v = sampleVariantBehindHeader(headerRef.current)
+      setVariant((prev) => (v && v !== prev ? v : prev ?? routeVariant))
+    }
+    const schedule = () => {
+      if (raf) return
+      raf = requestAnimationFrame(sample)
+    }
+    // Initial sample after mount / route change.
+    setVariant(routeVariant)
+    schedule()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    return () => {
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [pathname, routeVariant, isHome])
+
+
   const join = () => {
     try { rememberReturnTo(window.location.href) } catch { /* noop */ }
     navigate({ to: '/welcome' })
