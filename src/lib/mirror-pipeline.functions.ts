@@ -208,21 +208,23 @@ export async function crystallizeMirrorSignal(args: {
         last_seen: new Date().toISOString(),
         state: 'active',
       }
-      if (nextDepth > beforeDepth) {
-        try {
-          const punch = await runMirrorPunchCore({
-            name: p.name,
-            district: p.district,
-            count: nextCount,
-            depth: nextDepth,
-            sources: nextSources as Record<string, number>,
-            trend: nextTrend,
-            insight: p.insight ?? '',
-          })
-          update.punch = punch.punch
-          update.record = punch.record
-        } catch { /* keep existing punch */ }
-      }
+      // Always regenerate the hero line when a pattern deepens — the
+      // supportive prompt uses the fresh count/depth/sources numbers.
+      try {
+        const punch = await runMirrorPunchCore({
+          name: p.name,
+          district: p.district,
+          count: nextCount,
+          depth: nextDepth,
+          sources: nextSources as Record<string, number>,
+          trend: nextTrend,
+          insight: p.insight ?? '',
+        })
+        update.punch = punch.punch
+        update.record = punch.record
+      } catch { /* keep existing punch */ }
+      void beforeDepth
+
       const { error: updErr } = await supabase.from('mirror_patterns').update(update as never).eq('id', matched.id)
       if (updErr) console.error('[mirror-ingest] deepen update', updErr)
       patternId = matched.id
