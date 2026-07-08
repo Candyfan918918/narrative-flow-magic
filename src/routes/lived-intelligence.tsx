@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SITE_URL } from "@/lib/site";
 
 const TITLE =
-  "What is Lived Intelligence? The human counterpart to artificial intelligence";
+  "Lived Intelligence — the human counterpart to AI | Shutap";
 const DESCRIPTION =
-  "Lived Intelligence is the practical knowledge earned by living through real situations and seeing how they turn out — the human counterpart to AI. Shutap is built to capture it.";
+  "Lived Intelligence is the practical knowledge earned by living through real situations — the human counterpart to AI. Shutap is built to capture it.";
 const DEFINITION =
   "The practical knowledge that comes from living through real situations and seeing how they turn out — the human counterpart to artificial intelligence.";
 const URL = `${SITE_URL}/lived-intelligence`;
