@@ -33,6 +33,7 @@ import { Route as HallsRouteImport } from './routes/halls'
 import { Route as GuidelinesRouteImport } from './routes/guidelines'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FamilyRouteImport } from './routes/family'
+import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as AiDisclosureRouteImport } from './routes/ai-disclosure'
@@ -188,6 +189,11 @@ const FaqRoute = FaqRouteImport.update({
 const FamilyRoute = FamilyRouteImport.update({
   id: '/family',
   path: '/family',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DisclaimerRoute = DisclaimerRouteImport.update({
+  id: '/disclaimer',
+  path: '/disclaimer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -387,6 +393,7 @@ export interface FileRoutesByFullPath {
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
+  '/disclaimer': typeof DisclaimerRoute
   '/family': typeof FamilyRoute
   '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
@@ -448,6 +455,7 @@ export interface FileRoutesByTo {
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
+  '/disclaimer': typeof DisclaimerRoute
   '/family': typeof FamilyRoute
   '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
@@ -511,6 +519,7 @@ export interface FileRoutesById {
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
+  '/disclaimer': typeof DisclaimerRoute
   '/family': typeof FamilyRoute
   '/faq': typeof FaqRoute
   '/guidelines': typeof GuidelinesRoute
@@ -574,6 +583,7 @@ export interface FileRouteTypes {
     | '/ai-disclosure'
     | '/career'
     | '/contact'
+    | '/disclaimer'
     | '/family'
     | '/faq'
     | '/guidelines'
@@ -635,6 +645,7 @@ export interface FileRouteTypes {
     | '/ai-disclosure'
     | '/career'
     | '/contact'
+    | '/disclaimer'
     | '/family'
     | '/faq'
     | '/guidelines'
@@ -697,6 +708,7 @@ export interface FileRouteTypes {
     | '/ai-disclosure'
     | '/career'
     | '/contact'
+    | '/disclaimer'
     | '/family'
     | '/faq'
     | '/guidelines'
@@ -760,6 +772,7 @@ export interface RootRouteChildren {
   AiDisclosureRoute: typeof AiDisclosureRoute
   CareerRoute: typeof CareerRoute
   ContactRoute: typeof ContactRoute
+  DisclaimerRoute: typeof DisclaimerRoute
   FamilyRoute: typeof FamilyRoute
   FaqRoute: typeof FaqRoute
   GuidelinesRoute: typeof GuidelinesRoute
@@ -973,6 +986,13 @@ declare module '@tanstack/react-router' {
       path: '/family'
       fullPath: '/family'
       preLoaderRoute: typeof FamilyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/disclaimer': {
+      id: '/disclaimer'
+      path: '/disclaimer'
+      fullPath: '/disclaimer'
+      preLoaderRoute: typeof DisclaimerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1292,6 +1312,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiDisclosureRoute: AiDisclosureRoute,
   CareerRoute: CareerRoute,
   ContactRoute: ContactRoute,
+  DisclaimerRoute: DisclaimerRoute,
   FamilyRoute: FamilyRoute,
   FaqRoute: FaqRoute,
   GuidelinesRoute: GuidelinesRoute,
