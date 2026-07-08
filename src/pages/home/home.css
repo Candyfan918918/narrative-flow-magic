@@ -129,3 +129,13 @@ html.home-scroll-snap {
     transition: none !important;
   }
 }
+
+/* Immersive homepage — kill any inherited underline on links/CTAs. The
+ * design has zero underlined text; the global prose/link rules must not
+ * bleed into the injected reference markup. Scoped to .home-immersive
+ * so other pages keep their existing link styling. */
+.home-immersive a,
+.home-immersive a:hover,
+.home-immersive a:focus,
+.home-immersive a:visited,
+.home-immersive summary { text-decoration: none !important; }
