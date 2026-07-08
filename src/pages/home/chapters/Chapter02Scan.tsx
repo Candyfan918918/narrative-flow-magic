@@ -167,29 +167,30 @@ function ScanQuestion({ n, question, options, highlight }: { n: number; question
   }, [reduce, highlight, n])
   return (
     <div>
-      <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: '#aaa3e8', marginBottom: 10 }}>
+      <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.22em', textTransform: 'uppercase', color: '#8d86c9', marginBottom: 10 }}>
         question {n} of 6
       </div>
-      <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 18, lineHeight: 1.35, color: '#fff', marginBottom: 18 }}>
+      <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 20, lineHeight: 1.45, color: '#f7e8f0', marginBottom: 18 }}>
         {question}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
         {options.map((o, i) => {
           const active = i === hi
           return (
             <div
               key={i}
               style={{
-                fontFamily: SORA,
-                fontWeight: 500,
-                fontSize: 13,
+                display: 'block',
+                fontFamily: NEWS,
+                fontStyle: 'italic',
+                fontSize: 14.5,
                 padding: '11px 14px',
-                border: '.5px solid ' + (active ? '#aaa3e8' : 'rgba(255,255,255,.1)'),
-                background: active ? 'rgba(127,119,221,.25)' : 'rgba(255,255,255,.02)',
-                borderRadius: 12,
-                color: active ? '#fff' : 'rgba(255,255,255,.75)',
+                border: '1px solid ' + (active ? '#aaa3e8' : 'rgba(255,255,255,.14)'),
+                background: active ? 'rgba(127,119,221,.25)' : 'rgba(255,255,255,.05)',
+                borderRadius: 14,
+                color: active ? '#fff' : '#e9e4f6',
                 transform: active ? 'scale(1.03)' : 'scale(1)',
-                transition: 'all .35s cubic-bezier(.34,1.56,.64,1)',
+                transition: 'background .35s, border-color .35s, transform .35s',
               }}
             >
               {o}
@@ -202,39 +203,44 @@ function ScanQuestion({ n, question, options, highlight }: { n: number; question
 }
 
 function ScanDial({ value, progress }: { value: number; progress: number }) {
-  const size = 180
-  const r = 78
+  const size = 196
+  const r = 84
   const c = 2 * Math.PI * r
   const dash = c * progress
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, minHeight: 300, justifyContent: 'center' }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,.08)" strokeWidth={10} />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="#e7548a"
-          strokeWidth={10}
-          strokeLinecap="round"
-          strokeDasharray={`${dash} ${c - dash}`}
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
-          style={{ filter: 'drop-shadow(0 0 8px rgba(231,84,138,.6))', transition: 'stroke-dasharray .1s linear' }}
-        />
-        <text x="50%" y="48%" textAnchor="middle" fontFamily="Sora" fontWeight={800} fontSize={40} fill="#fff">
-          {value}
-        </text>
-        <text x="50%" y="62%" textAnchor="middle" fontFamily="Sora" fontSize={10} letterSpacing={2} fill="rgba(255,255,255,.55)">
-          OF 999
-        </text>
-      </svg>
-      <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 15, color: '#fff', letterSpacing: '-.01em' }}>Carrying It Loud</div>
-      <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 12.5, color: 'rgba(255,255,255,.7)', textAlign: 'center', maxWidth: 260, lineHeight: 1.4 }}>
-        the part that hurts is how unseen it makes you feel — and you keep showing up anyway.
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minHeight: 300, justifyContent: 'center' }}>
+      <div style={{ position: 'relative', display: 'grid', placeItems: 'center', margin: '2px 0' }}>
+        <svg width={size} height={size} viewBox={`0 0 200 200`} style={{ width: '60%', maxWidth: 196, transform: 'rotate(-90deg)' }}>
+          <circle cx={100} cy={100} r={r} fill="none" stroke="rgba(255,255,255,.08)" strokeWidth={10} />
+          <circle
+            cx={100}
+            cy={100}
+            r={r}
+            fill="none"
+            stroke="#e7548a"
+            strokeWidth={10}
+            strokeLinecap="round"
+            strokeDasharray={`${dash} ${c - dash}`}
+            style={{ filter: 'drop-shadow(0 0 8px rgba(231,84,138,.6))', transition: 'stroke-dasharray .1s linear' }}
+          />
+        </svg>
+        <div style={{ position: 'absolute', textAlign: 'center' }}>
+          <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 52, letterSpacing: '-.04em', color: '#e7548a', lineHeight: .9, fontVariantNumeric: 'tabular-nums' }}>
+            {value}
+          </div>
+          <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9, letterSpacing: '.18em', textTransform: 'uppercase', color: '#9e7a8c', marginTop: 5 }}>
+            of 999 · heavy &amp; loud
+          </div>
+        </div>
       </div>
-      <div style={{ width: '100%', maxWidth: 260, height: 4, borderRadius: 2, background: 'linear-gradient(90deg,#5DCAA5,#aaa3e8,#e7548a,#e24b4a)', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: -3, left: `${74 * progress}%`, width: 2, height: 10, background: '#fff', borderRadius: 2 }} />
+      <div style={{ textAlign: 'center', marginBottom: 14 }}>
+        <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 20, color: '#f7e8f0', lineHeight: 1.15 }}>Carrying It Loud</div>
+        <div style={{ marginTop: 6, fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, lineHeight: 1.5, color: '#c4a0b2' }}>
+          the part that hurts is how unseen it makes you feel — and you keep showing up anyway.
+        </div>
+      </div>
+      <div style={{ height: 5, borderRadius: 3, background: 'linear-gradient(90deg,#9e8f9c,#7F77DD,#c87c4a,#e7548a,#c1216b)', position: 'relative' }}>
+        <span style={{ position: 'absolute', left: `${100 * progress}%`, top: '50%', width: 13, height: 13, borderRadius: '50%', background: '#fff', border: '3px solid #e7548a', transform: 'translate(-50%,-50%)' }} />
       </div>
     </div>
   )
