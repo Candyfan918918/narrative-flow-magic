@@ -23,6 +23,21 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
   const sched = (fn: () => void, d: number) => { const id = setTimeout(fn, d); timers.push(id); return id }
   const q = <T extends Element = HTMLElement>(sel: string) => D.querySelector(sel) as T | null
   const qa = <T extends Element = HTMLElement>(sel: string) => Array.from(D.querySelectorAll(sel)) as T[]
+  // Defer non-essential ambient loops (mascot rAF, demo intervals) until the
+  // browser is idle, so hydration/first-paint aren't fighting them for CPU.
+  const idle = (fn: () => void) => {
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+      cancelIdleCallback?: (id: number) => void
+    }
+    if (typeof w.requestIdleCallback === 'function') {
+      const id = w.requestIdleCallback(fn, { timeout: 2000 })
+      cleanup.push(() => { try { w.cancelIdleCallback?.(id) } catch { /* noop */ } })
+    } else {
+      const id = setTimeout(fn, 200)
+      timers.push(id)
+    }
+  }
 
   /* ── link + CTA delegation ── */
   on(D, 'click', (e: MouseEvent) => {
