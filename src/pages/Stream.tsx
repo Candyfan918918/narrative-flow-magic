@@ -71,6 +71,8 @@ interface StoredRoom {
 }
 
 function loadUserRooms(): RoomTileData[] {
+  // SSR-safe: return [] on the server. User rooms hydrate after mount.
+  if (typeof window === 'undefined') return []
   try {
     const raw = localStorage.getItem('shutap_user_situations')
     if (!raw) return []
@@ -110,6 +112,10 @@ export function StreamPage() {
   const [open, setOpen] = useState<RoomTileData | null>(null)
   const [version, setVersion] = useState(0)
   const [openedPillars, setOpenedPillars] = useState<string[] | null>(null)
+  // Gate any localStorage / client-only data behind a post-mount flag so the
+  // first client render matches SSR output (no hydration mismatch).
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
 
   // Refresh when storage changes (publish from spill / scan)
   useEffect(() => {
@@ -120,7 +126,7 @@ export function StreamPage() {
     return () => window.removeEventListener('storage', onStorage)
   }, [])
 
-  // Phase 2c — load opened pillars once
+  // Phase 2c — load opened pillars once (client-only; non-blocking).
   useEffect(() => {
     listPillars()
       .then((rows) => {
@@ -134,20 +140,26 @@ export function StreamPage() {
 
   const rooms = useMemo<RoomTileData[]>(() => {
     const seed = (SHUTAP_SEED.rooms || []) as RoomTileData[]
-    const user = loadUserRooms()
+    // Only mix in user-local rooms after mount so SSR + first client render
+    // produce identical markup.
+    const user = mounted ? loadUserRooms() : []
     return [...user, ...seed]
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version])
+  }, [version, mounted])
 
   const filtered = useMemo(() => {
     // Pillar gate: hide user rooms tagged with a closed pillar. Seed rooms
     // (no pillar tag) and the currently-opened pillars are always allowed.
-    const opened = openedPillars ?? ['relationships']
-    const pillarGated = rooms.filter((r) => !r.pillar || opened.includes(r.pillar))
+    // Before mount / before pillars load, allow everything (seed only) so
+    // SSR and first client render agree.
+    const opened = mounted ? (openedPillars ?? ['relationships']) : null
+    const pillarGated = opened
+      ? rooms.filter((r) => !r.pillar || opened.includes(r.pillar))
+      : rooms
     if (filter === 'all') return pillarGated
     if (filter === 'scan') return pillarGated.filter((r) => r.kind === 'scan')
     return pillarGated.filter((r) => r.support === filter && r.kind !== 'scan')
-  }, [rooms, filter, openedPillars])
+  }, [rooms, filter, openedPillars, mounted])
 
 
   // Honor /stream#room-<id> deep links from the spill publish flow

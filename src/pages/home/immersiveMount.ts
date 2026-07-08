@@ -23,6 +23,21 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
   const sched = (fn: () => void, d: number) => { const id = setTimeout(fn, d); timers.push(id); return id }
   const q = <T extends Element = HTMLElement>(sel: string) => D.querySelector(sel) as T | null
   const qa = <T extends Element = HTMLElement>(sel: string) => Array.from(D.querySelectorAll(sel)) as T[]
+  // Defer non-essential ambient loops (mascot rAF, demo intervals) until the
+  // browser is idle, so hydration/first-paint aren't fighting them for CPU.
+  const idle = (fn: () => void) => {
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+      cancelIdleCallback?: (id: number) => void
+    }
+    if (typeof w.requestIdleCallback === 'function') {
+      const id = w.requestIdleCallback(fn, { timeout: 2000 })
+      cleanup.push(() => { try { w.cancelIdleCallback?.(id) } catch { /* noop */ } })
+    } else {
+      const id = setTimeout(fn, 200)
+      timers.push(id)
+    }
+  }
 
   /* ── link + CTA delegation ── */
   on(D, 'click', (e: MouseEvent) => {
@@ -103,7 +118,8 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
     raf = requestAnimationFrame(loop)
     rafs[0] = raf
   }
-  raf = requestAnimationFrame(loop); rafs[0] = raf
+  idle(() => { raf = requestAnimationFrame(loop); rafs[0] = raf })
+
 
   /* ── word-level reveals ── */
   const splitWords = (el: Element) => {
@@ -186,7 +202,7 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
       })
       sched(runSpill, t + 3400)
     }
-    runSpill()
+    idle(runSpill)
   }
 
   /* ── 02 scan flow ── */
@@ -220,7 +236,7 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
       }, 6500)
       sched(runScan, 12200)
     }
-    runScan()
+    idle(runScan)
   }
 
   /* ── 03 mirror ── */
@@ -254,8 +270,10 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
     }
     activate(0)
     const mVis = vis(mcs[0].closest('section'))
-    const iv = setInterval(() => { if (!mVis.v) return; mi = (mi + 1) % mcs.length; activate(mi) }, 5200)
-    intervals.push(iv)
+    idle(() => {
+      const iv = setInterval(() => { if (!mVis.v) return; mi = (mi + 1) % mcs.length; activate(mi) }, 5200)
+      intervals.push(iv)
+    })
   }
 
   /* ── card tilt ── */
@@ -334,8 +352,10 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
   const live = q('[data-livecount]')
   if (live) {
     let n = parseInt(live.textContent || '31', 10) || 31
-    const iv = setInterval(() => { n = Math.max(24, Math.min(45, n + (Math.random() < 0.5 ? -1 : 1))); if (live) live.textContent = String(n) }, 4200)
-    intervals.push(iv)
+    idle(() => {
+      const iv = setInterval(() => { n = Math.max(24, Math.min(45, n + (Math.random() < 0.5 ? -1 : 1))); if (live) live.textContent = String(n) }, 4200)
+      intervals.push(iv)
+    })
   }
 
   /* ── companion sheet (bubble → sheet, canned reply) ── */
