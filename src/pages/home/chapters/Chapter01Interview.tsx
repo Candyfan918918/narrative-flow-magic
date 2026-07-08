@@ -45,6 +45,8 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
   const [timeline] = useState(buildTimeline)
   const [shown, setShown] = useState<number>(reduce ? timeline.length : 0)
   const card = useReactiveCard({ glow: 'rgba(231,84,138,.55)' })
+  const magneticCta = useMagnetic<HTMLButtonElement>()
+
 
   useEffect(() => {
     if (reduce) return
