@@ -84,11 +84,15 @@ export const Route = createFileRoute("/halls/$hall/$region/$window")({
   component: HallPage,
   notFoundComponent: () => (
     <SeoPage>
-      <h1 className="text-2xl font-semibold">no hall at that path.</h1>
-      <p className="mt-3 text-muted-foreground">
+      <h1 style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 30, margin: '0 0 12px', color: '#0b080f' }}>no hall at that path.</h1>
+      <p style={{ fontFamily: "'Newsreader',serif", color: '#6b4a5c' }}>
         try{" "}
-        <Link to="/halls/$hall/$region/$window" params={{ hall: "most-related", region: "global", window: "30d" }} className="underline">
-          most-related · global · 30d
+        <Link
+          to="/halls/$hall/$region/$window"
+          params={{ hall: "most-related", region: "global", window: "30d" }}
+          style={{ color: '#c1216b', borderBottom: '1px solid rgba(193,33,107,.3)', textDecoration: 'none' }}
+        >
+          most relatable · global · 30d
         </Link>
         .
       </p>
@@ -96,11 +100,20 @@ export const Route = createFileRoute("/halls/$hall/$region/$window")({
   ),
   errorComponent: ({ reset }) => (
     <SeoPage>
-      <h1 className="text-2xl font-semibold">couldn't load this hall.</h1>
-      <button onClick={reset} className="mt-3 underline">try again</button>
+      <h1 style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 30, margin: '0 0 12px', color: '#0b080f' }}>couldn't load this hall.</h1>
+      <button
+        onClick={reset}
+        style={{ marginTop: 8, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', color: '#890041', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15 }}
+      >try again →</button>
     </SeoPage>
   ),
 });
+
+const HALL_DISPLAY: Record<HallSlug, string> = {
+  'most-related':   'most relatable',
+  'longest-thread': 'bravest',
+  'best-outcomes':  'most loving',
+}
 
 function HallPage() {
   const { hall, region, window, view } = Route.useLoaderData() as {
@@ -110,34 +123,55 @@ function HallPage() {
     view: HallView | undefined;
   };
   const meta = HALLS[hall];
+  const display = HALL_DISPLAY[hall] ?? meta.title;
 
   return (
     <SeoPage>
-      <article className="space-y-8">
-        <header className="space-y-2">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            hall · {region} · {window}
+      <article style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+        <header style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#e7548a' }} />
+            <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a' }}>
+              hall · {region} · {window}
+            </span>
+          </div>
+          <h1 style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 'clamp(26px,5vw,36px)', margin: 0, color: '#0b080f', letterSpacing: '-.01em', lineHeight: 1.15 }}>
+            {display}.
+          </h1>
+          <p style={{ fontFamily: "'Newsreader',serif", fontSize: 16, lineHeight: 1.55, color: '#6b4a5c', margin: 0, maxWidth: '46ch' }}>
+            {meta.blurb}
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight">{meta.title}</h1>
-          <p className="text-muted-foreground">{meta.blurb}</p>
         </header>
 
         {!view || view.entries.length === 0 ? (
-          <p className="text-muted-foreground">
+          <p style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15.5, color: '#9e7a8c', margin: 0 }}>
             we haven't gathered enough signal here yet. halls publish once at least{" "}
             {MIN_HALL_ENTRIES} rooms qualify for a (region, window) cell.
           </p>
         ) : (
-          <ol className="space-y-3">
+          <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
             {view.entries.map((e, i) => (
-              <li key={e.id} className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                <span className="flex gap-3">
-                  <span className="tabular-nums text-muted-foreground">{i + 1}.</span>
-                  <a href={e.href} className="underline-offset-4 hover:underline">
-                    {e.title}
-                  </a>
-                </span>
-                <span className="text-xs text-muted-foreground">{e.metric}</span>
+              <li
+                key={e.id}
+                className="hall-row"
+                style={{
+                  display: 'grid', gridTemplateColumns: 'auto 1fr auto',
+                  alignItems: 'center', gap: 14,
+                  padding: '14px 16px', borderRadius: 16,
+                  background: i === 0 ? '#fff5f9' : '#fff',
+                  border: '.5px solid rgba(11,8,15,.08)',
+                  transition: 'transform .18s, border-color .18s',
+                  animation: `hall-fadeup .5s ease ${i * 60}ms both`,
+                }}
+              >
+                <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 14, color: i === 0 ? '#c1216b' : '#9e7a8c', fontVariantNumeric: 'tabular-nums', minWidth: 26 }}>#{i + 1}</span>
+                <a
+                  href={e.href}
+                  style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15.5, color: '#0b080f', textDecoration: 'none', lineHeight: 1.35 }}
+                >
+                  {e.title}
+                </a>
+                <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 11, color: '#9e7a8c', letterSpacing: '.06em', whiteSpace: 'nowrap' }}>{e.metric}</span>
               </li>
             ))}
           </ol>
