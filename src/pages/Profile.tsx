@@ -250,62 +250,42 @@ export function ProfilePage() {
     finally { setAliasBusy(false) }
   }
 
+  const maskedEmail = maskEmail(email)
+
   return (
     <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-
-
-      <main style={{ maxWidth: 1000, margin: '0 auto', padding: '26px 22px 90px' }}>
-        {/* eyebrow */}
-        <div style={{ marginBottom: 18 }}>
-          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 6 }}>
-            your profile
-          </div>
-          <h1 style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 'clamp(22px,4vw,30px)', margin: 0, color: '#0b080f', letterSpacing: '-.02em' }}>
-            your stories
-          </h1>
-          <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14.5, color: '#6b4a5c', margin: '6px 0 0' }}>
-            {email ? <>signed in as <strong style={{ color: '#0b080f' }}>{email}</strong> · </> : null}
-            edit, make private, or delete anything here.
-          </p>
-        </div>
-
-        {/* alias card */}
+      <main style={{ maxWidth: 680, margin: '0 auto', padding: '26px 22px 90px' }}>
+        {/* identity hero */}
         {alias && (
-          <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 16, padding: '16px 18px', marginBottom: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ width: 42, height: 42, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 22 }}>{alias.emoji}</span>
+          <div style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', borderRadius: 22, padding: '22px 22px 18px', marginBottom: 18 }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 18% 0%, rgba(255,126,179,.22), transparent 60%)', pointerEvents: 'none' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+              <span style={{ width: 68, height: 68, borderRadius: '50%', background: 'linear-gradient(135deg,#ff7eb3,#890041)', display: 'grid', placeItems: 'center', fontSize: 30, color: '#fff', boxShadow: '0 8px 22px -8px rgba(0,0,0,.5)' }}>{alias.emoji}</span>
               <div style={{ flex: 1, minWidth: 180 }}>
-                <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>your alias</div>
-                <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 18, color: '#0b080f' }}>{alias.display_name}</div>
+                <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 22, letterSpacing: '-.02em', color: '#f7e8f0' }}>{alias.display_name}</div>
+                <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2', marginTop: 2 }}>{maskedEmail || 'anonymous'}</div>
               </div>
-              <button
-                disabled={aliasBusy}
-                onClick={() => setEditAlias((v) => !v)}
-                style={btn('#c1216b')}
-              >{editAlias ? 'close' : 'edit alias'}</button>
-              <button
-                disabled={aliasBusy}
-                onClick={onReroll}
-                style={btn('#7F77DD')}
-              >re-roll</button>
+              <button disabled={aliasBusy} onClick={() => setEditAlias((v) => !v)} style={btn('#ff7eb3')}>{editAlias ? 'close' : 'edit alias'}</button>
+              <button disabled={aliasBusy} onClick={onReroll} style={btn('#ff7eb3')}>re-roll</button>
             </div>
+
             {editAlias && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+              <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10, marginTop: 14 }}>
                 {(['emotion', 'nation', 'creature'] as const).map((k) => (
                   <label key={k} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>{k}</span>
+                    <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#c4a0b2' }}>{k}</span>
                     <input
                       defaultValue={alias[k]}
                       onBlur={(e) => {
                         const v = e.target.value.trim()
                         if (v && v !== alias[k]) onSaveAlias({ [k]: v })
                       }}
-                      style={{ border: '.5px solid rgba(11,8,15,.15)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, background: '#fff' }}
+                      style={{ border: '.5px solid rgba(255,255,255,.14)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, background: 'rgba(255,255,255,.06)', color: '#f7e8f0' }}
                     />
                   </label>
                 ))}
                 <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>emoji</span>
+                  <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#c4a0b2' }}>emoji</span>
                   <input
                     defaultValue={alias.emoji}
                     onBlur={(e) => {
@@ -313,28 +293,30 @@ export function ProfilePage() {
                       if (v && v !== alias.emoji) onSaveAlias({ emoji: v })
                     }}
                     maxLength={4}
-                    style={{ border: '.5px solid rgba(11,8,15,.15)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Inter,sans-serif', fontSize: 16, background: '#fff' }}
+                    style={{ border: '.5px solid rgba(255,255,255,.14)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Inter,sans-serif', fontSize: 16, background: 'rgba(255,255,255,.06)', color: '#f7e8f0' }}
                   />
                 </label>
               </div>
             )}
+
+            {/* stats inside the hero */}
+            <div style={{ position: 'relative', display: 'flex', gap: 26, flexWrap: 'wrap', marginTop: 18, paddingTop: 16, borderTop: '.5px solid rgba(255,255,255,.10)' }}>
+              {[
+                { n: counts.rooms, label: 'rooms open' },
+                { n: counts.journals, label: 'private journals' },
+                { n: counts.scans, label: 'scans' },
+              ].map((s) => (
+                <div key={s.label}>
+                  <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 21, color: '#fff', letterSpacing: '-.02em', fontVariantNumeric: 'tabular-nums' }}>{s.n}</div>
+                  <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: '#a99fa8', marginTop: 2 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
-          {[
-            { k: 'rooms' as const, n: counts.rooms, label: 'rooms open' },
-            { k: 'journals' as const, n: counts.journals, label: 'private journals' },
-            { k: 'scans' as const, n: counts.scans, label: 'scans' },
-          ].map((s) => (
-            <div key={s.k} style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: '12px 18px', minWidth: 120 }}>
-              <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 22, color: '#0b080f', letterSpacing: '-.02em' }}>{s.n}</div>
-              <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c', marginTop: 2 }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
 
-        {/* tab pills */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
+        {/* tabs (underline) */}
+        <div style={{ display: 'flex', gap: 22, flexWrap: 'wrap', marginBottom: 22, borderBottom: '.5px solid rgba(11,8,15,.08)' }}>
           {(['all', 'rooms', 'journals', 'scans'] as Tab[]).map((f) => {
             const active = tab === f
             return (
@@ -342,17 +324,16 @@ export function ProfilePage() {
                 key={f}
                 onClick={() => setTab(f)}
                 style={{
-                  padding: '7px 14px',
-                  borderRadius: 999,
-                  border: '.5px solid ' + (active ? '#e7548a' : 'rgba(11,8,15,.12)'),
-                  background: active ? '#fff' : 'transparent',
-                  color: active ? '#c1216b' : '#6b4a5c',
+                  padding: '10px 2px',
+                  border: 'none',
+                  background: 'transparent',
+                  color: active ? '#c1216b' : '#9e7a8c',
                   fontFamily: 'Sora,sans-serif',
                   fontWeight: 600,
-                  fontSize: 11.5,
-                  letterSpacing: '.06em',
-                  textTransform: 'uppercase',
+                  fontSize: 13.5,
                   cursor: 'pointer',
+                  borderBottom: '2px solid ' + (active ? '#c1216b' : 'transparent'),
+                  marginBottom: -1,
                 }}
               >
                 {f === 'all' ? 'all' : f === 'rooms' ? 'rooms' : f === 'journals' ? 'journals' : 'scans ✦'}
@@ -370,68 +351,37 @@ export function ProfilePage() {
             <span style={{ color: '#c1216b', cursor: 'pointer' }} onClick={() => navigate('/')}>start a spill →</span>
           </div>
         ) : (
-          <div style={{ display: 'grid', gap: 14 }}>
+          <div style={{ display: 'grid', gap: 10 }}>
             {filtered.map((s) => {
               const isScan = s.kind === 'scan' && typeof s.initial_scan === 'number'
-              const band = (s.scan_band || 'sitting') as keyof typeof BAND_COLOR
-              const accent = BAND_COLOR[band] || '#7F77DD'
+              const band = (s.scan_band || 'sitting')
+              const emoji = isScan ? '✦' : s.is_public ? '🗯' : '📓'
+              const title = s.title || (s.clean_text || s.body || '').slice(0, 80) || 'untitled'
+              const subline = [
+                s.pillar || null,
+                isScan ? 'scan' : s.is_public ? 'room' : 'journal',
+                s.edited ? 'edited' : null,
+                timeAgo(s.created_at),
+              ].filter(Boolean).join(' · ')
               return (
-                <article key={s.id} style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 16, padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                    <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 9.5, letterSpacing: '.14em', color: isScan ? accent : (s.is_public ? '#c1216b' : '#6b4a5c'), background: (isScan ? accent : (s.is_public ? '#e7548a' : '#6b4a5c')) + '15', padding: '3px 8px', borderRadius: 999, textTransform: 'uppercase' }}>
-                      {isScan ? 'scan' : s.is_public ? 'room' : 'journal'}
-                    </span>
-                    {s.pillar && (
-                      <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 9.5, letterSpacing: '.12em', textTransform: 'uppercase', color: '#6b4a5c', background: '#f7e8f0', padding: '3px 8px', borderRadius: 999 }}>{s.pillar}</span>
-                    )}
-                    {s.edited && (
-                      <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 11.5, color: '#9e7a8c' }}>edited</span>
-                    )}
-                    <span style={{ flex: 1 }} />
-                    <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 11.5, color: '#9e7a8c' }}>{timeAgo(s.created_at)}</span>
-                  </div>
-
-                  {isScan ? (
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
-                      <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 48, lineHeight: 1, letterSpacing: '-.04em', color: accent }}>{s.initial_scan}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: accent }}>{band}</div>
-                        <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.35, color: '#2e1a26' }}>{s.title || s.clean_text?.slice(0, 120)}</div>
-                      </div>
-                    </div>
-                  ) : (
+                <ListItem
+                  key={s.id}
+                  emoji={emoji}
+                  title={title}
+                  subline={subline}
+                  scan={isScan ? { n: s.initial_scan as number, band } : null}
+                  actions={
                     <>
-                      {s.title && (
-                        <h3 style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 16, margin: 0, color: '#0b080f' }}>{s.title}</h3>
+                      {s.is_public && s.room_id && (
+                        <button onClick={() => navigate('/room?id=' + s.room_id)} style={btn('#c1216b')}>open room →</button>
                       )}
-                      <p style={{ fontFamily: 'Newsreader,serif', fontSize: 14.5, lineHeight: 1.5, color: '#2e1a26', margin: 0, whiteSpace: 'pre-wrap' }}>
-                        {(s.body || s.clean_text || '').slice(0, 260)}
-                        {((s.body || s.clean_text || '').length > 260) ? '…' : ''}
-                      </p>
+                      <button disabled={busy === s.id} onClick={() => togglePrivacy(s)} style={btn('#890041')}>
+                        {s.is_public ? 'make private' : 'post to stream'}
+                      </button>
+                      <button disabled={busy === s.id} onClick={() => onDelete(s)} style={btn('#b3261e')}>delete</button>
                     </>
-                  )}
-
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
-                    {s.is_public && s.room_id && (
-                      <button
-                        onClick={() => navigate('/room?id=' + s.room_id)}
-                        style={btn('#c1216b')}
-                      >open room →</button>
-                    )}
-                    <button
-                      disabled={busy === s.id}
-                      onClick={() => togglePrivacy(s)}
-                      style={btn('#6b4a5c')}
-                    >
-                      {s.is_public ? 'make private' : 'post to stream'}
-                    </button>
-                    <button
-                      disabled={busy === s.id}
-                      onClick={() => onDelete(s)}
-                      style={btn('#9e3a3a')}
-                    >delete</button>
-                  </div>
-                </article>
+                  }
+                />
               )
             })}
           </div>
@@ -445,19 +395,19 @@ export function ProfilePage() {
           <BillingCard billing={billing} onOpenPortal={openPortal} portalBusy={portalBusy} navigate={navigate} />
         </div>
 
-        <div style={{ marginTop: 30, paddingTop: 22, borderTop: '.5px solid rgba(11,8,15,.08)' }}>
-          <button onClick={signOut} style={{ ...btn('#6b4a5c'), background: 'transparent' }}>sign out</button>
+        <div style={{ marginTop: 24 }}>
+          <button onClick={signOut} style={wineLink}>sign out →</button>
         </div>
 
         {/* danger zone */}
-        <div style={{ marginTop: 30, paddingTop: 22, borderTop: '.5px solid rgba(158,58,58,.16)' }}>
-          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e3a3a', marginBottom: 10 }}>
+        <div style={{ marginTop: 30, paddingTop: 22, borderTop: '.5px solid rgba(179,38,30,.16)' }}>
+          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#b3261e', marginBottom: 10 }}>
             danger zone
           </div>
           {!showDelete ? (
-            <button onClick={() => setShowDelete(true)} style={{ ...btn('#9e3a3a'), background: 'transparent' }}>delete account</button>
+            <button onClick={() => setShowDelete(true)} style={{ ...btn('#b3261e'), background: 'transparent' }}>delete account</button>
           ) : (
-            <div style={{ background: '#fff5f5', border: '.5px solid rgba(158,58,58,.24)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ background: '#fff5f5', border: '.5px solid rgba(179,38,30,.24)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15, color: '#0b080f', lineHeight: 1.5 }}>
                 this permanently deletes your account, alias, stories, scans, and cancels any active subscription. it cannot be undone.
               </div>
@@ -468,18 +418,18 @@ export function ProfilePage() {
                 value={deleteConfirm}
                 onChange={(e) => setDeleteConfirm(e.target.value)}
                 placeholder="delete my account"
-                style={{ border: '.5px solid rgba(158,58,58,.32)', borderRadius: 10, padding: '9px 12px', fontFamily: 'Inter,sans-serif', fontSize: 14, background: '#fff' }}
+                style={{ border: '.5px solid rgba(179,38,30,.32)', borderRadius: 10, padding: '9px 12px', fontFamily: 'Inter,sans-serif', fontSize: 14, background: '#fff' }}
               />
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button
                   disabled={deleteBusy || deleteConfirm !== 'delete my account'}
                   onClick={onDeleteAccount}
-                  style={{ ...btn('#9e3a3a'), opacity: (deleteBusy || deleteConfirm !== 'delete my account') ? 0.5 : 1 }}
+                  style={{ ...btn('#b3261e'), opacity: (deleteBusy || deleteConfirm !== 'delete my account') ? 0.5 : 1 }}
                 >{deleteBusy ? 'deleting…' : 'delete permanently'}</button>
                 <button
                   disabled={deleteBusy}
                   onClick={() => { setShowDelete(false); setDeleteConfirm('') }}
-                  style={btn('#6b4a5c')}
+                  style={btn('#890041')}
                 >cancel</button>
               </div>
             </div>
@@ -492,6 +442,67 @@ export function ProfilePage() {
   )
 }
 
+function maskEmail(e: string): string {
+  if (!e) return ''
+  const [u, d] = e.split('@')
+  if (!d) return e
+  return u.slice(0, 1) + '•••@' + d
+}
+
+function ListItem({ emoji, title, subline, scan, actions }: {
+  emoji: string
+  title: string
+  subline: string
+  scan: { n: number; band: string } | null
+  actions: React.ReactNode
+}) {
+  const [hover, setHover] = useState(false)
+  return (
+    <article
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: '#fff',
+        border: '.5px solid ' + (hover ? '#e7548a' : 'rgba(11,8,15,.08)'),
+        borderRadius: 16,
+        padding: '14px 16px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        transition: 'border-color .18s',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ width: 42, height: 42, borderRadius: 12, background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 20, flexShrink: 0 }}>{emoji}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 14, color: '#0b080f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</div>
+          <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 11.5, color: '#9e7a8c', marginTop: 2 }}>{subline}</div>
+        </div>
+        {scan && (
+          <div style={{ textAlign: 'right', marginRight: 6 }}>
+            <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>intensity</div>
+            <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 18, color: '#c1216b', letterSpacing: '-.02em', fontVariantNumeric: 'tabular-nums' }}>{scan.n}</div>
+          </div>
+        )}
+        <span style={{ fontFamily: 'Sora,sans-serif', fontSize: 20, color: '#9e7a8c' }} aria-hidden>›</span>
+      </div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{actions}</div>
+    </article>
+  )
+}
+
+const wineLink: React.CSSProperties = {
+  background: 'transparent',
+  border: 'none',
+  padding: 0,
+  color: '#890041',
+  fontFamily: "'Newsreader',serif",
+  fontStyle: 'italic',
+  fontSize: 14,
+  cursor: 'pointer',
+  textDecoration: 'none',
+}
+
 function btn(color: string): React.CSSProperties {
   return {
     padding: '6px 12px',
@@ -501,9 +512,8 @@ function btn(color: string): React.CSSProperties {
     color,
     fontFamily: 'Sora,sans-serif',
     fontWeight: 600,
-    fontSize: 11.5,
-    letterSpacing: '.06em',
-    textTransform: 'uppercase',
+    fontSize: 12,
+    letterSpacing: '.02em',
     cursor: 'pointer',
   }
 }
