@@ -13,7 +13,7 @@ import { saveSituation } from '@/lib/situations.functions'
 import { requireRealUser, saveIntent } from '@/lib/auth-guard'
 import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
-import { HeroMascot, usePrefersReducedMotion } from './hero/Mascot'
+import { HeroMascot } from './hero/Mascot'
 import { Chapter01Interview } from './chapters/Chapter01Interview'
 import { Chapter02Scan } from './chapters/Chapter02Scan'
 import { Chapter03Mirror } from './chapters/Chapter03Mirror'
@@ -47,7 +47,7 @@ export function HomePage() {
   const navigate = useNavigate()
   const router = useRouter()
   const save = useServerFn(saveSituation)
-  const reduce = usePrefersReducedMotion()
+  
 
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
