@@ -177,9 +177,10 @@ export function SubscribePage() {
               founders' pricing — locked in for as long as you stay subscribed. your card is required now; after your 14-day free trial ends you'll be charged automatically unless you cancel first. cancel anytime from your profile — cancellation takes effect at the end of your current billing period, and payments for the current or past periods are not refunded. by subscribing you agree to the <a href="/terms" style={{ color: '#9e7a8c', textDecoration: 'underline' }}>terms</a> and <a href="/privacy" style={{ color: '#9e7a8c', textDecoration: 'underline' }}>privacy policy</a>.
             </div>
             <div style={{ background: 'transparent', borderRadius: 14, overflow: 'hidden' }}>
-              <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
+              <EmbeddedCheckoutProvider key={plan.id} stripe={getStripe()} options={{ fetchClientSecret }}>
                 <EmbeddedCheckout />
               </EmbeddedCheckoutProvider>
+
             </div>
           </>
         )}
