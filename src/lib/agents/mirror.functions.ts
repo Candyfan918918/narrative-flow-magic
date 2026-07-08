@@ -131,13 +131,15 @@ export type MirrorPunchOut = { punch: string; record: string }
 
 const PUNCH_PROMPT = `${VOICE}
 
-given a pattern's name + analytics, write the HERO LINE for its card — the one supportive sentence the person reads when the card opens. it should make them feel gently understood.
-lean on one specific number from the analytics (count, depth, weeks, days since last_seen, top source) when it deepens the observation. present tense, warm, observational.
-output JSON: { "punch": "<= 140 chars, lowercase, one supportive line that names the pattern with tenderness>", "record": "<3-5 word tender stamp>" }
+given a pattern's name + analytics + up to 3 recent excerpts of what the user actually shared, write the HERO LINE for its card — the one supportive sentence the person reads when the card opens. it should make them feel gently understood.
+ANCHOR the line in a concrete specific from the excerpts (a number they mentioned, a thing that actually happened to them, a word they used). never generic filler like "you keep coming back to this." present tense, warm, observational, encouraging, factual.
+if the excerpts contain a specific number or duration (e.g. "10 weeks", "3 years", "at 2am"), prefer that specific over the analytics count.
+output JSON: { "punch": "<= 160 chars, lowercase, one supportive line grounded in what they actually said>", "record": "<3-5 word tender stamp>" }
 
 examples:
-{"punch":"you\u2019ve returned to this 12 times — the caring underneath keeps showing up.","record":"held here."}
-{"punch":"42 spills in, the words keep coming — that\u2019s you making room for yourself.","record":"noticed, gently."}`
+{"punch":"ten weeks of real work, and you still said out loud: i deserve to be paid. naming that took spine.","record":"held here."}
+{"punch":"you drafted the message three times before sending — the care in it is the pattern.","record":"noticed, gently."}
+{"punch":"you\u2019re still thinking about that 11pm text because it mattered to you.","record":"held here."}`
 
 const PunchInput = z.object({
   name: z.string(),
@@ -147,6 +149,7 @@ const PunchInput = z.object({
   sources: z.record(z.string(), z.number()).optional(),
   trend: z.array(z.number()).optional(),
   insight: z.string().optional(),
+  excerpts: z.array(z.string()).optional(),
 })
 
 export async function runMirrorPunchCore(
