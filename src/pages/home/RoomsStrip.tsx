@@ -134,42 +134,7 @@ export function RoomsStrip() {
         >
           <div className={reduce ? '' : 'home-strip-track'} style={{ display: 'inline-flex', gap: 16, padding: '4px 22px' }}>
             {(reduce ? cards : doubled).map((c, i) => (
-              <Link
-                key={`${c.id}-${i}`}
-                to="/stream"
-                hash={`room-${c.id}`}
-                style={{
-                  display: 'block',
-                  width: 340,
-                  flex: 'none',
-                  background: '#fff',
-                  borderRadius: 18,
-                  padding: 18,
-                  textDecoration: 'none',
-                  color: '#0b080f',
-                  boxShadow: '0 10px 28px -22px rgba(60,10,30,.28)',
-                  border: '.5px solid rgba(11,8,15,.06)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                  <span style={{ width: 36, height: 36, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg,#f7e8f0,#f060a0)', fontSize: 18 }}>{c.emoji}</span>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#4a3040' }}>{c.alias}</span>
-                    <span style={{ fontFamily: 'Inter', fontSize: 11, color: '#9e7a8c' }}>{c.hours}</span>
-                  </div>
-                </div>
-                <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 15, lineHeight: 1.35, color: '#0b080f', marginBottom: 14, minHeight: 60, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                  {c.title}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: SORA, fontWeight: 600, fontSize: 11.5, color: '#6b4a5c' }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span className="home-livedot green" style={{ width: 6, height: 6 }} />
-                    {c.sitting} sitting in
-                  </span>
-                  <span>🫂 {c.relates} relate</span>
-                  <span style={{ color: '#c1216b', fontFamily: NEWS, fontStyle: 'italic' }}>enter →</span>
-                </div>
-              </Link>
+              <RoomCard key={`${c.id}-${i}`} card={c} isDragging={() => draggingRef.current} />
             ))}
           </div>
         </div>
