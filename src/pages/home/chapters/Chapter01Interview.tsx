@@ -3,6 +3,7 @@
 // data. Timings match the spec.
 import { useEffect, useRef, useState } from 'react'
 import { useOnScreen, usePrefersReducedMotion } from '../hero/Mascot'
+import { useReactiveCard } from '@/components/motion'
 
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
