@@ -579,12 +579,13 @@ function TarotCard({
             fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 30,
             color, lineHeight: 1, letterSpacing: '-.02em',
           }}>
-            <CountTick value={p.count} animate={animate} />
+            <CountTick value={totalSignalsOverride ?? p.count} animate={animate} />
           </div>
           <div style={{
             marginTop: 4, fontFamily: "'Sora',sans-serif", fontSize: 10,
             color: MUTED_3, letterSpacing: '.18em', textTransform: 'uppercase',
-          }}>all-time signals</div>
+          }}>{totalSignalsOverride != null ? 'all-time signals · you' : 'all-time signals'}</div>
+
         </div>
         <div style={{ textAlign: 'right' }}>
           <span style={{
