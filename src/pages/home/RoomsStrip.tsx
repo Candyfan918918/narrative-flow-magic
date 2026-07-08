@@ -48,6 +48,7 @@ export function RoomsStrip() {
   const wrapRef = useRef<HTMLDivElement>(null)
   const reduce = usePrefersReducedMotion()
   const [dragging, setDragging] = useState(false)
+  const draggingRef = useRef(false)
 
   useEffect(() => {
     setUser(loadUserRooms())
@@ -79,6 +80,7 @@ export function RoomsStrip() {
     const down = (e: PointerEvent) => {
       active = true; moved = false
       startX = e.clientX; startScroll = el.scrollLeft
+      draggingRef.current = true
       setDragging(true)
     }
     const move = (e: PointerEvent) => {
@@ -89,6 +91,7 @@ export function RoomsStrip() {
     }
     const up = () => {
       active = false
+      draggingRef.current = false
       setDragging(false)
       if (moved) {
         // suppress next click
