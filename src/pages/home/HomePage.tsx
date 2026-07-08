@@ -16,7 +16,41 @@ import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
 import { IMMERSIVE_HTML } from './immersiveTemplate'
 import { mountImmersive, renderRoomsMarkup } from './immersiveMount'
+import { Link } from '@tanstack/react-router'
 import './home.css'
+
+const SORA = "'Sora',system-ui,sans-serif"
+const NEWS = "'Newsreader',Georgia,serif"
+
+export function HomeFooter() {
+  return (
+    <footer style={{ background: '#fdf0f5', borderTop: '.5px solid rgba(11,8,15,.06)', padding: '54px 22px 46px', color: '#6b4a5c', fontFamily: "'Inter',system-ui,sans-serif" }}>
+      <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, textAlign: 'center' }}>
+        <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 16, color: '#4a3040' }}>shutap — a room for what you're carrying.</div>
+        <div style={{ display: 'inline-flex', gap: 14, fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.16em', textTransform: 'uppercase' }}>
+          <Link to="/stream" style={{ color: '#6b4a5c', textDecoration: 'none' }}>rooms</Link>
+          <Link to="/halls" style={{ color: '#6b4a5c', textDecoration: 'none' }}>halls</Link>
+          <Link to="/vent/family" style={{ color: '#6b4a5c', textDecoration: 'none' }}>topics</Link>
+        </div>
+        <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: 'Inter', fontSize: 12, color: '#9e7a8c' }}>
+          <Link to="/terms" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Terms</Link>
+          <Link to="/privacy" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Privacy</Link>
+          <Link to="/guidelines" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Guidelines</Link>
+          <Link to="/safety" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Safety</Link>
+          <Link to="/ai-disclosure" style={{ color: '#9e7a8c', textDecoration: 'none' }}>AI Disclosure</Link>
+          <Link to="/legal" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Disclaimer</Link>
+          <a href="mailto:hello@shutap.com" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Contact</a>
+        </div>
+        <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', maxWidth: 620, lineHeight: 1.6 }}>
+          18+ · pseudonymous · your real name never shows · your story, your rules 🤍
+          <br />
+          shutap is your group chat, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
+        </div>
+        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.28em', color: '#c1216b', marginTop: 6 }}>YOU DON'T HAVE TO SHUT UP HERE</div>
+      </div>
+    </footer>
+  )
+}
 
 const SYNCED_KEY = 'shutap_situations_synced'
 function pillarMap(p?: string | null): 'relationships' | 'marriage' | 'family' | 'career' {
