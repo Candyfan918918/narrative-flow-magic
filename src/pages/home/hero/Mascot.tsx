@@ -92,9 +92,9 @@ export function HeroMascot({ size }: { size: number }) {
   )
 }
 
-// Re-export the shared motion hook so this module keeps its stable name
-// while the single implementation lives in src/components/motion.
-export { useReducedMotion as usePrefersReducedMotion } from '@/components/motion/useReducedMotion'
+// Preserve the historical export name; single implementation now lives in
+// src/components/motion (imported and re-aliased above).
+export { usePrefersReducedMotion }
 
 // Small helper — IntersectionObserver hook returning "true when >=threshold visible".
 export function useOnScreen<T extends Element>(ref: React.RefObject<T | null>, threshold = 0.15) {
