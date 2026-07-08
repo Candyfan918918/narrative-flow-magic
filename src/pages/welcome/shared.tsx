@@ -41,18 +41,26 @@ export const ghostBtn: React.CSSProperties = {
 }
 export const wheelSelect: React.CSSProperties = {
   appearance: 'none',
-  background: 'rgba(255,255,255,.06)',
-  border: '1px solid rgba(255,255,255,.14)',
-  borderRadius: 12,
+  WebkitAppearance: 'none',
+  MozAppearance: 'none',
+  background:
+    'linear-gradient(180deg, rgba(247,232,240,0.06) 0%, rgba(247,232,240,0.18) 45%, rgba(231,84,138,0.28) 50%, rgba(247,232,240,0.18) 55%, rgba(247,232,240,0.06) 100%)',
+  border: '1px solid rgba(231,84,138,.30)',
+  borderRadius: 14,
   color: TEXT,
-  fontFamily: "'Newsreader',serif",
-  fontStyle: 'italic',
-  fontSize: 16,
-  padding: '12px 14px',
-  minWidth: 80,
+  fontFamily: "'Sora', system-ui, sans-serif",
+  fontStyle: 'normal',
+  fontWeight: 600,
+  fontVariantNumeric: 'tabular-nums',
+  fontSize: 17,
+  letterSpacing: '.02em',
+  padding: '14px 14px',
+  minWidth: 84,
   textAlign: 'center',
   textAlignLast: 'center',
   cursor: 'pointer',
+  boxShadow:
+    'inset 0 1px 0 rgba(255,255,255,.06), 0 0 0 1px rgba(231,84,138,.10), 0 6px 16px -10px rgba(231,84,138,.35)',
 }
 
 export type Msg = { kind: 'err' | 'ok'; text: string } | null

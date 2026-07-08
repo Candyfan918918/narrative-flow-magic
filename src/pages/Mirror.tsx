@@ -37,7 +37,7 @@ import type { Alias } from '@/data/types'
 import { useNoIndex } from '@/components/NoIndex'
 
 /* ─────────────── design tokens ─────────────── */
-const BG = '#100810'
+const BG = '#160810'
 const INK = '#f7e8f0'
 const MUTED = '#c4a0b2'
 const MUTED_2 = '#9b7d8c'
@@ -1553,7 +1553,7 @@ export function MirrorPage() {
           <p style={{
             margin: 0, fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
             fontSize: 15, color: MUTED, maxWidth: 540, marginLeft: 'auto', marginRight: 'auto',
-          }}>the mirror records, observes, and analyzes. it does not diagnose or advise.</p>
+          }}>the mirror reflects, asks, and encourages. it never judges, advises, or decides.</p>
           <div style={{
             marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
           }}>
