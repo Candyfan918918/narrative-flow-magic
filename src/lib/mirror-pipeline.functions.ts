@@ -331,6 +331,7 @@ export async function crystallizeMirrorSignal(args: {
           sources: initialSources as Record<string, number>,
           trend: initialTrend,
           insight: reading.trait.insight,
+          excerpts: cleaned ? [cleaned] : [],
         })
         const { error: punchErr } = await supabase
           .from('mirror_patterns')
