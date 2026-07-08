@@ -264,6 +264,54 @@ one story is resonating harder than anything else right now — ${v.room_title |
 step into the room: ${v.cta_url ?? v.deep_link ?? ''}`,
   },
 
+  mirror_receipt: {
+    id: 'mirror_receipt',
+    identity: 'hello',
+    emailClass: 'transactional',
+    subject: (v) => `your mirror receipt — ${v.amount ?? ''}`.trim(),
+    preview: () => 'payment received. the mirror stays open.',
+    cta: 'view invoice',
+    htmlDesign: mirrorReceiptHtml,
+    buildBodyText: (v) => `${g(v)}
+
+payment received — ${v.amount ?? ''} for the mirror (${v.plan_interval ?? ''}), covering ${v.period_range ?? ''}. tax included where it applies.
+
+view your invoice: ${v.invoice_url ?? ''}`,
+  },
+
+  mirror_cancelled: {
+    id: 'mirror_cancelled',
+    identity: 'hello',
+    emailClass: 'transactional',
+    subject: (v) => `cancelled — the mirror stays open until ${v.access_until ?? 'the end of your period'}`,
+    preview: () => 'no further charges. your scans are always yours.',
+    cta: 'resume subscription',
+    htmlDesign: mirrorCancelledHtml,
+    buildBodyText: (v) => `${g(v)}
+
+your cancellation went through. the mirror stays open until ${v.access_until ?? 'the end of your billing period'}, and there are no further charges after that. your scans are always yours. venting, scan & being heard stay free, always.
+
+changed your mind? resume anytime: ${v.resume_url ?? 'https://shutap.com/subscribe'}`,
+  },
+
+  mirror_trial_ending: {
+    id: 'mirror_trial_ending',
+    identity: 'hello',
+    emailClass: 'transactional',
+    subject: (v) => `your trial ends ${v.trial_end ?? 'soon'} — no surprises`,
+    preview: () => 'two days left. keep it or cancel — no surprises either way.',
+    cta: 'open the mirror',
+    htmlDesign: mirrorTrialEndingHtml,
+    buildBodyText: (v) => `${g(v)}
+
+we promised to tell you before anything is charged — this is that email. your 14-day free trial ends ${v.trial_end ?? 'soon'}. if the mirror's been useful, do nothing — your ${v.plan_interval ?? ''} plan (${v.amount ?? ''} + tax where it applies) starts then. not for you? cancel from your profile before then and you won't be charged a cent.
+
+open the mirror: ${v.deep_link ?? 'https://shutap.com/mirror'}
+manage or cancel: ${v.manage_url ?? 'https://shutap.com/profile'}`,
+  },
+
+
+
   hall_updates: {
     id: 'hall_updates',
     identity: 'hello',
