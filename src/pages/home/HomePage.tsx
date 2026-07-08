@@ -182,10 +182,13 @@ export function HomePage() {
         {/* HERO */}
         <section
           className="home-chapter"
-          style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 22px 40px', position: 'relative', textAlign: 'center' }}
+          style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden', padding: 'clamp(76px,10vh,110px) clamp(18px,4vw,30px) clamp(50px,8vh,80px)', textAlign: 'center' }}
         >
-          <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22 }}>
-            <HeroMascot size={220} />
+          <div aria-hidden style={{ position: 'absolute', inset: '-30% -10% auto', height: '90vh', background: 'radial-gradient(ellipse at 50% 40%, rgba(231,84,138,.13), transparent 60%)', pointerEvents: 'none' }} />
+          <div style={{ maxWidth: 1560, margin: '0 auto', width: '100%', position: 'relative' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(18px,3vh,40px)' }}>
+              <HeroMascot size={220} />
+            </div>
 
             <Words
               as="h1"
@@ -195,42 +198,44 @@ export function HomePage() {
                 fontSize: heroWordSize,
                 lineHeight: 1,
                 letterSpacing: '-.045em',
-                margin: '18px 0 0',
+                margin: 0,
                 color: '#0b080f',
               }}
             >
               <span style={{ display: 'block' }}>finally, somewhere to</span>
-              <span style={{ display: 'block', fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>not shut up.</span>
+              <span style={{ display: 'block', fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, letterSpacing: '-.02em', background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>not shut up.</span>
             </Words>
 
-            <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 19, color: '#4a3040', lineHeight: 1.55, maxWidth: '44ch', margin: '4px 0 0' }}>
-              venting is free therapy — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
-            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(14px,2.6vh,26px)', marginTop: 'clamp(18px,3.4vh,44px)' }}>
+              <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(17px,1.6vw,21px)', color: '#4a3040', lineHeight: 1.55, maxWidth: '44ch', margin: 0 }}>
+                venting is free therapy — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
+              </p>
 
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
-              <button
-                type="button"
-                ref={magneticHero}
-                onClick={openSpill}
-                onPointerEnter={preloadWelcome}
-                onFocus={preloadWelcome}
-                disabled={pendingCta === 'spill'}
-                style={{ background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', border: 0, padding: '15px 26px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 15, cursor: 'pointer', boxShadow: '0 12px 28px -12px rgba(193,33,107,.55)', letterSpacing: '-.005em' }}
-              >
-                {pendingCta === 'spill' ? 'opening…' : 'spill it →'}
-              </button>
-              <Link
-                to="/stream"
-                ref={magneticSit}
-                style={{ background: '#fff', color: '#0b080f', border: '1px solid rgba(11,8,15,.1)', padding: '15px 26px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 15, textDecoration: 'none', letterSpacing: '-.005em' }}
-              >
-                sit in a room
-              </Link>
-            </div>
+              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  ref={magneticHero}
+                  onClick={openSpill}
+                  onPointerEnter={preloadWelcome}
+                  onFocus={preloadWelcome}
+                  disabled={pendingCta === 'spill'}
+                  style={{ background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', border: 0, padding: '18px 34px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 16, cursor: 'pointer', boxShadow: '0 16px 36px -14px rgba(193,33,107,.6)' }}
+                >
+                  {pendingCta === 'spill' ? 'opening…' : 'spill it →'}
+                </button>
+                <Link
+                  to="/stream"
+                  ref={magneticSit}
+                  style={{ display: 'inline-flex', alignItems: 'center', background: '#fff', color: '#c1216b', border: '1.5px solid rgba(231,84,138,.35)', padding: '18px 34px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 16, textDecoration: 'none' }}
+                >
+                  sit in a room
+                </Link>
+              </div>
 
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 6, fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: '#c1216b' }}>
-              <span className="home-livedot" />
-              {openCount > 0 ? `${openCount} rooms open now` : 'rooms are forming'}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 600, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#e7548a' }}>
+                <span className="home-breathe-dot" style={{ width: 7, height: 7, borderRadius: '50%', background: '#e7548a' }} />
+                {openCount > 0 ? `${openCount} rooms open now` : 'rooms are forming'}
+              </div>
             </div>
           </div>
 
