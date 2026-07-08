@@ -1384,7 +1384,7 @@ export function MirrorPage() {
                 } as React.CSSProperties}
               >
                 <div ref={heroRef} style={{ position: 'relative' }}>
-                  <TarotCard p={mostRecent} animate={animateHero} />
+                  <TarotCard p={mostRecent} animate={animateHero} totalSignalsOverride={aggregateSignals} />
                   {revealing && <DeckBack onDone={() => setRevealing(false)} />}
                 </div>
               </div>
