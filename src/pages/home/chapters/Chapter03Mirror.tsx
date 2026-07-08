@@ -47,6 +47,7 @@ export function Chapter03Mirror() {
           </p>
           <button
             type="button"
+            ref={magneticCta}
             onClick={() => navigate('/subscribe')}
             style={{
               background: 'linear-gradient(135deg,#e9c06a,#c69a3d)',
