@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { LandingNativePage } from '@/pages/landing/LandingPage'
+import { HomePage } from '@/pages/home/HomePage'
+import { HOME_FAQ } from '@/pages/home/HomeFAQ'
 import { SITE_URL } from '@/lib/site'
 
 const HOME_TITLE = "Shutap — vent about relationships, marriage, family, work"
@@ -35,11 +36,20 @@ export const Route = createFileRoute('/')({
             "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
         }),
       },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: HOME_FAQ.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      },
     ],
   }),
-  component: HomeRoute,
+  component: HomePage,
 })
 
-function HomeRoute() {
-  return <LandingNativePage />
-}

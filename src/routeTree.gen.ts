@@ -42,6 +42,7 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug'
+import { Route as VentTopicRouteImport } from './routes/vent.$topic'
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as SubscribeReturnRouteImport } from './routes/subscribe.return'
 import { Route as SitemapsProfilesDotxmlRouteImport } from './routes/sitemaps/profiles[.]xml'
@@ -233,6 +234,11 @@ const WhatHappensSlugRoute = WhatHappensSlugRouteImport.update({
   path: '/what-happens/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VentTopicRoute = VentTopicRouteImport.update({
+  id: '/vent/$topic',
+  path: '/vent/$topic',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UPseudonymRoute = UPseudonymRouteImport.update({
   id: '/u/$pseudonym',
   path: '/u/$pseudonym',
@@ -419,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/sitemaps/profiles.xml': typeof SitemapsProfilesDotxmlRoute
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
+  '/vent/$topic': typeof VentTopicRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -479,6 +486,7 @@ export interface FileRoutesByTo {
   '/sitemaps/profiles.xml': typeof SitemapsProfilesDotxmlRoute
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
+  '/vent/$topic': typeof VentTopicRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -541,6 +549,7 @@ export interface FileRoutesById {
   '/sitemaps/profiles.xml': typeof SitemapsProfilesDotxmlRoute
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
+  '/vent/$topic': typeof VentTopicRoute
   '/what-happens/$slug': typeof WhatHappensSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -603,6 +612,7 @@ export interface FileRouteTypes {
     | '/sitemaps/profiles.xml'
     | '/subscribe/return'
     | '/u/$pseudonym'
+    | '/vent/$topic'
     | '/what-happens/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -663,6 +673,7 @@ export interface FileRouteTypes {
     | '/sitemaps/profiles.xml'
     | '/subscribe/return'
     | '/u/$pseudonym'
+    | '/vent/$topic'
     | '/what-happens/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -724,6 +735,7 @@ export interface FileRouteTypes {
     | '/sitemaps/profiles.xml'
     | '/subscribe/return'
     | '/u/$pseudonym'
+    | '/vent/$topic'
     | '/what-happens/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -782,6 +794,7 @@ export interface RootRouteChildren {
   SitemapsOutcomesDotxmlRoute: typeof SitemapsOutcomesDotxmlRoute
   SitemapsProfilesDotxmlRoute: typeof SitemapsProfilesDotxmlRoute
   UPseudonymRoute: typeof UPseudonymRoute
+  VentTopicRoute: typeof VentTopicRoute
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -1023,6 +1036,13 @@ declare module '@tanstack/react-router' {
       path: '/what-happens/$slug'
       fullPath: '/what-happens/$slug'
       preLoaderRoute: typeof WhatHappensSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vent/$topic': {
+      id: '/vent/$topic'
+      path: '/vent/$topic'
+      fullPath: '/vent/$topic'
+      preLoaderRoute: typeof VentTopicRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/u/$pseudonym': {
@@ -1307,6 +1327,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapsOutcomesDotxmlRoute: SitemapsOutcomesDotxmlRoute,
   SitemapsProfilesDotxmlRoute: SitemapsProfilesDotxmlRoute,
   UPseudonymRoute: UPseudonymRoute,
+  VentTopicRoute: VentTopicRoute,
   WhatHappensSlugRoute: WhatHappensSlugRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
