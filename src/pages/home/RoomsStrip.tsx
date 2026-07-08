@@ -150,45 +150,46 @@ function RoomCard({ card: c, isDragging }: { card: Card; isDragging: () => boole
       ref={rc.ref}
       style={{
         position: 'relative',
-        width: 340,
         flex: 'none',
-        borderRadius: 18,
-        boxShadow: '0 10px 28px -22px rgba(60,10,30,.28)',
+        width: 340,
+        borderRadius: 22,
+        boxShadow: '0 6px 18px -12px rgba(60,10,30,.25)',
       }}
     >
       <Link
         to="/stream"
         hash={`room-${c.id}`}
+        draggable={false}
         style={{
-          display: 'block',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14,
           width: '100%',
           background: '#fff',
-          borderRadius: 18,
-          padding: 18,
+          borderRadius: 22,
+          padding: 24,
           textDecoration: 'none',
-          color: '#0b080f',
-          border: '.5px solid rgba(11,8,15,.06)',
+          color: 'inherit',
+          border: '1px solid rgba(11,8,15,.08)',
           position: 'relative',
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <span style={{ width: 36, height: 36, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg,#f7e8f0,#f060a0)', fontSize: 18 }}>{c.emoji}</span>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#4a3040' }}>{c.alias}</span>
-            <span style={{ fontFamily: 'Inter', fontSize: 11, color: '#9e7a8c' }}>{c.hours}</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+          <span style={{ width: 30, height: 30, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 16, flex: 'none' }}>{c.emoji}</span>
+          <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: '#9e7a8c' }}>{c.alias}</span>
+          <span style={{ marginLeft: 'auto', fontFamily: NEWS, fontStyle: 'italic', fontSize: 12, color: '#9e7a8c' }}>{c.hours}</span>
         </div>
-        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 15, lineHeight: 1.35, color: '#0b080f', marginBottom: 14, minHeight: 60, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 17, lineHeight: 1.3, letterSpacing: '-.01em', color: '#0b080f', flex: 1 }}>
           {c.title}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: SORA, fontWeight: 600, fontSize: 11.5, color: '#6b4a5c' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <span className="home-livedot green" style={{ width: 6, height: 6 }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#6b4a5c' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            <span className="home-breathe-dot" style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5' }} />
             {c.sitting} sitting in
           </span>
           <span>🫂 {c.relates} relate</span>
-          <span style={{ color: '#c1216b', fontFamily: NEWS, fontStyle: 'italic' }}>enter →</span>
+          <span style={{ marginLeft: 'auto', color: '#c1216b', fontFamily: SORA, fontWeight: 700, fontStyle: 'normal', fontSize: 12.5 }}>enter →</span>
         </div>
       </Link>
       {rc.decor}
