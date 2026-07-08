@@ -1145,8 +1145,22 @@ export function MirrorPage() {
     document.head.appendChild(s)
   }, [])
 
-  // daily-first reveal
-  const mostRecent = list[0] ?? null
+  // Headline picks the most recent pattern whose signals come from the
+  // user's own expressed behavior (spill / scan / comments) first —
+  // passive browse/likes/follows are only used as fallback so a room the
+  // user merely viewed can't hijack the reading.
+  const OWN_SOURCES = ['spill', 'scan', 'comments'] as const
+  function ownSignalCount(p: MirrorPatternView): number {
+    const s = p.sources ?? {}
+    return OWN_SOURCES.reduce((a, k) => a + Number(s[k] ?? 0), 0)
+  }
+  const ownAuthored = list.filter((p) => ownSignalCount(p) > 0)
+  const mostRecent = (ownAuthored[0] ?? list[0]) ?? null
+
+  // Aggregate across the whole roster — these numbers show that the mirror
+  // is growing with the user, not the per-pattern counter.
+  const aggregateSignals = list.reduce((a, p) => a + Number(p.count ?? 0), 0)
+
   const [revealing, setRevealing] = useState(false)
   const [animateHero, setAnimateHero] = useState(false)
   const [heroTick, setHeroTick] = useState(0)
