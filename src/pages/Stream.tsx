@@ -126,6 +126,7 @@ export function StreamPage() {
   const { toast: toastMsg, ToastHost } = useToast()
   const [open, setOpen] = useState<RoomTileData | null>(null)
   const [version, setVersion] = useState(0)
+  const [dbRooms, setDbRooms] = useState<RoomTileData[]>([])
   const [openedPillars, setOpenedPillars] = useState<string[] | null>(null)
   // Gate any localStorage / client-only data behind a post-mount flag so the
   // first client render matches SSR output (no hydration mismatch).
@@ -140,6 +141,47 @@ export function StreamPage() {
     window.addEventListener('storage', onStorage)
     return () => window.removeEventListener('storage', onStorage)
   }, [])
+
+  // Fetch public rooms from the DB + subscribe to live inserts.
+  useEffect(() => {
+    let cancelled = false
+    const fetchRooms = async () => {
+      const { data, error } = await supabase
+        .from('rooms')
+        .select('id, alias, emoji, title, body, support, hall, reflection, created_at, updated_at')
+        .order('created_at', { ascending: false })
+        .limit(200)
+      if (cancelled || error || !data) return
+      setDbRooms(
+        data.map((r): RoomTileData => ({
+          id: r.id,
+          alias: r.alias || 'someone',
+          emoji: r.emoji || '🩷',
+          title: r.title || 'untitled',
+          body: r.body || '',
+          reflection: r.reflection || '',
+          hall: ((r.hall as Room['hall']) || 'healing'),
+          support: ((r.support as Room['support']) || 'heard'),
+          hours: relativeHours(r.created_at as string),
+          relates: 0,
+          sitting: 1,
+          reactions: { heard: 0, same: 0, strong: 0, time: 0, brave: 0 },
+          kind: 'spill',
+          initial_scan: null,
+          scan_band: null,
+          scan_signature: null,
+          pillar: null,
+        })),
+      )
+    }
+    void fetchRooms()
+    const channel = supabase
+      .channel('stream-rooms')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'rooms' }, () => { void fetchRooms() })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'rooms' }, () => { void fetchRooms() })
+      .subscribe()
+    return () => { cancelled = true; void supabase.removeChannel(channel) }
+  }, [version])
 
   // Phase 2c — load opened pillars once (client-only; non-blocking).
   useEffect(() => {
@@ -158,9 +200,19 @@ export function StreamPage() {
     // Only mix in user-local rooms after mount so SSR + first client render
     // produce identical markup.
     const user = mounted ? loadUserRooms() : []
-    return [...user, ...seed]
+    // Dedup by id: DB rooms first (authoritative), then local cache (a
+    // just-published room before the DB fetch resolves), then seed.
+    const seen = new Set<string>()
+    const out: RoomTileData[] = []
+    for (const r of [...dbRooms, ...user, ...seed]) {
+      if (seen.has(r.id)) continue
+      seen.add(r.id)
+      out.push(r)
+    }
+    return out
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version, mounted])
+  }, [version, mounted, dbRooms])
+
 
   const filtered = useMemo(() => {
     // Pillar gate: hide user rooms tagged with a closed pillar. Seed rooms
