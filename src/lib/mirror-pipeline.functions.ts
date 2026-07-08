@@ -209,8 +209,11 @@ export async function crystallizeMirrorSignal(args: {
         state: 'active',
       }
       // Always regenerate the hero line when a pattern deepens — the
-      // supportive prompt uses the fresh count/depth/sources numbers.
+      // supportive prompt uses the fresh count/depth/sources numbers plus
+      // recent excerpts of what the user actually said, so the line stays
+      // grounded in their real words.
       try {
+        const excerpts = await recentPatternExcerpts(supabase, matched.id, cleaned)
         const punch = await runMirrorPunchCore({
           name: p.name,
           district: p.district,
@@ -219,6 +222,7 @@ export async function crystallizeMirrorSignal(args: {
           sources: nextSources as Record<string, number>,
           trend: nextTrend,
           insight: p.insight ?? '',
+          excerpts,
         })
         update.punch = punch.punch
         update.record = punch.record
