@@ -66,11 +66,103 @@ async function handleCreated(sub: any, env: StripeEnv) {
 }
 
 
+// Cancellation confirmation email when cancel_at_period_end flips
+// false → true (covers cancels made in the Stripe billing portal too).
+// Idempotent via billing_emails (dedupe on subscription id + period end),
+// so resuming and re-cancelling in a later period sends a fresh one.
+async function maybeSendCancellationEmail(
+  sub: any,
+  env: StripeEnv,
+  prev: { user_id?: string; product_id?: string; cancel_at_period_end?: boolean; current_period_end?: string | null } | null,
+  periodEndIso: string | null,
+) {
+  if (!prev || prev.product_id !== 'mirror') return;
+  const userId = (sub.metadata?.userId as string | undefined) ?? prev.user_id;
+  if (!userId) return;
+  // Normalize to a canonical ISO string — Postgres returns "+00:00" offsets
+  // while toISOString() yields "Z", and the dedupe key must match across both.
+  const raw = periodEndIso ?? prev.current_period_end ?? null;
+  const accessUntilIso = raw ? new Date(raw).toISOString() : null;
+  const accessUntil = accessUntilIso ? formatEmailDate(accessUntilIso) : 'the end of your billing period';
+  await sendBillingEmail({
+    kind: 'mirror_cancelled',
+    dedupeKey: `${sub.id}:${accessUntilIso ?? 'unknown-period-end'}`,
+    userId,
+    vars: {
+      access_until: accessUntil,
+      resume_url: `${APP_ORIGIN}/subscribe`,
+      deep_link: `${APP_ORIGIN}/subscribe`,
+    },
+  });
+}
+
+// Payment receipt on invoice.paid — only for real charges (the $0
+// trial-start invoice must NOT send a receipt) on mirror subscriptions.
+// Idempotent via billing_emails (dedupe on invoice id), so Stripe webhook
+// retries and event replays never double-send.
+async function handleInvoicePaid(invoice: any, env: StripeEnv) {
+  if (!invoice?.id || !(invoice.amount_paid > 0)) return;
+  const line = invoice.lines?.data?.[0];
+  const subId =
+    invoice.subscription ||
+    invoice.parent?.subscription_details?.subscription ||
+    line?.parent?.subscription_item_details?.subscription ||
+    line?.subscription;
+  if (!subId) return; // not a subscription invoice
+  const { data: row } = await getSupabase()
+    .from('subscriptions')
+    .select('user_id, product_id, price_id')
+    .eq('stripe_subscription_id', subId)
+    .eq('environment', env)
+    .maybeSingle();
+  if (!row || row.product_id !== 'mirror') return;
+
+  const interval: string =
+    line?.price?.recurring?.interval ?? line?.plan?.interval ??
+    (String(row.price_id).includes('annual') ? 'year' : 'month');
+  const periodStart = line?.period?.start ?? invoice.period_start;
+  const periodEnd = line?.period?.end ?? invoice.period_end;
+  const periodRange = periodStart && periodEnd
+    ? `${formatEmailDate(periodStart * 1000)} – ${formatEmailDate(periodEnd * 1000)}`
+    : 'the current billing period';
+  const amount = formatStripeAmount(invoice.amount_paid, invoice.currency);
+  const invoiceUrl = invoice.hosted_invoice_url || invoice.invoice_pdf || `${APP_ORIGIN}/profile`;
+
+  await sendBillingEmail({
+    kind: 'mirror_receipt',
+    dedupeKey: invoice.id,
+    userId: row.user_id,
+    vars: {
+      amount,
+      plan_interval: interval === 'year' ? 'annual' : 'monthly',
+      period_range: periodRange,
+      invoice_url: invoiceUrl,
+      deep_link: invoiceUrl,
+    },
+  });
+}
+
 async function handleUpdated(sub: any, env: StripeEnv) {
   const item = sub.items?.data?.[0];
   const periodStart = item?.current_period_start ?? sub.current_period_start;
   const periodEnd = item?.current_period_end ?? sub.current_period_end;
   const userId = sub.metadata?.userId;
+
+  // Read the existing row before upserting so a cancel_at_period_end
+  // false → true transition can be detected (portal cancels included).
+  const { data: prevRow } = await getSupabase()
+    .from('subscriptions')
+    .select('user_id, product_id, cancel_at_period_end, current_period_end')
+    .eq('stripe_subscription_id', sub.id)
+    .eq('environment', env)
+    .maybeSingle();
+  if (prevRow && !prevRow.cancel_at_period_end && (sub.cancel_at_period_end ?? false)) {
+    await maybeSendCancellationEmail(
+      sub, env, prevRow,
+      periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+    );
+  }
+
 
   // Stripe does NOT guarantee `.created` arrives before `.updated`. If we
   // only UPDATE, an out-of-order `.updated` matches zero rows and is lost,
