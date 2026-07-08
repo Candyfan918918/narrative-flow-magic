@@ -509,7 +509,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
             <div style={{ flex: 1, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 16, lineHeight: 1.5, color: '#dccff5' }}>{current.line}</div>
           </div>
           {current.prompt && (
-            <h2 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 21, lineHeight: 1.3, letterSpacing: '-.01em', color: '#f7e8f0', margin: '2px 0' }}>{current.prompt}</h2>
+            <Words as="h2" key={current.prompt} style={{ fontFamily: SORA, fontWeight: 700, fontSize: 21, lineHeight: 1.3, letterSpacing: '-.01em', color: '#f7e8f0', margin: '2px 0' }}>{current.prompt}</Words>
           )}
           {current.card.type === 'multi'    && <MultiW    key={qa.length} card={current.card} onDone={submitAnswer} />}
           {current.card.type === 'rate'     && <RateW     key={qa.length} card={current.card} onDone={submitAnswer} />}
