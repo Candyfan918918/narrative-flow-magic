@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from '@/compat/router'
 import { rememberReturnTo, signOut as doSignOut } from '../lib/auth'
 import { useCurrentAlias, useIsAdmin } from '../hooks/use-current-alias'
 import { EyeMark, ShutapWordmark } from './EyeMark'
+import { useMagnetic } from './motion'
 
 /* Canonical sticky header — identical across Landing, Stream, Halls, Profile.
    Alias pill is driven by the real Supabase session; sign-out clears both
