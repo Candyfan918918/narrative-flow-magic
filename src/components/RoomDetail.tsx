@@ -674,6 +674,12 @@ export function RoomDetail({
           toast={toast}
         />
       )}
+      <RoomShareSheet
+        open={roomShareOpen && !isScan}
+        onClose={() => setRoomShareOpen(false)}
+        room={{ id: room.id, emoji: room.emoji, title: room.title }}
+        url={(typeof window !== 'undefined' ? window.location.origin : 'https://shutap.com') + '/room?id=' + room.id}
+      />
     </div>
   )
 }
