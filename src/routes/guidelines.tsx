@@ -29,8 +29,8 @@ function GuidelinesPage() {
   return (
     <DocLayout
       active="/guidelines"
-      title="community guidelines"
-      subline="short, in-voice. be real, be kind, protect each other."
+      title="Community Guidelines"
+      subline="the short version, in our own voice"
     >
       <div
         style={{
@@ -38,49 +38,27 @@ function GuidelinesPage() {
           border: '.5px solid rgba(11,8,15,.08)',
           borderRadius: 18,
           padding: '22px 24px',
-          boxShadow: '0 12px 30px -24px rgba(80,10,45,.3)',
+          marginTop: 18,
         }}
       >
-        <h3 style={{ marginTop: 0 }}>be real. be kind.</h3>
-        <p>
-          shutap works because people can be honest here without being exposed or attacked. keep it
-          real, aim any edge at the <b>situation</b>, not the person who shared it.
-        </p>
-
-        <h3>don&apos;t post other people&apos;s private info.</h3>
-        <p>
-          no real names, addresses, workplaces, phone numbers, screenshots with identifying detail —
-          about anyone, including yourself. write about your experience, not their identity.
-        </p>
-
-        <h3>no harassment, no hate.</h3>
-        <p>no threats, no slurs, no pile-ons, no dogpiling on someone who shared.</p>
-
-        <h3>nothing illegal.</h3>
-        <p>
-          and <b>absolutely nothing sexual involving minors</b> — ever. content or accounts here
-          are removed and reported.
-        </p>
-
-        <h3>no impersonation, spam, or scraping.</h3>
-        <p>
-          be who you say you are (under your alias). don&apos;t pretend to be someone else.
-          don&apos;t scrape the site, the companion, or other people&apos;s stories.
-        </p>
-
-        <h3>don&apos;t sell services or hand out professional advice.</h3>
-        <p>
-          share <b>your own</b> experience. do not pose as a therapist, doctor, or lawyer, or
-          instruct anyone else what to do medically, legally, or financially.
-        </p>
-
-        <h3>report anything that breaks this.</h3>
-        <p>use the report tools in the room or on a comment — a real person reviews every report.</p>
-
-        <p style={{ marginTop: 22 }}>
-          <b>We remove content and accounts that break these rules.</b>
-        </p>
+        <ul style={{ margin: 0, paddingLeft: 18 }}>
+          <li>this is a place to be heard. be real, be kind to each other.</li>
+          <li>
+            <b>don&rsquo;t post other people&rsquo;s private info</b> — names, addresses, anything
+            that could identify someone. (we scrub a lot of this automatically, but don&rsquo;t
+            try.)
+          </li>
+          <li>no harassment, threats, hate, or cruelty aimed at people.</li>
+          <li>nothing illegal — and absolutely nothing sexual involving minors.</li>
+          <li>don&rsquo;t impersonate, spam, or scrape.</li>
+          <li>don&rsquo;t use shutap to sell services or give professional advice to others.</li>
+          <li>
+            see something that breaks this? <b>report it</b> — there&rsquo;s a button on every
+            post.
+          </li>
+        </ul>
       </div>
+      <p style={{ marginTop: 16 }}>We remove content and accounts that break these rules.</p>
     </DocLayout>
   )
 }

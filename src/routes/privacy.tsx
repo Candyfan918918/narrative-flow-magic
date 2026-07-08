@@ -29,115 +29,121 @@ function PrivacyPage() {
   return (
     <DocLayout
       active="/privacy"
-      title="privacy policy"
-      subline={"pseudonymous by design. your content is scrubbed of identifiers before it\u2019s stored."}
+      title="Privacy Policy"
+      subline="Effective: July 1, 2026 · Controller: Shutap"
     >
-      <p>
-        <b>Effective July 1, 2026.</b> Controller: Shutap. Contact:{' '}
-        <a href="mailto:privacy@shutap.com">privacy@shutap.com</a>. The short version: shutap is
-        pseudonymous by design, an automatic Scrubber removes personal identifiers before anything
-        is stored, we keep only the scrubbed version, we do not sell your personal information, and
-        you can access, export, or delete your data at any time.
-      </p>
-
-      <h3>our approach</h3>
+      <h3>1. Our approach.</h3>
       <p>
         Shutap is built to be pseudonymous and privacy-protective. You write under a pseudonym, and
         our Scrubber automatically removes personal identifiers (names, addresses, specific
-        locations, phone numbers, emails) before storage — we keep only the scrubbed version.
+        locations, phone numbers, emails) from what you write <b>before it is stored</b> — we keep
+        only the scrubbed version.
       </p>
 
-      <h3>what we collect</h3>
+      <h3>2. What we collect.</h3>
       <ul>
-        <li><b>Account:</b> a pseudonym, your email (sign-in and check-ins), timezone, notification preferences, consent records.</li>
-        <li><b>OAuth profile data:</b> if you sign in with Google or Apple, we receive and store your name, email, avatar, and the provider you used. Apple only shares your name on your first sign-in, so we save it right away. Your real name is never shown to other users.</li>
-        <li><b>Content:</b> your stories, spills, scans, and check-in responses — stored only in scrubbed form.</li>
-        <li><b>Usage:</b> product analytics via PostHog and our own database tables (page views, spills, comments, reactions, share clicks, and other in-app events), tied to your pseudonymous user id.</li>
-        <li><b>Approximate location:</b> country and (when available) city derived from your IP address at page load, plus your device / user-agent string. We use this to understand where the community is coming from and to keep the service safe. We do not store your IP address.</li>
-        <li><b>Visit history:</b> per-browser-session records of when you visited, what path you loaded, and whether you're a returning visitor.</li>
+        <li>
+          <b>Account:</b> a pseudonym, your email (for sign-in and check-ins), timezone,
+          notification preferences, consent records.
+        </li>
+        <li>
+          <b>Content:</b> your stories and check-in responses — stored{' '}
+          <b>only in scrubbed (de-identified) form</b>.
+        </li>
+        <li>
+          <b>Usage:</b> analytics about how you use the app (via PostHog), tied to a pseudonymous
+          ID, not your name.
+        </li>
+        <li>
+          <b>Device/technical:</b> standard log/device data.
+        </li>
       </ul>
 
-      <h3>how we use it</h3>
+      <h3>3. How we use it.</h3>
       <p>
-        To run the community and companion; deliver check-ins; provide the Mirror (your patterns
-        over time, for subscribers); produce aggregated, de-identified insights; keep the service
-        safe; and comply with law. <b>We do not sell your personal information.</b>
+        To run the community and companion; to deliver check-ins; to provide the Mirror (your
+        patterns over time, for subscribers); to produce <b>aggregated, de-identified</b> insights
+        (&ldquo;what usually happens when…&rdquo;); to keep the service safe; and to comply with
+        law. <b>We do not sell your personal information.</b>
       </p>
 
-      <h3>ai processing</h3>
+      <h3>4. AI processing.</h3>
       <p>
-        Your messages are processed by <b>Google&apos;s Gemini models via the Lovable AI Gateway</b>
-        {' '}to generate companion responses, Mirror readings, and safety checks. Under the
-        gateway&apos;s commercial terms, <b>your content is not used to train the underlying
-        models.</b> AI processing happens only to provide these features to you.
+        Your messages are processed by AI models (Google&rsquo;s Gemini, accessed through the
+        Lovable AI Gateway) to generate companion and Mirror responses. These responses are
+        generated automatically and are for support and reflection only.{' '}
+        <b>We do not use your content to train AI models</b>, and we send it to these providers
+        solely to generate your response.
       </p>
 
-      <h3>subprocessors</h3>
-      <ul>
-        <li><b>Lovable / Supabase</b> — database, auth, storage, and hosting.</li>
-        <li><b>Cloudflare</b> — edge network. Provides the approximate country/city header used above.</li>
-        <li><b>Lovable AI Gateway (Google Gemini)</b> — AI responses for the companion and Mirror.</li>
-        <li><b>Google / Apple</b> — sign-in providers when you choose to use them.</li>
-        <li><b>Resend</b> — email delivery for sign-in and check-ins.</li>
-        <li><b>PostHog</b> — pseudonymous product analytics with IP-based geolocation.</li>
-      </ul>
-      <p>Each processes data only to provide their service to shutap.</p>
-
-      <h3>legal &amp; safety disclosure</h3>
+      <h3>5. Service providers (subprocessors).</h3>
       <p>
-        We may disclose information where required by law or to prevent imminent harm.
-        Crisis-flagged content is kept private, excluded from public display and our aggregated
-        corpus, and is never sold or monetized.
+        Lovable / Supabase (hosting and database), Resend (transactional email), PostHog (product
+        analytics), and Google (Gemini, via the Lovable AI Gateway, for AI responses). Each
+        processes data only to provide its service.
       </p>
 
-      <h3>retention</h3>
+      <h3>6. Legal/safety disclosure.</h3>
+      <p>
+        We may disclose information where required by law (e.g., valid legal process) or to prevent
+        imminent harm. Crisis-flagged content is kept private, excluded from public display and
+        from our aggregated corpus, and is never sold or monetized.
+      </p>
+
+      <h3>7. Retention.</h3>
       <p>
         We keep your data while your account is active and as needed for the purposes above; you
-        can delete your content or account at any time.
+        can delete your content or account at any time (Section 9).
       </p>
 
-      <h3>security</h3>
+      <h3>8. Security.</h3>
       <p>
         We use reasonable technical and organizational measures to protect your data. No system is
-        perfectly secure. In a breach affecting your personal data, we will notify you and the
-        authorities as required by law.
+        perfectly secure. In the event of a breach affecting your personal data, we will notify you
+        and authorities as required by applicable law.
       </p>
 
-      <h3>your rights</h3>
+      <h3>9. Your rights.</h3>
       <p>
-        Depending on where you live (including under GDPR and California&apos;s CCPA/CPRA), you may
-        have the right to access, correct, delete, export, object to, or restrict processing, and
-        to withdraw consent. Delete your stories and account, or request an export, from
-        <b> Account &amp; Data</b> settings or via{' '}
-        <a href="mailto:privacy@shutap.com">privacy@shutap.com</a>. <b>We do not sell personal
-        information.</b> We will not discriminate against you for exercising these rights. We honor
-        verified requests within 30 days.
+        Depending on where you live (including under <b>GDPR</b> and{' '}
+        <b>California&rsquo;s CCPA/CPRA</b>), you may have the right to access, correct, delete,
+        export (port), object to, or restrict processing of your personal data, and to withdraw
+        consent.{' '}
+        <b>
+          You can delete your stories and your account, and request a data export, from Account
+          &amp; Data settings
+        </b>
+        , or by emailing privacy@shutap.com. We do not sell personal information, so there is
+        nothing to opt out of in that respect. We will not discriminate against you for exercising
+        these rights.
       </p>
 
-      <h3>children</h3>
+      <h3>10. Children.</h3>
       <p>
-        Shutap is for adults 18+. We do not knowingly collect data from anyone under 18; if we
-        learn we have, we delete it.
+        Shutap is for adults <b>18+</b>. We do not knowingly collect data from anyone under 18; if
+        we learn we have, we delete it.
       </p>
 
-      <h3>international users and transfers</h3>
+      <h3>11. International transfers.</h3>
       <p>
-        Shutap is operated from the United States. If you access it from outside the US, your data
-        is processed in the US. Where required for EU or UK users, we rely on appropriate
-        safeguards (such as Standard Contractual Clauses) with our providers.
+        If you access Shutap from outside the United States, your data may be processed in the U.S.
+        and other countries where our providers operate. Where required, we rely on Standard
+        Contractual Clauses and equivalent safeguards for transfers of personal data out of the
+        EEA, UK, and Switzerland.
       </p>
 
-      <h3>cookies</h3>
+      <h3>12. Cookies.</h3>
       <p>
-        We use essential cookies to run the service and privacy-preserving analytics (PostHog). We
-        do not use advertising cookies. In the EU and UK we show a consent banner and default to
-        declining non-essential cookies.
+        We use essential cookies needed to sign you in and keep the service secure, plus
+        privacy-preserving analytics (via PostHog) to understand how the app is used. Where
+        required (e.g., in the EU/UK), we show a consent banner and load non-essential cookies only
+        after you agree.
       </p>
 
-      <h3>changes &amp; contact</h3>
+      <h3>13. Changes &amp; contact.</h3>
       <p>
-        Material changes to this policy will be notified in-product. Questions or requests:{' '}
-        <a href="mailto:privacy@shutap.com">privacy@shutap.com</a>.
+        We&rsquo;ll post updates with a new effective date, and notify you in-app of material
+        changes. Questions or requests: privacy@shutap.com.
       </p>
     </DocLayout>
   )

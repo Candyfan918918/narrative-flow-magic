@@ -7,12 +7,13 @@ import { useRouterState } from '@tanstack/react-router'
 import { SiteFooter } from './SiteFooter'
 
 const DOC_NAV: { href: string; label: string }[] = [
-  { href: '/terms', label: 'terms of service' },
-  { href: '/privacy', label: 'privacy policy' },
-  { href: '/guidelines', label: 'community guidelines' },
-  { href: '/safety', label: 'crisis & safety' },
-  { href: '/contact', label: 'contact' },
-  { href: '/ai-disclosure', label: 'ai disclosure' },
+  { href: '/terms', label: 'Terms of Service' },
+  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/guidelines', label: 'Community Guidelines' },
+  { href: '/safety', label: 'Crisis & Safety' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/ai-disclosure', label: 'AI Disclosure' },
+  { href: '/disclaimer', label: 'Medical / Legal Disclaimer' },
 ]
 
 export function DocLayout({

@@ -6,6 +6,7 @@ const INFO_LINKS: { href: string; label: string }[] = [
   { href: '/safety', label: 'Crisis & Safety' },
   { href: '/contact', label: 'Contact' },
   { href: '/ai-disclosure', label: 'AI Disclosure' },
+  { href: '/disclaimer', label: 'Medical / Legal Disclaimer' },
 ]
 
 export function SiteFooter() {
