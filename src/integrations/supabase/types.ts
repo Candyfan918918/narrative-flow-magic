@@ -110,6 +110,30 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_emails: {
+        Row: {
+          dedupe_key: string
+          id: string
+          kind: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          dedupe_key: string
+          id?: string
+          kind: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          dedupe_key?: string
+          id?: string
+          kind?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       checkin_responses: {
         Row: {
           action: string | null
