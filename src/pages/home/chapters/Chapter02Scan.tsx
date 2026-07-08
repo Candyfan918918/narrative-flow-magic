@@ -53,24 +53,24 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
       ref={ref}
       className="home-chapter"
       style={{
+        position: 'relative',
         background: 'linear-gradient(165deg,#241d47 0%,#151030 60%,#100c14)',
         minHeight: '96vh',
-        padding: 'clamp(90px,12vh,150px) 22px',
         display: 'flex',
         alignItems: 'center',
+        overflow: 'hidden',
         color: '#f7e8f0',
       }}
     >
-      <span aria-hidden className="home-watermark" style={{ left: '3%', bottom: '6%', color: 'rgba(127,119,221,.08)' }}>scan</span>
-      <div className="home-grid-2" style={{ maxWidth: 1100, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'center' }}>
-        <div>
-          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#aaa3e8', marginBottom: 18 }}>
+      <div className="home-grid-2" style={{ maxWidth: 1280, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 'clamp(34px,6vw,90px)', padding: 'clamp(90px,12vh,150px) clamp(20px,4vw,32px)', alignItems: 'center' }}>
+        <div style={{ order: 2 }}>
+          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#aaa3e8', marginBottom: 22 }}>
             chapter 02 — scan it
           </div>
-          <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: 1.05, letterSpacing: '-.03em', margin: '0 0 20px', color: '#fff' }}>
+          <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: 1.08, letterSpacing: '-.04em', margin: '0 0 24px', color: '#fff' }}>
             how heavy is it, <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#aaa3e8', fontWeight: 400 }}>really?</em>
           </h2>
-          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 19, lineHeight: 1.6, color: '#d5c9de', maxWidth: '46ch', margin: '0 0 28px' }}>
+          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(16px,1.4vw,20px)', lineHeight: 1.6, color: '#c6c0ef', maxWidth: '44ch', margin: '0 0 32px' }}>
             a 60-second read. the companion asks, you answer, and you get a private intensity score — before you decide whether the world gets to sit in.
           </p>
           <button
@@ -78,14 +78,17 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
             ref={magneticCta}
             onClick={onCtaScan}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 10,
               background: '#fff',
-              color: '#241d47',
+              color: '#100c14',
               border: 0,
-              padding: '14px 22px',
+              padding: '16px 30px',
               borderRadius: 999,
               fontFamily: SORA,
               fontWeight: 700,
-              fontSize: 14,
+              fontSize: 15,
               cursor: 'pointer',
             }}
           >
@@ -93,24 +96,24 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
           </button>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', order: 1 }}>
           <div
             ref={card.ref}
             style={{
               width: 'min(330px,88vw)',
-              background: 'linear-gradient(170deg,#241226,#160b16)',
-              border: '.5px solid rgba(231,84,138,.35)',
+              background: 'linear-gradient(170deg,#241226,#160b16 70%)',
+              border: '1px solid rgba(231,84,138,.35)',
               borderRadius: 24,
-              padding: 18,
-              boxShadow: '0 32px 60px -30px rgba(60,10,30,.6)',
+              padding: '24px 22px 20px',
+              boxShadow: '0 40px 90px -40px rgba(0,0,0,.7)',
               position: 'relative',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-              <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#aaa3e8', padding: '4px 10px', border: '.5px solid rgba(170,163,232,.3)', borderRadius: 999 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(231,84,138,.16)', color: '#f7b8d4', border: '.5px solid rgba(231,84,138,.3)', borderRadius: 999, padding: '4px 12px', fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase' }}>
                 relationships
               </span>
-              <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.4)' }}>
+              <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c' }}>
                 the scan · sample
               </span>
             </div>
@@ -129,20 +132,20 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
                 />
               )}
               {phase === 2 && (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 18 }}>
-                  <EyeMark size={64} />
-                  <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, color: '#d5c9de' }}>reading the weight of it…</div>
-                  <div style={{ display: 'inline-flex', gap: 6 }}>
-                    <span className="home-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#aaa3e8', animationDelay: '0s' }} />
-                    <span className="home-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#aaa3e8', animationDelay: '.2s' }} />
-                    <span className="home-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#aaa3e8', animationDelay: '.4s' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 16 }}>
+                  <EyeMark size={46} />
+                  <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 16.5, color: '#c6c0ef' }}>reading the weight of it…</div>
+                  <div style={{ display: 'inline-flex', gap: 7 }}>
+                    <span className="home-breathe-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#7F77DD' }} />
+                    <span className="home-breathe-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#7F77DD', animationDelay: '.2s' }} />
+                    <span className="home-breathe-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#7F77DD', animationDelay: '.4s' }} />
                   </div>
                 </div>
               )}
               {phase === 3 && <ScanDial value={counter} progress={dialProgress} />}
             </div>
 
-            <div style={{ marginTop: 12, fontFamily: SORA, fontWeight: 700, fontSize: 9, letterSpacing: '.24em', color: 'rgba(255,255,255,.35)', textAlign: 'center' }}>
+            <div style={{ marginTop: 10, opacity: .6, textAlign: 'center', fontFamily: SORA, fontWeight: 800, fontSize: 8.5, letterSpacing: '.28em', color: '#c4a0b2' }}>
               SHUTAP · THE SCAN
             </div>
             {card.decor}
@@ -152,6 +155,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
     </section>
   )
 }
+
 
 function ScanQuestion({ n, question, options, highlight }: { n: number; question: string; options: string[]; highlight: number }) {
   const reduce = usePrefersReducedMotion()
