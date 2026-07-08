@@ -112,18 +112,18 @@ export function RoomsStrip() {
   const doubled = useMemo(() => (cards.length > 0 ? [...cards, ...cards] : []), [cards])
 
   return (
-    <section style={{ background: '#fdf0f5', padding: '80px 0 60px' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 22px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 22 }}>
-        <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(24px,3vw,36px)', letterSpacing: '-.03em', margin: 0 }}>
+    <section style={{ position: 'relative', background: '#fdf0f5', padding: 'clamp(80px,11vh,130px) 0 clamp(56px,8vh,90px)', overflow: 'hidden' }}>
+      <div style={{ maxWidth: 1360, margin: '0 auto', padding: '0 30px 26px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+        <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(28px,3.6vw,54px)', letterSpacing: '-.04em', margin: 0, color: '#0b080f' }}>
           rooms open <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', fontWeight: 400 }}>right now.</em>
         </h2>
-        <Link to="/stream" style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', textDecoration: 'none', fontSize: 15 }}>
+        <Link to="/stream" style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', textDecoration: 'none', fontSize: 16 }}>
           all rooms →
         </Link>
       </div>
 
       {cards.length === 0 ? (
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 22px' }}>
+        <div style={{ maxWidth: 1360, margin: '0 auto', padding: '0 30px' }}>
           <p style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#9e7a8c', fontSize: 15 }}>rooms are forming.</p>
         </div>
       ) : (
@@ -132,7 +132,7 @@ export function RoomsStrip() {
           className={`home-strip-wrap${dragging ? ' dragging' : ''}`}
           style={{ overflowX: 'auto', overflowY: 'hidden', cursor: dragging ? 'grabbing' : 'grab', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
         >
-          <div className={reduce ? '' : 'home-strip-track'} style={{ display: 'inline-flex', gap: 16, padding: '4px 22px' }}>
+          <div className={reduce ? '' : 'home-strip-track'} style={{ display: 'inline-flex', gap: 18, padding: '6px 30px 22px' }}>
             {(reduce ? cards : doubled).map((c, i) => (
               <RoomCard key={`${c.id}-${i}`} card={c} isDragging={() => draggingRef.current} />
             ))}
