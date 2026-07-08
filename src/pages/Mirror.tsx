@@ -565,7 +565,7 @@ function TarotCard({
 
       {/* signal bar */}
       <div style={{ position: 'relative', margin: '2px 0 10px' }}>
-        <SignalBar sources={p.sources ?? {}} animate={animate} />
+        <SignalBar sources={p.sources ?? {}} animate={animate} totalOverride={totalSignalsOverride} />
       </div>
 
       {/* readout row */}
