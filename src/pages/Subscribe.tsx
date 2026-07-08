@@ -103,9 +103,43 @@ export function SubscribePage() {
         <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 26, lineHeight: 1.3, marginBottom: 8 }}>
           open the full mirror
         </div>
+        {!alreadySubbed && (
+          <div style={{ display: 'flex', gap: 8, marginBottom: 14, background: 'rgba(255,255,255,.04)', border: '.5px solid rgba(247,232,240,.14)', borderRadius: 999, padding: 4, width: 'fit-content' }}>
+            {(['monthly', 'annual'] as const).map((k) => {
+              const active = planKey === k
+              const label = k === 'monthly' ? 'monthly · $7.99/mo' : 'annual · $49.99/yr'
+              return (
+                <button
+                  key={k}
+                  onClick={() => {
+                    if (planKey === k) return
+                    setPlanKey(k)
+                    setErr(null)
+                    navigate(`/subscribe?plan=${k}`, { replace: true })
+                  }}
+                  style={{
+                    background: active ? '#e7548a' : 'transparent',
+                    color: active ? '#fff' : '#caaebb',
+                    border: 'none',
+                    borderRadius: 999,
+                    padding: '8px 14px',
+                    fontFamily: 'Sora, sans-serif',
+                    fontWeight: 700,
+                    fontSize: 12,
+                    letterSpacing: '.02em',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {label}{k === 'annual' && !active ? ' · save ~48%' : ''}
+                </button>
+              )
+            })}
+          </div>
+        )}
         <div style={{ color: '#caaebb', fontSize: 14.5, lineHeight: 1.55, marginBottom: 18 }}>
           {plan.label} · {plan.price} · 14 days free · founders' pricing
         </div>
+
         {alreadySubbed ? (
           <div style={{ background: 'rgba(255,255,255,.04)', border: '.5px solid rgba(247,232,240,.16)', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 18, lineHeight: 1.4 }}>
