@@ -1355,19 +1355,21 @@ export function MirrorPage() {
                 letterSpacing: '.28em',
               }}>EXAMPLE</div>
             )}
-            <div
-              ref={heroTiltRef}
-              style={{
-                width: 'min(440px, 92vw)', margin: '0 auto',
-                position: 'relative', transformStyle: 'preserve-3d',
-                transition: 'transform .2s ease',
-              } as React.CSSProperties}
-            >
-              <div ref={heroRef} style={{ position: 'relative' }}>
-                <TarotCard p={mostRecent} animate={animateHero} />
-                {revealing && <DeckBack onDone={() => setRevealing(false)} />}
+            <Reveal fx="zoom">
+              <div
+                ref={heroTiltRef}
+                style={{
+                  width: 'min(440px, 92vw)', margin: '0 auto',
+                  position: 'relative', transformStyle: 'preserve-3d',
+                  transition: 'transform .2s ease',
+                } as React.CSSProperties}
+              >
+                <div ref={heroRef} style={{ position: 'relative' }}>
+                  <TarotCard p={mostRecent} animate={animateHero} />
+                  {revealing && <DeckBack onDone={() => setRevealing(false)} />}
+                </div>
               </div>
-            </div>
+            </Reveal>
 
             <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
               <ActionPill onClick={replay} ariaLabel="Replay reveal">
