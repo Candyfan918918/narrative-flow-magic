@@ -55,12 +55,13 @@ type PatternRow = {
 }
 
 function depthFor(count: number): number {
-  if (count < 10) return 1
-  if (count < 25) return 2
-  if (count < 60) return 3
-  if (count < 120) return 4
+  if (count < 3) return 1
+  if (count < 7) return 2
+  if (count < 15) return 3
+  if (count < 30) return 4
   return 5
 }
+
 
 function pushTrend(trend: number[]): number[] {
   const arr = (Array.isArray(trend) && trend.length === 7 ? [...trend] : [0, 0, 0, 0, 0, 0, 0]).map(Number)
