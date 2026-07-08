@@ -108,7 +108,7 @@ export function Hero() {
                 </div>
               </div>
               {' '}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#9e7a8c', paddingBottom: 'clamp(26px,4vh,40px)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#9e7a8c', paddingBottom: 'clamp(26px,4vh,40px)', marginTop: 'clamp(20px,3vh,40px)' }}>
                 {' '}
                 <span style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '13px' }}>
                   scroll
