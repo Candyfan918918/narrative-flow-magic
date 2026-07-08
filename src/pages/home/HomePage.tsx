@@ -109,8 +109,16 @@ export function HomePage() {
       motion: 'full',
       showPreloader: false,
     })
-    return () => { dispose(); if (root) root.innerHTML = '' }
+    const disposeMotion = mountHomeMotion(root)
+    return () => { disposeMotion(); dispose(); if (root) root.innerHTML = '' }
   }, [navigate, openSpill, openScan])
+
+  // Scroll-snap: opt in on the homepage only.
+  useEffect(() => {
+    const html = document.documentElement
+    html.classList.add('home-scroll-snap')
+    return () => { html.classList.remove('home-scroll-snap') }
+  }, [])
 
   // Hash intents — /#spill, /#scan, /#mirror
   useEffect(() => {
