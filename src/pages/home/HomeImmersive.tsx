@@ -3,7 +3,9 @@
  * RestInjector bridge and IMMERSIVE_REST_HTML template are gone. All
  * data-* hooks preserved so mountImmersive drives interactivity unchanged. */
 import { EyeGradients } from './sections/EyeGradients'
-import { Preloader } from './sections/Preloader'
+// Preloader intentionally not rendered: it was a render-blocking full-screen
+// overlay only removed after full hydration. mountImmersive's revealHero
+// path handles the missing [data-pre] element.
 import { HomeHeader } from './sections/Header'
 import { Hero } from './sections/Hero'
 import { Chapter01Spill } from './sections/Chapter01Spill'
@@ -18,7 +20,6 @@ export function HomeImmersive() {
   return (
     <>
       <EyeGradients />
-      <Preloader />
       <HomeHeader />
       <main>
         <Hero />
