@@ -20,6 +20,7 @@ import { Chapter03Mirror } from './chapters/Chapter03Mirror'
 import { RoomsStrip } from './RoomsStrip'
 import { HomeFAQ } from './HomeFAQ'
 import { Link } from '@tanstack/react-router'
+import { Words } from '@/components/motion'
 import './home.css'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -41,9 +42,6 @@ function hashKey(input: { pillar?: string | null; title?: string | null; body?: 
   for (let i = 0; i < raw.length; i++) h = ((h << 5) + h + raw.charCodeAt(i)) | 0
   return (h >>> 0).toString(36)
 }
-
-const HERO_WORDS_LINE_1 = ['finally,', 'somewhere', 'to']
-const HERO_WORDS_LINE_2 = ['not', 'shut', 'up.']
 
 export function HomePage() {
   const navigate = useNavigate()
