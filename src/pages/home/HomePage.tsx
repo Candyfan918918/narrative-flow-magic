@@ -265,6 +265,7 @@ export function HomePage() {
               </Words>
               <button
                 type="button"
+                ref={magneticFinale}
                 onClick={openSpill}
                 style={{ background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', border: 0, padding: '16px 32px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 15, cursor: 'pointer' }}
               >
