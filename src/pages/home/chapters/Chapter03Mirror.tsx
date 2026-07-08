@@ -18,6 +18,7 @@ export function Chapter03Mirror() {
   const reduce = usePrefersReducedMotion()
   const navigate = useNavigate()
   const [idx, setIdx] = useState(0)
+  const magneticCta = useMagnetic<HTMLButtonElement>()
   useEffect(() => {
     if (reduce || !onScreen) return
     const iv = window.setInterval(() => setIdx((i) => (i + 1) % DEMO_MIRROR_CAST.length), CYCLE_MS)
