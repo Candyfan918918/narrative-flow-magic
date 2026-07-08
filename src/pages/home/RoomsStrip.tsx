@@ -6,6 +6,7 @@ import { Link } from '@tanstack/react-router'
 import { SHUTAP_SEED } from '@/data/seed'
 import type { Room } from '@/data/types'
 import { usePrefersReducedMotion } from './hero/Mascot'
+import { useReactiveCard } from '@/components/motion'
 
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
