@@ -98,6 +98,7 @@ export function CompanionBubble({
       role="button"
       tabIndex={0}
       aria-label="Ask the companion"
+      className="companion-halo"
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen() } }}
       style={{
         position: 'fixed',
