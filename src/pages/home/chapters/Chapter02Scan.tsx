@@ -142,6 +142,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
             <div style={{ marginTop: 12, fontFamily: SORA, fontWeight: 700, fontSize: 9, letterSpacing: '.24em', color: 'rgba(255,255,255,.35)', textAlign: 'center' }}>
               SHUTAP · THE SCAN
             </div>
+            {card.decor}
           </div>
         </div>
       </div>
