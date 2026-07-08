@@ -13,7 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles/global.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { GlobalHeader } from "@/components/GlobalHeader";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+
 import { CompanionBubble } from "@/components/CompanionBubble";
 import { useNavigate } from "@/compat/router";
 
@@ -230,7 +230,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PaymentTestModeBanner />
+      
       <GlobalHeader />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
