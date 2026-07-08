@@ -252,6 +252,7 @@ export function HomePage() {
               <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 18, color: '#9e7a8c' }}>ready when you are.</div>
               <Words
                 as="h2"
+                stagger={45}
                 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(44px,8vw,110px)', letterSpacing: '-.05em', lineHeight: 1, margin: 0 }}
               >
                 say it <em style={{ fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>here.</em>
