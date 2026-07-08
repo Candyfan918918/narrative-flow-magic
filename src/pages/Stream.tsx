@@ -212,12 +212,8 @@ export function StreamPage() {
           })}
         </div>
 
-        {/* grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
-          {filtered.map((r) => (
-            <RoomTile key={r.id} room={r} onOpen={(room) => setOpen(room)} />
-          ))}
-        </div>
+        {/* waterfall */}
+        <WaterfallFeed filtered={filtered} onOpen={(room) => setOpen(room)} />
 
         {filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: '50px 0', fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#9e7a8c' }}>
@@ -241,6 +237,46 @@ export function StreamPage() {
       )}
 
       {ToastHost}
+    </div>
+  )
+}
+
+function WaterfallFeed({ filtered, onOpen }: { filtered: RoomTileData[]; onOpen: (r: RoomTileData) => void }) {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 720px)')
+    const upd = () => setIsMobile(mq.matches)
+    upd()
+    mq.addEventListener('change', upd)
+    return () => mq.removeEventListener('change', upd)
+  }, [])
+
+  // Weave nudges into slots 1 and 3
+  const items: FeedItem[] = []
+  let nudgeIx = 0
+  const nudgeSlots = new Set([1, 3])
+  for (const r of filtered) {
+    if (nudgeSlots.has(items.length) && nudgeIx < NUDGES.length) {
+      items.push({ kind: 'nudge', text: NUDGES[nudgeIx], key: 'nudge-' + nudgeIx })
+      nudgeIx++
+    }
+    items.push({ kind: 'room', room: r })
+  }
+
+  const render = (it: FeedItem) =>
+    it.kind === 'room'
+      ? <RoomTile key={it.room.id} room={it.room} onOpen={onOpen} />
+      : <NudgeTile key={it.key} text={it.text} />
+
+  if (isMobile) {
+    return <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>{items.map(render)}</div>
+  }
+  const left = items.filter((_, i) => i % 2 === 0)
+  const right = items.filter((_, i) => i % 2 === 1)
+  return (
+    <div style={{ display: 'flex', gap: 13, alignItems: 'flex-start' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13 }}>{left.map(render)}</div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13 }}>{right.map(render)}</div>
     </div>
   )
 }
