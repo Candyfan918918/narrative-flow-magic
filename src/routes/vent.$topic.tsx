@@ -7,6 +7,7 @@ import type { Room } from '@/data/types'
 import { SITE_URL } from '@/lib/site'
 import { findVentTopic, VENT_TOPICS, type VentTopic } from '@/lib/seo/venting-topics'
 import { HomeFooter } from '@/pages/home/HomePage'
+import { Words, Reveal } from '@/components/motion'
 
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
@@ -174,7 +175,11 @@ function VentTopicPage() {
         {/* Room cards */}
         {rooms.length > 0 ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 16 }}>
-            {rooms.map((r: Room) => <VentRoomCard key={r.id} room={r} />)}
+            {rooms.map((r: Room) => (
+              <Reveal key={r.id} fx="pop">
+                <VentRoomCard room={r} />
+              </Reveal>
+            ))}
           </div>
         ) : (
           <p style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#9e7a8c' }}>
@@ -184,9 +189,9 @@ function VentTopicPage() {
 
         {/* FAQ */}
         <div style={{ marginTop: 56 }}>
-          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.22em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 12 }}>
+          <Words as="div" style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.22em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 12 }}>
             common questions
-          </div>
+          </Words>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {faq.map((f, i) => (
               <details key={i} style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 12, padding: '14px 16px' }}>
@@ -202,7 +207,7 @@ function VentTopicPage() {
 
         {/* CTA */}
         <div style={{ marginTop: 56, background: '#100c14', color: '#f7e8f0', borderRadius: 24, padding: '46px 30px', textAlign: 'center' }}>
-          <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(28px,4vw,44px)', letterSpacing: '-.03em', margin: '0 0 12px' }}>say it here.</h2>
+          <Words as="h2" style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(28px,4vw,44px)', letterSpacing: '-.03em', margin: '0 0 12px' }}>say it here.</Words>
           <p style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c4a0b2', fontSize: 16, margin: '0 0 22px' }}>
             open a room. someone who's lived your exact {topic.label} thing is around.
           </p>
