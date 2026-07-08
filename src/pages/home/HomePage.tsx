@@ -256,15 +256,15 @@ export function HomePage() {
         {/* Finale */}
         <section
           className="home-chapter"
-          style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '96px 22px', textAlign: 'center' }}
+          style={{ position: 'relative', background: '#fdf0f5', padding: '60px 30px 40px', overflow: 'hidden', textAlign: 'center' }}
         >
           <Reveal fx="zoom">
-            <div style={{ maxWidth: 900, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22 }}>
-              <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 18, color: '#9e7a8c' }}>ready when you are.</div>
+            <div style={{ maxWidth: 1360, margin: '0 auto', padding: '60px 0 70px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(17px,1.6vw,22px)', color: '#6b4a5c', marginBottom: 18 }}>ready when you are.</div>
               <Words
                 as="h2"
                 stagger={45}
-                style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(44px,8vw,110px)', letterSpacing: '-.05em', lineHeight: 1, margin: 0 }}
+                style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(44px,8vw,110px)', letterSpacing: '-.05em', lineHeight: 1, margin: '0 0 44px', color: '#0b080f' }}
               >
                 say it <em style={{ fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>here.</em>
               </Words>
@@ -272,7 +272,7 @@ export function HomePage() {
                 type="button"
                 ref={magneticFinale}
                 onClick={openSpill}
-                style={{ background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', border: 0, padding: '16px 32px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 15, cursor: 'pointer' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', border: 0, padding: '22px 46px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 18, cursor: 'pointer', boxShadow: '0 20px 44px -16px rgba(193,33,107,.6)' }}
               >
                 join shutap →
               </button>
