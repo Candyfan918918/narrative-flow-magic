@@ -22,6 +22,7 @@ const entries: SitemapEntry[] = [
   { path: "/guidelines", changefreq: "yearly", priority: "0.4" },
   { path: "/safety", changefreq: "yearly", priority: "0.4" },
   { path: "/ai-disclosure", changefreq: "yearly", priority: "0.4" },
+  { path: "/disclaimer", changefreq: "yearly", priority: "0.4" },
   { path: "/legal", changefreq: "yearly", priority: "0.3" },
   ...HUBS.map((h) => ({
     path: `/is-it-normal/${h.slug}`,
