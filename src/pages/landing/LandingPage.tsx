@@ -18,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
 import type { Room } from '@/data/types'
 import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
+import { Words } from '@/components/motion'
 import './landing.native.css'
 
 // Shared sync key (kept identical to iframe bridge in src/pages/Landing.tsx).
