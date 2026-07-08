@@ -201,12 +201,27 @@ async function handleUpdated(sub: any, env: StripeEnv) {
 }
 
 async function handleDeleted(sub: any, env: StripeEnv) {
+  const { data: prevRow } = await getSupabase()
+    .from('subscriptions')
+    .select('user_id, product_id, cancel_at_period_end, current_period_end')
+    .eq('stripe_subscription_id', sub.id)
+    .eq('environment', env)
+    .maybeSingle();
+
   const { error, count } = await getSupabase().from('subscriptions').update({
     status: 'canceled',
     updated_at: new Date().toISOString(),
   }, { count: 'exact' }).eq('stripe_subscription_id', sub.id).eq('environment', env);
   if (error) console.error('[stripe webhook] subscriptions update failed on deleted:', error, { subscription_id: sub.id, env });
   else if (!count) console.error(`[stripe webhook] no subscription row for ${sub.id} — event out of order?`, { env });
+
+  // If the subscription ended without a prior cancellation confirmation
+  // (e.g. immediate cancel), send it now — the dedupe key (subscription id +
+  // period end) makes this a no-op when handleUpdated already confirmed.
+  const endedAtIso = sub.ended_at
+    ? new Date(sub.ended_at * 1000).toISOString()
+    : (prevRow?.current_period_end ?? null);
+  await maybeSendCancellationEmail(sub, env, prevRow, endedAtIso);
 }
 
 async function handleInvoicePaymentFailed(invoice: any, env: StripeEnv) {
