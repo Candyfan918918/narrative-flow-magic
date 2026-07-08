@@ -87,6 +87,7 @@ export function RoomDetail({
   const [active, setActive] = useState<Set<string>>(new Set())
   const [related, setRelated] = useState(false)
   const [scanShareOpen, setScanShareOpen] = useState(false)
+  const [roomShareOpen, setRoomShareOpen] = useState(false)
   const [guide, setGuide] = useState<string | null>(null)
   const [chips, setChips] = useState<string[]>([])
   const [helpText, setHelpText] = useState('seen without your real name.')
