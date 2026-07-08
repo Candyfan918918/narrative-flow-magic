@@ -105,7 +105,7 @@ export function usePrefersReducedMotion() {
 }
 
 // Small helper — IntersectionObserver hook returning "true when >=threshold visible".
-export function useOnScreen<T extends Element>(ref: React.RefObject<T>, threshold = 0.15) {
+export function useOnScreen<T extends Element>(ref: React.RefObject<T | null>, threshold = 0.15) {
   const [on, setOn] = useState(false)
   useEffect(() => {
     const el = ref.current
