@@ -39,7 +39,7 @@ function splitNode(node: ReactNode, counter: { n: number }): ReactNode {
         <span
           key={'w' + idx}
           className="mo-word"
-          style={{ transitionDelay: `${idx * 45}ms` }}
+          style={{ transitionDelay: `${idx * 15}ms` }}
         >
           {p}
         </span>
