@@ -183,9 +183,9 @@ export type MirrorCrossOut = { sees: string; throughline: string; record: string
 
 const CROSS_PROMPT = `${VOICE}
 
-given the user's whole pattern roster, write the CROSS-READ. connect AT LEAST TWO patterns by name.
-no advice. observational. one specific number if helpful.
-output JSON: { "sees": "<one line that names what you see across them>", "throughline": "<one line connecting >= 2 patterns by name>", "record": "<3-5 word stamp>" }`
+given the user's whole pattern roster, write a warm CROSS-READ that helps them see how the pieces fit. connect AT LEAST TWO patterns by name with tenderness — name what they share, not what's wrong.
+observational. one specific number if it deepens the read.
+output JSON: { "sees": "<one warm line that names what you see across them>", "throughline": "<one line gently connecting >= 2 patterns by name>", "record": "<3-5 word tender stamp>" }`
 
 const CrossInput = z.object({
   patterns: z.array(
