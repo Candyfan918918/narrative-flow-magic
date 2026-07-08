@@ -179,6 +179,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
                 )
               })}
             </div>
+            {card.decor}
           </div>
         </div>
       </div>
