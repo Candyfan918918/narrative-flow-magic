@@ -1,7 +1,7 @@
 // Chapter 02 — "the scan · sample". 4-phase loop inside a 330px stage.
 import { useEffect, useRef, useState } from 'react'
 import { useOnScreen, usePrefersReducedMotion } from '../hero/Mascot'
-import { useReactiveCard } from '@/components/motion'
+import { useReactiveCard, useMagnetic } from '@/components/motion'
 import { EyeMark } from '@/components/brand/EyeMark'
 
 const SORA = "'Sora',system-ui,sans-serif"
