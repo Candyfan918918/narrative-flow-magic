@@ -17,7 +17,12 @@ import {
   sanitizePunch,
   fallbackPunch,
   fallbackRecord,
+  rejectsAdviceOrClinical,
 } from './mirror-guards'
+
+// Emoji that read as accusatory / judgmental on a pattern name. The reading
+// prompt occasionally reaches for these; swap for a neutral district glyph.
+const ACCUSATORY_NAME_EMOJI = new Set(['🚩', '👎', '💩', '🤡', '👺', '🤥', '🖕'])
 
 const VOICE = `you are THE MIRROR — a warm, perceptive close friend who notices patterns in what someone is working through, and names them with tenderness.
 you REFLECT, never judge. you celebrate self-awareness, notice effort and movement, and frame patterns as understandable protections a person built for good reasons — never flaws, never failures.
