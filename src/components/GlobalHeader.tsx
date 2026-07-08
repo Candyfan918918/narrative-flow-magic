@@ -106,6 +106,7 @@ export function GlobalHeader() {
     cursor: 'pointer',
   }
 
+  if (isHome) return null
   return (
     <header
       style={{
