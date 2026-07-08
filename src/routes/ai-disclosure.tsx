@@ -5,7 +5,7 @@ import { SITE_URL } from '@/lib/site'
 const URL = `${SITE_URL}/ai-disclosure`
 const TITLE = 'AI Disclosure — Shutap'
 const DESCRIPTION =
-  'What the AI on shutap does, what it isn\u2019t, that it can be wrong, and which models we use — Google Gemini via the Lovable AI Gateway, no training on your content.'
+  'What the AI on Shutap does, what it isn\u2019t, that it can be wrong, and which models we use — Google Gemini via the Lovable AI Gateway.'
 
 export const Route = createFileRoute('/ai-disclosure')({
   head: () => ({
