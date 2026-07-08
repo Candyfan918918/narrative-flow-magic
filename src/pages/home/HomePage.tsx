@@ -53,7 +53,6 @@ export function HomePage() {
   const [scanOpen, setScanOpen] = useState(false)
   const [composerOpen, setComposerOpen] = useState(false)
   const [pendingCta, setPendingCta] = useState<null | 'spill' | 'scan'>(null)
-  const [wordsIn, setWordsIn] = useState(reduce)
 
   // Live count: rooms currently open (seed + user-published)
   const [openCount, setOpenCount] = useState<number>(SHUTAP_SEED.rooms?.length ?? 0)
@@ -78,13 +77,6 @@ export function HomePage() {
     el.classList.add('home-scroll-snap')
     return () => el.classList.remove('home-scroll-snap')
   }, [])
-
-  useEffect(() => {
-    if (reduce) return
-    // trigger word reveal after mount
-    const t = window.setTimeout(() => setWordsIn(true), 50)
-    return () => window.clearTimeout(t)
-  }, [reduce])
 
   useEffect(() => {
     void router.preloadRoute({ to: '/welcome' }).catch(() => {})
