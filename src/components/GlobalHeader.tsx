@@ -186,14 +186,18 @@ export function GlobalHeader() {
   if (isHome) return null
   return (
     <header
+      ref={headerRef}
+      data-hdr-variant={variant}
       style={{
         position: 'sticky',
         top: 0,
         zIndex: 40,
         background: barBg,
         borderBottom: barBorder,
+        transition: 'background-color .35s ease, border-color .35s ease, color .35s ease',
       }}
     >
+
       <div
         style={{
           maxWidth: 1100,
