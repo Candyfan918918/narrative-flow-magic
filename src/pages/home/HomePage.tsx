@@ -16,8 +16,11 @@ import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
 import { IMMERSIVE_HTML } from './immersiveTemplate'
 import { mountImmersive, renderRoomsMarkup } from './immersiveMount'
+import { mountHomeMotion } from './motionAdapter'
+import { CursorTrail } from '@/components/motion/CursorTrail'
 import { Link } from '@tanstack/react-router'
 import './home.css'
+import '@/components/motion/motion.css'
 
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
@@ -106,8 +109,16 @@ export function HomePage() {
       motion: 'full',
       showPreloader: false,
     })
-    return () => { dispose(); if (root) root.innerHTML = '' }
+    const disposeMotion = mountHomeMotion(root)
+    return () => { disposeMotion(); dispose(); if (root) root.innerHTML = '' }
   }, [navigate, openSpill, openScan])
+
+  // Scroll-snap: opt in on the homepage only.
+  useEffect(() => {
+    const html = document.documentElement
+    html.classList.add('home-scroll-snap')
+    return () => { html.classList.remove('home-scroll-snap') }
+  }, [])
 
   // Hash intents — /#spill, /#scan, /#mirror
   useEffect(() => {
@@ -164,6 +175,7 @@ export function HomePage() {
 
   return (
     <div className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
+      <CursorTrail />
       <div ref={rootRef} />
       <SpillModal open={spillOpen} onClose={() => setSpillOpen(false)} />
       <ScanModal open={scanOpen} onClose={() => setScanOpen(false)} />

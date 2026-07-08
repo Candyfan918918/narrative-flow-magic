@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -155,6 +156,8 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHome = pathname === '/';
 
   useEffect(() => {
     let mounted = true
@@ -231,13 +234,15 @@ function RootComponent() {
       <GlobalHeader />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <CompanionBubble onOpen={() => {
-        if (window.location.pathname === '/') {
-          window.location.hash = 'ask'
-        } else {
-          navigate('/#ask')
-        }
-      }} />
+      {!isHome && (
+        <CompanionBubble onOpen={() => {
+          if (window.location.pathname === '/') {
+            window.location.hash = 'ask'
+          } else {
+            navigate('/#ask')
+          }
+        }} />
+      )}
     </QueryClientProvider>
   );
 }

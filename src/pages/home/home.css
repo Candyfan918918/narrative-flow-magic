@@ -17,131 +17,61 @@ html.home-scroll-snap {
 /* Reference design has no giant chapter watermarks — suppress. */
 .home-watermark { display: none !important; }
 
-/* live "breathe" dot (matches ref @keyframes breathe) */
+/* live "breathe" dot (kept — used by injected markup via `animation:breathe`) */
 @keyframes home-breathe-dot {
   0%, 100% { opacity: .5; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.25); }
 }
 .home-breathe-dot { animation: home-breathe-dot 2.8s ease-in-out infinite; display: inline-block; }
 
-/* hero word reveal */
-.home-word-wrap {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: bottom;
-  line-height: 1;
-}
-.home-word {
-  display: inline-block;
-  transform: translateY(115%);
-  transition: transform .9s var(--home-ease-spring);
-}
-.home-word.in {
-  transform: translateY(0);
-}
-
-/* mascot breathe */
-@keyframes home-breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.035); }
-}
-.home-mascot-breathe {
-  animation: home-breathe 4.6s ease-in-out infinite;
-  transform-origin: center 60%;
-  will-change: transform;
-}
-
-/* live pulsing dot */
-@keyframes home-livedot {
-  0% { box-shadow: 0 0 0 0 rgba(231, 84, 138, .55); }
-  70% { box-shadow: 0 0 0 10px rgba(231, 84, 138, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(231, 84, 138, 0); }
-}
-.home-livedot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #e7548a; display: inline-block;
-  animation: home-livedot 1.9s ease-out infinite;
-}
-.home-livedot.green {
-  background: #5DCAA5;
-  animation-name: home-greendot;
-}
-@keyframes home-greendot {
-  0% { box-shadow: 0 0 0 0 rgba(93, 202, 165, .55); }
-  70% { box-shadow: 0 0 0 8px rgba(93, 202, 165, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(93, 202, 165, 0); }
-}
-
-/* scroll indicator */
-@keyframes home-scrollline {
-  0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
-  60% { transform: scaleY(1); transform-origin: top; opacity: 1; }
-  61% { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
-}
-.home-scrollline {
-  width: 1px; height: 34px; background: #c1216b;
-  animation: home-scrollline 1.8s ease-in-out infinite;
-}
-
-/* demo card fade-up */
-@keyframes home-bubblein {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-}
-.home-bubble-in { animation: home-bubblein .5s ease-out both; }
-
-/* dot loader */
-@keyframes home-dot {
-  0%, 80%, 100% { opacity: .25; }
-  40% { opacity: 1; }
-}
-.home-dot { animation: home-dot 1.2s ease-in-out infinite; }
-
-/* rooms strip drift */
-@keyframes home-strip-drift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.home-strip-track {
-  display: inline-flex;
-  gap: 16px;
-  animation: home-strip-drift 55s linear infinite;
-  will-change: transform;
-}
-.home-strip-wrap:hover .home-strip-track,
-.home-strip-wrap.dragging .home-strip-track {
-  animation-play-state: paused;
-}
-
-/* reduced motion — kill all decorative motion */
-@media (prefers-reduced-motion: reduce) {
-  .home-mascot-breathe,
-  .home-livedot,
-  .home-scrollline,
-  .home-bubble-in,
-  .home-dot,
-  .home-strip-track {
-    animation: none !important;
-  }
-  .home-word {
-    transform: none !important;
-    transition: none !important;
-  }
-}
-
-/* Immersive homepage — kill any inherited underline on links/CTAs. The
- * design has zero underlined text; the global prose/link rules must not
- * bleed into the injected reference markup. Scoped to .home-immersive
- * so other pages keep their existing link styling. */
+/* Immersive homepage — kill any inherited underline on links/CTAs. */
 .home-immersive a,
 .home-immersive a:hover,
 .home-immersive a:focus,
 .home-immersive a:visited,
 .home-immersive summary { text-decoration: none !important; }
 
-/* Reference-parity homepage CSS (from the design file's <style> block).
- * Scoped to .home-immersive so global body/a/html rules don't leak. */
+/* Homepage link color (design system pink). */
+.home-immersive a { color: #c1216b; }
+.home-immersive a:hover { color: #a01a55; }
+
+/* Selection color. */
+.home-immersive ::selection { background: #e7548a; color: #fff; }
+
+/* Push the immersive fixed header below the fixed payment banner. */
+.home-immersive [data-hdr] { top: 32px !important; }
+
+/* ── Restored hover states (design's style-hover attrs were never compiled) ── */
+/* header "join →" pill */
+.home-immersive [data-hdr] a[data-link="/welcome"]:hover {
+  background: #c1216b !important;
+}
+/* hero "sit in a room" pill (the one with the pink border) */
+.home-immersive a[data-link="/stream"][data-mag]:hover {
+  border-color: #e7548a !important;
+}
+/* chapter 01 "open a room →" (dark pill inside .chsec) */
+.home-immersive .chsec a[data-cta="spill"]:hover {
+  background: #c1216b !important;
+}
+/* chapter 02 "scan it →" (white pill inside .chsec) */
+.home-immersive .chsec a[data-cta="scan"]:hover {
+  background: #aaa3e8 !important;
+}
+/* chapter 03 "unlock the full mirror ✦" (gold pill inside .chsec) */
+.home-immersive .chsec a[data-link="/welcome"][data-mag]:hover {
+  background: #f7b8d4 !important;
+}
+/* rooms-strip tile hover */
+.home-immersive [data-strip] > a {
+  transition: transform .18s ease, box-shadow .18s ease !important;
+}
+.home-immersive [data-strip] > a:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 26px 44px -24px rgba(193,33,107,.35) !important;
+}
+
+/* Reference-parity homepage CSS (from the design file's <style> block). */
 .home-immersive [data-strip]{scrollbar-width:none}
 .home-immersive [data-strip]::-webkit-scrollbar{display:none}
 .home-immersive .chgrid{max-width:1280px;margin:0 auto;width:100%;padding:clamp(90px,12vh,150px) clamp(20px,4vw,32px);display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(34px,6vw,90px);align-items:center}
@@ -161,3 +91,24 @@ html.home-scroll-snap {
 @keyframes spinSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes scrollHint{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{transform:translateY(0);opacity:0}}
+
+/* Card rise reveal — one-shot per view, applied by motionAdapter. */
+.home-tile-rise {
+  transform: translateY(56px) rotate(1.2deg) scale(.97);
+  opacity: 0;
+  transition: transform .9s var(--home-ease-spring), opacity .55s ease;
+  will-change: transform, opacity;
+}
+.home-tile-rise.in {
+  transform: none;
+  opacity: 1;
+}
+
+/* Reduced motion — suppress the tile-rise transform. */
+@media (prefers-reduced-motion: reduce) {
+  .home-tile-rise, .home-tile-rise.in {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+}
