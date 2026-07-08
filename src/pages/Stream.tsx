@@ -161,68 +161,94 @@ export function StreamPage() {
   }, [hash, rooms])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
-
-
-
-
-
-
-
-      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '26px 22px 90px' }}>
-        {/* page eyebrow */}
-        <div style={{ marginBottom: 18 }}>
-          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 6 }}>
-            the stream
+    <div style={{ minHeight: '100vh', background: '#fdf0f5', overflowX: 'hidden' }}>
+      <main>
+        {/* HERO */}
+        <section style={{ position: 'relative', padding: '44px 0 8px', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: '-40% -10% auto', height: '80vh', background: 'radial-gradient(ellipse at 50% 30%, rgba(231,84,138,.12), transparent 60%)', pointerEvents: 'none', animation: 'drift 24s ease-in-out infinite' }} />
+          <div aria-hidden style={{ position: 'absolute', right: '-4%', top: '-18%', fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 'clamp(160px,26vw,340px)', lineHeight: 1, color: 'rgba(231,84,138,.06)', letterSpacing: '-.06em', pointerEvents: 'none', userSelect: 'none' }}>rooms</div>
+          <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px', position: 'relative' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: '.24em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 14 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 3s ease-in-out infinite', display: 'block' }} />
+              rooms open right now
+            </div>
+            <Words as="h1" style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 'clamp(38px,7vw,64px)', lineHeight: 1, letterSpacing: '-.045em', margin: '0 0 12px', color: '#0b080f' }}>
+              sit in <em style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>someone's&nbsp;thing.</em>
+            </Words>
+            <p style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 'clamp(15.5px,1.4vw,18px)', color: '#4a3040', margin: 0, maxWidth: '46ch' }}>
+              no algorithm. no upvotes. the room reshapes only when you ask it to.
+            </p>
           </div>
-          <Words as="h1" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 'clamp(22px,4vw,30px)', margin: 0, color: '#0b080f', letterSpacing: '-.02em' }}>
-            rooms open right now
-          </Words>
-          <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14.5, color: '#6b4a5c', margin: '6px 0 0' }}>
-            sit in one. don't fix anything. just be there.
-          </p>
-        </div>
+        </section>
 
-        {/* filter pills */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
-          {(['all', 'heard', 'advice', 'scan'] as Filter[]).map((f) => {
-            const active = filter === f
-            return (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                style={{
-                  padding: '7px 14px',
-                  borderRadius: 999,
-                  border: '.5px solid ' + (active ? '#e7548a' : 'rgba(11,8,15,.12)'),
-                  background: active ? '#fff' : 'transparent',
-                  color: active ? '#c1216b' : '#6b4a5c',
-                  fontFamily: 'Sora,sans-serif',
-                  fontWeight: 600,
-                  fontSize: 11.5,
-                  letterSpacing: '.06em',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  transition: '.18s',
-                }}
+        {/* MARQUEE STRIP */}
+        <section aria-hidden style={{ background: '#100c14', padding: '18px 0', overflow: 'hidden', margin: '26px 0 6px', borderTop: '1px solid rgba(231,84,138,.25)', borderBottom: '1px solid rgba(231,84,138,.25)' }}>
+          <div style={{ display: 'flex', width: 'max-content', animation: 'mq 32s linear infinite' }}>
+            {[0, 1].map((k) => (
+              <div key={k} style={{ display: 'flex', gap: 38, paddingRight: 38, alignItems: 'center', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 19, letterSpacing: '-.02em', color: '#f7e8f0', whiteSpace: 'nowrap' }}>
+                <span>omg same 🫂</span><span style={{ color: '#e7548a' }}>✦</span>
+                <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#f7b8d4' }}>i hear you</span><span style={{ color: '#e7548a' }}>✦</span>
+                <span>you've got this 💪</span><span style={{ color: '#e7548a' }}>✦</span>
+                <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#f7b8d4' }}>no verdicts. no juries.</span><span style={{ color: '#e7548a' }}>✦</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FEED */}
+        <section style={{ padding: '16px 0 60px' }}>
+          <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
+            {/* filter pills */}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
+              {(['all', 'heard', 'advice', 'scan'] as Filter[]).map((f) => {
+                const active = filter === f
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    style={{
+                      padding: '7px 14px',
+                      borderRadius: 999,
+                      border: '.5px solid ' + (active ? '#e7548a' : 'rgba(11,8,15,.12)'),
+                      background: active ? '#fff' : 'transparent',
+                      color: active ? '#c1216b' : '#6b4a5c',
+                      fontFamily: "'Sora',sans-serif",
+                      fontWeight: 600,
+                      fontSize: 11.5,
+                      letterSpacing: '.06em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      transition: '.18s',
+                    }}
+                  >
+                    {f === 'all' ? 'all rooms' : f === 'scan' ? 'scans ✦' : f === 'heard' ? 'looking to be heard' : 'open to advice'}
+                  </button>
+                )
+              })}
+            </div>
+
+            <WaterfallFeed filtered={filtered} onOpen={(room) => setOpen(room)} />
+
+            {filtered.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '50px 0', fontFamily: "'Newsreader',serif", fontStyle: 'italic', color: '#9e7a8c' }}>
+                no rooms here yet.{' '}
+                <span style={{ color: '#c1216b', cursor: 'pointer' }} onClick={() => navigate('/')}>
+                  open one →
+                </span>
+              </div>
+            )}
+
+            <div style={{ marginTop: 32, paddingTop: 20, borderTop: '.5px solid rgba(11,8,15,.08)', textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15, color: '#6b4a5c' }}>
+              something happened to you too.{' '}
+              <span
+                onClick={() => navigate('/#spill')}
+                style={{ color: '#c1216b', borderBottom: '1px solid rgba(193,33,107,.3)', cursor: 'pointer' }}
               >
-                {f === 'all' ? 'all rooms' : f === 'scan' ? 'scans ✦' : f === 'heard' ? 'looking to be heard' : 'open to advice'}
-              </button>
-            )
-          })}
-        </div>
-
-        {/* waterfall */}
-        <WaterfallFeed filtered={filtered} onOpen={(room) => setOpen(room)} />
-
-        {filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '50px 0', fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#9e7a8c' }}>
-            no rooms here yet.{' '}
-            <span style={{ color: '#c1216b', cursor: 'pointer' }} onClick={() => navigate('/')}>
-              open one →
-            </span>
+                the room is open. →
+              </span>
+            </div>
           </div>
-        )}
+        </section>
       </main>
 
       {open && (
