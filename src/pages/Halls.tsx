@@ -17,7 +17,7 @@ export function HallOfFamePageNative() {
       
       <main style={{ maxWidth: 780, margin: '0 auto', padding: '48px 22px 96px' }}>
         <Words as="h1" style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 36, margin: '0 0 12px' }}>
-          Hall of Fame
+          hall of fame
         </Words>
         <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#6b4a5c', fontSize: 17, margin: '0 0 32px', maxWidth: '52ch' }}>
           The rooms people came back to. What happened next, told by people who actually lived it.

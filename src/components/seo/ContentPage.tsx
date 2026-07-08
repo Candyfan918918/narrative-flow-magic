@@ -18,8 +18,8 @@ export function ContentPage({
     <main
       style={{
         minHeight: "100vh",
-        background: "#fdf3f6",
-        color: "#1b0f16",
+        background: "#fdf0f5",
+        color: "#0b080f",
         fontFamily: "'Inter', system-ui, sans-serif",
         padding: "clamp(48px, 8vw, 96px) clamp(20px, 5vw, 40px)",
       }}
@@ -33,11 +33,11 @@ export function ContentPage({
           style={{
             fontFamily: "'Sora', system-ui, sans-serif",
             fontSize: "clamp(32px, 6vw, 52px)",
-            fontWeight: 700,
+            fontWeight: 800,
             letterSpacing: "-0.03em",
             lineHeight: 1.1,
             margin: "0 0 28px",
-            color: "#1b0f16",
+            color: "#0b080f",
           }}
         >
           {h1}
@@ -48,9 +48,9 @@ export function ContentPage({
             fontFamily: "'Newsreader', Georgia, serif",
             fontSize: "clamp(19px, 2.4vw, 23px)",
             lineHeight: 1.55,
-            color: "#1b0f16",
+            color: "#0b080f",
             background: "#ffffff",
-            border: "1px solid rgba(26,12,20,.10)",
+            border: "1px solid rgba(11,8,15,.10)",
             borderRadius: 18,
             padding: "24px 26px",
             margin: "0 0 48px",
@@ -69,12 +69,12 @@ export function ContentPage({
                 fontWeight: 600,
                 letterSpacing: "-0.02em",
                 margin: "0 0 12px",
-                color: "#1b0f16",
+                color: "#0b080f",
               }}
             >
               {s.heading}
             </h2>
-            <p style={{ fontSize: 17, margin: 0, color: "#1b0f16" }}>
+            <p style={{ fontSize: 17, margin: 0, color: "#0b080f" }}>
               {s.body}
             </p>
           </section>
@@ -87,8 +87,8 @@ export function ContentPage({
               flexWrap: "wrap",
               gap: 18,
               padding: "20px 0",
-              borderTop: "1px solid rgba(26,12,20,.10)",
-              borderBottom: "1px solid rgba(26,12,20,.10)",
+              borderTop: "1px solid rgba(11,8,15,.10)",
+              borderBottom: "1px solid rgba(11,8,15,.10)",
               margin: "40px 0",
               fontSize: 15,
             }}
@@ -99,13 +99,13 @@ export function ContentPage({
                 key={o.href}
                 href={o.href}
                 style={{
-                  color: "#1b0f16",
+                  color: "#0b080f",
                   textDecoration: "none",
-                  borderBottom: "1px solid rgba(26,12,20,.25)",
+                  borderBottom: "1px solid rgba(11,8,15,.25)",
                   paddingBottom: 1,
                 }}
               >
-                {o.label}
+                {o.label.toLowerCase()}
               </a>
             ))}
           </nav>
@@ -115,14 +115,14 @@ export function ContentPage({
           <a
             href="/"
             style={{
-              color: "#cf3b7c",
+              color: "#c1216b",
               textDecoration: "none",
               fontWeight: 600,
-              borderBottom: "1px solid rgba(207,59,124,.35)",
+              borderBottom: "1px solid rgba(193,33,107,.35)",
               paddingBottom: 2,
             }}
           >
-            Shutap. Speak Up.
+            shutap. speak up.
           </a>
         </p>
       </article>

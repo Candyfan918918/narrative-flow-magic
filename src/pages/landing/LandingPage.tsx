@@ -403,7 +403,7 @@ export function LandingNativePage() {
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#e7548a' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', boxShadow: '0 0 0 3px rgba(231,84,138,.18)', display: 'block' }} />
-                Hall of Fame
+                hall of fame
               </div>
               <a href="/halls" className="prose-link" style={{ fontSize: 13 }}>all halls →</a>
             </div>
@@ -444,17 +444,17 @@ export function LandingNativePage() {
           <div>shutap — a room for what you're carrying</div>
           <div style={{ marginTop: 3 }}>18+ · pseudonymous · your real name never shows · your story, your rules 🤍</div>
           <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: '7px 16px', justifyContent: 'center', fontStyle: 'normal' }}>
-            <a href="/relationships" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Relationships</a>
-            <a href="/marriage" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Marriage</a>
-            <a href="/family" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Family</a>
-            <a href="/career" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Career</a>
-            <a href="/lived-intelligence" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Lived Intelligence</a>
-            <a href="/faq" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>FAQ</a>
-            <a href="/terms" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Terms</a>
-            <a href="/privacy" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Privacy</a>
-            <a href="/guidelines" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Guidelines</a>
-            <a href="/safety" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Safety</a>
-            <a href="mailto:hello@shutap.com" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>Contact</a>
+            <a href="/relationships" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>relationships</a>
+            <a href="/marriage" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>marriage</a>
+            <a href="/family" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>family</a>
+            <a href="/career" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>career</a>
+            <a href="/lived-intelligence" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>lived intelligence</a>
+            <a href="/faq" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>faq</a>
+            <a href="/terms" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>terms</a>
+            <a href="/privacy" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>privacy</a>
+            <a href="/guidelines" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>guidelines</a>
+            <a href="/safety" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>safety</a>
+            <a href="mailto:hello@shutap.com" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>contact</a>
           </div>
 
           <div style={{ marginTop: 9, fontSize: 11.5, color: '#b09aa6', maxWidth: '42ch', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.5 }}>

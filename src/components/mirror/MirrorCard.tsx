@@ -190,7 +190,7 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
         padding: 22,
         background: isRuin
           ? 'linear-gradient(160deg, #1a1f1d 0%, #0e1311 100%)'
-          : `linear-gradient(160deg, #14121c 0%, #0a0810 100%)`,
+          : `linear-gradient(160deg, #1c0e18 0%, #0e0710 100%)`,
         border: `1px solid ${frameColor}`,
         boxShadow: isLegendary
           ? '0 0 0 1px rgba(255,212,121,.35), 0 20px 60px rgba(255,212,121,.12), inset 0 0 80px rgba(255,212,121,.06)'
@@ -225,7 +225,7 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
 
       {/* name */}
       <h3 style={{
-        fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontWeight: 500,
+        fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontWeight: 500,
         fontSize: 26, lineHeight: 1.15, margin: '14px 0 4px', color: '#fff', position: 'relative',
       }}>
         {p.name}
