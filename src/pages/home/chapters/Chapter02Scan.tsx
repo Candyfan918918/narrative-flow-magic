@@ -1,7 +1,7 @@
 // Chapter 02 — "the scan · sample". 4-phase loop inside a 330px stage.
 import { useEffect, useRef, useState } from 'react'
 import { useOnScreen, usePrefersReducedMotion } from '../hero/Mascot'
-import { useReactiveCard } from '@/components/motion'
+import { useReactiveCard, useMagnetic } from '@/components/motion'
 import { EyeMark } from '@/components/brand/EyeMark'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -17,6 +17,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
   const [dialProgress, setDialProgress] = useState(reduce ? 1 : 0)
   const [counter, setCounter] = useState(reduce ? 740 : 0)
   const card = useReactiveCard({ glow: 'rgba(231,84,138,.55)' })
+  const magneticCta = useMagnetic<HTMLButtonElement>()
 
   useEffect(() => {
     if (reduce || !onScreen) return
@@ -60,6 +61,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
         color: '#f7e8f0',
       }}
     >
+      <span aria-hidden className="home-watermark" style={{ left: '3%', bottom: '6%', color: 'rgba(127,119,221,.08)' }}>scan</span>
       <div className="home-grid-2" style={{ maxWidth: 1100, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'center' }}>
         <div>
           <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#aaa3e8', marginBottom: 18 }}>
@@ -73,6 +75,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
           </p>
           <button
             type="button"
+            ref={magneticCta}
             onClick={onCtaScan}
             style={{
               background: '#fff',

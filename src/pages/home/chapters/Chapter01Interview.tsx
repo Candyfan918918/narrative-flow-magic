@@ -3,7 +3,8 @@
 // data. Timings match the spec.
 import { useEffect, useRef, useState } from 'react'
 import { useOnScreen, usePrefersReducedMotion } from '../hero/Mascot'
-import { useReactiveCard } from '@/components/motion'
+import { useReactiveCard, useMagnetic } from '@/components/motion'
+import { EyeMark } from '@/components/EyeMark'
 
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
@@ -44,6 +45,8 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
   const [timeline] = useState(buildTimeline)
   const [shown, setShown] = useState<number>(reduce ? timeline.length : 0)
   const card = useReactiveCard({ glow: 'rgba(231,84,138,.55)' })
+  const magneticCta = useMagnetic<HTMLButtonElement>()
+
 
   useEffect(() => {
     if (reduce) return
@@ -87,6 +90,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
       className="home-chapter"
       style={{ background: '#fdf0f5', minHeight: '96vh', padding: 'clamp(90px,12vh,150px) 22px', display: 'flex', alignItems: 'center' }}
     >
+      <span aria-hidden className="home-watermark" style={{ right: '3%', top: '5%', color: 'rgba(231,84,138,.07)' }}>spill</span>
       <div
         style={{
           maxWidth: 1100,
@@ -111,6 +115,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
           </p>
           <button
             type="button"
+            ref={magneticCta}
             onClick={onCtaSpill}
             style={{
               background: '#0b080f',
@@ -145,7 +150,9 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ display: 'inline-block', width: 18, height: 12, borderRadius: 6, background: 'linear-gradient(155deg,#ffd0e8,#c0206a)' }} />
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <EyeMark size={24} />
+                </span>
                 <span style={{ fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: '#f7b8d4' }}>
                   spilling it
                 </span>

@@ -20,7 +20,7 @@ import { Chapter03Mirror } from './chapters/Chapter03Mirror'
 import { RoomsStrip } from './RoomsStrip'
 import { HomeFAQ } from './HomeFAQ'
 import { Link } from '@tanstack/react-router'
-import { Words, Reveal } from '@/components/motion'
+import { Words, Reveal, useMagnetic, CursorTrail } from '@/components/motion'
 import './home.css'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -47,6 +47,10 @@ export function HomePage() {
   const navigate = useNavigate()
   const router = useRouter()
   const save = useServerFn(saveSituation)
+  const magneticHero = useMagnetic<HTMLButtonElement>()
+  const magneticSit = useMagnetic<HTMLAnchorElement>()
+  const magneticFinale = useMagnetic<HTMLButtonElement>()
+  
   
 
   const [spillOpen, setSpillOpen] = useState(false)
@@ -206,6 +210,7 @@ export function HomePage() {
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
               <button
                 type="button"
+                ref={magneticHero}
                 onClick={openSpill}
                 onPointerEnter={preloadWelcome}
                 onFocus={preloadWelcome}
@@ -216,6 +221,7 @@ export function HomePage() {
               </button>
               <Link
                 to="/stream"
+                ref={magneticSit}
                 style={{ background: '#fff', color: '#0b080f', border: '1px solid rgba(11,8,15,.1)', padding: '15px 26px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 15, textDecoration: 'none', letterSpacing: '-.005em' }}
               >
                 sit in a room
@@ -259,6 +265,7 @@ export function HomePage() {
               </Words>
               <button
                 type="button"
+                ref={magneticFinale}
                 onClick={openSpill}
                 style={{ background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', border: 0, padding: '16px 32px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 15, cursor: 'pointer' }}
               >
@@ -274,6 +281,7 @@ export function HomePage() {
       <SpillModal open={spillOpen} onClose={closeSpill} />
       <ScanModal open={scanOpen} onClose={closeScan} />
       <CompanionComposer open={composerOpen} onClose={() => setComposerOpen(false)} onSpill={openSpill} onScan={openScan} />
+      <CursorTrail />
     </div>
   )
 }

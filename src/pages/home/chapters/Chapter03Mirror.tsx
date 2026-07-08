@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@/compat/router'
 import { useOnScreen, usePrefersReducedMotion } from '../hero/Mascot'
-import { useReactiveCard } from '@/components/motion'
+import { useReactiveCard, useMagnetic } from '@/components/motion'
 import { DEMO_DISTRICTS, DEMO_MIRROR_CAST, type DemoPattern } from '../mirrorCast'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -18,6 +18,7 @@ export function Chapter03Mirror() {
   const reduce = usePrefersReducedMotion()
   const navigate = useNavigate()
   const [idx, setIdx] = useState(0)
+  const magneticCta = useMagnetic<HTMLButtonElement>()
   useEffect(() => {
     if (reduce || !onScreen) return
     const iv = window.setInterval(() => setIdx((i) => (i + 1) % DEMO_MIRROR_CAST.length), CYCLE_MS)
@@ -32,6 +33,7 @@ export function Chapter03Mirror() {
       className="home-chapter"
       style={{ background: '#100c14', minHeight: '96vh', padding: 'clamp(90px,12vh,150px) 22px', display: 'flex', alignItems: 'center', color: '#f7e8f0' }}
     >
+      <span aria-hidden className="home-watermark" style={{ right: '3%', top: '5%', color: 'rgba(233,192,106,.07)' }}>mirror</span>
       <div className="home-grid-2" style={{ maxWidth: 1100, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'center' }}>
         <div>
           <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#e9c06a', marginBottom: 18 }}>
@@ -45,6 +47,7 @@ export function Chapter03Mirror() {
           </p>
           <button
             type="button"
+            ref={magneticCta}
             onClick={() => navigate('/subscribe')}
             style={{
               background: 'linear-gradient(135deg,#e9c06a,#c69a3d)',

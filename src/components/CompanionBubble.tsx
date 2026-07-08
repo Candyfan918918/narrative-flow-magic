@@ -39,22 +39,6 @@ export function CompanionBubble({
     const el = ref.current
     if (!el) return
 
-    // restore saved position (clamped to current viewport so a stale
-    // localStorage entry from a larger window can't strand the bubble off-screen)
-    try {
-      const p = JSON.parse(localStorage.getItem('shutap_bubble') || 'null')
-      if (p && typeof p.x === 'number' && typeof p.y === 'number') {
-        const sz = el.offsetWidth || 58
-        const nx = Math.max(8, Math.min(window.innerWidth - sz - 8, p.x))
-        const ny = Math.max(8, Math.min(window.innerHeight - sz - 8, p.y))
-        el.style.left = nx + 'px'
-        el.style.top = ny + 'px'
-        el.style.bottom = 'auto'
-      }
-    } catch {
-      /* noop */
-    }
-
     let dragging = false
     let moved = false
     let sx = 0
@@ -72,7 +56,6 @@ export function CompanionBubble({
       sx = e.clientX
       sy = e.clientY
       el.style.cursor = 'grabbing'
-      el.style.animation = 'none'
       if (el.setPointerCapture && e.pointerId != null) el.setPointerCapture(e.pointerId)
     }
     const move = (e: PointerEvent) => {
@@ -93,38 +76,19 @@ export function CompanionBubble({
       if (!dragging) return
       dragging = false
       el.style.cursor = 'grab'
-      if (moved) {
-        const r = el.getBoundingClientRect()
-        try {
-          localStorage.setItem('shutap_bubble', JSON.stringify({ x: r.left, y: r.top }))
-        } catch {
-          /* noop */
-        }
-      } else {
+      if (!moved) {
         // tap: no meaningful movement — fire onOpen
         try { onOpenRef.current() } catch { /* noop */ }
       }
     }
 
-    const onResize = () => {
-      const sz = el.offsetWidth || 58
-      const r = el.getBoundingClientRect()
-      const nx = Math.max(8, Math.min(window.innerWidth - sz - 8, r.left))
-      const ny = Math.max(8, Math.min(window.innerHeight - sz - 8, r.top))
-      el.style.left = nx + 'px'
-      el.style.top = ny + 'px'
-      el.style.bottom = 'auto'
-    }
-
     el.addEventListener('pointerdown', down)
     window.addEventListener('pointermove', move, { passive: false })
     window.addEventListener('pointerup', up)
-    window.addEventListener('resize', onResize)
     return () => {
       el.removeEventListener('pointerdown', down)
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
-      window.removeEventListener('resize', onResize)
     }
   }, [])
 
@@ -150,7 +114,6 @@ export function CompanionBubble({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        animation: 'pulse 4s infinite',
         touchAction: 'none',
         userSelect: 'none',
       }}

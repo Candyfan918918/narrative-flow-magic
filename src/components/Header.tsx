@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from '@/compat/router'
 import { rememberReturnTo, signOut as doSignOut } from '../lib/auth'
 import { useCurrentAlias, useIsAdmin } from '../hooks/use-current-alias'
 import { EyeMark, ShutapWordmark } from './EyeMark'
+import { useMagnetic } from './motion'
 
 /* Canonical sticky header — identical across Landing, Stream, Halls, Profile.
    Alias pill is driven by the real Supabase session; sign-out clears both
@@ -14,6 +15,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
   const admin = useIsAdmin()
   const [menuOpen, setMenuOpen] = useState(false)
   const areaRef = useRef<HTMLDivElement>(null)
+  const joinRef = useMagnetic<HTMLAnchorElement>()
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -186,6 +188,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
             ) : (
               <a
                 href="/welcome"
+                ref={joinRef}
                 role="button"
                 onClick={(e) => {
                   // Preserve returnTo; still allow real anchor to navigate
