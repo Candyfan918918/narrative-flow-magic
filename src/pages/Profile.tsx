@@ -21,17 +21,6 @@ import { useNoIndex } from '@/components/NoIndex'
 
 type Tab = 'all' | 'rooms' | 'journals' | 'scans'
 
-const BAND_COLOR: Record<string, string> = {
-  settling: '#5B8A5E',
-  sitting: '#7F77DD',
-  weighing: '#c1a02b',
-  heavy: '#c87c4a',
-  consuming: '#c1216b',
-  quiet: '#5B8A5E',
-  real: '#7F77DD',
-  hot: '#c87c4a',
-  serious: '#c1216b',
-}
 
 interface Situation {
   id: string
