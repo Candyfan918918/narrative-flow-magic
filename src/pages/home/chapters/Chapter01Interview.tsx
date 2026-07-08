@@ -150,7 +150,9 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ display: 'inline-block', width: 18, height: 12, borderRadius: 6, background: 'linear-gradient(155deg,#ffd0e8,#c0206a)' }} />
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <EyeMark size={24} />
+                </span>
                 <span style={{ fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: '#f7b8d4' }}>
                   spilling it
                 </span>
