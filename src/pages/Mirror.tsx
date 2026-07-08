@@ -381,9 +381,11 @@ function TrendChart({ trend, color, animate }: { trend: number[]; color: string;
 }
 
 /* ─────────────── signal bar ─────────────── */
-function SignalBar({ sources, animate }: { sources: Record<string, number>; animate: boolean }) {
+function SignalBar({ sources, animate, totalOverride }: { sources: Record<string, number>; animate: boolean; totalOverride?: number }) {
   const order = ['spill', 'scan', 'comments', 'likes', 'follows', 'browse']
-  const total = order.reduce((a, k) => a + Number(sources?.[k] ?? 0), 0)
+  const bandTotal = order.reduce((a, k) => a + Number(sources?.[k] ?? 0), 0)
+  const total = totalOverride ?? bandTotal
+
   return (
     <div>
       <div style={{
