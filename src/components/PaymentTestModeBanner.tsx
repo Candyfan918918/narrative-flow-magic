@@ -1,26 +1,59 @@
 const clientToken = import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN as string | undefined;
 
+const BANNER_H = 32;
+
+const wrap: React.CSSProperties = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  zIndex: 70,
+  height: BANNER_H,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '0 16px',
+  background: '#2e0d1a',
+  color: '#f7e8f0',
+  fontFamily: "'Sora',system-ui,sans-serif",
+  fontWeight: 600,
+  fontSize: 12,
+  textTransform: 'lowercase',
+  letterSpacing: '.02em',
+  borderBottom: '1px solid rgba(247,184,212,.14)',
+  textAlign: 'center',
+  lineHeight: 1.2,
+};
+const linkStyle: React.CSSProperties = { color: '#f7b8d4', textDecoration: 'underline', marginLeft: 6 };
+const spacer: React.CSSProperties = { height: BANNER_H, flex: 'none' };
+
 export function PaymentTestModeBanner() {
   if (!clientToken) {
     return (
-      <div className="w-full bg-red-100 border-b border-red-300 px-4 py-2 text-center text-sm text-red-800">
-        Production checkout is not configured. Complete Stripe go-live in your Lovable project to accept real payments.
-      </div>
+      <>
+        <div style={wrap} role="status">
+          production checkout is not configured — complete stripe go-live to accept real payments.
+        </div>
+        <div aria-hidden style={spacer} />
+      </>
     );
   }
   if (clientToken.startsWith('pk_test_')) {
     return (
-      <div className="w-full bg-orange-100 border-b border-orange-300 px-4 py-2 text-center text-sm text-orange-800">
-        All payments made in the preview are in test mode.{' '}
-        <a
-          href="https://docs.lovable.dev/features/payments#test-and-live-environments"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline font-medium"
-        >
-          Read more
-        </a>
-      </div>
+      <>
+        <div style={wrap} role="status">
+          all payments in the preview are in test mode.
+          <a
+            href="https://docs.lovable.dev/features/payments#test-and-live-environments"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={linkStyle}
+          >
+            read more
+          </a>
+        </div>
+        <div aria-hidden style={spacer} />
+      </>
     );
   }
   return null;
