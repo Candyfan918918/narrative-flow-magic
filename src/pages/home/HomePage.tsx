@@ -191,7 +191,8 @@ export function HomePage() {
           <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22 }}>
             <HeroMascot size={220} />
 
-            <h1
+            <Words
+              as="h1"
               style={{
                 fontFamily: SORA,
                 fontWeight: 800,
@@ -202,17 +203,9 @@ export function HomePage() {
                 color: '#0b080f',
               }}
             >
-              <span style={{ display: 'block' }}>
-                {HERO_WORDS_LINE_1.map((w, i) => (
-                  <HeroWord key={i} text={w} shown={wordsIn} delay={i * 80} space={i < HERO_WORDS_LINE_1.length - 1} />
-                ))}
-              </span>
-              <span style={{ display: 'block', fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>
-                {HERO_WORDS_LINE_2.map((w, i) => (
-                  <HeroWord key={i} text={w} shown={wordsIn} delay={(HERO_WORDS_LINE_1.length + i) * 80} space={i < HERO_WORDS_LINE_2.length - 1} />
-                ))}
-              </span>
-            </h1>
+              <span style={{ display: 'block' }}>finally, somewhere to</span>
+              <span style={{ display: 'block', fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>not shut up.</span>
+            </Words>
 
             <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 19, color: '#4a3040', lineHeight: 1.55, maxWidth: '44ch', margin: '4px 0 0' }}>
               venting is free therapy — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
