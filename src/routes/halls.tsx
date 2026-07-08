@@ -18,7 +18,6 @@ function HallsRoot() {
 }
 
 export const Route = createFileRoute('/halls')({
-  ssr: false,
   head: () => ({
     meta: [
       { title: TITLE },
