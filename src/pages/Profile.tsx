@@ -583,8 +583,8 @@ function BillingCard({
       )}
       <div>
         {billing.hasCustomer && (
-          <button onClick={onOpenPortal} disabled={portalBusy} style={btn('#c1216b')}>
-            {portalBusy ? 'opening…' : 'manage billing →'}
+          <button onClick={onOpenPortal} disabled={portalBusy} style={wineLink}>
+            {portalBusy ? 'opening…' : 'manage →'}
           </button>
         )}
       </div>
