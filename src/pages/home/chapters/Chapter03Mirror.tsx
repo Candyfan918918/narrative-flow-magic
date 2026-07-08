@@ -123,17 +123,24 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
     <div
       ref={card.ref}
       style={{
+        display: 'block',
         width: 'min(380px,92vw)',
         background: 'radial-gradient(125% 80% at 50% 0%, rgba(127,119,221,.18), #1c0d16 58%, #140810)',
-        border: '.5px solid rgba(233,192,106,.85)',
+        border: '1px solid rgba(233,192,106,.85)',
         borderRadius: 22,
-        padding: 18,
+        padding: 20,
         position: 'relative',
-        boxShadow: '0 32px 60px -30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06)',
+        overflow: 'hidden',
+        boxShadow: '0 40px 90px -34px rgba(0,0,0,.85), 0 0 0 1px rgba(233,192,106,.33), 0 0 38px -6px rgba(233,192,106,.4)',
       }}
     >
-      {/* top sheen */}
-      <div style={{ position: 'absolute', inset: '0 0 auto 0', height: 32, background: 'linear-gradient(180deg, rgba(255,255,255,.06), transparent)', borderRadius: '22px 22px 0 0', pointerEvents: 'none' }} />
+      {/* top glass sheen */}
+      <div style={{ position: 'absolute', inset: 0, borderRadius: 22, background: 'linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 18%, transparent 38%)', pointerEvents: 'none', zIndex: 2 }} />
+      {/* thin multicolor top line */}
+      <div style={{ position: 'absolute', top: 0, left: '12%', right: '12%', height: 1.5, background: 'linear-gradient(90deg, transparent, #7F77DD, #e7548a, #5B8A5E, transparent)', opacity: .4, pointerEvents: 'none', zIndex: 3 }} />
+      {/* inner hairline inset border */}
+      <div style={{ position: 'absolute', inset: 6, border: '.5px solid rgba(233,192,106,.5)', borderRadius: 16, pointerEvents: 'none', zIndex: 1 }} />
+      <div style={{ position: 'relative', zIndex: 3 }}>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
         <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e9c06a' }}>
