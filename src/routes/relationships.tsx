@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/relationships";
-const TITLE = "Relationships — real stories about dating & breakups | Shutap";
+const TITLE = "Relationships — vent about dating & breakups | Shutap";
 const DESCRIPTION =
-  "Read and share real, pseudonymous stories about relationships — dating, partners, situationships, breakups — and see what happened next. Someone here has lived your exact thing.";
+  "Real, pseudonymous stories about relationships — dating, partners, situationships, breakups — and what happened next. Someone has lived your thing.";
 const H1 = "relationships";
 const CAPSULE =
   "Dating, partners, situationships, breakups, and the gray area in between. This is where people vent about what's happening in their relationships — pseudonymously, honestly — and come back to share what actually happened next. Whatever you're sitting with, someone here has lived a version of it.";
