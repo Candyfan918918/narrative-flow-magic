@@ -202,7 +202,7 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
       })
       sched(runSpill, t + 3400)
     }
-    runSpill()
+    idle(runSpill)
   }
 
   /* ── 02 scan flow ── */
