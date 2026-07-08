@@ -1,52 +1,61 @@
-## Root causes confirmed
+# Plan — immersive homepage + /vent/:topic SEO pages
 
-- **RLS is fine.** `mirror_patterns` and `mirror_signals` already have owner-scoped INSERT/UPDATE/SELECT policies against `auth.uid()`. No migration needed.
-- The three code bugs (fire-and-forget death, swallowed errors, forming threshold) match the report. Backfill is missing.
+## Scope clarification needed (blocking)
 
-## Files to change
+The spec says both:
+1. "Replace the current `/` with this page."
+2. "The old landing (spill/scan flows) stays at its existing route… behaves exactly as before."
 
-### 1. `src/lib/situations.functions.ts`
-- `saveSituation`: replace `void runIngestMirrorEvent(...)` with `await runIngestMirrorEvent(...)` wrapped in `try/catch` that `console.error('[mirror-ingest] saveSituation', err)`. Keeps user-facing save resilient.
-- `createComment`: same treatment for its `runIngestMirrorEvent` call (source `'comments'`).
+The current `/` **is** the landing page that owns the spill/scan modals — there is no other route hosting them. Two viable readings:
 
-### 2. `src/lib/agents/spill.functions.ts`
-- Step 5c: replace `void runIngestMirrorEvent(...)` with awaited `try/catch` + `console.error('[mirror-ingest] spill', err)`. Never rethrow.
+- **(A) Keep spill/scan as modals on the NEW home too.** The new immersive homepage imports `SpillModal` + `ScanModal` and its "spill it →" / "scan it →" buttons open them exactly like today. The old `LandingNativePage` file is removed (its only job was hosting those modals + FAQ). Nothing else in the app changes. This matches the spec's spirit (flows unchanged) and is the smallest, safest change.
+- **(B) Move the old landing to a new route** (e.g. `/vent-classic`) and have the new home's CTAs navigate there. This preserves the exact old page byte-for-byte but adds a route users can hit that mirrors home. Uglier, and no flow benefit vs. (A).
 
-### 3. `src/lib/mirror-pipeline.functions.ts`
-Add error visibility across `runIngestMirrorEvent`:
-- Every `.insert()` / `.update()` on `mirror_patterns` and `mirror_signals` (deepen update, crystallize insert, punch update, cap-hit signals insert, no-reading signals insert, final provenance insert) captures `{ error }` and `console.error('[mirror-ingest] <op>', error)` on failure.
-- The idempotency `select().maybeSingle()` also logs on error (but keeps existing return).
-- No behavioral change on success paths.
+**Assumption unless you say otherwise: (A).** Please confirm or override.
 
-### 4. `src/pages/Mirror.tsx`
-- Change `const isForming = mineList.length < 2` → `mineList.length < 1`. Cross-read gate (`mineList.length >= 2`) stays.
+## Files I will change
 
-### 5. New file `src/lib/mirror-backfill.functions.ts`
-- `backfillMyMirror` — `createServerFn({ method: 'POST' })` with `requireSupabaseAuth`, no input.
-- Loads via `context.supabase`:
-  - user's `situations` where `deleted_at IS NULL`, selecting `id, pillar, kind, clean_text, body, title`, ordered `created_at asc`, limit 50.
-  - user's `comment_records` (that's the comments table per schema), selecting `id, situation_id, clean_text` (or body field), ordered ascending, limit 50.
-- For each row, look up `mirror_signals` by `(user_id, source, ref_id)` — skip if present (also, the pipeline is already idempotent, so this is belt-and-suspenders; can just let the pipeline dedupe).
-- Sequentially call `runIngestMirrorEvent({ supabase, userId, data: { source, ref_id, raw_text, district_hint } })`:
-  - situation with `kind === 'scan'` → source `'scan'`, otherwise `'spill'`
-  - comment → source `'comments'`
-  - `district_hint` mapped from pillar exactly like `saveSituation` (`career` → `career`, `family` → `family`, `marriage` → `love`, else `love`).
-- Overall cap: 50 total items per invocation (situations first, then comments until 50).
-- Return `{ processed, remaining }` so the UI can show progress or re-invoke.
+### New home at `/`
+- `src/pages/home/HomePage.tsx` — new immersive page (header, hero with mascot, chapters 01/02/03, rooms strip, FAQ, finale, footer). Uses existing `SpillModal`/`ScanModal` and existing companion FAB.
+- `src/pages/home/hero/Mascot.tsx` — cursor-tracking / breathing / blinking mascot wrapping the existing `EyeMark`.
+- `src/pages/home/chapters/Chapter01Interview.tsx` — scripted chat demo, labeled `the interview · sample`.
+- `src/pages/home/chapters/Chapter02Scan.tsx` — 4-phase scan demo, labeled `the scan · sample`.
+- `src/pages/home/chapters/Chapter03Mirror.tsx` — 3-card mirror cycle, labeled `THE MIRROR · DEMO`, zero links inside, gold lock banner.
+- `src/pages/home/RoomsStrip.tsx` — pulls first 8 real public rooms from existing rooms query, doubles for wrap, auto-drift + drag.
+- `src/pages/home/HomeFAQ.tsx` — 4 native-details accordions with the exact copy already in the current landing FAQ + FAQPage JSON-LD.
+- `src/pages/home/home.css` — scroll-snap, signature/secondary eases, keyframes (blink/breathe/pulse), reduced-motion overrides, header blur.
+- `src/pages/home/mirrorCast.ts` — the 3 demo pattern rows (Impostor / Avoidant Texter / Heart on Read) as static local data, derived from the Agent 12 cast constants; no free-typed numbers.
+- `src/routes/index.tsx` — swap component to `HomePage`; keep existing `head()` meta and JSON-LD, add FAQPage JSON-LD from the FAQ module.
 
-### 6. `src/pages/Mirror.tsx` — backfill trigger
-**Chosen trigger: explicit "Reflect my history" button in the Forming state** (not auto-on-load), because:
-- awaited ingest of up to 50 items runs multiple LLM calls per item → could take 30–60s; auto-firing on every Mirror mount would spam the gateway and stall the page.
-- gives the user a clear cause→effect ("I clicked, my mirror filled").
-- avoids double-triggering across tabs/refreshes.
+### /vent/:topic
+- `src/lib/seo/venting-topics.ts` — topic list (family, work, romance, friendship, parenting, money, roommates, stranger), per-topic H1 + italic intro + topic-specific FAQ question. No fake stats.
+- `src/routes/vent.$topic.tsx` — SSR route. Loader hits existing rooms table (public + not deleted) filtered by category via `context.queryClient.ensureQueryData`. `head()` emits QAPage + FAQPage + Dataset JSON-LD + canonical + og. Renders breadcrumb, kicker, H1, intro, live line, up to 8 Q&A cards (title, snippet, top-comment pull-quote if present, real counts, "sit in this room →"), topic chip row with real counts, 5 FAQ cards, dark CTA, footer.
+- `src/routes/sitemaps/core[.]xml.ts` — add `/vent/{topic}` entries for every topic (currently no venting-topic URLs there).
 
-Implementation: in the Forming block, when a signed-in user has 0 patterns, render a button "Reflect my history" that calls `backfillMyMirror` via `useServerFn`, shows a pending spinner, then re-runs the `listMirrorPatterns` query on success. Disable + hide the button afterward.
+### Home link retarget
+- `rg` for `to="/"` in components/nav — leave alone, they already point to `/`. No other retarget needed.
 
-## No DB migrations
-Existing RLS covers the writes. Bug 2 will surface any latent policy issue via console once logging lands; if a real failure appears after this fix, we address it in a follow-up migration.
+## What I will NOT touch
 
-## Verification (after build mode)
-1. Publish a spill as an auth'd user → confirm `mirror_signals` row + a `mirror_patterns` row (`is_demo=false`, `punch` set).
-2. Mirror page renders the single pattern (no forming state).
-3. Click "Reflect my history" on an account with existing situations/comments → rows accumulate and depth increases.
-4. No "Server function info not found" in responses.
+Spill flow, scan flow, mirror logic, auth, rooms/comments/reactions/presence, agents, gateway, RLS, migrations, edge functions, companion sheet behavior, existing legal routes, sitemap index, robots.txt.
+
+## Data reads (read-only, no schema changes)
+
+- Rooms strip + topic pages read from the same `situations` / rooms source the existing `Stream` page already uses. I'll reuse the existing query hook / server fn — no new endpoints. If the existing hook can't filter by category, I'll add a thin client-side filter over its results.
+- Live "N rooms open now" count reuses the same rooms query length; polls at the query's existing stale time (no new realtime channel).
+
+## Motion / a11y
+
+- Signature ease `cubic-bezier(.34,1.56,.64,1)`, secondary `cubic-bezier(.16,1,.3,1)`.
+- All demo timelines gated on IntersectionObserver (threshold .15); off-screen = paused.
+- `@media (prefers-reduced-motion: reduce)` disables mascot spring, breathing, chapter demo loops, rooms strip auto-drift, and hero word stagger.
+
+## Verify before finishing
+
+1. `tsgo` typecheck clean.
+2. Grep confirms no hardcoded room titles/counts outside the 3 labeled demos.
+3. Playwright: load `/`, scroll through all chapters, confirm each demo card renders + no console errors; load `/vent/family`, confirm QAPage JSON-LD present in HTML and room cards render from DB.
+4. Spill + scan modals still open from the new home CTAs.
+5. Companion FAB unchanged behaviorally.
+
+Confirm assumption (A) and I'll execute.
