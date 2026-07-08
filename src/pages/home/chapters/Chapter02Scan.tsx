@@ -75,6 +75,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
           </p>
           <button
             type="button"
+            ref={magneticCta}
             onClick={onCtaScan}
             style={{
               background: '#fff',
