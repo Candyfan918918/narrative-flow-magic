@@ -1,52 +1,36 @@
-## Scope
+## Why your new room doesn't show up on `/stream`
 
-UI/UX-only alignment of the legal surface to `Shutap_Legal_standalone.html`. No auth/billing/AI/data changes. One new leaf route added because the template introduces a `disclaimer` doc that isn't in the app today.
+`/stream` currently reads from only two places:
 
-## Files touched
+1. **Seed rooms** hardcoded in `SHUTAP_SEED` (`src/data/seed.ts`)
+2. **Your device's `localStorage`** key `shutap_user_situations`
 
-1. `src/components/site/DocLayout.tsx` — restyle
-2. `src/routes/terms.tsx` — full copy rewrite (16 numbered sections)
-3. `src/routes/privacy.tsx` — full copy rewrite (13 numbered sections)
-4. `src/routes/guidelines.tsx` — swap to single white-card bulleted list
-5. `src/routes/safety.tsx` — three white "hotline card" links + closing paragraph
-6. `src/routes/ai-disclosure.tsx` — dark plum gradient card with eye mascot + italic quote + explainer
-7. `src/routes/contact.tsx` — 4 mailto "cbox" cards
-8. `src/routes/disclaimer.tsx` **(new)** — Medical / Legal Disclaimer (formal + in-voice card)
-9. `src/routes/legal.tsx` — add disclaimer to `OTHERS` and `SECTIONS`
+It never queries the `rooms` table in the database. So:
 
-Routes, loaders, `head()` metadata, canonical URLs, JSON-LD, and `SITE_URL` usage all stay. Only page bodies, titles rendered by `DocLayout`, and the sidebar/footer chrome change.
+- On the device where you spilled, the room shows because `SpillModal.publishOrSave` calls `appendUserRoom(...)` after save, which writes to `localStorage`. After sign-out or on a different browser/device, that cache is gone and the room disappears from Stream even though the DB row still exists.
+- Rooms other real users spill never show up for you at all.
+- If you spill and are bounced through `/welcome` (anonymous session), the resume-after-sign-in path in `HomePage.tsx` does append to `localStorage`, but again only on that device.
 
-## DocLayout changes
+Meanwhile `rooms` table SELECT is public (`anon, authenticated`, safe columns only: `id, hall, emoji, alias, support, body, title, reflection, created_at, updated_at`), so we can just fetch it.
 
-- Sidebar `DOC_NAV` becomes the template's 7 items (add `{ href: '/disclaimer', label: 'medical / legal disclaimer' }`).
-- Replace `<SiteFooter />` with the template's inline footer: full-width `.5px` top border on `#fdf3f6`, `max-width 980`, all 7 doc links (Inter 12.5px `#6b4a5c`) on the left, italic caption "18+ · pseudonymous · not a medical or legal service" (Newsreader italic 12px `#9e7a8c`) on the right.
-- Titles: `DocLayout` `title` prop keeps taking whatever the route passes. Each route now passes Title Case per template ("Terms of Service", "Privacy Policy", "Community Guidelines", "Crisis & Safety", "AI Disclosure", "Contact", "Medical / Legal Disclaimer"). SEO `<title>` in `head()` stays unchanged.
-- Sublines updated to template values (e.g. "Effective: July 1, 2026 · Operator: Shutap").
-- Sidebar eyebrow, active-pill treatment, header sticky bar, and the 40px gap / 188px sidebar / 680px main widths are already correct — no geometry change.
+## Fix
 
-## Content ports (verbatim from template)
+Make `/stream` actually read the `rooms` table.
 
-Each route body is replaced with the exact HTML the template's `render(id)` returns, converted to JSX. All copy (numbered section titles, bold spans, links, emoji `🤍`, em-dashes, quotes) matches the template character-for-character. Inline styles (white card `background:#fff;border:.5px solid rgba(11,8,15,.08);border-radius:18px;padding:22px 24px`, gradient card `linear-gradient(160deg,#2e0d1a,#1a0a12)`, cbox rows, etc.) copy verbatim.
+### Changes
 
-Guidelines becomes a single white rounded card with a `<ul>` of 7 bullets + trailing "We remove content and accounts that break these rules." paragraph.
+1. **`src/pages/Stream.tsx`** — add a client-side fetch of public rooms and merge into the feed.
+   - New `useEffect` (post-mount) that runs `supabase.from('rooms').select('id, alias, emoji, title, body, support, hall, created_at, updated_at').order('created_at', { ascending: false }).limit(200)`.
+   - Map DB rows to `RoomTileData` (fill defaults for missing fields: `reflection: ''`, `hours: relativeTime(created_at)`, `relates: 0`, `sitting: 1`, `reactions: {heard:0,same:0,strong:0,time:0,brave:0}`, `kind: 'spill'`, `pillar: null`).
+   - Merge order in `rooms` memo: `dbRooms` (newest first) → `localUserRooms` (device fallback, deduped) → `seed`. Dedup by `id` so a just-published room shown from `appendUserRoom` isn't listed twice when the DB fetch resolves.
+   - Re-fetch when the `shutap_user_situations` storage event fires (already listened for) so a fresh publish triggers a refresh on the same tab.
+   - Optional: subscribe to `postgres_changes` on `public.rooms` inside the same `useEffect` for live inserts; tear the channel down on unmount.
 
-Safety renders three white cards: 988 (`tel:988`), Samaritans (`tel:116123`), findahelpline.com (external), followed by the closing paragraph with 🤍.
+2. **Deep link keeps working** — `/stream#room-<id>` still resolves because the DB fetch will now include the new room.
 
-AI Disclosure renders the plum gradient card with the inline eye SVG (unique ids `eyeGAI`/`pupGAI`) and italic Newsreader body, followed by the explainer paragraph about California disclosure.
+No changes to the write path, RLS, or `rooms` table schema — the row already exists after `saveSituation`; we just weren't reading it.
 
-Contact renders 4 mailto cbox cards (hello / privacy / safety / legal) plus the "in an emergency" line linking to `/safety` and the italic footer note.
+### Out of scope
 
-Disclaimer (new route) renders Formal `<h3>` + paragraph and In-voice `<h3>` + white italic card quote.
-
-## SEO wiring for `/disclaimer`
-
-- `head()` mirrors sibling routes: TITLE `"Medical / Legal Disclaimer — Shutap"`, DESCRIPTION from the formal paragraph (<160 chars), og/twitter tags, canonical `${SITE_URL}/disclaimer`.
-- Add `{ heading, body }` entry to `src/routes/legal.tsx` `SECTIONS` and `{ href: "/disclaimer", label: "Medical / legal disclaimer" }` to `OTHERS`.
-
-## Out of scope
-
-Header (`SiteHeader`) — the design's header matches what's already there, no changes. Auth pill, admin-menu logic, hash-based single-page doc-switching (the app uses real routes and that's better than the template's `#id` model — keep routes). Copy on `/legal` hub stays; only add the new disclaimer item.
-
-## Verification
-
-Playwright at 1440×900 and 390×844 on `/terms`, `/privacy`, `/guidelines`, `/safety`, `/ai-disclosure`, `/contact`, `/disclaimer`. Screenshot each; confirm sidebar active state, footer link row + italic caption, gradient AI card, cbox rows, hotline cards. Zero console errors. Report files touched + any deviations.
+- Reactions/relates counts on DB rooms (columns don't exist in the table selection; they stay at 0 until we wire the aggregate).
+- Realtime is optional; if you'd rather keep this minimal, we can skip the channel and rely on the mount fetch + storage event.
