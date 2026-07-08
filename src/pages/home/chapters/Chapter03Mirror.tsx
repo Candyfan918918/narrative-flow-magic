@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@/compat/router'
 import { useOnScreen, usePrefersReducedMotion } from '../hero/Mascot'
-import { useReactiveCard } from '@/components/motion'
+import { useReactiveCard, useMagnetic } from '@/components/motion'
 import { DEMO_DISTRICTS, DEMO_MIRROR_CAST, type DemoPattern } from '../mirrorCast'
 
 const SORA = "'Sora',system-ui,sans-serif"
