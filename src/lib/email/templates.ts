@@ -35,6 +35,9 @@ export type TemplateId =
   | 'milestone'
   | 'popular_today'
   | 'hall_updates'
+  | 'mirror_receipt'
+  | 'mirror_cancelled'
+  | 'mirror_trial_ending'
 
 export type TemplateVars = {
   alias?: string
