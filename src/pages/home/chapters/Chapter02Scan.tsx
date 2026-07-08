@@ -17,6 +17,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
   const [dialProgress, setDialProgress] = useState(reduce ? 1 : 0)
   const [counter, setCounter] = useState(reduce ? 740 : 0)
   const card = useReactiveCard({ glow: 'rgba(231,84,138,.55)' })
+  const magneticCta = useMagnetic<HTMLButtonElement>()
 
   useEffect(() => {
     if (reduce || !onScreen) return
