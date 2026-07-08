@@ -9,6 +9,7 @@ import { EyeMark } from './EyeMark'
 import { track } from '../lib/feedback'
 import { CommentsThread } from './CommentsThread'
 import { ScanShareCard } from './ScanShareCard'
+import { RoomShareSheet } from './RoomShareSheet'
 import { createComment } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { ActionPill } from './ShareChannels'
@@ -86,6 +87,7 @@ export function RoomDetail({
   const [active, setActive] = useState<Set<string>>(new Set())
   const [related, setRelated] = useState(false)
   const [scanShareOpen, setScanShareOpen] = useState(false)
+  const [roomShareOpen, setRoomShareOpen] = useState(false)
   const [guide, setGuide] = useState<string | null>(null)
   const [chips, setChips] = useState<string[]>([])
   const [helpText, setHelpText] = useState('seen without your real name.')
@@ -121,37 +123,9 @@ export function RoomDetail({
       setScanShareOpen(true)
       return
     }
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shutap.com'
-    const url = origin + '/room?id=' + room.id
-    const text = '“' + room.title + '” — a room on Shutap. someone in here has lived your exact thing →'
-    if (window.ShutapShare) {
-      window.ShutapShare.manual({
-        trigger: 'manual_room',
-        kind: 'generic',
-        headline: '“' + room.title + '”',
-        companion: 'sharing this room — de-identified. only the headline and a link travel, never the full story.',
-        caption: text,
-        url,
-        loopLabel: 'take yours →',
-        privacy: 'only the headline + link leave — never the full story.',
-      })
-      return
-    }
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'a room on Shutap', text, url })
-      } catch {
-        // user cancelled or share unavailable — no toast
-      }
-      return
-    }
-    try {
-      await navigator.clipboard.writeText(text + ' ' + url)
-      toast('link copied — only the headline + link travel, never the full story.')
-    } catch {
-      toast('couldn’t copy the link — you can still share it from the address bar.')
-    }
+    setRoomShareOpen(true)
   }
+
 
 
   // ── AI-guided comment nudge + starters (with deterministic fallback) ──
@@ -700,6 +674,12 @@ export function RoomDetail({
           toast={toast}
         />
       )}
+      <RoomShareSheet
+        open={roomShareOpen && !isScan}
+        onClose={() => setRoomShareOpen(false)}
+        room={{ id: room.id, emoji: room.emoji, title: room.title }}
+        url={(typeof window !== 'undefined' ? window.location.origin : 'https://shutap.com') + '/room?id=' + room.id}
+      />
     </div>
   )
 }
