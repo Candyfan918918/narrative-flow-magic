@@ -13,6 +13,21 @@ import type { Room } from '../data/types'
 import { NUDGES } from '../data/constants'
 import { listPillars } from '../lib/pillars.functions'
 import { useNoIndex } from '@/components/NoIndex'
+import { supabase } from '@/integrations/supabase/client'
+
+function relativeHours(iso: string): string {
+  const then = new Date(iso).getTime()
+  if (!Number.isFinite(then)) return 'just now'
+  const diff = Math.max(0, Date.now() - then)
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return mins + 'm'
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return hrs + 'h'
+  const days = Math.floor(hrs / 24)
+  return days + 'd'
+}
+
 
 type FeedItem =
   | { kind: 'room'; room: RoomTileData }
