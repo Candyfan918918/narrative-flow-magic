@@ -1150,17 +1150,19 @@ export function MirrorPage() {
     document.head.appendChild(s)
   }, [])
 
-  // Headline picks the most recent pattern whose signals come from the
-  // user's own expressed behavior (spill / scan / comments) first —
-  // passive browse/likes/follows are only used as fallback so a room the
-  // user merely viewed can't hijack the reading.
-  const OWN_SOURCES = ['spill', 'scan', 'comments'] as const
-  function ownSignalCount(p: MirrorPatternView): number {
-    const s = p.sources ?? {}
-    return OWN_SOURCES.reduce((a, k) => a + Number(s[k] ?? 0), 0)
+  // Headline uses tiered ranking so the user's poured-out stories always
+  // outrank reactions/browsing:
+  //   tier 1 — patterns with any spill or scan signal
+  //   tier 2 — comments-only patterns
+  //   tier 3 — browse/likes/follows-only patterns
+  // Within a tier, most recent last_seen (list is already ordered) wins.
+  function countOf(p: MirrorPatternView, k: string): number {
+    return Number((p.sources ?? {})[k] ?? 0)
   }
-  const ownAuthored = list.filter((p) => ownSignalCount(p) > 0)
-  const mostRecent = (ownAuthored[0] ?? list[0]) ?? null
+  const tier1 = list.filter((p) => countOf(p, 'spill') + countOf(p, 'scan') > 0)
+  const tier2 = list.filter((p) => countOf(p, 'spill') + countOf(p, 'scan') === 0 && countOf(p, 'comments') > 0)
+  const tier3 = list.filter((p) => countOf(p, 'spill') + countOf(p, 'scan') + countOf(p, 'comments') === 0)
+  const mostRecent = (tier1[0] ?? tier2[0] ?? tier3[0] ?? list[0]) ?? null
 
   // Aggregate across the whole roster — these numbers show that the mirror
   // is growing with the user, not the per-pattern counter.

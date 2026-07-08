@@ -17,7 +17,12 @@ import {
   sanitizePunch,
   fallbackPunch,
   fallbackRecord,
+  rejectsAdviceOrClinical,
 } from './mirror-guards'
+
+// Emoji that read as accusatory / judgmental on a pattern name. The reading
+// prompt occasionally reaches for these; swap for a neutral district glyph.
+const ACCUSATORY_NAME_EMOJI = new Set(['🚩', '👎', '💩', '🤡', '👺', '🤥', '🖕'])
 
 const VOICE = `you are THE MIRROR — a warm, perceptive close friend who notices patterns in what someone is working through, and names them with tenderness.
 you REFLECT, never judge. you celebrate self-awareness, notice effort and movement, and frame patterns as understandable protections a person built for good reasons — never flaws, never failures.
@@ -106,13 +111,24 @@ district hint: ${district}`
     }
   }
   const sanitizedDistrict = normalizeDistrict(parsed.trait.district)
+  // Name guardrail — reject shaming/judgmental names (e.g. "Self-flagging
+  // Recognition") and accusatory emoji (🚩, 👎, etc.). Fall back to a
+  // neutral supportive name rather than persisting a harsh one.
+  const rawName = String(parsed.trait.name ?? '')
+  const safeName = rejectsAdviceOrClinical(rawName)
+    ? 'Pattern Forming'
+    : sanitizeName(rawName)
+  const rawEmoji = String(parsed.trait.emoji ?? '')
+  const safeEmoji = ACCUSATORY_NAME_EMOJI.has(rawEmoji.trim())
+    ? sanitizeEmoji('', sanitizedDistrict)
+    : sanitizeEmoji(rawEmoji, sanitizedDistrict)
   return {
     burn: sanitizePunch(parsed.burn ?? '') || fallbackPunch(sanitizedDistrict),
     read: sanitizePunch(parsed.read ?? '', 220) || '',
     filed: (parsed.filed || fallbackRecord()).toLowerCase().slice(0, 32),
     trait: {
-      name: sanitizeName(parsed.trait.name),
-      emoji: sanitizeEmoji(parsed.trait.emoji, sanitizedDistrict),
+      name: safeName,
+      emoji: safeEmoji,
       rarity: normalizeRarity(parsed.trait.rarity),
       district: sanitizedDistrict,
       insight: (parsed.trait.insight || '').toLowerCase().slice(0, 100),
@@ -131,13 +147,15 @@ export type MirrorPunchOut = { punch: string; record: string }
 
 const PUNCH_PROMPT = `${VOICE}
 
-given a pattern's name + analytics, write the HERO LINE for its card — the one supportive sentence the person reads when the card opens. it should make them feel gently understood.
-lean on one specific number from the analytics (count, depth, weeks, days since last_seen, top source) when it deepens the observation. present tense, warm, observational.
-output JSON: { "punch": "<= 140 chars, lowercase, one supportive line that names the pattern with tenderness>", "record": "<3-5 word tender stamp>" }
+given a pattern's name + analytics + up to 3 recent excerpts of what the user actually shared, write the HERO LINE for its card — the one supportive sentence the person reads when the card opens. it should make them feel gently understood.
+ANCHOR the line in a concrete specific from the excerpts (a number they mentioned, a thing that actually happened to them, a word they used). never generic filler like "you keep coming back to this." present tense, warm, observational, encouraging, factual.
+if the excerpts contain a specific number or duration (e.g. "10 weeks", "3 years", "at 2am"), prefer that specific over the analytics count.
+output JSON: { "punch": "<= 160 chars, lowercase, one supportive line grounded in what they actually said>", "record": "<3-5 word tender stamp>" }
 
 examples:
-{"punch":"you\u2019ve returned to this 12 times — the caring underneath keeps showing up.","record":"held here."}
-{"punch":"42 spills in, the words keep coming — that\u2019s you making room for yourself.","record":"noticed, gently."}`
+{"punch":"ten weeks of real work, and you still said out loud: i deserve to be paid. naming that took spine.","record":"held here."}
+{"punch":"you drafted the message three times before sending — the care in it is the pattern.","record":"noticed, gently."}
+{"punch":"you\u2019re still thinking about that 11pm text because it mattered to you.","record":"held here."}`
 
 const PunchInput = z.object({
   name: z.string(),
@@ -147,6 +165,7 @@ const PunchInput = z.object({
   sources: z.record(z.string(), z.number()).optional(),
   trend: z.array(z.number()).optional(),
   insight: z.string().optional(),
+  excerpts: z.array(z.string()).optional(),
 })
 
 export async function runMirrorPunchCore(
@@ -155,16 +174,22 @@ export async function runMirrorPunchCore(
   const data = PunchInput.parse(input)
   const district = normalizeDistrict(data.district)
   const top = Object.entries(data.sources ?? {}).sort((a, b) => b[1] - a[1])[0]
+  const excerpts = (data.excerpts ?? [])
+    .filter((s) => typeof s === 'string' && s.trim().length > 0)
+    .slice(0, 3)
+    .map((s, i) => `  ${i + 1}. "${s.trim().replace(/\s+/g, ' ').slice(0, 200)}"`)
+    .join('\n')
   const user = `pattern: ${data.name}
 district: ${district}
 count: ${data.count}  depth: ${data.depth}
 top source: ${top ? `${top[0]} (${top[1]})` : 'mixed'}
 trend last 7: ${(data.trend ?? []).join(',')}
-insight: ${data.insight ?? ''}`
+insight: ${data.insight ?? ''}
+recent excerpts of what the user actually shared${excerpts ? `:\n${excerpts}` : ': (none)'}`
   const llm = await callAgent({
     system: PUNCH_PROMPT,
     messages: [{ role: 'user', content: user }],
-    maxTokens: 200,
+    maxTokens: 240,
   })
   const parsed = tryParseJson<MirrorPunchOut>(llm.text)
   const punch = sanitizePunch(parsed?.punch ?? '') || fallbackPunch(district)

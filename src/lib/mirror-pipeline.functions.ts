@@ -79,6 +79,40 @@ function trendDir(trend: number[]): 'rising' | 'steady' | 'cooling' | 'dormant' 
   return 'steady'
 }
 
+// Fetch up to 3 recent scrubbed excerpts for a pattern so the punch prompt
+// can anchor the hero line in what the user actually said. Includes the
+// current cleaned text (if any) as the freshest excerpt.
+async function recentPatternExcerpts(
+  supabase: any,
+  patternId: string,
+  currentText: string,
+): Promise<string[]> {
+  const out: string[] = []
+  const seen = new Set<string>()
+  const push = (s: string | null | undefined) => {
+    const t = (s ?? '').trim()
+    if (!t) return
+    const key = t.slice(0, 80).toLowerCase()
+    if (seen.has(key)) return
+    seen.add(key)
+    out.push(t.slice(0, 400))
+  }
+  push(currentText)
+  try {
+    const { data } = await supabase
+      .from('mirror_signals')
+      .select('text_scrubbed')
+      .eq('pattern_id', patternId)
+      .order('created_at', { ascending: false })
+      .limit(6)
+    for (const r of (data ?? []) as Array<{ text_scrubbed: string | null }>) {
+      push(r.text_scrubbed)
+      if (out.length >= 3) break
+    }
+  } catch { /* fail-soft */ }
+  return out.slice(0, 3)
+}
+
 export type IngestMirrorInput = z.input<typeof IngestInput>
 
 // ---------- PHASE 1 — durable enqueue ----------
@@ -209,8 +243,11 @@ export async function crystallizeMirrorSignal(args: {
         state: 'active',
       }
       // Always regenerate the hero line when a pattern deepens — the
-      // supportive prompt uses the fresh count/depth/sources numbers.
+      // supportive prompt uses the fresh count/depth/sources numbers plus
+      // recent excerpts of what the user actually said, so the line stays
+      // grounded in their real words.
       try {
+        const excerpts = await recentPatternExcerpts(supabase, matched.id, cleaned)
         const punch = await runMirrorPunchCore({
           name: p.name,
           district: p.district,
@@ -219,6 +256,7 @@ export async function crystallizeMirrorSignal(args: {
           sources: nextSources as Record<string, number>,
           trend: nextTrend,
           insight: p.insight ?? '',
+          excerpts,
         })
         update.punch = punch.punch
         update.record = punch.record
@@ -293,6 +331,7 @@ export async function crystallizeMirrorSignal(args: {
           sources: initialSources as Record<string, number>,
           trend: initialTrend,
           insight: reading.trait.insight,
+          excerpts: cleaned ? [cleaned] : [],
         })
         const { error: punchErr } = await supabase
           .from('mirror_patterns')
