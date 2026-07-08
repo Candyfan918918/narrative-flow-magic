@@ -13,13 +13,14 @@ import { saveSituation } from '@/lib/situations.functions'
 import { requireRealUser, saveIntent } from '@/lib/auth-guard'
 import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
-import { HeroMascot, usePrefersReducedMotion } from './hero/Mascot'
+import { HeroMascot } from './hero/Mascot'
 import { Chapter01Interview } from './chapters/Chapter01Interview'
 import { Chapter02Scan } from './chapters/Chapter02Scan'
 import { Chapter03Mirror } from './chapters/Chapter03Mirror'
 import { RoomsStrip } from './RoomsStrip'
 import { HomeFAQ } from './HomeFAQ'
 import { Link } from '@tanstack/react-router'
+import { Words } from '@/components/motion'
 import './home.css'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -42,20 +43,16 @@ function hashKey(input: { pillar?: string | null; title?: string | null; body?: 
   return (h >>> 0).toString(36)
 }
 
-const HERO_WORDS_LINE_1 = ['finally,', 'somewhere', 'to']
-const HERO_WORDS_LINE_2 = ['not', 'shut', 'up.']
-
 export function HomePage() {
   const navigate = useNavigate()
   const router = useRouter()
   const save = useServerFn(saveSituation)
-  const reduce = usePrefersReducedMotion()
+  
 
   const [spillOpen, setSpillOpen] = useState(false)
   const [scanOpen, setScanOpen] = useState(false)
   const [composerOpen, setComposerOpen] = useState(false)
   const [pendingCta, setPendingCta] = useState<null | 'spill' | 'scan'>(null)
-  const [wordsIn, setWordsIn] = useState(reduce)
 
   // Live count: rooms currently open (seed + user-published)
   const [openCount, setOpenCount] = useState<number>(SHUTAP_SEED.rooms?.length ?? 0)
@@ -80,13 +77,6 @@ export function HomePage() {
     el.classList.add('home-scroll-snap')
     return () => el.classList.remove('home-scroll-snap')
   }, [])
-
-  useEffect(() => {
-    if (reduce) return
-    // trigger word reveal after mount
-    const t = window.setTimeout(() => setWordsIn(true), 50)
-    return () => window.clearTimeout(t)
-  }, [reduce])
 
   useEffect(() => {
     void router.preloadRoute({ to: '/welcome' }).catch(() => {})
@@ -193,7 +183,8 @@ export function HomePage() {
           <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22 }}>
             <HeroMascot size={220} />
 
-            <h1
+            <Words
+              as="h1"
               style={{
                 fontFamily: SORA,
                 fontWeight: 800,
@@ -204,17 +195,9 @@ export function HomePage() {
                 color: '#0b080f',
               }}
             >
-              <span style={{ display: 'block' }}>
-                {HERO_WORDS_LINE_1.map((w, i) => (
-                  <HeroWord key={i} text={w} shown={wordsIn} delay={i * 80} space={i < HERO_WORDS_LINE_1.length - 1} />
-                ))}
-              </span>
-              <span style={{ display: 'block', fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>
-                {HERO_WORDS_LINE_2.map((w, i) => (
-                  <HeroWord key={i} text={w} shown={wordsIn} delay={(HERO_WORDS_LINE_1.length + i) * 80} space={i < HERO_WORDS_LINE_2.length - 1} />
-                ))}
-              </span>
-            </h1>
+              <span style={{ display: 'block' }}>finally, somewhere to</span>
+              <span style={{ display: 'block', fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>not shut up.</span>
+            </Words>
 
             <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 19, color: '#4a3040', lineHeight: 1.55, maxWidth: '44ch', margin: '4px 0 0' }}>
               venting is free therapy — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
@@ -286,19 +269,6 @@ export function HomePage() {
       <ScanModal open={scanOpen} onClose={closeScan} />
       <CompanionComposer open={composerOpen} onClose={() => setComposerOpen(false)} onSpill={openSpill} onScan={openScan} />
     </div>
-  )
-}
-
-function HeroWord({ text, shown, delay, space }: { text: string; shown: boolean; delay: number; space: boolean }) {
-  return (
-    <span className="home-word-wrap" style={{ marginRight: space ? '0.28em' : 0 }}>
-      <span
-        className={`home-word${shown ? ' in' : ''}`}
-        style={{ transitionDelay: `${delay}ms` }}
-      >
-        {text}
-      </span>
-    </span>
   )
 }
 

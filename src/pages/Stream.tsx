@@ -2,6 +2,7 @@
  * Renders seed rooms + user-published rooms from localStorage (the same
  * dynamic source the iframe used). Scan rooms render as score-card tiles. */
 import { useEffect, useMemo, useState } from 'react'
+import { Words } from '@/components/motion'
 import { useLocation, useNavigate } from '@/compat/router'
 
 import { RoomTile, type RoomTileData } from '../components/RoomTile'
@@ -140,9 +141,9 @@ export function StreamPage() {
           <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 6 }}>
             the stream
           </div>
-          <h1 style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 'clamp(22px,4vw,30px)', margin: 0, color: '#0b080f', letterSpacing: '-.02em' }}>
+          <Words as="h1" style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 'clamp(22px,4vw,30px)', margin: 0, color: '#0b080f', letterSpacing: '-.02em' }}>
             rooms open right now
-          </h1>
+          </Words>
           <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14.5, color: '#6b4a5c', margin: '6px 0 0' }}>
             sit in one. don't fix anything. just be there.
           </p>

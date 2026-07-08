@@ -1,6 +1,7 @@
 /* Age gate (18+). Lazy-loaded — pulls in `recordLegalAcceptance` only when
  * the user actually reaches this step. */
 import { useState } from 'react'
+import { Words } from '@/components/motion'
 import { MONTHS, wheelSelect, primaryBtn, BG, ACCENT, TEXT, SOFT, MUTED, type Msg } from './shared'
 
 export interface AgeStepProps {
@@ -34,7 +35,7 @@ export function AgeStep({ ageBlocked, onBlocked, onConfirm }: AgeStepProps) {
   return (
     <div className="wstep" style={{ display: 'flex', flexDirection: 'column', gap: 24, textAlign: 'center' }}>
       <div>
-        <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 22, lineHeight: 1.4, color: TEXT, marginBottom: 8 }}>one small thing first.</div>
+        <Words as="div" style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 22, lineHeight: 1.4, color: TEXT, marginBottom: 8 }}>one small thing first.</Words>
         <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15, color: SOFT, lineHeight: 1.55, maxWidth: '34ch', margin: '0 auto' }}>
           shutap is 18 and over. some of what's shared here is honest in ways that need a little life experience to hold.
         </div>

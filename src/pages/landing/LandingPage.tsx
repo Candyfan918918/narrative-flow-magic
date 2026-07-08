@@ -18,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { SHUTAP_SEED } from '@/data/seed'
 import type { Room } from '@/data/types'
 import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
+import { Words } from '@/components/motion'
 import './landing.native.css'
 
 // Shared sync key (kept identical to iframe bridge in src/pages/Landing.tsx).
@@ -274,9 +275,9 @@ export function LandingNativePage() {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'shimmer 3s ease-in-out infinite', display: 'block' }} />
               <span>rooms open now</span>
             </div>
-            <h1 style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(30px,6vw,50px)', lineHeight: 1.15, letterSpacing: '-.015em', margin: '0 0 20px', color: '#0b080f', maxWidth: '14ch' }}>
+            <Words as="h1" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(30px,6vw,50px)', lineHeight: 1.15, letterSpacing: '-.015em', margin: '0 0 20px', color: '#0b080f', maxWidth: '14ch' }}>
               finally, somewhere to <em style={{ fontStyle: 'normal', background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>not shut up.</em>
-            </h1>
+            </Words>
             <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 18, lineHeight: 1.6, color: '#4a3040', maxWidth: '46ch', margin: '0 0 30px' }}>
               let it all out — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
             </p>

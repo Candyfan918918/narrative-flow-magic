@@ -1,3 +1,5 @@
+import { Words } from '@/components/motion'
+
 type Section = { heading: string; body: string };
 type Other = { href: string; label: string };
 
@@ -25,7 +27,9 @@ export function ContentPage({
       <article
         style={{ maxWidth: 720, margin: "0 auto", lineHeight: 1.65 }}
       >
-        <h1
+        <Words
+          as="h1"
+          key={h1}
           style={{
             fontFamily: "'Sora', system-ui, sans-serif",
             fontSize: "clamp(32px, 6vw, 52px)",
@@ -37,7 +41,7 @@ export function ContentPage({
           }}
         >
           {h1}
-        </h1>
+        </Words>
 
         <p
           style={{
