@@ -20,7 +20,7 @@ import { Chapter03Mirror } from './chapters/Chapter03Mirror'
 import { RoomsStrip } from './RoomsStrip'
 import { HomeFAQ } from './HomeFAQ'
 import { Link } from '@tanstack/react-router'
-import { Words, Reveal } from '@/components/motion'
+import { Words, Reveal, useMagnetic, CursorTrail } from '@/components/motion'
 import './home.css'
 
 const SORA = "'Sora',system-ui,sans-serif"
