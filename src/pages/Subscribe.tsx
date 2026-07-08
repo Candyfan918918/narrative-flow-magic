@@ -17,9 +17,11 @@ export function SubscribePage() {
   useNoIndex()
   const [search] = useSearchParams()
   const navigate = useNavigate()
-  const planKey = (search.get('plan') === 'monthly' ? 'monthly' : 'annual') as 'monthly' | 'annual'
+  const initialPlan = (search.get('plan') === 'monthly' ? 'monthly' : 'annual') as 'monthly' | 'annual'
+  const [planKey, setPlanKey] = useState<'monthly' | 'annual'>(initialPlan)
   const plan = PLAN_TO_PRICE[planKey]
   const [err, setErr] = useState<string | null>(null)
+
   const [authed, setAuthed] = useState<boolean | null>(null)
   const [checked, setChecked] = useState(false)
   const [alreadySubbed, setAlreadySubbed] = useState(false)
@@ -101,9 +103,43 @@ export function SubscribePage() {
         <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 26, lineHeight: 1.3, marginBottom: 8 }}>
           open the full mirror
         </div>
+        {!alreadySubbed && (
+          <div style={{ display: 'flex', gap: 8, marginBottom: 14, background: 'rgba(255,255,255,.04)', border: '.5px solid rgba(247,232,240,.14)', borderRadius: 999, padding: 4, width: 'fit-content' }}>
+            {(['monthly', 'annual'] as const).map((k) => {
+              const active = planKey === k
+              const label = k === 'monthly' ? 'monthly · $7.99/mo' : 'annual · $49.99/yr'
+              return (
+                <button
+                  key={k}
+                  onClick={() => {
+                    if (planKey === k) return
+                    setPlanKey(k)
+                    setErr(null)
+                    navigate(`/subscribe?plan=${k}`, { replace: true })
+                  }}
+                  style={{
+                    background: active ? '#e7548a' : 'transparent',
+                    color: active ? '#fff' : '#caaebb',
+                    border: 'none',
+                    borderRadius: 999,
+                    padding: '8px 14px',
+                    fontFamily: 'Sora, sans-serif',
+                    fontWeight: 700,
+                    fontSize: 12,
+                    letterSpacing: '.02em',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {label}{k === 'annual' && !active ? ' · save ~48%' : ''}
+                </button>
+              )
+            })}
+          </div>
+        )}
         <div style={{ color: '#caaebb', fontSize: 14.5, lineHeight: 1.55, marginBottom: 18 }}>
           {plan.label} · {plan.price} · 14 days free · founders' pricing
         </div>
+
         {alreadySubbed ? (
           <div style={{ background: 'rgba(255,255,255,.04)', border: '.5px solid rgba(247,232,240,.16)', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 18, lineHeight: 1.4 }}>
@@ -141,9 +177,10 @@ export function SubscribePage() {
               founders' pricing — locked in for as long as you stay subscribed. your card is required now; after your 14-day free trial ends you'll be charged automatically unless you cancel first. cancel anytime from your profile — cancellation takes effect at the end of your current billing period, and payments for the current or past periods are not refunded. by subscribing you agree to the <a href="/terms" style={{ color: '#9e7a8c', textDecoration: 'underline' }}>terms</a> and <a href="/privacy" style={{ color: '#9e7a8c', textDecoration: 'underline' }}>privacy policy</a>.
             </div>
             <div style={{ background: 'transparent', borderRadius: 14, overflow: 'hidden' }}>
-              <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
+              <EmbeddedCheckoutProvider key={plan.id} stripe={getStripe()} options={{ fetchClientSecret }}>
                 <EmbeddedCheckout />
               </EmbeddedCheckoutProvider>
+
             </div>
           </>
         )}
