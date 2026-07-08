@@ -38,8 +38,6 @@ html.home-scroll-snap {
 /* Selection color. */
 .home-immersive ::selection { background: #e7548a; color: #fff; }
 
-/* Push the immersive fixed header below the fixed payment banner. */
-.home-immersive [data-hdr] { top: 32px !important; }
 
 /* ── Restored hover states (design's style-hover attrs were never compiled) ── */
 /* header "join →" pill */
