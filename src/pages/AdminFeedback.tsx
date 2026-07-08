@@ -1,16 +1,11 @@
-/* Pixel-perfect iframe port of Shutap-Feedback-Admin.html (0627 handoff).
- * Rendered below the GlobalHeader — fills remaining viewport. */
-import { NoIndex } from '@/components/NoIndex'
+/* Native React admin feedback page. Replaces the former iframe port of
+ * public/shutap/Shutap-Feedback-Admin.dc.html (a compiled Claude Design
+ * bundle). Renders the same feedback dashboard the Admin shell shows
+ * under its "feedback" tab. */
+import { useNoIndex } from '@/components/NoIndex'
+import { AdminShell } from '@/pages/Admin'
 
 export function AdminFeedbackPage() {
-  return (
-    <>
-      <NoIndex />
-      <iframe
-        src="/shutap/Shutap-Feedback-Admin.dc.html"
-        title="Shutap — Feedback Admin"
-        style={{ display: 'block', width: '100%', height: 'calc(100vh - 96px)', border: 0, background: '#faf9f5' }}
-      />
-    </>
-  )
+  useNoIndex()
+  return <AdminShell initialView="feedback" />
 }
