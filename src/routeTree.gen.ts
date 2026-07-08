@@ -67,6 +67,7 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as HallsHallRegionWindowRouteImport } from './routes/halls.$hall.$region.$window'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicHooksTrialEndingEmailsRouteImport } from './routes/api/public/hooks/trial-ending-emails'
 import { Route as ApiPublicHooksReengagementEmailsRouteImport } from './routes/api/public/hooks/reengagement-emails'
 import { Route as ApiPublicHooksMirrorEvolutionRouteImport } from './routes/api/public/hooks/mirror-evolution'
 import { Route as ApiPublicHooksDispatchCheckinsRouteImport } from './routes/api/public/hooks/dispatch-checkins'
@@ -366,6 +367,12 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksTrialEndingEmailsRoute =
+  ApiPublicHooksTrialEndingEmailsRouteImport.update({
+    id: '/api/public/hooks/trial-ending-emails',
+    path: '/api/public/hooks/trial-ending-emails',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksReengagementEmailsRoute =
   ApiPublicHooksReengagementEmailsRouteImport.update({
     id: '/api/public/hooks/reengagement-emails',
@@ -444,6 +451,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
+  '/api/public/hooks/trial-ending-emails': typeof ApiPublicHooksTrialEndingEmailsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -506,6 +514,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
+  '/api/public/hooks/trial-ending-emails': typeof ApiPublicHooksTrialEndingEmailsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -570,6 +579,7 @@ export interface FileRoutesById {
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
+  '/api/public/hooks/trial-ending-emails': typeof ApiPublicHooksTrialEndingEmailsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/halls/$hall/$region/$window': typeof HallsHallRegionWindowRoute
 }
@@ -634,6 +644,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
     | '/api/public/hooks/reengagement-emails'
+    | '/api/public/hooks/trial-ending-emails'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesByTo: FileRoutesByTo
@@ -696,6 +707,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
     | '/api/public/hooks/reengagement-emails'
+    | '/api/public/hooks/trial-ending-emails'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   id:
@@ -759,6 +771,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
     | '/api/public/hooks/reengagement-emails'
+    | '/api/public/hooks/trial-ending-emails'
     | '/api/public/payments/webhook'
     | '/halls/$hall/$region/$window'
   fileRoutesById: FileRoutesById
@@ -816,6 +829,7 @@ export interface RootRouteChildren {
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicHooksMirrorEvolutionRoute: typeof ApiPublicHooksMirrorEvolutionRoute
   ApiPublicHooksReengagementEmailsRoute: typeof ApiPublicHooksReengagementEmailsRoute
+  ApiPublicHooksTrialEndingEmailsRoute: typeof ApiPublicHooksTrialEndingEmailsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -1227,6 +1241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/trial-ending-emails': {
+      id: '/api/public/hooks/trial-ending-emails'
+      path: '/api/public/hooks/trial-ending-emails'
+      fullPath: '/api/public/hooks/trial-ending-emails'
+      preLoaderRoute: typeof ApiPublicHooksTrialEndingEmailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/reengagement-emails': {
       id: '/api/public/hooks/reengagement-emails'
       path: '/api/public/hooks/reengagement-emails'
@@ -1356,6 +1377,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicHooksMirrorEvolutionRoute: ApiPublicHooksMirrorEvolutionRoute,
   ApiPublicHooksReengagementEmailsRoute: ApiPublicHooksReengagementEmailsRoute,
+  ApiPublicHooksTrialEndingEmailsRoute: ApiPublicHooksTrialEndingEmailsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
