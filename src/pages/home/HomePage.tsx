@@ -210,6 +210,7 @@ export function HomePage() {
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
               <button
                 type="button"
+                ref={magneticHero}
                 onClick={openSpill}
                 onPointerEnter={preloadWelcome}
                 onFocus={preloadWelcome}
@@ -220,6 +221,7 @@ export function HomePage() {
               </button>
               <Link
                 to="/stream"
+                ref={magneticSit}
                 style={{ background: '#fff', color: '#0b080f', border: '1px solid rgba(11,8,15,.1)', padding: '15px 26px', borderRadius: 999, fontFamily: SORA, fontWeight: 700, fontSize: 15, textDecoration: 'none', letterSpacing: '-.005em' }}
               >
                 sit in a room
