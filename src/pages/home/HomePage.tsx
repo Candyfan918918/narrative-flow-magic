@@ -47,6 +47,10 @@ export function HomePage() {
   const navigate = useNavigate()
   const router = useRouter()
   const save = useServerFn(saveSituation)
+  const magneticHero = useMagnetic<HTMLButtonElement>()
+  const magneticSit = useMagnetic<HTMLAnchorElement>()
+  const magneticFinale = useMagnetic<HTMLButtonElement>()
+  
   
 
   const [spillOpen, setSpillOpen] = useState(false)
