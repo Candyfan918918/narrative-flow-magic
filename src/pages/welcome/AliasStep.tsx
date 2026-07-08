@@ -1,6 +1,7 @@
 /* Alias mint / re-roll step. Lazy-loaded — pulls in alias, legal, and
  * welcome-email server-fn modules only when the user reaches this step. */
 import { useMemo, useState } from 'react'
+import { Words } from '@/components/motion'
 import { upsertMyAlias, randomAliasParts } from '@/lib/alias.functions'
 import { recordLegalAcceptance } from '@/lib/legal.functions'
 import { sendWelcomeEmail } from '@/lib/welcome-email.functions'
@@ -72,7 +73,7 @@ export function AliasStep({ birth, initial, onComplete }: AliasStepProps) {
     <div className="wstep" style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
       <div>
         <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: ACCENT, marginBottom: 14 }}>your name in the room</div>
-        <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.5, color: TEXT, marginBottom: 8 }}>it won't be yours. it will be the name the room knows you by.</div>
+        <Words as="div" style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.5, color: TEXT, marginBottom: 8 }}>it won't be yours. it will be the name the room knows you by.</Words>
         <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15, color: SOFT }}>one alias. always yours. never your real name.</div>
       </div>
       <div style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 20, padding: '28px 24px', textAlign: 'center' }}>

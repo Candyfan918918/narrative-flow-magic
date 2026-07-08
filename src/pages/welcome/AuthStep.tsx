@@ -2,6 +2,7 @@
  * first paint of /welcome doesn't Suspense. Does NOT advance step itself —
  * parent's onAuthStateChange picks up SIGNED_IN and drives the flow. */
 import { useEffect, useState } from 'react'
+import { Words } from '@/components/motion'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
 import { EyeMark, oauthBtn, ACCENT, TEXT, SOFT, MUTED, type Msg } from './shared'
@@ -85,8 +86,8 @@ export function AuthStep() {
         <div style={{ marginTop: 20, fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 26, letterSpacing: '-.04em', marginBottom: 10 }}>
           shut<span style={{ color: ACCENT }}>ap</span>
         </div>
-        <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.45, color: SOFT, marginBottom: 4 }}>before the room hears you,</div>
-        <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.45, color: TEXT }}>you need a name.</div>
+        <Words as="div" style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.45, color: SOFT, marginBottom: 4 }}>before the room hears you,</Words>
+        <Words as="div" style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.45, color: TEXT }}>you need a name.</Words>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <button className="oauth-btn" style={oauthBtn} disabled={busy} onClick={() => doOAuth('google')}>
