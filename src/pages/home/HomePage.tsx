@@ -13,9 +13,7 @@ import { ScanModal } from '@/pages/landing/modals/ScanModal'
 import { saveSituation } from '@/lib/situations.functions'
 import { requireRealUser, saveIntent } from '@/lib/auth-guard'
 import { supabase } from '@/integrations/supabase/client'
-import { SHUTAP_SEED } from '@/data/seed'
-import { IMMERSIVE_REST_HTML } from './immersiveTemplate'
-import { mountImmersive, renderRoomsMarkup } from './immersiveMount'
+import { mountImmersive } from './immersiveMount'
 import { mountHomeMotion } from './motionAdapter'
 import { CursorTrail } from '@/components/motion/CursorTrail'
 import { HomeImmersive } from './HomeImmersive'
@@ -95,14 +93,6 @@ export function HomePage() {
   }, [pendingCta])
 
   // Mount the immersive motion/interactivity onto the native React DOM.
-  const [restHtml] = useState(() => {
-    const rooms = (SHUTAP_SEED.rooms || []).map((r) => ({
-      emoji: r.emoji, alias: r.alias, hours: r.hours, title: r.title,
-      sitting: (r as unknown as { sitting?: number }).sitting ?? 0,
-      relates: (r as unknown as { relates?: number }).relates ?? 0,
-    }))
-    return IMMERSIVE_REST_HTML.replace('<!--ROOMS-->', renderRoomsMarkup(rooms))
-  })
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
@@ -184,7 +174,7 @@ export function HomePage() {
   return (
     <div ref={rootRef} className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
       <CursorTrail />
-      <HomeImmersive restHtml={restHtml} />
+      <HomeImmersive />
       <SpillModal open={spillOpen} onClose={() => setSpillOpen(false)} />
       <ScanModal open={scanOpen} onClose={() => setScanOpen(false)} />
     </div>
