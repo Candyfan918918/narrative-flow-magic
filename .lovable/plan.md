@@ -1,36 +1,33 @@
-## Why your new room doesn't show up on `/stream`
+## Why there's no monthly option
 
-`/stream` currently reads from only two places:
+`SubscribePage` (`src/pages/Subscribe.tsx`) already supports both plans — it reads `?plan=monthly` or `?plan=annual` from the URL and defaults to `annual` when the param is missing or invalid:
 
-1. **Seed rooms** hardcoded in `SHUTAP_SEED` (`src/data/seed.ts`)
-2. **Your device's `localStorage`** key `shutap_user_situations`
+```ts
+const planKey = (search.get('plan') === 'monthly' ? 'monthly' : 'annual')
+```
 
-It never queries the `rooms` table in the database. So:
-
-- On the device where you spilled, the room shows because `SpillModal.publishOrSave` calls `appendUserRoom(...)` after save, which writes to `localStorage`. After sign-out or on a different browser/device, that cache is gone and the room disappears from Stream even though the DB row still exists.
-- Rooms other real users spill never show up for you at all.
-- If you spill and are bounced through `/welcome` (anonymous session), the resume-after-sign-in path in `HomePage.tsx` does append to `localStorage`, but again only on that device.
-
-Meanwhile `rooms` table SELECT is public (`anon, authenticated`, safe columns only: `id, hall, emoji, alias, support, body, title, reflection, created_at, updated_at`), so we can just fetch it.
+Nothing in the app ever links to `/subscribe?plan=monthly`, and the page renders no toggle, so users always land on annual `$49.99/year` with no way to switch. Both prices exist in code (`mirror_monthly` = `$7.99/month`, `mirror_annual` = `$49.99/year`) and the checkout server fn accepts either.
 
 ## Fix
 
-Make `/stream` actually read the `rooms` table.
+Add an inline **monthly ↔ annual** toggle at the top of the Subscribe page.
 
-### Changes
+### Changes — `src/pages/Subscribe.tsx` only
 
-1. **`src/pages/Stream.tsx`** — add a client-side fetch of public rooms and merge into the feed.
-   - New `useEffect` (post-mount) that runs `supabase.from('rooms').select('id, alias, emoji, title, body, support, hall, created_at, updated_at').order('created_at', { ascending: false }).limit(200)`.
-   - Map DB rows to `RoomTileData` (fill defaults for missing fields: `reflection: ''`, `hours: relativeTime(created_at)`, `relates: 0`, `sitting: 1`, `reactions: {heard:0,same:0,strong:0,time:0,brave:0}`, `kind: 'spill'`, `pillar: null`).
-   - Merge order in `rooms` memo: `dbRooms` (newest first) → `localUserRooms` (device fallback, deduped) → `seed`. Dedup by `id` so a just-published room shown from `appendUserRoom` isn't listed twice when the DB fetch resolves.
-   - Re-fetch when the `shutap_user_situations` storage event fires (already listened for) so a fresh publish triggers a refresh on the same tab.
-   - Optional: subscribe to `postgres_changes` on `public.rooms` inside the same `useEffect` for live inserts; tear the channel down on unmount.
-
-2. **Deep link keeps working** — `/stream#room-<id>` still resolves because the DB fetch will now include the new room.
-
-No changes to the write path, RLS, or `rooms` table schema — the row already exists after `saveSituation`; we just weren't reading it.
+1. Replace the derived-from-URL `planKey` with local state initialized from the URL param (still defaults to `annual`).
+2. Render a two-button pill selector above the summary line:
+   - `monthly · $7.99/mo`
+   - `annual · $49.99/yr` with a small "save ~48%" note
+   - Active button uses the existing pink treatment (`#e7548a`), inactive uses the muted border style already in the file.
+3. When the user toggles:
+   - update state,
+   - update the URL via `navigate('/subscribe?plan=<key>', { replace: true })` so refresh/back preserves choice and existing deep links still work,
+   - the `EmbeddedCheckoutProvider` is keyed on `plan.id` so Stripe rebuilds the checkout session with the new price. `fetchClientSecret` already reads the current `plan.id`, so no server-side changes are needed.
+4. Hide the toggle when `alreadySubbed` is true (portal path).
+5. Keep the existing summary line (`{plan.label} · {plan.price} · 14 days free · founders' pricing`) — it will reflect whichever plan is selected.
 
 ### Out of scope
 
-- Reactions/relates counts on DB rooms (columns don't exist in the table selection; they stay at 0 until we wire the aggregate).
-- Realtime is optional; if you'd rather keep this minimal, we can skip the channel and rely on the mount fetch + storage event.
+- No changes to `payments.functions.ts`, Stripe products, or webhook handling.
+- No pricing changes.
+- No changes to how other pages link to `/subscribe` (the default remains annual for existing entry points; users can switch on-page).

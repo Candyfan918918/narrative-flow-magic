@@ -17,9 +17,11 @@ export function SubscribePage() {
   useNoIndex()
   const [search] = useSearchParams()
   const navigate = useNavigate()
-  const planKey = (search.get('plan') === 'monthly' ? 'monthly' : 'annual') as 'monthly' | 'annual'
+  const initialPlan = (search.get('plan') === 'monthly' ? 'monthly' : 'annual') as 'monthly' | 'annual'
+  const [planKey, setPlanKey] = useState<'monthly' | 'annual'>(initialPlan)
   const plan = PLAN_TO_PRICE[planKey]
   const [err, setErr] = useState<string | null>(null)
+
   const [authed, setAuthed] = useState<boolean | null>(null)
   const [checked, setChecked] = useState(false)
   const [alreadySubbed, setAlreadySubbed] = useState(false)
