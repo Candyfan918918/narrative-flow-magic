@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { useReducedMotion } from './useReducedMotion'
 import './motion.css'
 
@@ -12,6 +12,8 @@ type RevealProps = {
   style?: CSSProperties
 }
 
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
+
 /** Block reveal. Wraps children in a single element (default <div>). Pure
  * pass-through — does not swallow clicks or focus. Replays every time the
  * element scrolls back into view. */
@@ -22,7 +24,7 @@ export function Reveal({ children, fx, as, className, style }: RevealProps) {
   const [inView, setInView] = useState(false)
   const Tag = (as || 'div') as keyof React.JSX.IntrinsicElements
 
-  useEffect(() => { setMounted(true) }, [])
+  useIsoLayoutEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     if (reduce) return
@@ -31,7 +33,12 @@ export function Reveal({ children, fx, as, className, style }: RevealProps) {
     const io = new IntersectionObserver(
       (entries) => {
         const e = entries[0]
-        setInView(!!e && e.isIntersecting)
+        if (!e) return
+        if (e.isIntersecting) {
+          requestAnimationFrame(() => requestAnimationFrame(() => setInView(true)))
+        } else {
+          setInView(false)
+        }
       },
       { threshold: 0.18 },
     )

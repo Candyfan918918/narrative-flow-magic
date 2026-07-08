@@ -3,6 +3,7 @@ import React, {
   cloneElement,
   isValidElement,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -18,6 +19,9 @@ type WordsProps = {
   className?: string
   style?: CSSProperties
 }
+
+// useLayoutEffect writes a warning on the server; fall back to useEffect there.
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 /** Walk the tree, replacing string leaves with word spans. Whitespace kept.
  * Nested elements (<em>, gradient spans, etc.) are preserved with their
@@ -74,7 +78,9 @@ export function Words({ children, as, className, style }: WordsProps) {
   const [inView, setInView] = useState(false)
   const Tag = (as || 'span') as keyof React.JSX.IntrinsicElements
 
-  useEffect(() => { setMounted(true) }, [])
+  // useLayoutEffect flips to 'hidden' before the browser paints, so the
+  // hidden state paints at least once before the observer flips to 'in'.
+  useIsoLayoutEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     if (reduce) return
@@ -83,7 +89,14 @@ export function Words({ children, as, className, style }: WordsProps) {
     const io = new IntersectionObserver(
       (entries) => {
         const e = entries[0]
-        setInView(!!e && e.isIntersecting)
+        if (!e) return
+        if (e.isIntersecting) {
+          // Double-rAF: guarantee one paint of the hidden state before we
+          // flip to 'in' so the CSS transition actually runs.
+          requestAnimationFrame(() => requestAnimationFrame(() => setInView(true)))
+        } else {
+          setInView(false)
+        }
       },
       { threshold: 0.35 },
     )
