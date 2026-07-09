@@ -8,10 +8,12 @@ import type { Database } from '@/integrations/supabase/types'
 
 interface CompleteBody {
   messages?: { role: 'user' | 'assistant'; content: string }[]
-  system?: string
   maxTokens?: number
   stream?: boolean
 }
+
+const MAX_MESSAGES = 40
+const MAX_MESSAGE_CHARS = 8000
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
