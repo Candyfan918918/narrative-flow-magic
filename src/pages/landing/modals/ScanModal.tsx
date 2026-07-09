@@ -177,27 +177,70 @@ function NextBtn({ enabled, onClick, label }: { enabled: boolean; onClick: () =>
 }
 
 // ─────────────────────────── widgets ───────────────────────────
+// ─────────────────────────── widgets ───────────────────────────
 function ChoiceW({ card, onPick }: { card: CardChoice; onPick: (v: string) => void }) {
+  const [picked, setPicked] = useState<string | null>(null)
+  const handle = (o: string) => {
+    if (picked) return
+    setPicked(o)
+    window.setTimeout(() => onPick(o), 240)
+  }
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-      {(card.options || ['ok']).map((o, i) => (
-        <div key={i} role="button" onClick={() => onPick(o)}
-          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, padding: '15px 17px', border: '1px solid rgba(127,119,221,.22)', background: 'rgba(127,119,221,.06)', borderRadius: 13, fontFamily: SORA, fontWeight: 600, fontSize: 15, color: '#ece6f5', transition: '.15s' }}
-          onMouseOver={e => { const s = e.currentTarget.style; s.borderColor = '#7F77DD'; s.background = 'rgba(127,119,221,.16)' }}
-          onMouseOut={e => { const s = e.currentTarget.style; s.borderColor = 'rgba(127,119,221,.22)'; s.background = 'rgba(127,119,221,.06)' }}
-        >{o}</div>
-      ))}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
+      {(card.options || ['ok']).map((o, i) => {
+        const on = picked === o
+        return (
+          <div key={i} role="button" onClick={() => handle(o)}
+            style={{
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12,
+              padding: '17px 19px',
+              border: '1px solid ' + (on ? '#7F77DD' : 'rgba(127,119,221,.22)'),
+              background: on ? '#7F77DD' : 'rgba(127,119,221,.06)',
+              borderRadius: 16,
+              fontFamily: SORA, fontWeight: 600, fontSize: 16.5,
+              color: on ? '#fff' : '#ece6f5',
+              transition: 'transform .18s, background .18s, border-color .18s, box-shadow .18s',
+              transform: on ? 'scale(1.02)' : 'none',
+              opacity: 0,
+              animation: `slideIn .4s ease-out ${i * 0.07}s forwards`,
+            }}
+            onMouseOver={e => {
+              if (picked) return
+              const s = e.currentTarget.style
+              s.borderColor = '#7F77DD'
+              s.background = 'rgba(127,119,221,.16)'
+              s.transform = 'translateX(6px)'
+              s.boxShadow = '0 0 22px -8px rgba(127,119,221,.7)'
+            }}
+            onMouseOut={e => {
+              if (picked) return
+              const s = e.currentTarget.style
+              s.borderColor = 'rgba(127,119,221,.22)'
+              s.background = 'rgba(127,119,221,.06)'
+              s.transform = 'none'
+              s.boxShadow = 'none'
+            }}
+          >{o}</div>
+        )
+      })}
     </div>
   )
 }
+
 function MultiW({ card, onDone }: { card: CardMulti; onDone: (v: string) => void }) {
   const max = card.max || 99
   const [sel, setSel] = useState<Set<string>>(new Set())
+  const [warn, setWarn] = useState<string | null>(null)
   const toggle = (o: string) => {
     setSel(prev => {
       const n = new Set(prev)
-      if (n.has(o)) n.delete(o)
-      else if (n.size < max) n.add(o)
+      if (n.has(o)) { n.delete(o); return n }
+      if (n.size >= max) {
+        setWarn(`pick up to ${max}`)
+        window.setTimeout(() => setWarn(null), 1600)
+        return prev
+      }
+      n.add(o)
       return n
     })
   }
@@ -217,15 +260,27 @@ function MultiW({ card, onDone }: { card: CardMulti; onDone: (v: string) => void
           )
         })}
       </div>
+      {warn && (
+        <div style={{ marginTop: 10, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#f7b8d4' }}>{warn}</div>
+      )}
       <NextBtn enabled={sel.size > 0} onClick={() => onDone([...sel].join(', '))} />
     </>
   )
 }
+
 function RateW({ card, onDone }: { card: CardRate; onDone: (v: string) => void }) {
   const [val, setVal] = useState(5)
+  const col = val >= 8 ? '#e7548a' : val >= 5 ? '#9a93e8' : '#7F77DD'
+  const scale = 1 + val * 0.035
   return (
     <div style={{ marginTop: 14 }}>
-      <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 44, color: '#7F77DD', textAlign: 'center', marginBottom: 10 }}>{val}</div>
+      <div style={{
+        fontFamily: SORA, fontWeight: 800, fontSize: 52,
+        color: col, textAlign: 'center', marginBottom: 10,
+        fontVariantNumeric: 'tabular-nums',
+        transform: `scale(${scale})`, transformOrigin: 'center',
+        transition: 'transform .18s, color .18s',
+      }}>{val}</div>
       <input type="range" min={0} max={10} step={1} value={val} onChange={e => setVal(Number(e.target.value))}
         style={{ width: '100%', accentColor: '#7F77DD', height: 6, cursor: 'pointer' }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9b8db5' }}>
