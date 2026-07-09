@@ -50,7 +50,8 @@ export const getSituation = createServerFn({ method: 'GET' })
     if (!isOwner && !isPublic) throw new Error('not found')
     const rowRec = row as Record<string, unknown>
     const { alias_id: _drop, ...rest } = rowRec
-    return rest as typeof rowRec
+    void _drop
+    return rest as Omit<typeof row, 'alias_id'>
   })
 
 // ---------- save (scan / journal / spill) ----------
