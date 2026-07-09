@@ -175,7 +175,7 @@ export function Chapter02Scan() {
                     chapter 01 — scan it
                   </div>
                   {' '}
-                  <h2 data-words="" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: '1.08', letterSpacing: '-.04em', margin: '0 0 24px', color: '#fff' }}>
+                  <h2 data-words="" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: 'clamp(38px,5vw,68px)', lineHeight: '1.05', letterSpacing: '-.045em', margin: '0 0 24px', color: '#fff' }}>
                     how heavy is it, 
                     <em style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '400', color: '#aaa3e8' }}>
                       really?
