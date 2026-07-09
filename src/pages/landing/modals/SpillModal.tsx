@@ -255,7 +255,7 @@ function ChromeBar({ step, total, onClose }: { step: number; total: number; onCl
           <span key={i} style={{ height: 3, flex: 1, borderRadius: 2, background: i < step ? '#e7548a' : 'rgba(255,255,255,.12)', transition: 'background .3s' }} />
         ))}
       </div>
-      <div role="button" onClick={onClose} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', cursor: 'pointer', flex: 'none' }}>close ×</div>
+      <div role="button" onClick={onClose} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', cursor: 'pointer', flex: 'none' }}>close</div>
     </div>
   )
 }
