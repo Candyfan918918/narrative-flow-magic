@@ -14,7 +14,7 @@ import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
-import { EyeMark } from '@/components/EyeMark'
+import { CompanionEye } from '@/components/brand/CompanionEye'
 
 
 const SORA = "'Sora', system-ui, sans-serif"
@@ -228,10 +228,10 @@ export function appendUserRoom(r: {
 }
 
 function eyeSVG(size = 32) {
-  // Backwards-compat wrapper: renders the canonical brand EyeMark.
+  // Shared cursor-reactive companion eye (3D spring + breathe + lunge).
   return (
     <span style={{ display: 'inline-flex', flex: 'none' }}>
-      <EyeMark size={size} />
+      <CompanionEye size={size} />
     </span>
   )
 }
@@ -255,7 +255,7 @@ function ChromeBar({ step, total, onClose }: { step: number; total: number; onCl
           <span key={i} style={{ height: 3, flex: 1, borderRadius: 2, background: i < step ? '#e7548a' : 'rgba(255,255,255,.12)', transition: 'background .3s' }} />
         ))}
       </div>
-      <div role="button" onClick={onClose} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', cursor: 'pointer', flex: 'none' }}>close</div>
+      <div role="button" onClick={onClose} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', cursor: 'pointer', flex: 'none' }}>close ×</div>
     </div>
   )
 }
@@ -546,7 +546,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
   const hasQ = !!lastCompanion?.hasQ
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#1a0a12' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#100b1c' }}>
       {/* shared eye gradients (matches parent Landing defs). */}
       <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
         <defs>
