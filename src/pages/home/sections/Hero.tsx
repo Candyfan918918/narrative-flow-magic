@@ -108,7 +108,7 @@ export function Hero() {
                 </div>
               </div>
               {' '}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#6b4a5c', paddingBottom: 'clamp(26px,4vh,40px)', marginTop: 'clamp(40px,6vh,80px)' }}>
+              <div className="home-hero-scrollcue" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#6b4a5c', paddingBottom: 'clamp(26px,4vh,40px)', marginTop: 'clamp(40px,6vh,80px)' }}>
                 {' '}
                 <span style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '13px' }}>
                   scroll
