@@ -6,7 +6,7 @@ export function Chapter02Scan() {
             {' '}
             {/* 02 SCAN */}
             {' '}
-            <section data-screen-label="02 Scan" className="chsec" style={{ position: 'relative', minHeight: '96vh', scrollSnapAlign: 'start', background: 'linear-gradient(165deg,#241d47,#151030 60%,#100c14)', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+            <section data-screen-label="02 Scan" data-theme="dark" className="chsec" style={{ position: 'relative', minHeight: '100vh', scrollSnapAlign: 'start', background: 'linear-gradient(165deg,#241d47,#151030 60%,#100c14)', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
               {' '}
               <div className="chgrid rev">
                 {' '}
