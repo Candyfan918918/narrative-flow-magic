@@ -19,8 +19,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { ScanShareCard, type ScanRecord } from '@/components/ScanShareCard'
-import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
-import { Words } from '@/components/motion'
+import { CompanionEye } from '@/components/brand/CompanionEye'
 import { appendUserRoom } from './SpillModal'
 
 const SORA = "'Sora', system-ui, sans-serif"

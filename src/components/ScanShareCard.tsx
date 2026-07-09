@@ -9,7 +9,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { ShareChannels, ActionPill, type ShareChannelKey } from './ShareChannels'
-import { EyeMark, ShutapWordmark } from './EyeMark'
+import { ShutapWordmark } from './EyeMark'
+import { CompanionEye } from './brand/CompanionEye'
 
 export interface ScanRecord {
   score: number
