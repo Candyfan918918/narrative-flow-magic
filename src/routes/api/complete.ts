@@ -79,8 +79,14 @@ export const Route = createFileRoute('/api/complete')({
           }
 
           const body = (await request.json()) as CompleteBody
-          const messages = Array.isArray(body.messages) ? body.messages : []
-          if (!messages.length) return json({ error: 'messages required' }, 400)
+          const rawMessages = Array.isArray(body.messages) ? body.messages : []
+          if (!rawMessages.length) return json({ error: 'messages required' }, 400)
+          // Enforce hard limits on caller-supplied conversation to prevent
+          // abuse of the shared Lovable AI key.
+          const messages = rawMessages.slice(-MAX_MESSAGES).map((m) => ({
+            role: m.role === 'assistant' ? 'assistant' as const : 'user' as const,
+            content: String(m.content ?? '').slice(0, MAX_MESSAGE_CHARS),
+          }))
           const maxTokens = Math.min(Math.max(body.maxTokens ?? 1500, 64), 4096)
           const wantStream = body.stream === true
 
@@ -90,13 +96,9 @@ export const Route = createFileRoute('/api/complete')({
           const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-2.5-flash'
           const gateway = createLovableAiGatewayProvider(lovableKey)
           const model = gateway(modelId)
-          const msgs = messages.map((m) => ({ role: m.role, content: m.content }))
-          // If the caller didn't bring their own system prompt, fall back to the
-          // Companion Constitution so spill/scan responses stay warm and in-voice
-          // instead of cold and clinical.
-          const system = body.system && body.system.trim().length > 0
-            ? body.system
-            : COMPANION_CONSTITUTION
+          const msgs = messages
+          // System prompt is server-controlled — callers cannot override it.
+          const system = COMPANION_CONSTITUTION
 
 
           if (wantStream) {
