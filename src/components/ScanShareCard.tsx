@@ -206,7 +206,7 @@ export function ScanShareCard({
         position: 'fixed',
         inset: 0,
         zIndex: 200,
-        background: 'rgba(8,4,10,.78)',
+        background: 'rgba(10,5,14,.82)',
         backdropFilter: 'blur(10px)',
         display: 'flex',
         alignItems: 'center',
@@ -333,7 +333,7 @@ export function ScanShareCard({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <EyeMark w={34} />
+              <CompanionEye size={22} />
               <ShutapWordmark size={15} ink="#f7e8f0" accent="#e7548a" />
             </div>
             <span
