@@ -291,7 +291,8 @@ export const deleteSituation = createServerFn({ method: 'POST' })
   .middleware([requireRealUser])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { data: current } = await context.supabase
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: current } = await supabaseAdmin
       .from('situations')
       .select('id, alias_id, room_id')
       .eq('id', data.id)
