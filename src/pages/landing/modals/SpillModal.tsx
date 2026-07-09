@@ -665,7 +665,13 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
             )}
             <div style={{ background: 'rgba(255,255,255,.035)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 18, padding: '20px 20px 18px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'Inter', fontWeight: 500, fontSize: 12.5, color: '#9e7a8c', marginBottom: 12 }}>
-                🩷 you <span style={{ opacity: .5 }}>· {normalizePillar(composed.pillar) || 'your story'}</span>
+                {(() => {
+                  let alias = 'you', emoji = '🩷'
+                  try { const raw = typeof window !== 'undefined' ? localStorage.getItem('shutap_alias') : null
+                    if (raw) { const a = JSON.parse(raw) as { name?: string; emoji?: string }
+                      if (a?.name) alias = a.name; if (a?.emoji) emoji = a.emoji } } catch { /* noop */ }
+                  return <><span>{emoji} {alias}</span><span style={{ opacity: .5 }}>· {normalizePillar(composed.pillar) || 'your story'}</span></>
+                })()}
               </div>
               <div
                 ref={titleElRef}
