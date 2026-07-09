@@ -21,9 +21,11 @@ export const backfillMyMirror = createServerFn({ method: 'POST' })
   .handler(async ({ context }): Promise<{ processed: number; remaining: number }> => {
     const supabase = context.supabase
     const userId = context.userId
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
 
     // Load user's own situations (non-deleted) and their comments.
-    const { data: sits, error: sitErr } = await supabase
+    // alias_id SELECT is revoked from authenticated → use service role.
+    const { data: sits, error: sitErr } = await supabaseAdmin
       .from('situations')
       .select('id, pillar, kind, clean_text, body, title')
       .eq('alias_id', userId)

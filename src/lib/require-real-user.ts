@@ -14,11 +14,3 @@ export const requireRealUser = createMiddleware({ type: 'function' })
     }
     return next()
   })
-
-/** Owner demo email — the ONLY account that gets Mirror demo/seed data
- *  and unconditional Mirror entitlement. */
-export const OWNER_DEMO_EMAIL = 'whatcandyeats@gmail.com'
-
-export function isOwnerDemoEmail(email: string | null | undefined): boolean {
-  return !!email && email.trim().toLowerCase() === OWNER_DEMO_EMAIL
-}

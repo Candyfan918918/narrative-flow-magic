@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { generateText, streamText } from 'ai'
 import { createClient } from '@supabase/supabase-js'
+import { createHash } from 'crypto'
 import { createLovableAiGatewayProvider } from '@/lib/ai-gateway.server'
 import { COMPANION_CONSTITUTION } from '@/lib/agents/constitution'
 import type { Database } from '@/integrations/supabase/types'
@@ -12,6 +13,20 @@ interface CompleteBody {
   maxTokens?: number
   stream?: boolean
 }
+
+const MAX_MESSAGES = 40
+const MAX_MESSAGE_CHARS = 8000
+
+// SHA-256 allowlist of known-good system prompts shipped by our own client
+// flows (spill turn engine, spill reflect, scan, etc.). Any other value is
+// rejected and the request falls back to COMPANION_CONSTITUTION, so this
+// endpoint cannot be steered into arbitrary personas.
+const ALLOWED_SYSTEM_HASHES = new Set<string>([
+  'd61510546edd294d9d6228421014c1d7c24c2cf4288f8cfec13e826f13a5ff71', // SPILL_SYSTEM
+  'c94c983c15d3b17459224ddd3fcfac6c13209656227d8940369d51ec01420987', // TURN_SYS
+  '353973ed93925f7f1e8cd025fb75dc1efbbb9e1cf70e227e40383d5c15cfdb31', // SCAN_SYSTEM
+  'fdac5e05546d70afa737684bce382fa627d2b33539b97743ecd50555f5f4c431', // reflectSystem
+])
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -77,8 +92,14 @@ export const Route = createFileRoute('/api/complete')({
           }
 
           const body = (await request.json()) as CompleteBody
-          const messages = Array.isArray(body.messages) ? body.messages : []
-          if (!messages.length) return json({ error: 'messages required' }, 400)
+          const rawMessages = Array.isArray(body.messages) ? body.messages : []
+          if (!rawMessages.length) return json({ error: 'messages required' }, 400)
+          // Enforce hard limits on caller-supplied conversation to prevent
+          // abuse of the shared Lovable AI key.
+          const messages = rawMessages.slice(-MAX_MESSAGES).map((m) => ({
+            role: m.role === 'assistant' ? 'assistant' as const : 'user' as const,
+            content: String(m.content ?? '').slice(0, MAX_MESSAGE_CHARS),
+          }))
           const maxTokens = Math.min(Math.max(body.maxTokens ?? 1500, 64), 4096)
           const wantStream = body.stream === true
 
@@ -88,13 +109,16 @@ export const Route = createFileRoute('/api/complete')({
           const modelId = process.env.LOVABLE_AI_MODEL || 'google/gemini-2.5-flash'
           const gateway = createLovableAiGatewayProvider(lovableKey)
           const model = gateway(modelId)
-          const msgs = messages.map((m) => ({ role: m.role, content: m.content }))
-          // If the caller didn't bring their own system prompt, fall back to the
-          // Companion Constitution so spill/scan responses stay warm and in-voice
-          // instead of cold and clinical.
-          const system = body.system && body.system.trim().length > 0
-            ? body.system
-            : COMPANION_CONSTITUTION
+          const msgs = messages
+          // Only accept a client-supplied system prompt if it matches one of
+          // the known-good hashes shipped by our own flows; otherwise fall
+          // back to the Companion Constitution. This blocks arbitrary
+          // persona injection while keeping spill/scan/reflect in-voice.
+          let system = COMPANION_CONSTITUTION
+          if (typeof body.system === 'string' && body.system.length > 0) {
+            const hash = createHash('sha256').update(body.system).digest('hex')
+            if (ALLOWED_SYSTEM_HASHES.has(hash)) system = body.system
+          }
 
 
           if (wantStream) {

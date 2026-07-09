@@ -14,7 +14,11 @@ const Hall = z.enum(['healing', 'brave', 'relatable', 'loving'])
 export const listMySituations = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
+    // alias_id column is revoked from anon/authenticated for pseudonymity,
+    // so we filter server-side via the service-role client and never return
+    // alias_id to the browser.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data, error } = await supabaseAdmin
       .from('situations')
       .select(
         'id, pillar, clean_text, title, body, kind, initial_scan, scan_band, tags, is_public, room_id, status, edited, created_at, updated_at',
@@ -31,13 +35,23 @@ export const getSituation = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { data: row, error } = await context.supabase
+    // Read via service role so we can check ownership, then strip alias_id
+    // before returning to the client.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: row, error } = await supabaseAdmin
       .from('situations')
       .select('*')
       .eq('id', data.id)
       .single()
     if (error) throw new Error(error.message)
-    return row
+    if (!row) throw new Error('not found')
+    const isOwner = (row as { alias_id?: string }).alias_id === context.userId
+    const isPublic = (row as { is_public?: boolean }).is_public === true
+    if (!isOwner && !isPublic) throw new Error('not found')
+    const rowRec = row as Record<string, unknown>
+    const { alias_id: _drop, ...rest } = rowRec
+    void _drop
+    return rest as Omit<typeof row, 'alias_id'>
   })
 
 // ---------- save (scan / journal / spill) ----------
@@ -197,7 +211,10 @@ export const updateSituation = createServerFn({ method: 'POST' })
   .middleware([requireRealUser])
   .inputValidator((d: unknown) => UpdateInput.parse(d))
   .handler(async ({ data, context }) => {
-    const current = await context.supabase
+    // Ownership check uses supabaseAdmin because SELECT on alias_id is
+    // revoked from the authenticated role.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const current = await supabaseAdmin
       .from('situations')
       .select('id, alias_id, is_public, room_id, title, body, clean_text, scan_band, pillar')
       .eq('id', data.id)
@@ -274,7 +291,8 @@ export const deleteSituation = createServerFn({ method: 'POST' })
   .middleware([requireRealUser])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { data: current } = await context.supabase
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: current } = await supabaseAdmin
       .from('situations')
       .select('id, alias_id, room_id')
       .eq('id', data.id)
@@ -439,13 +457,14 @@ export const createComment = createServerFn({ method: 'POST' })
     // a non-author leaves a comment. Drives the relate-queue and the
     // time-to-first-human-response metric (§7.6).
     try {
-      const { data: sit } = await context.supabase
+      const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+      const { data: sit } = await supabaseAdmin
         .from('situations')
         .select('id, alias_id, human_response_at')
         .eq('room_id', data.roomId)
         .maybeSingle()
       if (sit && !sit.human_response_at && sit.alias_id !== context.userId) {
-        await context.supabase
+        await supabaseAdmin
           .from('situations')
           .update({ human_response_at: new Date().toISOString() } as never)
           .eq('id', sit.id)
