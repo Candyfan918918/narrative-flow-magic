@@ -11,9 +11,9 @@ export function Chapter03Mirror() {
               <div style={{ position: 'absolute', inset: 'auto 0 -20% 0', height: '60vh', background: 'radial-gradient(ellipse at 50% 100%,rgba(231,84,138,.12),transparent 65%)', pointerEvents: 'none' }}>
               </div>
               {' '}
-              <div className="chgrid">
+              <div className="chgrid" style={{ direction: 'rtl' }}>
                 {' '}
-                <div data-rv="swipe-l" style={{ textAlign: 'left' }}>
+                <div data-rv="swipe-l" style={{ textAlign: 'left', direction: 'ltr' }}>
                   {' '}
                   <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '12px', letterSpacing: '.24em', textTransform: 'uppercase', color: '#e9c06a', marginBottom: '22px' }}>
                     chapter 03 — the mirror ✦
@@ -36,7 +36,7 @@ export function Chapter03Mirror() {
                   {' '}
                 </div>
                 {' '}
-                <div data-rv="pop" data-democard="" style={{ display: 'flex', justifyContent: 'center' }}>
+                <div data-rv="pop" data-democard="" style={{ display: 'flex', justifyContent: 'center', direction: 'ltr' }}>
                   {' '}
                   {/* the mirror's full read: cycling patterns with depth, trend + signal analytics */}
                   {' '}
