@@ -110,8 +110,15 @@ export const Route = createFileRoute('/api/complete')({
           const gateway = createLovableAiGatewayProvider(lovableKey)
           const model = gateway(modelId)
           const msgs = messages
-          // System prompt is server-controlled — callers cannot override it.
-          const system = COMPANION_CONSTITUTION
+          // Only accept a client-supplied system prompt if it matches one of
+          // the known-good hashes shipped by our own flows; otherwise fall
+          // back to the Companion Constitution. This blocks arbitrary
+          // persona injection while keeping spill/scan/reflect in-voice.
+          let system = COMPANION_CONSTITUTION
+          if (typeof body.system === 'string' && body.system.length > 0) {
+            const hash = createHash('sha256').update(body.system).digest('hex')
+            if (ALLOWED_SYSTEM_HASHES.has(hash)) system = body.system
+          }
 
 
           if (wantStream) {
