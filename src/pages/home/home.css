@@ -44,8 +44,8 @@ html.home-scroll-snap {
 .home-immersive [data-hdr] a[data-link="/welcome"]:hover {
   background: #c1216b !important;
 }
-/* hero "sit in a room" pill (the one with the pink border) */
-.home-immersive a[data-link="/stream"][data-mag]:hover {
+/* hero secondary "spill it" outline button (scoped to Hero only) */
+.home-immersive [data-screen-label="Hero"] a[data-cta="spill"]:hover {
   border-color: #e7548a !important;
 }
 /* chapter 01 "open a room →" (dark pill inside .chsec) */
