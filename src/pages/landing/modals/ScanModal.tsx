@@ -542,37 +542,33 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   const band = result ? bandFromScore(result.score) : 'settling'
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#1a0a12', display: 'flex', flexDirection: 'column' }}>
-      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
-        <defs>
-          <linearGradient id="eyeG" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#e7548a" /><stop offset="100%" stopColor="#a01a55" />
-          </linearGradient>
-          <linearGradient id="pupG" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#2e0d1a" /><stop offset="100%" stopColor="#100608" />
-          </linearGradient>
-        </defs>
-      </svg>
-
-      <ScanHeader pct={pct} onClose={onClose} />
+    <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#100b1c', display: 'flex', flexDirection: 'column' }}>
+      <ScanHeader pct={pct} onClose={onClose} minimal={phase === 'result' || phase === 'saving'} />
 
       {phase === 'loading' && (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center' }}>
-          <div className="flex items-center gap-2">
-            <CompanionSVG size={34} />
-            <ThinkingDots label={qa.length ? 'reading that' : 'hold on… responding soon'} marginTop={0} />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center', gap: 22 }}>
+          <div style={{ position: 'relative', padding: 18 }}>
+            <div style={{ position: 'absolute', inset: 0, borderRadius: 22, border: '1px solid rgba(127,119,221,.35)', boxShadow: '0 0 26px -8px rgba(127,119,221,.6)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', inset: 0, borderRadius: 22, overflow: 'hidden', pointerEvents: 'none' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(180deg, rgba(127,119,221,0), rgba(127,119,221,.25), rgba(127,119,221,0))', animation: 'scanbeam 1.4s ease-in-out infinite' }} />
+            </div>
+            <CompanionSVG size={38} />
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#b3a0d0' }}>
+            <span>{qa.length ? 'reading that' : 'tuning in'}</span>
+            <BlinkDots />
           </div>
         </div>
       )}
 
       {phase === 'card' && current && (
-        <div style={{ flex: 1, overflowY: 'auto', padding: '28px 24px 30px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '28px 24px 30px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18, animation: 'fadeUp .45s ease-out' }}>
           <div style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
-            <CompanionSVG size={28} />
-            <div style={{ flex: 1, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 16, lineHeight: 1.5, color: '#dccff5' }}>{current.line}</div>
+            <CompanionSVG size={26} />
+            <div style={{ flex: 1, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.5, color: '#b3a0d0' }}>{current.line}</div>
           </div>
           {current.prompt && (
-            <Words as="h2" key={current.prompt} style={{ fontFamily: SORA, fontWeight: 700, fontSize: 21, lineHeight: 1.3, letterSpacing: '-.01em', color: '#f7e8f0', margin: '2px 0' }}>{current.prompt}</Words>
+            <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(24px,5vw,34px)', lineHeight: 1.14, letterSpacing: '-.03em', color: '#f7e8f0', margin: '2px 0' }}>{current.prompt}</h2>
           )}
           {current.card.type === 'multi'    && <MultiW    key={qa.length} card={current.card} onDone={submitAnswer} />}
           {current.card.type === 'rate'     && <RateW     key={qa.length} card={current.card} onDone={submitAnswer} />}
@@ -584,15 +580,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       )}
 
       {phase === 'result' && result && (
-        <div style={{ flex: 1, overflowY: 'auto', padding: '32px 22px 36px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 22 }}>
-          {/* branded lockup — shared EyeMark + accent wordmark + SCAN eyebrow */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <EyeMark w={34} />
-              <ShutapWordmark size={15} ink="#f7e8f0" accent="#e7548a" letterSpacing="-.03em" />
-            </div>
-            <span style={{ fontFamily: SORA, fontWeight: 800, fontSize: 10, letterSpacing: '.34em', color: col }}>SCAN</span>
-          </div>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 22px 36px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 22 }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(72px,16vw,108px)', letterSpacing: '-.04em', lineHeight: 1, color: col }}>{displayScore}</div>
             <div style={{ marginTop: 8, fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: col }}>intensity · {band}</div>
@@ -611,11 +599,17 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
             <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, color: '#c4a0b2', lineHeight: 1.55 }}>{result.sub}</div>
           </div>
           <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14.5, color: '#9e7a8c', textAlign: 'center' }}>this is your read. keep it just for you, or let a room hold your number too.</div>
+          <div role="button" onClick={() => navigate('/mirror')} style={{ cursor: 'pointer', background: 'rgba(231,84,138,.08)', border: '.5px solid rgba(231,84,138,.22)', borderRadius: 14, padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'center' }}>
+            <CompanionSVG size={24} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14.5, color: '#f7e8f0', lineHeight: 1.45 }}>this is one moment. i am holding the whole pattern — every scan adds to the picture of you.</div>
+              <div style={{ marginTop: 6, fontFamily: SORA, fontWeight: 700, fontSize: 12.5, color: '#f7b8d4' }}>see your mirror →</div>
+            </div>
+          </div>
           {saveNote && (
             <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#a8d4a9', textAlign: 'center' }}>{saveNote}</div>
           )}
           <div role="button" onClick={() => setShareOpen(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 14, background: 'linear-gradient(120deg,#ff7eb3,#c1216b)', borderRadius: 14, cursor: 'pointer' }}>
-            <span style={{ fontSize: 15, color: '#fff' }}>＋</span>
             <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 14, color: '#fff' }}>share your score</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 11 }}>
@@ -633,9 +627,12 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
 
       {phase === 'saving' && (
         <div style={{ flex: 1, display: 'grid', placeItems: 'center', padding: '34px 22px', textAlign: 'center' }}>
-          <div>
+          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
             <CompanionSVG size={50} />
-            <ThinkingDots label="saving your read" />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#b3a0d0' }}>
+              <span>saving your read</span>
+              <BlinkDots />
+            </div>
           </div>
         </div>
       )}
@@ -653,6 +650,14 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
           toast={() => { /* no toast surface in native landing yet */ }}
         />
       )}
+
+      <style>{`
+        @keyframes scanbeam { 0% { transform: translateY(-120%); } 100% { transform: translateY(320%); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) {
+          [style*="scanbeam"], [style*="slideIn"], [style*="fadeUp"] { animation: none !important; opacity: 1 !important; transform: none !important; }
+        }
+      `}</style>
     </div>
   )
 }
