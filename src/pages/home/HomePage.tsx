@@ -124,6 +124,14 @@ export function HomePage() {
       const h = window.location.hash
       if (!h) return
       if (h === '#mirror') { history.replaceState(null, '', window.location.pathname + window.location.search); navigate('/mirror'); return }
+      if (h === '#ask') {
+        history.replaceState(null, '', window.location.pathname + window.location.search)
+        requestAnimationFrame(() => {
+          const trigger = document.querySelector('[data-comp-action="open"]') as HTMLElement | null
+          trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+        })
+        return
+      }
       if (h !== '#spill' && h !== '#scan') return
       const { data: sess } = await supabase.auth.getSession()
       const u = sess.session?.user as { is_anonymous?: boolean } | undefined
