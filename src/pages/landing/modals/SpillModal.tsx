@@ -563,33 +563,47 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         <ChromeBar step={step} total={9} onClose={onClose} />
 
         {(phase === 'chat' || phase === 'reflect' || phase === 'support') && (
-          <div ref={bodyRef} style={{ flex: 1, overflowY: 'auto', padding: '34px 22px 28px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 22 }}>
-            <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#e7548a' }}>spill</div>
-            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <div style={{ flex: 'none' }}>{eyeSVG(32)}</div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7 }}>
-                {bubbles.map((t, i) => {
-                  const isQ = hasQ && i === bubbles.length - 1
-                  const first = i === 0
-                  return (
-                    <div key={i} style={{
-                      alignSelf: 'flex-start', maxWidth: '88%',
-                      background: isQ ? 'rgba(231,84,138,.14)' : 'rgba(255,255,255,.05)',
-                      border: '.5px solid ' + (isQ ? 'rgba(231,84,138,.32)' : 'rgba(255,255,255,.1)'),
-                      borderRadius: first ? '4px 16px 16px 16px' : 16,
-                      padding: '10px 14px', fontFamily: NEWSREADER, fontStyle: 'italic',
-                      fontSize: first ? 18 : 16, lineHeight: 1.45,
-                      color: isQ ? '#f7b8d4' : '#f7e8f0',
-                    }}>{t}</div>
-                  )
-                })}
-              </div>
+          <div ref={bodyRef} style={{ flex: 1, overflowY: 'auto', padding: '34px 22px 32px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 26 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {eyeSVG(30)}
+              <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#e7548a' }}>spill</div>
             </div>
 
-            {thinking && <Thinking />}
+            {bubbles.length > 0 && (() => {
+              const reactions = bubbles.slice(0, -1)
+              const star = bubbles[bubbles.length - 1]
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {reactions.map((t, i) => (
+                    <div key={i} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.45, color: '#c4a0b2' }}>{t}</div>
+                  ))}
+                  <div
+                    key={'star-' + msgs.length}
+                    style={{
+                      fontFamily: NEWSREADER, fontStyle: 'italic', fontWeight: 500,
+                      fontSize: 'clamp(24px,5.4vw,36px)', lineHeight: 1.22,
+                      color: hasQ ? '#f7b8d4' : '#f7e8f0',
+                      animation: 'fadeUp .45s ease-out both',
+                    }}
+                  >{star}</div>
+                </div>
+              )
+            })()}
+
+            {thinking && phase === 'chat' && (
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#9e7a8c' }}>
+                <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'blinkdot 1.2s infinite' }} />
+                <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'blinkdot 1.2s .2s infinite' }} />
+                <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'blinkdot 1.2s .4s infinite' }} />
+                &nbsp;ok hang on…
+              </div>
+            )}
 
             {phase === 'chat' && !thinking && (
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 16, padding: '13px 15px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 16, padding: '13px 15px', transition: 'border-color .18s' }}
+                onFocusCapture={e => (e.currentTarget.style.borderColor = '#e7548a')}
+                onBlurCapture={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,.14)')}
+              >
                 <textarea
                   rows={1}
                   value={input}
@@ -597,18 +611,19 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const v = input.trim(); if (v) { setInput(''); void runTurn(v) } } }}
                   placeholder={hasQ ? 'answer however it comes…' : 'keep going… i\u2019m listening'}
                   autoFocus
-                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#f7e8f0', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 16, resize: 'none', maxHeight: 140, lineHeight: 1.5 }}
+                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#f7e8f0', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 19, resize: 'none', maxHeight: 160, lineHeight: 1.5 }}
                 />
                 <div role="button" onClick={() => { const v = input.trim(); if (v) { setInput(''); void runTurn(v) } }} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#e7548a', cursor: 'pointer', flex: 'none', paddingBottom: 2 }}>send →</div>
               </div>
             )}
 
+            {phase === 'reflect' && thinking && <Thinking />}
             {reflectSummary && (
               <div style={{ background: 'rgba(255,255,255,.04)', borderLeft: '2px solid rgba(231,84,138,.4)', padding: '14px 16px', borderRadius: '0 12px 12px 0', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.55, color: '#f7e8f0' }}>{reflectSummary}</div>
             )}
 
             {phase === 'support' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 4 }}>
                 <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#c4a0b2' }}>real quick — you want advice on this, or you just wanna get it out?</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div role="button" onClick={() => void runCompose('heard')} style={{ cursor: 'pointer', padding: 16, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 14, textAlign: 'center', transition: '.15s' }}>
