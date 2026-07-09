@@ -211,7 +211,10 @@ export const updateSituation = createServerFn({ method: 'POST' })
   .middleware([requireRealUser])
   .inputValidator((d: unknown) => UpdateInput.parse(d))
   .handler(async ({ data, context }) => {
-    const current = await context.supabase
+    // Ownership check uses supabaseAdmin because SELECT on alias_id is
+    // revoked from the authenticated role.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const current = await supabaseAdmin
       .from('situations')
       .select('id, alias_id, is_public, room_id, title, body, clean_text, scan_band, pillar')
       .eq('id', data.id)
