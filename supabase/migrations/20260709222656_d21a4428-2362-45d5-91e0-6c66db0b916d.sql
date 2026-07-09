@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.match_user_patterns(uuid, vector, integer, double precision) TO authenticated;
