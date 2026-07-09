@@ -129,29 +129,37 @@ function scanFallback(n: number, hasText: boolean): ScanTurn {
 function CompanionSVG({ size = 34 }: { size?: number }) {
   return (
     <span style={{ display: 'inline-flex', flex: 'none' }}>
-      <EyeMark size={size} />
+      <CompanionEye size={size} />
     </span>
   )
 }
 
-function ThinkingDots({ label, marginTop = 14 }: { label: string; marginTop?: number }) {
+function BlinkDots({ colour = '#7F77DD' }: { colour?: string }) {
   return (
-    <div style={{ marginTop, display: 'inline-flex', gap: 5, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#b3a0d0' }}>
-      {label}
-      <i style={{ width: 5, height: 5, borderRadius: '50%', background: '#7F77DD', display: 'block', animation: 'blinkdot 1.2s infinite' }} />
-      <i style={{ width: 5, height: 5, borderRadius: '50%', background: '#7F77DD', display: 'block', animation: 'blinkdot 1.2s .2s infinite' }} />
-      <i style={{ width: 5, height: 5, borderRadius: '50%', background: '#7F77DD', display: 'block', animation: 'blinkdot 1.2s .4s infinite' }} />
-    </div>
+    <span style={{ display: 'inline-flex', gap: 5, alignItems: 'center' }}>
+      <i style={{ width: 5, height: 5, borderRadius: '50%', background: colour, display: 'block', animation: 'blinkdot 1.2s infinite' }} />
+      <i style={{ width: 5, height: 5, borderRadius: '50%', background: colour, display: 'block', animation: 'blinkdot 1.2s .2s infinite' }} />
+      <i style={{ width: 5, height: 5, borderRadius: '50%', background: colour, display: 'block', animation: 'blinkdot 1.2s .4s infinite' }} />
+    </span>
   )
 }
 
-function ScanHeader({ pct, onClose }: { pct: number; onClose: () => void }) {
+function ScanHeader({ pct, onClose, minimal = false }: { pct: number; onClose: () => void; minimal?: boolean }) {
   return (
-    <div style={{ flex: 'none', padding: '20px 22px 16px', display: 'flex', alignItems: 'center', gap: 14, borderBottom: '.5px solid rgba(255,255,255,.06)' }}>
+    <div style={{ flex: 'none', padding: '20px 22px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
       <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 13, letterSpacing: '.3em', color: '#7F77DD' }}>SCAN</div>
-      <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'rgba(255,255,255,.10)', overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: pct + '%', background: 'linear-gradient(90deg,#5B8A5E,#7F77DD)', borderRadius: 3, transition: 'width .4s' }} />
-      </div>
+      {!minimal && (
+        <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'rgba(255,255,255,.10)', overflow: 'hidden' }}>
+          <div style={{
+            height: '100%', width: pct + '%',
+            background: 'linear-gradient(90deg,#5B8A5E,#7F77DD)',
+            borderRadius: 3,
+            boxShadow: '0 0 10px rgba(127,119,221,.7)',
+            transition: 'width .8s cubic-bezier(.16,1,.3,1)',
+          }} />
+        </div>
+      )}
+      {minimal && <div style={{ flex: 1 }} />}
       <div role="button" onClick={onClose} style={{ fontFamily: SORA, fontWeight: 600, fontSize: 12, color: '#9e7a8c', cursor: 'pointer' }}>close</div>
     </div>
   )
