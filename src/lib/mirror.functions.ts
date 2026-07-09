@@ -80,7 +80,7 @@ export const getMirrorPortrait = createServerFn({ method: 'GET' })
       .map(([t]) => t)
 
     // Check-in trajectory counts
-    const { data: resp } = await context.supabase
+    const { data: resp } = await supabaseAdmin
       .from('checkin_responses')
       .select('trajectory')
       .eq('alias_id', context.userId)
