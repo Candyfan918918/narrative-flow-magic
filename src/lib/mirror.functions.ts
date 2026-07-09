@@ -38,13 +38,16 @@ function computeTrend(series: ScorePoint[]): MirrorPortrait['trend'] {
 export const getMirrorPortrait = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<MirrorPortrait> => {
-    const { data: sits } = await context.supabase
+    // alias_id read is revoked from authenticated → use service role.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: sits } = await supabaseAdmin
       .from('situations')
       .select('id, pillar, kind, initial_scan, scan_band, tags, created_at, status')
       .eq('alias_id', context.userId)
       .neq('status', 'deleted')
       .order('created_at', { ascending: true })
       .limit(500)
+
 
     const rows = sits ?? []
     const spill_count = rows.filter((r) => r.kind !== 'scan').length
