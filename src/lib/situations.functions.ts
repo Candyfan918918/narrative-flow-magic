@@ -14,7 +14,11 @@ const Hall = z.enum(['healing', 'brave', 'relatable', 'loving'])
 export const listMySituations = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
+    // alias_id column is revoked from anon/authenticated for pseudonymity,
+    // so we filter server-side via the service-role client and never return
+    // alias_id to the browser.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data, error } = await supabaseAdmin
       .from('situations')
       .select(
         'id, pillar, clean_text, title, body, kind, initial_scan, scan_band, tags, is_public, room_id, status, edited, created_at, updated_at',
@@ -31,13 +35,21 @@ export const getSituation = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { data: row, error } = await context.supabase
+    // Read via service role so we can check ownership, then strip alias_id
+    // before returning to the client.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: row, error } = await supabaseAdmin
       .from('situations')
       .select('*')
       .eq('id', data.id)
       .single()
     if (error) throw new Error(error.message)
-    return row
+    if (!row) throw new Error('not found')
+    const isOwner = (row as { alias_id?: string }).alias_id === context.userId
+    const isPublic = (row as { is_public?: boolean }).is_public === true
+    if (!isOwner && !isPublic) throw new Error('not found')
+    const { alias_id: _drop, ...safe } = row as Record<string, unknown> & { alias_id?: string }
+    return safe
   })
 
 // ---------- save (scan / journal / spill) ----------
