@@ -6,7 +6,7 @@ export function Chapter02Scan() {
             {' '}
             {/* 02 SCAN */}
             {' '}
-            <section data-screen-label="02 Scan" className="chsec" style={{ position: 'relative', minHeight: '96vh', scrollSnapAlign: 'start', background: 'linear-gradient(165deg,#241d47,#151030 60%,#100c14)', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+            <section data-screen-label="02 Scan" data-theme="dark" className="chsec" style={{ position: 'relative', minHeight: '100vh', scrollSnapAlign: 'start', background: 'linear-gradient(165deg,#241d47,#151030 60%,#100c14)', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
               {' '}
               <div className="chgrid rev">
                 {' '}
@@ -14,7 +14,7 @@ export function Chapter02Scan() {
                   {' '}
                   {/* the scan flow as a self-playing sample: questions → reading → score */}
                   {' '}
-                  <div data-reactive="" data-glow="rgba(231,84,138,.55)" style={{ width: 'min(330px,88vw)', background: 'linear-gradient(170deg,#241226,#160b16 70%)', border: '1px solid rgba(231,84,138,.35)', borderRadius: '24px', padding: '24px 22px 20px', boxShadow: '0 40px 90px -40px rgba(0,0,0,.7)' }}>
+                  <div data-reactive="" data-glow="rgba(231,84,138,.75)" style={{ width: 'min(400px,92vw)', background: 'linear-gradient(170deg,#2a1430,#170918 70%)', border: '1px solid rgba(231,84,138,.45)', borderRadius: '28px', padding: '28px 26px 24px', boxShadow: '0 50px 120px -40px rgba(231,84,138,.55), 0 20px 60px -20px rgba(0,0,0,.7)' }}>
                     {' '}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                       {' '}
@@ -172,10 +172,10 @@ export function Chapter02Scan() {
                 <div data-rv="swipe-r">
                   {' '}
                   <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '12px', letterSpacing: '.24em', textTransform: 'uppercase', color: '#aaa3e8', marginBottom: '22px' }}>
-                    chapter 02 — scan it
+                    chapter 01 — scan it
                   </div>
                   {' '}
-                  <h2 data-words="" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: '1.08', letterSpacing: '-.04em', margin: '0 0 24px', color: '#fff' }}>
+                  <h2 data-words="" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: 'clamp(38px,5vw,68px)', lineHeight: '1.05', letterSpacing: '-.045em', margin: '0 0 24px', color: '#fff' }}>
                     how heavy is it, 
                     <em style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '400', color: '#aaa3e8' }}>
                       really?

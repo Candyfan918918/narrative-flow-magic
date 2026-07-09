@@ -23,10 +23,10 @@ export function HomeImmersive() {
       <HomeHeader />
       <main>
         <Hero />
-        <div data-screen-label="Chapters" style={{ background: '#100c14' }}>
-          <Chapter01Spill />
-          <Chapter02Scan />
-          <Chapter03Mirror />
+        <div data-screen-label="Chapters" style={{ background: '#100c14', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ order: 2 }}><Chapter01Spill /></div>
+          <div style={{ order: 1 }}><Chapter02Scan /></div>
+          <div style={{ order: 3 }}><Chapter03Mirror /></div>
         </div>
         <RoomsStrip />
         <FAQ />

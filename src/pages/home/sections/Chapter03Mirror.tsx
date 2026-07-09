@@ -6,7 +6,7 @@ export function Chapter03Mirror() {
             {' '}
             {/* 03 MIRROR */}
             {' '}
-            <section data-screen-label="03 Mirror" className="chsec" style={{ position: 'relative', minHeight: '96vh', scrollSnapAlign: 'start', background: '#100c14', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+            <section data-screen-label="03 Mirror" data-theme="dark" className="chsec" style={{ position: 'relative', minHeight: '96vh', scrollSnapAlign: 'start', background: '#100c14', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
               {' '}
               <div style={{ position: 'absolute', inset: 'auto 0 -20% 0', height: '60vh', background: 'radial-gradient(ellipse at 50% 100%,rgba(231,84,138,.12),transparent 65%)', pointerEvents: 'none' }}>
               </div>

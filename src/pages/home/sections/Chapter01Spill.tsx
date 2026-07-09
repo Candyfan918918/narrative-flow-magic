@@ -13,7 +13,7 @@ export function Chapter01Spill() {
                 <div data-rv="swipe-l">
                   {' '}
                   <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '12px', letterSpacing: '.24em', textTransform: 'uppercase', color: '#e7548a', marginBottom: '22px' }}>
-                    chapter 01 — spill it
+                    chapter 02 — spill it
                   </div>
                   {' '}
                   <h2 data-words="" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: '1.08', letterSpacing: '-.04em', margin: '0 0 24px', color: '#0b080f' }}>

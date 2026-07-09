@@ -292,41 +292,20 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
     }
   }
 
-  /* ── header ink over dark sections (luminance-sampled) ── */
+  /* ── header ink over dark sections (geometry-based) ── */
   const brand = document.querySelector('[data-brandword]') as HTMLElement | null
   const navlinks = Array.from(document.querySelectorAll('[data-navlink]')) as HTMLElement[]
   const hdr = document.querySelector('[data-hdr]') as HTMLElement | null
   if (hdr) hdr.style.transition = 'background-color .3s ease, box-shadow .3s ease, color .3s ease'
 
-  const parseRgb = (s: string): [number, number, number, number] | null => {
-    const m = s.match(/rgba?\(([^)]+)\)/i); if (!m) return null
-    const p = m[1].split(',').map((x) => parseFloat(x.trim()))
-    if (p.length < 3) return null
-    const [r, g, b, a = 1] = p
-    return [r, g, b, a]
-  }
-  const lum = (r: number, g: number, b: number) => {
-    const t = (c: number) => { const s = c / 255; return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4) }
-    return 0.2126 * t(r) + 0.7152 * t(g) + 0.0722 * t(b)
-  }
+  const HEADER_LINE = 44
+  const darkSections = () => Array.from(document.querySelectorAll('[data-theme="dark"]')) as HTMLElement[]
   const isDarkBehind = (): boolean => {
-    if (!hdr) return false
-    const rect = hdr.getBoundingClientRect()
-    const x = window.innerWidth / 2
-    const y = Math.max(1, rect.bottom + 6)
-    const prev = hdr.style.pointerEvents
-    hdr.style.pointerEvents = 'none'
-    let node = document.elementFromPoint(x, y) as HTMLElement | null
-    hdr.style.pointerEvents = prev
-    while (node && node !== document.body) {
-      const cs = getComputedStyle(node)
-      const rgba = parseRgb(cs.backgroundColor)
-      if (rgba && rgba[3] > 0.1) return lum(rgba[0], rgba[1], rgba[2]) < 0.35
-      if (cs.backgroundImage && cs.backgroundImage !== 'none') return true
-      node = node.parentElement
+    for (const s of darkSections()) {
+      const r = s.getBoundingClientRect()
+      if (r.top <= HEADER_LINE && r.bottom > HEADER_LINE) return true
     }
-    const bodyBg = parseRgb(getComputedStyle(document.body).backgroundColor)
-    return !!(bodyBg && bodyBg[3] > 0.1 && lum(bodyBg[0], bodyBg[1], bodyBg[2]) < 0.35)
+    return false
   }
   const onScroll = () => {
     const dark = isDarkBehind()

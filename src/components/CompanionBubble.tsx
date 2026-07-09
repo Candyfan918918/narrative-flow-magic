@@ -139,7 +139,7 @@ export function CompanionBubble({
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen() } }}
       style={{
         position: 'fixed',
-        left: 'calc(50% - 29px)',
+        right: 24,
         bottom: 24,
         zIndex: elevated ? 65 : 35,
         width: 58,
