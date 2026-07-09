@@ -172,7 +172,7 @@ export function Chapter02Scan() {
                 <div data-rv="swipe-r">
                   {' '}
                   <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '12px', letterSpacing: '.24em', textTransform: 'uppercase', color: '#aaa3e8', marginBottom: '22px' }}>
-                    chapter 02 — scan it
+                    chapter 01 — scan it
                   </div>
                   {' '}
                   <h2 data-words="" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: '1.08', letterSpacing: '-.04em', margin: '0 0 24px', color: '#fff' }}>
