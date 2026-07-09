@@ -80,15 +80,15 @@ export function Hero() {
                     {' '}
                     <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
                       {' '}
-                      <a href="#spill" data-cta="spill" data-hover="" data-mag="" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '16px', color: '#fff', background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', borderRadius: '999px', padding: '18px 34px', boxShadow: '0 16px 36px -14px rgba(193,33,107,.6)' }}>
-                        spill it 
+                      <a href="#scan" data-cta="scan" data-hover="" data-mag="" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '16px', color: '#fff', background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', borderRadius: '999px', padding: '18px 34px', boxShadow: '0 16px 36px -14px rgba(193,33,107,.6)' }}>
+                        scan it 
                         <span style={{ fontWeight: '400' }}>
                           →
                         </span>
                       </a>
                       {' '}
-                      <a href="/stream" data-link="/stream" data-hover="" data-mag="" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '16px', color: '#c1216b', background: '#fff', border: '1.5px solid rgba(231,84,138,.35)', borderRadius: '999px', padding: '18px 34px', transition: 'border-color .3s' }}>
-                        sit in a room
+                      <a href="#spill" data-cta="spill" data-hover="" data-mag="" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '16px', color: '#c1216b', background: '#fff', border: '1.5px solid rgba(231,84,138,.35)', borderRadius: '999px', padding: '18px 34px', transition: 'border-color .3s, background .3s' }}>
+                        spill it
                       </a>
                       {' '}
                     </div>
