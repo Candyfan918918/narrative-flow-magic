@@ -457,13 +457,14 @@ export const createComment = createServerFn({ method: 'POST' })
     // a non-author leaves a comment. Drives the relate-queue and the
     // time-to-first-human-response metric (§7.6).
     try {
-      const { data: sit } = await context.supabase
+      const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+      const { data: sit } = await supabaseAdmin
         .from('situations')
         .select('id, alias_id, human_response_at')
         .eq('room_id', data.roomId)
         .maybeSingle()
       if (sit && !sit.human_response_at && sit.alias_id !== context.userId) {
-        await context.supabase
+        await supabaseAdmin
           .from('situations')
           .update({ human_response_at: new Date().toISOString() } as never)
           .eq('id', sit.id)
