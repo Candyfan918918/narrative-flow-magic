@@ -138,9 +138,26 @@ function canFire(id: string, opts: ShareOpts) {
   return true
 }
 
+function esc(s: string | undefined | null): string {
+  if (!s) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 function artifact(opts: ShareOpts): string {
   const kind = opts.kind || 'generic'
-  const accent = opts.accent || '#e7548a'
+  // Only allow hex color for accent to prevent CSS injection.
+  const rawAccent = opts.accent || '#e7548a'
+  const accent = /^#[0-9a-fA-F]{3,8}$/.test(rawAccent) ? rawAccent : '#e7548a'
+  const headline = esc(opts.headline)
+  const sub = esc(opts.sub)
+  const big = esc(opts.big)
+  const badge = esc(opts.badge) || '🏛'
+  const loopLabel = esc(opts.loopLabel)
   let bg = 'linear-gradient(165deg,#2a0d18,#160810)'
   let inner = ''
   if (kind === 'scan') {
@@ -149,18 +166,18 @@ function artifact(opts: ShareOpts): string {
       '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:64px;line-height:1;letter-spacing:-.04em;color:' +
       accent +
       '">' +
-      (opts.big || '') +
+      big +
       '</div><div style="margin-top:10px;font-family:Sora,sans-serif;font-weight:700;font-size:16px;color:#f7e8f0">' +
-      (opts.headline || '') +
+      headline +
       '</div>'
   } else if (kind === 'signature') {
     inner =
       "<div style=\"font-family:'Cormorant Garamond',Newsreader,serif;font-style:italic;font-size:38px;line-height:1.1;color:#f7e8f0\">" +
-      (opts.headline || '') +
+      headline +
       '</div>' +
-      (opts.sub
+      (sub
         ? '<div style="margin-top:12px;font-family:Newsreader,serif;font-style:italic;font-size:15px;color:#c9a3b6">' +
-          opts.sub +
+          sub +
           '</div>'
         : '')
   } else if (kind === 'relate' || kind === 'milestone') {
@@ -168,47 +185,47 @@ function artifact(opts: ShareOpts): string {
       '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:46px;line-height:1;color:' +
       accent +
       '">' +
-      (opts.big || '') +
+      big +
       '</div><div style="margin-top:12px;font-family:Newsreader,serif;font-style:italic;font-size:18px;line-height:1.4;color:#f7e8f0">' +
-      (opts.headline || '') +
+      headline +
       '</div>'
   } else if (kind === 'hall') {
     inner =
       '<div style="font-size:34px;margin-bottom:8px">' +
-      (opts.badge || '🏛') +
+      badge +
       '</div><div style="font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:' +
       accent +
       '">' +
-      (opts.headline || '') +
+      headline +
       '</div>' +
-      (opts.sub
+      (sub
         ? '<div style="margin-top:8px;font-family:Newsreader,serif;font-style:italic;font-size:14px;color:#c9a3b6">' +
-          opts.sub +
+          sub +
           '</div>'
         : '')
   } else if (kind === 'arc' || kind === 'growth' || kind === 'outcome') {
     inner =
       '<div style="font-family:Newsreader,serif;font-style:italic;font-size:22px;line-height:1.35;color:#f7e8f0">' +
-      (opts.headline || '') +
+      headline +
       '</div>' +
-      (opts.sub
+      (sub
         ? '<div style="margin-top:10px;font-family:Sora,sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;color:' +
           accent +
           '">' +
-          opts.sub +
+          sub +
           '</div>'
         : '')
   } else {
     inner =
       '<div style="font-family:Newsreader,serif;font-style:italic;font-size:20px;line-height:1.4;color:#f7e8f0">' +
-      (opts.headline || '') +
+      headline +
       '</div>'
   }
-  const loop = opts.loopLabel
+  const loop = loopLabel
     ? '<div style="position:absolute;left:0;right:0;bottom:14px;text-align:center;font-family:Sora,sans-serif;font-weight:700;font-size:11px;letter-spacing:.06em;color:' +
       accent +
       '">' +
-      opts.loopLabel +
+      loopLabel +
       '</div>'
     : ''
   return (
