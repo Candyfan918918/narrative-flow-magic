@@ -90,6 +90,11 @@ html.home-scroll-snap {
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes scrollHint{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{transform:translateY(0);opacity:0}}
 
+/* Hide hero scroll cue on short viewports so it doesn't crowd the CTAs. */
+@media (max-height: 819px) {
+  .home-immersive .home-hero-scrollcue { display: none !important; }
+}
+
 /* Card rise reveal — one-shot per view, applied by motionAdapter. */
 .home-tile-rise {
   transform: translateY(56px) rotate(1.2deg) scale(.97);
