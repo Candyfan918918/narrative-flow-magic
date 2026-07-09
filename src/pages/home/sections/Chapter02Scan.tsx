@@ -14,7 +14,7 @@ export function Chapter02Scan() {
                   {' '}
                   {/* the scan flow as a self-playing sample: questions → reading → score */}
                   {' '}
-                  <div data-reactive="" data-glow="rgba(231,84,138,.55)" style={{ width: 'min(330px,88vw)', background: 'linear-gradient(170deg,#241226,#160b16 70%)', border: '1px solid rgba(231,84,138,.35)', borderRadius: '24px', padding: '24px 22px 20px', boxShadow: '0 40px 90px -40px rgba(0,0,0,.7)' }}>
+                  <div data-reactive="" data-glow="rgba(231,84,138,.75)" style={{ width: 'min(400px,92vw)', background: 'linear-gradient(170deg,#2a1430,#170918 70%)', border: '1px solid rgba(231,84,138,.45)', borderRadius: '28px', padding: '28px 26px 24px', boxShadow: '0 50px 120px -40px rgba(231,84,138,.55), 0 20px 60px -20px rgba(0,0,0,.7)' }}>
                     {' '}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                       {' '}
