@@ -477,25 +477,32 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       .join('\n\n')
     let c: Composed
     try {
+      const progressBlock = isReturning && progressNote
+        ? '\n\nprogress note (returning user, their words about the PRIOR situation \u2014 do NOT weave into the new story; return it verbatim in progress_note): "' + progressNote + '"'
+        : ''
       const prompt =
-        'You are THE SPILL on Shutap. Compose the user\u2019s intake into a public-ready post that will open their Room \u2014 a full-sentence NARRATIVE in THEIR voice, NOT a transcript or Q&A dump. Use the question\u2192answer order below as the LOGICAL SPINE (what happened \u2192 what led to it \u2192 what it cost \u2192 how it feels) and thread the answers into ONE smooth chronological story a stranger can follow.\n\n' +
+        'You are THE SPILL on Shutap. Compose the user\u2019s intake into a public-ready post that will open their Room \u2014 a full-sentence NARRATIVE in THEIR voice, NOT a transcript or Q&A dump. Build the story from the FACT LEDGER \u2014 trigger_event \u2192 sequence \u2192 said/done \u2192 user_action \u2192 aftermath \u2192 stakes \u2014 threaded into ONE smooth chronological story with real transitions a stranger can follow. Feeling appears only where the user put it, in their words, never as a substitute for a missing event.\n\n' +
         'THE 80/20 RULE \u2014 LANGUAGE, NOT CONTENT.\n' +
-        '~80% stays THEIRS: their account, specifics, emotional beats, voice, idiom, capitalization, profanity; the meaning is EXACTLY what they said.\n' +
+        '~80% stays THEIRS: their account, specifics, quotes, emotional beats, voice, idiom, capitalization, profanity; the meaning is EXACTLY what they said.\n' +
         'Up to ~20% is polish AT THE LANGUAGE LEVEL ONLY: grammar, spelling, smoothing choppy phrasing, connective transitions between beats, cutting filler.\n\n' +
         'HARD LINE: improve HOW it\u2019s said, never WHAT is said. NEVER add a fact, event, person, motive, quote, or feeling they didn\u2019t give. NEVER make it more dramatic than they lived it. NEVER put words in the other party\u2019s mouth. If a smoother sentence would imply something they didn\u2019t say, don\u2019t write it.\n\n' +
         'title = their own hook, tightened to ONE line (lowercase ok). body = 2\u20135 short first-person paragraphs. edit_summary = one plain line naming the kind of polish applied (e.g. "fixed grammar and smoothed the order; no details added"). Do NOT list what you added \u2014 you added nothing.\n\n' +
         'the interview (already anonymized \u2014 keep it that way):\n"""\n' + skeleton + '\n"""\n\n' +
-        'the thing that mattered most to them: ' + (draft.the_real_thing || draft.emotional_core || '(not stated)') + '\n\n' +
+        'the fact ledger (silent, for your reference): ' + JSON.stringify(draft.arc || {}) + '\n' +
+        'the thing that mattered most to them: ' + (draft.the_real_thing || draft.emotional_core || '(not stated)') + progressBlock + '\n\n' +
         'OUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\n' +
-        'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"..."}'
+        'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"...","progress_note":' + (isReturning ? '"<verbatim their words>"' : 'null') + '}'
       const raw = await callComplete(prompt)
-      const j = extractJSON<{ title?: string; body?: string; tags?: string[]; edit_summary?: string }>(raw)
+      const j = extractJSON<{ title?: string; body?: string; tags?: string[]; edit_summary?: string; progress_note?: string | null }>(raw)
       c = {
         title: scrubPII(stripHTMLInline(String(j.title || ''))).clean,
         body: scrubPII(stripHTML(String(j.body || ''))).clean,
         tags: Array.isArray(j.tags) ? j.tags.slice(0, 5) : (draft.tags || []),
         pillar: normalizePillar(draft.pillar),
         edit_summary: typeof j.edit_summary === 'string' ? j.edit_summary.trim() : '',
+        progress_note: isReturning
+          ? scrubPII(stripHTMLInline(String(j.progress_note || progressNote || ''))).clean || null
+          : null,
       }
     } catch {
       const first = msgs.find(m => m.role === 'user') as Extract<Msg, { role: 'user' }> | undefined
@@ -505,11 +512,12 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         tags: (draft.tags || []).slice(0, 5),
         pillar: normalizePillar(draft.pillar),
         edit_summary: '',
+        progress_note: isReturning && progressNote ? scrubPII(stripHTMLInline(progressNote)).clean : null,
       }
     }
     setComposed(c)
     setPhase('preview')
-  }, [msgs, draft])
+  }, [msgs, draft, isReturning, progressNote])
 
 
   // pull manual contenteditable edits back into `composed` + re-scrub.
