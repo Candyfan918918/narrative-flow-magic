@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { ScanShareCard, type ScanRecord } from '@/components/ScanShareCard'
 import { CompanionEye } from '@/components/brand/CompanionEye'
 import { appendUserRoom } from './SpillModal'
+import { stripHTML, stripHTMLInline } from '@/lib/sanitize'
 
 const SORA = "'Sora', system-ui, sans-serif"
 const NEWSREADER = "'Newsreader', Georgia, serif"
