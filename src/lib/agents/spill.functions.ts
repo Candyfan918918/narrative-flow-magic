@@ -6,7 +6,7 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 
 import { runScrub } from './scrubber.functions'
 import { runClassifyCrisis } from './guard.functions'
-import { scanIntensity, bandFor } from './scan.functions'
+import { scanIntensity, bandFor, bandToDb } from './scan.functions'
 import { findMatches } from './matcher.functions'
 import { runCompanion } from './companion.functions'
 import { CRISIS_COPY } from './constitution'
