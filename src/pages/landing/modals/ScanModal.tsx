@@ -522,7 +522,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   useEffect(() => {
     if (!open) return
     document.body.style.overflow = 'hidden'
-    setQA([]); setResult(null); setShareOpen(false); setDisplayScore(0); setSaveNote(null)
+    setQA([]); setResult(null); setShareOpen(false); setDisplayScore(0); setSaveNote(null); setComposed(null)
     setPhase('loading'); setCurrent(null)
     return () => { document.body.style.overflow = '' }
   }, [open])
