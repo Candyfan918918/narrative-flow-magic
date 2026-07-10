@@ -135,11 +135,15 @@ export const saveSituation = createServerFn({ method: 'POST' })
       is_public: data.is_public,
       support_mode: data.support_mode ?? null,
       status: 'open' as const,
+      scan_reasoning: (data.scan_reasoning ?? null) as unknown,
+      scan_basis: data.scan_basis ?? (data.kind === 'scan' ? 'model_prior' : null),
+      scan_corpus_n: data.scan_corpus_n ?? null,
+      scan_cultural_note: data.scan_cultural_note ?? null,
     }
 
     const { data: sit, error } = await context.supabase
       .from('situations')
-      .insert(insertRow)
+      .insert(insertRow as never)
       .select('id, is_public, room_id')
       .single()
     if (error || !sit) throw new Error(error?.message ?? 'save failed')
