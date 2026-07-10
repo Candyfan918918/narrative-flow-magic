@@ -525,6 +525,8 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
         sub: res.read || '',
         factors,
         pillar: pillarFromQA(qaRef.current),
+        reasoning: (res.reasoning ?? null) as Reasoning | null,
+        cultural_note: res.cultural_note ?? null,
       }
       setResult(r)
       setPhase('result')
