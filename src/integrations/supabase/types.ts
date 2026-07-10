@@ -969,8 +969,12 @@ export type Database = {
           resolved_at: string | null
           room_id: string | null
           scan_band: Database["public"]["Enums"]["scan_band"] | null
+          scan_basis: string | null
+          scan_corpus_n: number | null
+          scan_cultural_note: string | null
           scan_factors: string[]
           scan_read: string | null
+          scan_reasoning: Json | null
           scan_signature: string | null
           signature: string | null
           status: Database["public"]["Enums"]["situation_status"]
@@ -1004,8 +1008,12 @@ export type Database = {
           resolved_at?: string | null
           room_id?: string | null
           scan_band?: Database["public"]["Enums"]["scan_band"] | null
+          scan_basis?: string | null
+          scan_corpus_n?: number | null
+          scan_cultural_note?: string | null
           scan_factors?: string[]
           scan_read?: string | null
+          scan_reasoning?: Json | null
           scan_signature?: string | null
           signature?: string | null
           status?: Database["public"]["Enums"]["situation_status"]
@@ -1039,8 +1047,12 @@ export type Database = {
           resolved_at?: string | null
           room_id?: string | null
           scan_band?: Database["public"]["Enums"]["scan_band"] | null
+          scan_basis?: string | null
+          scan_corpus_n?: number | null
+          scan_cultural_note?: string | null
           scan_factors?: string[]
           scan_read?: string | null
+          scan_reasoning?: Json | null
           scan_signature?: string | null
           signature?: string | null
           status?: Database["public"]["Enums"]["situation_status"]
