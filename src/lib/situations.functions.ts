@@ -66,6 +66,18 @@ const OptionalTolerantPillar = z.preprocess(
   z.enum(PILLAR_VALUES).optional(),
 )
 
+const ScanReasoningSchema = z
+  .object({
+    norm_distance: z.string().max(200).optional(),
+    justification: z.string().max(200).optional(),
+    boundary: z.string().max(200).optional(),
+    stakes: z.string().max(200).optional(),
+    pattern: z.string().max(60).optional(),
+    power_consent: z.string().max(200).optional(),
+  })
+  .partial()
+  .passthrough()
+
 const SaveInput = z.object({
   kind: z.enum(['scan', 'spill']).nullable().optional(),
   pillar: TolerantPillar.default('relationships'),
@@ -79,6 +91,10 @@ const SaveInput = z.object({
   support_mode: z.enum(['heard', 'advice']).nullable().optional(),
   emoji: z.string().max(8).optional(),
   alias: z.string().max(40).optional(),
+  scan_reasoning: ScanReasoningSchema.nullable().optional(),
+  scan_basis: z.string().max(60).nullable().optional(),
+  scan_corpus_n: z.number().int().nullable().optional(),
+  scan_cultural_note: z.string().max(500).nullable().optional(),
 })
 type ScanBand = 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'
 
