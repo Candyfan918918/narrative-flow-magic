@@ -500,7 +500,8 @@ function TextW({ card, onDone }: { card: CardText; onDone: (v: string) => void }
 }
 
 // ─────────────────────────── ScanModal ───────────────────────────
-type Phase = 'loading' | 'card' | 'result' | 'saving'
+type Phase = 'loading' | 'card' | 'result' | 'composing' | 'preview' | 'saving'
+type Composed = { title: string; body: string; edit_summary: string }
 
 export function ScanModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const navigate = useNavigate()
@@ -513,6 +514,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   const [shareOpen, setShareOpen] = useState(false)
   const [displayScore, setDisplayScore] = useState(0)
   const [saveNote, setSaveNote] = useState<string | null>(null)
+  const [composed, setComposed] = useState<Composed | null>(null)
   const qaRef = useRef<QA[]>([])
   qaRef.current = qa
 
