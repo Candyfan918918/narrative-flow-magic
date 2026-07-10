@@ -707,7 +707,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 22px 36px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 22 }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(72px,16vw,108px)', letterSpacing: '-.04em', lineHeight: 1, color: col }}>{displayScore}</div>
-            <div style={{ marginTop: 8, fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: col }}>intensity · {band}</div>
+            <div style={{ marginTop: 8, fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: col }}>{bandPhrase[band]}</div>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, justifyContent: 'center' }}>
             {result.pillar && (
