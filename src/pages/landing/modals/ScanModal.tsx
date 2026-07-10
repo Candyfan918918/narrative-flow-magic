@@ -802,9 +802,9 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
               <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 7 }}>keep private</div>
               <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0', lineHeight: 1.4 }}>yours alone. saved to your journal.</div>
             </div>
-            <div role="button" onClick={() => void doPersist(true)} style={{ padding: 18, background: 'rgba(231,84,138,.10)', border: '1.5px solid rgba(231,84,138,.35)', borderRadius: 14, cursor: 'pointer' }}>
+            <div role="button" onClick={() => void runCompose()} style={{ padding: 18, background: 'rgba(231,84,138,.10)', border: '1.5px solid rgba(231,84,138,.35)', borderRadius: 14, cursor: 'pointer' }}>
               <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: '#f7b8d4', marginBottom: 7 }}>post to a room</div>
-              <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0', lineHeight: 1.4 }}>let a room hold your number too.</div>
+              <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0', lineHeight: 1.4 }}>i'll write it up in your words — you check it first.</div>
             </div>
           </div>
         </div>
