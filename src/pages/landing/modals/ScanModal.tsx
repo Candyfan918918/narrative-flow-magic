@@ -213,21 +213,32 @@ output ONLY the JSON."
 }
 
 
-// Fallback deck — verbatim from Landing.dc.html scanFallbackCard (~1657).
+// Fallback deck — norm/situation cards that fill the fact spine. No somatic
+// probes, no feeling ladders. Used only if the LLM call fails.
 function scanFallback(n: number, hasText: boolean): ScanTurn {
   const seq: ScanTurn[] = [
-    { line: "ok, i'm here. let's get a real read on you - no wrong answers, take your time.", prompt: "what's this mostly about?", card: { type: 'choice', options: ['love / someone i love', 'family', 'a friend', 'work', 'me, internally', 'something else'] } },
-    { line: "okay. tell me the shape of it -", prompt: 'what actually happened? a few words.', card: { type: 'text', placeholder: 'the gist of it...' } },
-    { line: 'got it. and be honest with me -', prompt: "how long's this been sitting with you?", card: { type: 'rate', min_label: 'just today', max_label: 'years now' } },
-    { line: "mm. where's it living in you right now?", prompt: 'drag toward where you feel it', card: { type: 'spectrum', left: 'all in my head', right: 'all in my body' } },
-    { line: "let's find what's actually driving it.", prompt: 'rank these - heaviest on top', card: { type: 'rank', items: ['what they did', 'what it means about me', 'what happens next', 'that no one sees it', "that i can't fix it"] } },
-    { line: 'yeah. that tracks.', prompt: 'what are you feeling, really?', card: { type: 'multi', options: ['hurt', 'angry', 'anxious', 'numb', 'guilty', 'relieved', 'exhausted'], max: 3 } },
-    { line: 'okay, gut check -', prompt: 'which voice is louder right now?', card: { type: 'spectrum', left: "i'm overreacting", right: "i've been too patient" } },
-    { line: 'and this part matters -', prompt: 'have you said any of this out loud?', card: { type: 'choice', options: ['not to anyone', 'to one person', 'to a few people', 'everyone knows but me'] } },
-    { line: "last thing, then i'll read you -", prompt: 'what would actually help right now?', card: { type: 'multi', options: ['to be heard', 'some clarity', "to know i'm not wrong", 'to feel less alone', 'for it to change', 'to let it go'], max: 2 } },
+    { line: "ok, i'm here. we're going to figure out how far outside normal this actually is — no verdicts, no sides.", prompt: "what's this mostly about?", card: { type: 'choice', options: ['a partner / spouse', 'a family member', 'a friend', 'a boss or coworker', 'a stranger / situation', 'something else'] } },
+    { line: "okay. tell me the shape of it —", prompt: 'what actually happened? a few words in your own words.', card: { type: 'text', placeholder: 'just say it…' } },
+    { line: 'got it.', prompt: 'what did they actually say or do — the specifics?', card: { type: 'text', placeholder: 'their words / the actions…' } },
+    { line: 'okay — and this next one really matters.', prompt: 'did they give a reason for it?', card: { type: 'choice', options: ['no reason at all', 'a weak/thin reason', 'a reason but it doesn\'t hold up', 'a reason i understand', 'something else…'] } },
+    { line: 'noted.', prompt: 'how often does this happen?', card: { type: 'choice', options: ['first time / one-off', 'a handful of times', 'repeated pattern', 'ongoing / constant', 'something else…'] } },
+    { line: 'and be honest —', prompt: 'what feels actually at risk here?', card: { type: 'multi', options: ['trust', 'the relationship itself', 'your peace / rest', 'money or work', 'your privacy', 'your safety', 'nothing concrete'], max: 3 } },
+    { line: 'okay.', prompt: 'could you have said no or pushed back safely?', card: { type: 'spectrum', left: 'easily', right: 'not really' } },
+    { line: 'last thing before i read it —', prompt: 'what did you actually do or say back?', card: { type: 'text', placeholder: 'briefly…' } },
   ]
   if (!hasText && n >= 1 && n < seq.length) return seq[1]
-  if (n >= seq.length) return { done: true, score: 520, signature: 'Carrying It Quietly', read: "you're holding something real right now - not a five-alarm fire, but it's there, and it's yours. saying it out loud was the right move.", factors: ['still looping', 'not said out loud'] }
+  if (n >= seq.length) return {
+    done: true,
+    score: 500,
+    band: 'outside normal',
+    signature: 'Somewhere Outside Normal',
+    read: "from what you shared, this sits outside what most people would call ordinary — the reason (or lack of one) is doing a lot of the work here. worth taking seriously.",
+    reasoning: { norm_distance: 'moderate', justification: 'weak or none', boundary: 'unclear', stakes: 'real', pattern: 'unclear', power_consent: 'unclear' },
+    factors: ['thin reason', 'not just you'],
+    basis: 'model_prior',
+    corpus_n: null,
+    cultural_note: null,
+  }
   return seq[n]
 }
 
