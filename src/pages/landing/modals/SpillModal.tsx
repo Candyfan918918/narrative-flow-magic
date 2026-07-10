@@ -15,6 +15,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { saveSituation } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { CompanionEye } from '@/components/brand/CompanionEye'
+import { stripHTML, stripHTMLInline } from '@/lib/sanitize'
 
 
 const SORA = "'Sora', system-ui, sans-serif"
