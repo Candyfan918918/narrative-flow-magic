@@ -1,6 +1,7 @@
-// The adaptive SCAN — one AI-driven card per turn, dig one layer deeper each
-// step, finish with score/signature/read. Server-side; reuses the gateway,
-// scrubber, and Crisis Guard from existing agents.
+// THE SCAN — adaptive one-card-per-turn engine.
+// Measures the SITUATION against social norms (0-999): how far outside
+// normal is what happened, and how much should it concern the user.
+// Server-side; reuses gateway, scrubber, and Crisis Guard.
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
@@ -40,6 +41,14 @@ type ScanCard = {
   items?: string[]
   placeholder?: string
 }
+type Reasoning = {
+  norm_distance?: string
+  justification?: string
+  boundary?: string
+  stakes?: string
+  pattern?: string
+  power_consent?: string
+}
 type ContinueTurn = {
   done: false
   line: string
@@ -49,9 +58,14 @@ type ContinueTurn = {
 type DoneTurn = {
   done: true
   score: number
+  band: string
   signature: string
   read: string
+  reasoning: Reasoning
   factors: string[]
+  basis: 'model_prior'
+  corpus_n: null
+  cultural_note: string | null
   pillar: string
   crisis?: boolean
 }
@@ -61,7 +75,8 @@ export const scanTurn = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => TurnInput.parse(d))
   .handler(async ({ data }): Promise<TurnOut> => {
-    const { SCAN_PERSONA, sanitizeLine, clampScore } = await import('./scan-turn.server')
+    const { SCAN_PERSONA, sanitizeLine, clampScore, BAND_LABEL, bandFromScore, phraseToBand } =
+      await import('./scan-turn.server')
 
     // Scrub + crisis-check any free-text answer
     if (data.last_text && data.last_text.length > 1) {
@@ -72,9 +87,21 @@ export const scanTurn = createServerFn({ method: 'POST' })
           done: true,
           crisis: true,
           score: 950,
-          signature: 'pause for safety',
+          band: BAND_LABEL.far_outside,
+          signature: 'Pause For Safety',
           read: 'this is a lot to carry. you matter — and there are people trained for this exact moment.',
+          reasoning: {
+            norm_distance: 'safety concern (n/a)',
+            justification: 'none',
+            boundary: 'safety',
+            stakes: 'high',
+            pattern: 'ongoing',
+            power_consent: 'n/a',
+          },
           factors: ['safety'],
+          basis: 'model_prior',
+          corpus_n: null,
+          cultural_note: null,
           pillar: 'self',
         }
       }
@@ -86,15 +113,19 @@ export const scanTurn = createServerFn({ method: 'POST' })
       .join('\n\n')
 
     const turnIndex = data.history.length
-    const softCap = turnIndex >= 6
+    const softCap = turnIndex >= 10
     const depthHint = [
-      'card 1 — concrete scene (what happened)',
-      'card 2 — the feeling on top',
-      'card 3 — feeling under that feeling',
-      'card 4 — fear/need/grief at the bottom',
-      'card 5 — converging; if core is named, FINISH next turn',
-      'card 6 — FINISH this turn with the score+read',
-    ][Math.min(turnIndex, 5)]
+      'card 1 — greet by alias; open with a warm free-text ask: what actually happened',
+      'card 2 — pin down WHO and the concrete said/done (their nouns, their words)',
+      'card 3 — CONTEXT: what surrounded it, what came before',
+      'card 4 — JUSTIFICATION: what reason (if any) did they give? this is required',
+      'card 5 — FREQUENCY: one-off, repeated, ongoing?',
+      'card 6 — STAKES: what is concretely at risk',
+      'card 7 — their_response: what they did/said/decided; feeling captured briefly',
+      'card 8+ — fill any missing slot, then FINISH with the result',
+      'card 10+ — FINISH now with the result JSON',
+      'card 11+ — WRAP UP THIS TURN with the finishing JSON',
+    ][Math.min(turnIndex, 9)]
 
     const userMsg = `${SCAN_PERSONA}
 
@@ -105,32 +136,53 @@ ${softCap ? 'YOU ARE AT THE SOFT CAP — return the finishing JSON now.' : ''}
 last two widget types used: ${usedTypes.length ? usedTypes.join(', ') : '(none)'} — DO NOT REPEAT.
 
 prior cards:
-${transcript || '(none yet — open with a warm greeting that uses the alias)'}`
+${transcript || '(none yet — open with a warm greeting that uses the alias and a free-text ask)'}`
 
     const llm = await callAgent({
       messages: [{ role: 'user', content: userMsg }],
-      maxTokens: 380,
+      maxTokens: 520,
     })
     const parsed = tryParseJson<TurnOut>(llm.text)
     if (!parsed) {
       // Fallback finisher so the user never gets stuck.
       return {
         done: true,
-        score: 500,
-        signature: 'sitting with it',
-        read: "couldn't get a clean read on this one — but it's clearly weighing on you.",
-        factors: ['recurring'],
+        score: 400,
+        band: BAND_LABEL.uncommon,
+        signature: 'Not Enough To Read',
+        read: "couldn't get a clean read on this one from what we have. name what happened and what reason they gave, and try again.",
+        reasoning: {
+          norm_distance: 'unclear',
+          justification: 'unclear',
+          boundary: 'unclear',
+          stakes: 'unclear',
+          pattern: 'unclear',
+          power_consent: 'unclear',
+        },
+        factors: ['not enough info'],
+        basis: 'model_prior',
+        corpus_n: null,
+        cultural_note: null,
         pillar: 'self',
       }
     }
 
     if ('done' in parsed && parsed.done) {
+      const score = clampScore(Number(parsed.score) || 400)
+      const bandKey = phraseToBand(parsed.band) ?? bandFromScore(score)
       return {
         done: true,
-        score: clampScore(Number(parsed.score) || 500),
-        signature: sanitizeLine(parsed.signature, 60) || 'sitting with it',
+        score,
+        band: BAND_LABEL[bandKey],
+        signature: sanitizeLine(parsed.signature, 60) || 'A Read',
         read: sanitizeLine(parsed.read, 400) || 'this one is real.',
-        factors: Array.isArray(parsed.factors) ? parsed.factors.slice(0, 6).map((f) => sanitizeLine(String(f), 40)) : [],
+        reasoning: (parsed.reasoning ?? {}) as Reasoning,
+        factors: Array.isArray(parsed.factors)
+          ? parsed.factors.slice(0, 6).map((f) => sanitizeLine(String(f), 40))
+          : [],
+        basis: 'model_prior',
+        corpus_n: null,
+        cultural_note: parsed.cultural_note != null ? sanitizeLine(String(parsed.cultural_note), 200) || null : null,
         pillar: ['relationships', 'marriage', 'family', 'career', 'self', 'other'].includes(
           String(parsed.pillar),
         )

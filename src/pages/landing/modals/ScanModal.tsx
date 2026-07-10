@@ -26,8 +26,9 @@ import { stripHTML, stripHTMLInline } from '@/lib/sanitize'
 const SORA = "'Sora', system-ui, sans-serif"
 const NEWSREADER = "'Newsreader', Georgia, serif"
 
-// SCAN_SYSTEM — verbatim from src/pages/Landing.tsx bridge (line 322). Keep in sync.
-const SCAN_SYSTEM = "You are the user's wisest, most emotionally attuned friend — warm, tender, deeply human, lowercase, texty, fully on their side — gently reading how heavy a situation feels and helping them understand WHY, all the way down. This is a caring conversation, NOT a quiz. THE OPENING CARD must build trust: gently acknowledge it took something to bring this here, reassure them this is a safe, no-judgment space, and invite the specifics in a warm, guiding way (not a cold 'what's going on?'). Then DIG TO THE ROOT, like a friend who keeps gently asking what's underneath: don't stop at how it feels or why it's happening — trace the chain. Treat what they first say as the SURFACE symptom; each turn, find the cause beneath it, then the cause beneath THAT, laddering down (a 'why under the why') toward the fundamental root — the real fear, unmet need, old wound, relationship pattern, health/stress driver, or belief that's actually generating the surface reaction and emotion. React first with genuine sympathy ('oof, that sits heavy', 'that sounds scary, honestly'), then REASON like a perceptive friend and ask ONE smart, specific, hypothesis-driven question that goes a layer DEEPER than the last — connect body, mind, history, and life. Example: 'period 2 weeks early' (surface) → the body may be reacting to stress/sleep/health/hormones (cause) → so explore what's driving that stress ('what's been weighing on you lately?') (deeper cause) → then what's under THAT (a fear, a relationship, pressure, something unspoken) (root). Keep gently descending until you reach something that feels fundamental, then reflect it back with real warmth and a sense of what might help. INTERACTIVITY: run MANY cards (aim ~8–12, don't wrap up early), vary the input type each step favoring tactile ones (spectrum, rate, rank, multi, free text); for any choice/multi card offer 5–7 specific human options AND always include an open escape like 'something else…' / 'let me say it in my own words', and drop to a free-text card when nothing fits — never trap them in a wrong answer, never ask a flat generic 'how do you feel?'. Keep your reply in the EXACT same JSON shape the rest of the instructions require (a card object {line,prompt,card:{...}}, or the done/score object); never add prose outside the JSON. OUTPUT FORMAT: return PLAIN TEXT only in every string field — no HTML tags, no markdown, no <br>; never use </br>; use real newline characters if a break is needed."
+// THE SCAN system prompt — measures the SITUATION against social norms,
+// not felt intensity. See scan-turn.server.ts for the canonical persona.
+const SCAN_SYSTEM = "you are THE SCAN on Shutap. you read a SITUATION against social norms and answer ONE question: 'how far outside normal is what happened, and how much should it concern me?' scored 0-999. you are NOT measuring how heavy it FEELS — feelings are ONE input, never the point. warm, plain, lowercase, texty, fully on their side. never say who's right or wrong (no AITA, no verdict, no blame, no diagnosis, never score a person). norms are cultural: 'most people in your context', never objective moral fact.\n\nBEFORE YOU SCORE, FILL THE FACT SPINE. required slots — each filled or explicitly declined before finishing: what_happened (concrete event, their words) · who (scrubbed referents) · said_done (ACTUAL words/actions, not characterisations) · context (what surrounded it) · justification (the reason the other party gave, or 'none' — THE SINGLE MOST IMPORTANT INPUT; ask it in EVERY scan) · frequency (one-off/repeated/ongoing) · stakes (what is concretely at risk) · their_response (what the user did/said/decided). feeling is captured ONCE, LATE, and NEVER the completion condition.\n\nSCORE RISES WITH: norm_distance (primary ↑) × justification (STRONGEST discount ↓) × boundary crossing (personal/bodily/relational/privacy ↑↑) × stakes + reversibility (↑) × pattern (multiplier ↑) × power_consent (↑↑ when absent). a high score REQUIRES unusual AND unjustified. unusual-but-justified stays LOW. anchors: MIL sharing your husband's bed, ongoing, no reason → ~850 · no-tip after genuinely bad service → ~150 · partner reads your phone once after a fight → ~450 · boss texts at 11pm every night → ~600.\n\nPERSONALISATION IS MANDATORY: every card after the opener quotes the user's own specifics back (their nouns, their words). a card that would make sense pasted into a stranger's Scan is not good enough — rewrite it with their nouns. interactivity: vary the input type EVERY step (never repeat the previous type), lean on the tactile widgets (spectrum, rank, rate, multi), always offer an escape hatch ('something else…' / 'let me say it in my own words'). aim ~8-11 cards. HARD RULE: card 1 or 2 MUST be free text asking what actually happened.\n\nBANNED OUTRIGHT: somatic probes ('where do you feel it in your body?', 'in my head vs in my body'), feeling ladders ('the feeling under that feeling', 'the fear at the bottom'), flat generics ('how does that make you feel?', standalone 'how long has this been sitting with you?'), therapy-speak ('hold space', 'sit with that', 'that's valid', 'i hear you', 'it sounds like', 'that must be hard'), advice tokens ('you should', 'try', 'consider', 'recommend'), verdicts ('nta', 'ytah'). NEVER fabricate a human count ('312 people said…') — the corpus is empty for now.\n\nreturn the JSON shapes the rest of the instructions require (a card object or the done/score object); never add prose outside the JSON. OUTPUT FORMAT: return PLAIN TEXT only in every string field — no HTML tags, no markdown, no <br>; never use </br>; use real newline characters if a break is needed."
 
 // ─────────────────────────── types ───────────────────────────
 type CardChoice   = { type: 'choice';   options?: string[] }
@@ -38,23 +39,53 @@ type CardRank     = { type: 'rank';     items?: string[] }
 type CardText     = { type: 'text';     placeholder?: string }
 type ScanCard = CardChoice | CardMulti | CardRate | CardSpectrum | CardRank | CardText
 
+type Reasoning = {
+  norm_distance?: string
+  justification?: string
+  boundary?: string
+  stakes?: string
+  pattern?: string
+  power_consent?: string
+}
 type ScanTurn =
   | { done?: false; line?: string; prompt?: string; card?: ScanCard }
-  | { done: true; score?: number | string; signature?: string; read?: string; factors?: string[] }
+  | {
+      done: true
+      score?: number | string
+      band?: string
+      signature?: string
+      read?: string
+      factors?: string[]
+      reasoning?: Reasoning
+      basis?: string
+      corpus_n?: number | null
+      cultural_note?: string | null
+      pillar?: string
+    }
 
 type QA = { prompt: string; answer: string; type?: ScanCard['type'] }
+type ScanBandKey = 'within' | 'uncommon' | 'outside' | 'well_outside' | 'far_outside'
 type Result = {
   score: number
   label: string
   sub: string
   factors: string[]
   pillar: string | null
+  reasoning: Reasoning | null
+  cultural_note: string | null
 }
 
-const bandFromScore = (n: number): 'settling' | 'sitting' | 'weighing' | 'heavy' | 'consuming' =>
-  n < 200 ? 'settling' : n < 400 ? 'sitting' : n < 600 ? 'weighing' : n < 800 ? 'heavy' : 'consuming'
-const dbBand: Record<ReturnType<typeof bandFromScore>, 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'> = {
-  settling: 'quiet', sitting: 'real', weighing: 'hot', heavy: 'heavy', consuming: 'serious',
+const bandFromScore = (n: number): ScanBandKey =>
+  n < 200 ? 'within' : n < 400 ? 'uncommon' : n < 600 ? 'outside' : n < 800 ? 'well_outside' : 'far_outside'
+const bandPhrase: Record<ScanBandKey, string> = {
+  within: 'within normal',
+  uncommon: 'uncommon',
+  outside: 'outside normal',
+  well_outside: 'well outside normal',
+  far_outside: 'far outside normal',
+}
+const dbBand: Record<ScanBandKey, 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'> = {
+  within: 'quiet', uncommon: 'real', outside: 'hot', well_outside: 'heavy', far_outside: 'serious',
 }
 const scoreColor = (score: number): string =>
   score < 200 ? '#9e8f9c' : score < 400 ? '#7F77DD' : score < 600 ? '#c87c4a' : score < 800 ? '#e7548a' : '#c1216b'
@@ -79,15 +110,27 @@ function scrubPII(text: string): string {
 function sanitizeTurn(t: ScanTurn): ScanTurn {
   if (!t || typeof t !== 'object') return t
   if ((t as { done?: boolean }).done) {
-    const d = t as { done: true; score?: number | string; signature?: string; read?: string; factors?: string[] }
+    const d = t as {
+      done: true; score?: number | string; band?: string; signature?: string; read?: string;
+      factors?: string[]; reasoning?: Reasoning; basis?: string; corpus_n?: number | null;
+      cultural_note?: string | null; pillar?: string
+    }
     const factors = Array.isArray(d.factors)
       ? d.factors.map(f => stripHTMLInline(String(f || ''))).filter(Boolean)
       : d.factors
+    const cleanReasoning: Reasoning | undefined = d.reasoning
+      ? Object.fromEntries(
+          Object.entries(d.reasoning).map(([k, v]) => [k, v != null ? stripHTMLInline(String(v)) : v]),
+        ) as Reasoning
+      : d.reasoning
     return {
       ...d,
+      band: d.band != null ? stripHTMLInline(String(d.band)) : d.band,
       signature: d.signature != null ? stripHTMLInline(String(d.signature)) : d.signature,
       read: d.read != null ? stripHTML(String(d.read)) : d.read,
       factors,
+      reasoning: cleanReasoning,
+      cultural_note: d.cultural_note != null ? stripHTMLInline(String(d.cultural_note)) : d.cultural_note,
     }
   }
   const c = t as { done?: false; line?: string; prompt?: string; card?: ScanCard }
@@ -139,7 +182,16 @@ async function callScanAI(qa: QA[], aliasName: string | null): Promise<ScanTurn>
       ? 'Only finish if you have TRULY reached the emotional core (the fear/need/grief underneath) and it landed for them. If you are still on feelings or facts, go one layer DEEPER instead.'
       : 'Do NOT finish yet - you are still near the surface. dig.'
   // Verbatim from Landing.dc.html openScan() sys builder (line 1526).
-  const sys = "You are THE SCAN on Shutap - a quick, intuitive read of how heavy someone's situation is RIGHT NOW, scored 0-999. You are a warm, perceptive, FUNNY friend - caring, a little cheeky, never clinical, never a dry form. lowercase, texty.\n\nYou run an ADAPTIVE check: each step you design the NEXT input card, REACTING specifically to what they just said (name it, take their side, a gentle joke when it fits). VARY the input type EVERY step - never repeat the same kind twice in a row, and lean on the tactile widgets (spectrum, rank, rate, multi) far more than plain choice so it stays playful, hands-on and alive. ~9-12 cards - go the distance; do NOT stop at the surface; keep going until you reach the bottom of their heart, then finish. HARD RULE: card 1 or card 2 MUST be a free-text card asking what actually happened, in their own words (type 'text', e.g. prompt \"what's going on - tell me in your own words?\", placeholder \"whatever it is, just say it...\"). you cannot read someone you haven't heard.\n\nDIG LIKE THEIR CLOSEST FRIEND - this is the whole point. each card goes ONE LAYER DEEPER than the last: what happened -> the feeling -> the feeling UNDER that feeling -> the fear or need or grief at the very bottom (what they are most scared is true, what they actually need and are not getting, the thing they have not said out loud). when you sense the real thing, NAME it back to them tenderly and check if that is it. never settle for their first, tidiest answer - push, warmly, like someone who refuses to let them stay on the surface.\n\nCARD TYPES (pick what truly fits the question):\n- choice   -> one pick. fields: options:[4-7 short strings, an emoji is nice]\n- multi    -> pick several. fields: options:[5-9 strings], max:int\n- rate     -> a 0-10 slider. fields: min_label, max_label\n- spectrum -> drag a handle between two extremes. fields: left, right\n- rank     -> drag to order. fields: items:[4-6 short strings]\n- text     -> a few words. fields: placeholder\n\nReturn STRICT JSON, exactly ONE of:\n{\"line\":\"<short warm/funny reaction to their last answer, or a welcoming opener>\",\"prompt\":\"<the question, short, specific>\",\"card\":{\"type\":\"...\", ...fields}}\nOR when you have a real read:\n{\"done\":true,\"score\":<int 0-999>,\"signature\":\"<3-4 word title, Title Case>\",\"read\":\"<2 warm sentences that NAME the real thing at the bottom of their heart - the core fear or need underneath - specific to them, tender, a little funny>\",\"factors\":[\"<2-4 word driver>\",\"<...>\"]}\nNEVER return the done/score object unless the transcript contains at least one free-text answer describing what happened. if you are about to finish without one, ask a text card first.\n\nSCORE BANDS (use the WHOLE range; judge by recency, how stuck/looping it is, body load, isolation, stakes): 0-199 barely landed / settling . 200-399 sitting with it . 400-599 weighing on you . 600-799 heavy and loud . 800-999 consuming, urgent.\n\n" + (aliasName ? ('the user goes by "' + aliasName + '" - you can use their name warmly.\n') : '') + "\n=== what they have told you ===\n" + transcript + "\n\n" + finishHint + (n >= 1 && !hasText ? "\nIMPORTANT: you still have NO free-text answer from them. your next card MUST be type 'text' asking what actually happened." : '') + "\nOUTPUT FORMAT: return PLAIN TEXT only in every string field — no HTML tags, no markdown, no <br>; never use </br>; use real newline characters if a break is needed.\noutput ONLY the JSON."
+  const sysHead = "You are THE SCAN on Shutap — you read a SITUATION against social norms and answer ONE question: 'how far outside normal is what happened, and how much should i be concerned?' scored 0-999. you are NOT measuring how heavy it FEELS — feelings are ONE input, never the point. warm, plain, lowercase, texty, fully on their side. never say who's right or wrong (no AITA, no verdict, no blame, no diagnosis, never score a person). norms are cultural: 'most people in your context', never objective moral fact.\n\nADAPTIVE FLOW: each step you design the NEXT input card, REACTING specifically to what they just said and quoting their own specifics back (their nouns, their words). VARY the input type EVERY step — never repeat the same kind twice in a row, and lean on the tactile widgets (spectrum, rank, rate, multi) more than plain choice. any choice/multi card MUST include an escape hatch ('something else…' / 'let me say it in my own words'). aim ~8-11 cards. HARD RULE: card 1 or card 2 MUST be a free-text card asking what actually happened, in their own words (type 'text', e.g. prompt \"what actually happened — tell me in your own words?\", placeholder \"just say it…\"). you cannot score what you have not heard.\n\nFILL THE FACT SPINE BEFORE YOU SCORE. required slots — each filled or explicitly declined before finishing: what_happened · who · said_done (their ACTUAL words/actions) · context · justification (the reason the other party gave, or 'none' — THE SINGLE MOST IMPORTANT INPUT; ask it in EVERY scan) · frequency (one-off/repeated/ongoing) · stakes · their_response. feeling is captured ONCE, LATE, and never the completion condition.\n\nSCORE RISES WITH: norm_distance (primary ↑) × justification (STRONGEST discount ↓) × boundary crossing (personal/bodily/relational/privacy ↑↑) × stakes + reversibility (↑) × pattern (multiplier ↑) × power_consent (↑↑ when absent). a high score REQUIRES unusual AND unjustified. unusual-but-justified stays LOW. anchors: MIL sharing your husband's bed, ongoing, no reason → ~850 · no-tip after genuinely bad service → ~150 · partner reads your phone once after a fight → ~450 · boss texts at 11pm every night → ~600.\n\nBANNED OUTRIGHT: somatic probes ('where do you feel it in your body?'), feeling ladders ('the feeling under that feeling', 'the fear at the bottom'), flat generics ('how does that make you feel?'), therapy-speak, advice tokens ('you should', 'try', 'consider', 'recommend'), verdicts ('nta', 'ytah'). NEVER fabricate a human count ('312 people said…') — the corpus is empty for now.\n\nCARD TYPES: choice (options:[4-7]) · multi (options:[5-9], max:int) · rate (min_label, max_label) · spectrum (left, right) · rank (items:[4-6]) · text (placeholder).\n\nReturn STRICT JSON, exactly ONE of:\n{\"line\":\"<short warm reaction that quotes their own specifics back>\",\"prompt\":\"<the question, short, specific, personalised>\",\"card\":{\"type\":\"...\", ...fields}}\nOR when the fact spine is full:\n{\"done\":true,\"score\":<int 0-999>,\"band\":\"within normal|uncommon|outside normal|well outside normal|far outside normal\",\"signature\":\"<3-4 word Title Case>\",\"read\":\"<2 sentences naming WHAT makes this unusual and what (if anything) justifies it — observation only, never advice, never a verdict on a person>\",\"reasoning\":{\"norm_distance\":\"<line + 0-100>\",\"justification\":\"<what was offered or 'none' + 0-100 discount>\",\"boundary\":\"<which boundary or 'none'>\",\"stakes\":\"<concrete>\",\"pattern\":\"one_off|repeated|ongoing\",\"power_consent\":\"<could they say no?>\"},\"factors\":[\"<2-4 word driver>\",\"...\"],\"basis\":\"model_prior\",\"corpus_n\":null,\"cultural_note\":\"<null or one line acknowledging norms differ by context>\"}\nNEVER return the done object unless the transcript contains at least one free-text answer describing what happened. if you are about to finish without one, ask a text card first."
+  const sys = sysHead
+    + "\n\n"
+    + (aliasName ? "the user goes by \"" + aliasName + "\" — use their name warmly.\n" : "")
+    + "\n=== what they have told you ===\n"
+    + transcript
+    + "\n\n"
+    + finishHint
+    + (n >= 1 && !hasText ? "\nIMPORTANT: you still have NO free-text answer from them. your next card MUST be type 'text' asking what actually happened." : "")
+    + "\nOUTPUT FORMAT: return PLAIN TEXT only in every string field — no HTML tags, no markdown, no <br>; never use </br>; use real newline characters if a break is needed.\noutput ONLY the JSON."
 
   const { data: sessionData } = await supabase.auth.getSession()
   const token = sessionData.session?.access_token
@@ -162,21 +214,32 @@ async function callScanAI(qa: QA[], aliasName: string | null): Promise<ScanTurn>
 }
 
 
-// Fallback deck — verbatim from Landing.dc.html scanFallbackCard (~1657).
+// Fallback deck — norm/situation cards that fill the fact spine. No somatic
+// probes, no feeling ladders. Used only if the LLM call fails.
 function scanFallback(n: number, hasText: boolean): ScanTurn {
   const seq: ScanTurn[] = [
-    { line: "ok, i'm here. let's get a real read on you - no wrong answers, take your time.", prompt: "what's this mostly about?", card: { type: 'choice', options: ['love / someone i love', 'family', 'a friend', 'work', 'me, internally', 'something else'] } },
-    { line: "okay. tell me the shape of it -", prompt: 'what actually happened? a few words.', card: { type: 'text', placeholder: 'the gist of it...' } },
-    { line: 'got it. and be honest with me -', prompt: "how long's this been sitting with you?", card: { type: 'rate', min_label: 'just today', max_label: 'years now' } },
-    { line: "mm. where's it living in you right now?", prompt: 'drag toward where you feel it', card: { type: 'spectrum', left: 'all in my head', right: 'all in my body' } },
-    { line: "let's find what's actually driving it.", prompt: 'rank these - heaviest on top', card: { type: 'rank', items: ['what they did', 'what it means about me', 'what happens next', 'that no one sees it', "that i can't fix it"] } },
-    { line: 'yeah. that tracks.', prompt: 'what are you feeling, really?', card: { type: 'multi', options: ['hurt', 'angry', 'anxious', 'numb', 'guilty', 'relieved', 'exhausted'], max: 3 } },
-    { line: 'okay, gut check -', prompt: 'which voice is louder right now?', card: { type: 'spectrum', left: "i'm overreacting", right: "i've been too patient" } },
-    { line: 'and this part matters -', prompt: 'have you said any of this out loud?', card: { type: 'choice', options: ['not to anyone', 'to one person', 'to a few people', 'everyone knows but me'] } },
-    { line: "last thing, then i'll read you -", prompt: 'what would actually help right now?', card: { type: 'multi', options: ['to be heard', 'some clarity', "to know i'm not wrong", 'to feel less alone', 'for it to change', 'to let it go'], max: 2 } },
+    { line: "ok, i'm here. we're going to figure out how far outside normal this actually is — no verdicts, no sides.", prompt: "what's this mostly about?", card: { type: 'choice', options: ['a partner / spouse', 'a family member', 'a friend', 'a boss or coworker', 'a stranger / situation', 'something else'] } },
+    { line: "okay. tell me the shape of it —", prompt: 'what actually happened? a few words in your own words.', card: { type: 'text', placeholder: 'just say it…' } },
+    { line: 'got it.', prompt: 'what did they actually say or do — the specifics?', card: { type: 'text', placeholder: 'their words / the actions…' } },
+    { line: 'okay — and this next one really matters.', prompt: 'did they give a reason for it?', card: { type: 'choice', options: ['no reason at all', 'a weak/thin reason', 'a reason but it doesn\'t hold up', 'a reason i understand', 'something else…'] } },
+    { line: 'noted.', prompt: 'how often does this happen?', card: { type: 'choice', options: ['first time / one-off', 'a handful of times', 'repeated pattern', 'ongoing / constant', 'something else…'] } },
+    { line: 'and be honest —', prompt: 'what feels actually at risk here?', card: { type: 'multi', options: ['trust', 'the relationship itself', 'your peace / rest', 'money or work', 'your privacy', 'your safety', 'nothing concrete'], max: 3 } },
+    { line: 'okay.', prompt: 'could you have said no or pushed back safely?', card: { type: 'spectrum', left: 'easily', right: 'not really' } },
+    { line: 'last thing before i read it —', prompt: 'what did you actually do or say back?', card: { type: 'text', placeholder: 'briefly…' } },
   ]
   if (!hasText && n >= 1 && n < seq.length) return seq[1]
-  if (n >= seq.length) return { done: true, score: 520, signature: 'Carrying It Quietly', read: "you're holding something real right now - not a five-alarm fire, but it's there, and it's yours. saying it out loud was the right move.", factors: ['still looping', 'not said out loud'] }
+  if (n >= seq.length) return {
+    done: true,
+    score: 500,
+    band: 'outside normal',
+    signature: 'Somewhere Outside Normal',
+    read: "from what you shared, this sits outside what most people would call ordinary — the reason (or lack of one) is doing a lot of the work here. worth taking seriously.",
+    reasoning: { norm_distance: 'moderate', justification: 'weak or none', boundary: 'unclear', stakes: 'real', pattern: 'unclear', power_consent: 'unclear' },
+    factors: ['thin reason', 'not just you'],
+    basis: 'model_prior',
+    corpus_n: null,
+    cultural_note: null,
+  }
   return seq[n]
 }
 
@@ -494,6 +557,8 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
         sub: res.read || '',
         factors,
         pillar: pillarFromQA(qaRef.current),
+        reasoning: (res.reasoning ?? null) as Reasoning | null,
+        cultural_note: res.cultural_note ?? null,
       }
       setResult(r)
       setPhase('result')
@@ -545,6 +610,10 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       scan_band: dbBand[band],
       is_public: isPublic,
       support_mode: 'heard' as const,
+      scan_reasoning: result.reasoning ?? null,
+      scan_basis: 'model_prior' as const,
+      scan_corpus_n: null,
+      scan_cultural_note: result.cultural_note ?? null,
     }
     setPhase('saving')
     try {
@@ -594,7 +663,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
 
   const pct = phase === 'result' ? 100 : Math.min(90, (qa.length + (phase === 'card' ? 1 : 0)) * 8)
   const col = result ? scoreColor(result.score) : '#7F77DD'
-  const band = result ? bandFromScore(result.score) : 'settling'
+  const band: ScanBandKey = result ? bandFromScore(result.score) : 'within'
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#100b1c', display: 'flex', flexDirection: 'column' }}>
@@ -638,7 +707,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 22px 36px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 22 }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(72px,16vw,108px)', letterSpacing: '-.04em', lineHeight: 1, color: col }}>{displayScore}</div>
-            <div style={{ marginTop: 8, fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: col }}>intensity · {band}</div>
+            <div style={{ marginTop: 8, fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: col }}>{bandPhrase[band]}</div>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, justifyContent: 'center' }}>
             {result.pillar && (
