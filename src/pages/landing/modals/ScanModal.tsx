@@ -810,6 +810,44 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
         </div>
       )}
 
+      {phase === 'composing' && (
+        <div style={{ flex: 1, display: 'grid', placeItems: 'center', padding: '34px 22px', textAlign: 'center' }}>
+          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+            <CompanionSVG size={50} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#b3a0d0' }}>
+              <span>writing it up in your words</span>
+              <BlinkDots />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {phase === 'preview' && composed && result && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 22px 36px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#f7b8d4' }}>preview your post</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+            <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase', color: col, background: col + '22', border: '.5px solid ' + col + '55', borderRadius: 999, padding: '4px 12px' }}>{result.score} · {bandPhrase[band]}</span>
+            <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase', color: '#b9a9e6', background: 'rgba(127,119,221,.14)', borderRadius: 999, padding: '4px 12px' }}>{result.label}</span>
+          </div>
+          <div style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 16, padding: 20 }}>
+            <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 20, color: '#f7e8f0', marginBottom: 12, lineHeight: 1.25 }}>{composed.title}</div>
+            <div style={{ fontFamily: NEWSREADER, fontSize: 15.5, color: '#e8dcf0', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{composed.body}</div>
+          </div>
+          {composed.edit_summary && (
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#9e7a8c', textAlign: 'center' }}>{composed.edit_summary}</div>
+          )}
+          <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#9e7a8c', textAlign: 'center' }}>still your words — did i keep it true?</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 11 }}>
+            <div role="button" onClick={() => { setComposed(null); setPhase('result') }} style={{ padding: 16, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 14, cursor: 'pointer', textAlign: 'center' }}>
+              <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 13, color: '#f7e8f0' }}>back</div>
+            </div>
+            <div role="button" onClick={() => void doPersist(true)} style={{ padding: 16, background: 'linear-gradient(120deg,#ff7eb3,#c1216b)', borderRadius: 14, cursor: 'pointer', textAlign: 'center' }}>
+              <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 13, color: '#fff' }}>post it →</div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {phase === 'saving' && (
         <div style={{ flex: 1, display: 'grid', placeItems: 'center', padding: '34px 22px', textAlign: 'center' }}>
           <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
