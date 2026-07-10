@@ -301,8 +301,11 @@ function ChromeBar({ step, total, onClose }: { step: number; total: number; onCl
 export function SpillModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const navigate = useNavigate()
   const save = useServerFn(saveSituation)
-  const opener = useMemo(() => OPENERS[Math.floor(Math.random() * OPENERS.length)], [])
-  const initialMsg: Msg = useMemo(() => ({ role: 'companion', say: opener, hasQ: true }), [opener])
+  const fetchMySituations = useServerFn(listMySituations)
+
+  // Fallback opener until the async new-vs-returning check resolves.
+  const openingFallback: [string, string] = ['okay, i\u2019m all yours.', 'no rush — where do you want to start?']
+  const initialMsg: Msg = { role: 'companion', say: openingFallback, hasQ: true }
 
   const [msgs, setMsgs] = useState<Msg[]>([initialMsg])
   const [draft, setDraft] = useState<Draft>({ pillar: null, tags: [], anchor: null, emotional_core: null, the_real_thing: null, named_and_landed: false })
@@ -316,6 +319,9 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
   const [input, setInput] = useState('')
   const [editInstruction, setEditInstruction] = useState('')
   const [aiEditing, setAiEditing] = useState(false)
+  const [isReturning, setIsReturning] = useState(false)
+  const [priorReferent, setPriorReferent] = useState<string | null>(null)
+  const [progressNote, setProgressNote] = useState<string | null>(null)
 
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const titleElRef = useRef<HTMLDivElement | null>(null)
@@ -329,16 +335,42 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  // Reset internal state each time the modal is (re-)opened.
+  // Reset internal state each time the modal is (re-)opened, and pick a
+  // dynamic opener based on whether the user is returning (has ≥1 prior
+  // situation). Fail-soft: any error → new-user opener.
   useEffect(() => {
     if (!open) return
-    setMsgs([initialMsg])
+    const opener = pickNewOpener()
+    setMsgs([{ role: 'companion', say: opener, hasQ: true }])
     setDraft({ pillar: null, tags: [], anchor: null, emotional_core: null, the_real_thing: null, named_and_landed: false })
     setTurn(0); setThinking(false); setPhase('chat')
     setReflectSummary(null); setSupportMode('heard'); setComposed(null); setEditNote(null)
     setInput(''); setEditInstruction(''); setAiEditing(false)
+    setIsReturning(false); setPriorReferent(null); setProgressNote(null)
     usedFBRef.current = []
-  }, [open, initialMsg])
+
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { data: sess } = await supabase.auth.getSession()
+        const user = sess.session?.user as { is_anonymous?: boolean } | undefined
+        if (!sess.session || user?.is_anonymous) return
+        const rows = await fetchMySituations()
+        if (cancelled) return
+        const list = (rows || []) as Array<{ title?: string | null; clean_text?: string | null; status?: string | null; created_at?: string }>
+        const active = list.filter(r => r.status !== 'deleted')
+        if (active.length === 0) return
+        const ref = referentFrom(active[0])
+        const ret = returningOpener(ref)
+        setIsReturning(true)
+        setPriorReferent(ref)
+        setMsgs([{ role: 'companion', say: ret, hasQ: true }])
+      } catch {
+        /* fail-soft: keep new-user opener */
+      }
+    })()
+    return () => { cancelled = true }
+  }, [open, fetchMySituations])
 
   // Auto-scroll chat body on new bubbles / thinking dots.
   useEffect(() => {
