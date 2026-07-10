@@ -500,7 +500,8 @@ function TextW({ card, onDone }: { card: CardText; onDone: (v: string) => void }
 }
 
 // ─────────────────────────── ScanModal ───────────────────────────
-type Phase = 'loading' | 'card' | 'result' | 'saving'
+type Phase = 'loading' | 'card' | 'result' | 'composing' | 'preview' | 'saving'
+type Composed = { title: string; body: string; edit_summary: string }
 
 export function ScanModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const navigate = useNavigate()
@@ -513,6 +514,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   const [shareOpen, setShareOpen] = useState(false)
   const [displayScore, setDisplayScore] = useState(0)
   const [saveNote, setSaveNote] = useState<string | null>(null)
+  const [composed, setComposed] = useState<Composed | null>(null)
   const qaRef = useRef<QA[]>([])
   qaRef.current = qa
 
@@ -520,7 +522,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
   useEffect(() => {
     if (!open) return
     document.body.style.overflow = 'hidden'
-    setQA([]); setResult(null); setShareOpen(false); setDisplayScore(0); setSaveNote(null)
+    setQA([]); setResult(null); setShareOpen(false); setDisplayScore(0); setSaveNote(null); setComposed(null)
     setPhase('loading'); setCurrent(null)
     return () => { document.body.style.overflow = '' }
   }, [open])
@@ -588,6 +590,65 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
     setPhase('loading')
   }, [current])
 
+  // ─────────── compose (public "post to a room" only) ───────────
+  const runCompose = useCallback(async () => {
+    if (!result) return
+    setPhase('composing')
+    const freeText = qaRef.current
+      .filter(x => x.type === 'text' && String(x.answer || '').trim())
+      .map(x => String(x.answer).trim())
+    const skeleton = qaRef.current
+      .map((x, i) => `Q${i + 1} (${x.type || 'text'}): ${x.prompt}\nA${i + 1}: ${x.answer}`)
+      .join('\n\n')
+    const fallbackBody = (freeText.length ? freeText.join('\n\n') : qaRef.current.map(x => String(x.answer)).filter(Boolean).join('\n\n')).trim()
+    const fallbackTitle = (freeText[0] || result.label).replace(/\s+/g, ' ').trim().slice(0, 72) || result.label
+
+    let c: Composed
+    try {
+      const prompt =
+        'You are THE SCAN on Shutap. Compose the user\u2019s scan conversation into a public-ready post that will open their Room \u2014 a full-sentence first-person NARRATIVE in THEIR voice, NOT a Q&A dump and NOT the scan\u2019s 2-sentence "read". Use the Q/A transcript as the logical spine (what happened \u2192 who / what was said or done \u2192 justification the other party gave \u2192 frequency \u2192 stakes). Free-text answers carry the story; widget answers (choice/multi/rate/spectrum/rank) add texture \u2014 weave them as supporting detail; do NOT quote raw widget strings like "3/10 (toward \u2018years now\u2019)" verbatim.\n\n' +
+        'THE 80/20 RULE \u2014 LANGUAGE, NOT CONTENT.\n' +
+        '~80% stays THEIRS: their account, specifics, quotes, emotional beats, voice, idiom, capitalization, profanity; the meaning is EXACTLY what they said.\n' +
+        'Up to ~20% is polish AT THE LANGUAGE LEVEL ONLY: grammar, spelling, smoothing choppy phrasing, connective transitions between beats, cutting filler.\n\n' +
+        'HARD LINE: improve HOW it\u2019s said, never WHAT is said. NEVER add a fact, event, person, motive, quote, or feeling they didn\u2019t give. NEVER make it more dramatic than they lived it. NEVER put words in the other party\u2019s mouth. NEVER paste in the scan\u2019s "read" or "signature". If a smoother sentence would imply something they didn\u2019t say, don\u2019t write it.\n\n' +
+        'title = their own hook, tightened to ONE line (lowercase ok). body = 2\u20135 short first-person paragraphs. edit_summary = one plain line naming the kind of polish applied (e.g. "fixed grammar and smoothed the order; no details added"). Do NOT list what you added \u2014 you added nothing.\n\n' +
+        'the scan conversation (already anonymized \u2014 keep it that way):\n"""\n' + skeleton + '\n"""\n\n' +
+        'OUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\n' +
+        'return STRICT JSON only: {"title":"...","body":"...","edit_summary":"..."}'
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData.session?.access_token
+      const res = await fetch('/api/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], system: SCAN_SYSTEM, maxTokens: 1500 }),
+      })
+      if (!res.ok) throw new Error('compose http ' + res.status)
+      const j = (await res.json()) as { text?: string; error?: string }
+      const raw = j.text ?? ''
+      const cleaned = raw.replace(/```json/gi, '').replace(/```/g, '')
+      const m = cleaned.match(/\{[\s\S]*\}/)
+      if (!m) throw new Error('no json')
+      const parsed = JSON.parse(m[0]) as { title?: string; body?: string; edit_summary?: string }
+      const t = scrubPII(stripHTMLInline(String(parsed.title || ''))).slice(0, 120)
+      const b = scrubPII(stripHTML(String(parsed.body || '')))
+      if (!t || !b) throw new Error('empty compose')
+      c = {
+        title: t,
+        body: b,
+        edit_summary: typeof parsed.edit_summary === 'string' ? parsed.edit_summary.trim().slice(0, 200) : '',
+      }
+    } catch (e) {
+      console.warn('[scan compose] falling back to user words', e)
+      c = {
+        title: scrubPII(stripHTMLInline(fallbackTitle)),
+        body: scrubPII(stripHTML(fallbackBody || result.label)),
+        edit_summary: '',
+      }
+    }
+    setComposed(c)
+    setPhase('preview')
+  }, [result])
+
   // ─────────── persist ───────────
   const doPersist = useCallback(async (isPublic: boolean) => {
     if (!result) return
@@ -597,8 +658,8 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       : result.pillar === 'friendship' ? 'relationships'
       : result.pillar === 'self' ? 'relationships'
       : 'relationships') as 'relationships' | 'marriage' | 'family' | 'career'
-    const title = result.label
-    const body = result.sub
+    const title = isPublic && composed ? composed.title : result.label
+    const body = isPublic && composed ? composed.body : result.sub
     const payload = {
       kind: 'scan' as const,
       pillar,
@@ -657,7 +718,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       setSaveNote("couldn't save — " + msg)
       setPhase('result')
     }
-  }, [result, save, navigate])
+  }, [result, composed, save, navigate])
 
   if (!open) return null
 
@@ -741,9 +802,47 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
               <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 7 }}>keep private</div>
               <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0', lineHeight: 1.4 }}>yours alone. saved to your journal.</div>
             </div>
-            <div role="button" onClick={() => void doPersist(true)} style={{ padding: 18, background: 'rgba(231,84,138,.10)', border: '1.5px solid rgba(231,84,138,.35)', borderRadius: 14, cursor: 'pointer' }}>
+            <div role="button" onClick={() => void runCompose()} style={{ padding: 18, background: 'rgba(231,84,138,.10)', border: '1.5px solid rgba(231,84,138,.35)', borderRadius: 14, cursor: 'pointer' }}>
               <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10.5, letterSpacing: '.12em', textTransform: 'uppercase', color: '#f7b8d4', marginBottom: 7 }}>post to a room</div>
-              <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0', lineHeight: 1.4 }}>let a room hold your number too.</div>
+              <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0', lineHeight: 1.4 }}>i'll write it up in your words — you check it first.</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {phase === 'composing' && (
+        <div style={{ flex: 1, display: 'grid', placeItems: 'center', padding: '34px 22px', textAlign: 'center' }}>
+          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+            <CompanionSVG size={50} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#b3a0d0' }}>
+              <span>writing it up in your words</span>
+              <BlinkDots />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {phase === 'preview' && composed && result && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 22px 36px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#f7b8d4' }}>preview your post</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+            <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase', color: col, background: col + '22', border: '.5px solid ' + col + '55', borderRadius: 999, padding: '4px 12px' }}>{result.score} · {bandPhrase[band]}</span>
+            <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase', color: '#b9a9e6', background: 'rgba(127,119,221,.14)', borderRadius: 999, padding: '4px 12px' }}>{result.label}</span>
+          </div>
+          <div style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 16, padding: 20 }}>
+            <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 20, color: '#f7e8f0', marginBottom: 12, lineHeight: 1.25 }}>{composed.title}</div>
+            <div style={{ fontFamily: NEWSREADER, fontSize: 15.5, color: '#e8dcf0', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{composed.body}</div>
+          </div>
+          {composed.edit_summary && (
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#9e7a8c', textAlign: 'center' }}>{composed.edit_summary}</div>
+          )}
+          <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#9e7a8c', textAlign: 'center' }}>still your words — did i keep it true?</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 11 }}>
+            <div role="button" onClick={() => { setComposed(null); setPhase('result') }} style={{ padding: 16, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 14, cursor: 'pointer', textAlign: 'center' }}>
+              <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 13, color: '#f7e8f0' }}>back</div>
+            </div>
+            <div role="button" onClick={() => void doPersist(true)} style={{ padding: 16, background: 'linear-gradient(120deg,#ff7eb3,#c1216b)', borderRadius: 14, cursor: 'pointer', textAlign: 'center' }}>
+              <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 13, color: '#fff' }}>post it →</div>
             </div>
           </div>
         </div>
