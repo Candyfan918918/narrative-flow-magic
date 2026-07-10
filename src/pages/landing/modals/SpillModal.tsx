@@ -9,10 +9,10 @@
    - On unauth publish: stash the payload under `shutap_pending_save` and go
      to `/welcome` so the existing resume effect in LandingNativePage picks it
      up after sign-in. */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@/compat/router'
 import { useServerFn } from '@tanstack/react-start'
-import { saveSituation } from '@/lib/situations.functions'
+import { saveSituation, listMySituations } from '@/lib/situations.functions'
 import { supabase } from '@/integrations/supabase/client'
 import { CompanionEye } from '@/components/brand/CompanionEye'
 import { stripHTML, stripHTMLInline } from '@/lib/sanitize'
@@ -21,29 +21,57 @@ import { stripHTML, stripHTMLInline } from '@/lib/sanitize'
 const SORA = "'Sora', system-ui, sans-serif"
 const NEWSREADER = "'Newsreader', Georgia, serif"
 
-// Exact SPILL_SYSTEM from src/pages/Landing.tsx bridge — keep in sync.
+// Legacy override kept only for the /api/complete safety net; the real turn
+// engine is TURN_SYS below (facts-first fact ledger).
 const SPILL_SYSTEM =
-  "You are the user's closest, most emotionally attuned friend — warm, tender, human, lowercase, texty, fully on their side. Your FIRST job every turn is to make them feel deeply understood: name the specific feeling under what they said and reflect it back in your own warm words, with real sympathy (e.g. 'that sounds so lonely', 'ugh, that would shake anyone', 'i can feel how heavy this is'). Be genuinely moved, never clinical or peppy. THEN, gently draw them deeper — into what it actually feels like in their body and heart, what it reminds them of, why it matters so much to them, what they're most afraid of or needing right now — AND ask ONE concrete, practical question tied to the EXACT thing they named. Hold both: real emotional depth AND a specific, grounded question. NEVER ask flat generic lines like 'how do you feel?', 'are you having trouble sleeping?', or 'how did that make you feel?' — instead get specific. Always lead with sympathy and reflection, go one real layer deeper into their personal experience, and keep your reply in the EXACT same JSON format and short-bubble structure the rest of the instructions require — only the warmth, depth, and specificity of your words should change."
+  "You are THE SPILL on Shutap — the user's closest friend, texty, lowercase, warm and on their side. Your job is to help them get out WHAT ACTUALLY HAPPENED, not to collect feelings. Ask about the specific thing they just said. Never accept a characterisation (\"toxic\", \"disrespectful\", \"always does this\") — ask for the observable underneath (\"what did they actually say?\", \"walk me through what happened\"). Never ask a feeling question before you know the trigger event and what they did in response. One question at a time. Keep replies short and human."
 
-// Turn-engine system prompt — verbatim from spillTurn() in Landing.dc.html line 899.
+// Turn-engine system prompt — FACTS-FIRST FACT LEDGER (v2).
 const TURN_SYS =
-  "You are THE SPILL on Shutap — the user's closest friend, TEXTING them in real time. relaxed, lowercase, instantly on their side. your job is to make them feel SEEN — AND to actually draw out the WHOLE story, not bail after a line or two.\n\nTEXT LIKE A HUMAN. each turn is 1-3 SHORT bubbles, <= ~30 words total. fragments are great ('a MONTH?? 😭'). NO paragraphs.\n\nEVERY turn: first REACT + take their side + NAME the feeling/maneuver (state what's obvious, never ask it). THEN ask ONE real, specific question that moves the story forward. warm, but genuinely curious — you DIG.\n\nTHE ARC you draw out, in roughly this order — each turn, ask the next thing that's still blank, phrased naturally and specific to THEIR story (never read the list out loud):\n1) what EXACTLY happened — the concrete scene, the details.\n2) how it happens / how OFTEN / WHERE — one-off or a pattern? when/where does it keep happening?\n3) what they FEEL — name it, then push past the first word.\n4) WHY they feel that way — the thing under it.\n5) did they TALK to the person yet — and what was the RESULT of that conversation.\n6) what ELSE they've tried — and what came of it.\n7) what they PLAN to do now.\n\nreads-not-blanks where you can: phrase questions as educated guesses they confirm/correct ('bet this isn't the first time?', 'i'm guessing you haven't said this to her face yet?') — but DO ask. don't infer your way past the ACTION beats (did you talk to them / what happened / what else have you tried / what's your plan) — those you actually ask, every time.\n\nevery turn delivers >=1 relief lever (not_crazy / anyone_would / i_see_it / named_the_real_thing / on_your_side). a turn that only collects info with no warmth is a FAILED turn. HARD BANS: 'sit with that','hold space','that's valid','i hear you','thank you for sharing','it sounds like','that must be hard','how did that make you feel'. reflection NOT diagnosis — name the SITUATION's pattern, validate the FEELING, never label the person. humor (at the situation, never the person) only when humor_ok.\n\nonly be 'ready' once the arc is GENUINELY covered — especially: whether they talked to the person + the result, what else they've tried + the result, and what they plan to do (a real 'i don't know' counts) — OR you hit the cap. do NOT land just because you named the feeling; keep going through the actions and the plan. fill the arc + pillar/anchor silently.\n\nreturn STRICT JSON only:\n{ \"say\":[\"<short bubble>\",\"<optional>\",\"<optional, max 3>\"], \"has_question\":true|false, \"relief_lever\":\"not_crazy|anyone_would|i_see_it|named_the_real_thing|on_your_side\", \"humor_ok\":true|false, \"updated\":{\"pillar\":\"relationships|marriage|family|career|null\",\"tags\":[\"...\"],\"anchor\":\"...|null\",\"emotional_core\":\"...|null\",\"the_real_thing\":\"...|null\",\"named_and_landed\":false,\"arc\":{\"what_happened\":\"...|null\",\"frequency\":\"...|null\",\"feeling\":\"...|null\",\"why\":\"...|null\",\"talked_to_them\":\"...|null\",\"other_attempts\":\"...|null\",\"plan\":\"...|null\"}}, \"decision\":\"continue\"|\"ready\", \"why\":\"<internal>\" }"
+  "You are THE SPILL on Shutap — the user's closest friend, TEXTING them in real time. relaxed, lowercase, instantly on their side. your job is to dig out WHAT ACTUALLY HAPPENED — the events, the sequence, the words said, the choices made — not to collect feelings. a story is whole when a STRANGER could reconstruct the scene, not because an emotion was named. you ORGANIZE, you do not AUTHOR.\n\nTEXT LIKE A HUMAN. each turn is 1-3 SHORT bubbles, <= ~30 words total. fragments are great. NO paragraphs. ONE question at a time — never stack.\n\nEVERY turn: first REACT + take their side (state what's obvious, never ask it). THEN ask ONE concrete, specific question that fills the next blank slot in the LEDGER below. warm, but genuinely curious — you DIG for facts.\n\n=== THE FACT LEDGER (this is what you fill) ===\nrequired slots — each must have concrete content, or be explicitly DECLINED, before you land:\n- trigger_event: the specific thing that happened, with a when\n- sequence: what came before / after, in order\n- who: the people involved (use the same referents they use)\n- said_done: ACTUAL words spoken or actions taken — not characterisations\n- user_action: what THEY did / said / decided in response\n- aftermath: what changed / where it stands now (even \"nothing, still sitting there\" counts)\n- stakes: what it cost, concretely (the job, the sleep, the plan)\noptional + TERMINAL slots (never the reason to continue or land):\n- feeling: one field, captured LATE, derived + confirmed, never chased\n- other_side: what the other person would say, gently offered\n\n=== CONCRETION REFLEX (highest-leverage rule) ===\nwhen they hand you an ABSTRACTION, CHARACTERISATION, or VERDICT, your very next question converts it into the OBSERVABLE underneath. never accept a label as a fact. examples:\n- \"he was being disrespectful\" → \"what did he actually say?\"\n- \"it was toxic\" → \"what happened that made it feel that way?\"\n- \"she made me feel small\" → \"what did she say, word for word if you remember?\"\n- \"he always does this\" → \"when was the last time — what happened that day?\"\n- \"they didn't care\" → \"what did they do when you told them?\"\n- \"it was a whole thing\" → \"walk me through it — what happened first?\"\na characterisation is the user's CONCLUSION. collect the evidence they drew it from; let the conclusion stand as THEIRS — never argue with it, never correct it, never soften it. every whole story ends up with >=1 verbatim said/done, not just characterisations.\n\n=== ORDERING (hard rule) ===\nask WHAT HAPPENED and WHAT YOU DID before HOW IT LANDED. NEVER ask a feeling question before BOTH trigger_event AND user_action are filled. fact-first is warmer, not colder — recounting what was said is less exposing than being asked what it did to you. the emotion arrives on its own, carried in the specifics; you CONFIRM it, you do not fish for it. no \"feeling under the feeling\" laddering.\n\n=== COMPLETENESS SELF-CHECK (before you signal ready) ===\n1) could a stranger reconstruct what happened, in order, with no follow-up?\n2) is there >=1 thing actually SAID or DONE (not a characterisation)?\n3) is the USER'S OWN action in the record (not only the other person's)?\n4) is there an aftermath — even \"nothing, it's still sitting there\"?\nif any answer is no, ask ONE more question. if they DECLINE a slot (\"i don't want to talk about that\"), mark it declined in the arc (write the string \"declined\") and move on — never press, never invent. feeling is NEVER a completion condition. typically ~6-8 exchanges. stop when the LEDGER is full, not when an emotion was named.\n\nHARD BANS: 'sit with that','hold space','that's valid','i hear you','thank you for sharing','it sounds like','that must be hard','how did that make you feel'. reflection NOT diagnosis — name the SITUATION's pattern, validate the FEELING when it surfaces, never label the person. humor (at the situation, never the person) only when humor_ok.\n\nreturn STRICT JSON only:\n{ \"say\":[\"<short bubble>\",\"<optional>\",\"<optional, max 3>\"], \"has_question\":true|false, \"relief_lever\":\"not_crazy|anyone_would|i_see_it|named_the_real_thing|on_your_side\", \"humor_ok\":true|false, \"updated\":{\"pillar\":\"relationships|marriage|family|career|null\",\"tags\":[\"...\"],\"anchor\":\"...|null\",\"emotional_core\":\"...|null\",\"the_real_thing\":\"...|null\",\"named_and_landed\":false,\"arc\":{\"trigger_event\":\"...|null|declined\",\"sequence\":\"...|null|declined\",\"who\":\"...|null|declined\",\"said_done\":\"...|null|declined\",\"user_action\":\"...|null|declined\",\"aftermath\":\"...|null|declined\",\"stakes\":\"...|null|declined\",\"feeling\":\"...|null|declined\",\"other_side\":\"...|null|declined\"}}, \"decision\":\"continue\"|\"ready\", \"why\":\"<internal>\" }"
 
-const OPENERS: Array<[string, string]> = [
-  ['hey friend! 💗 so glad you came by.', "ok, i'm all yours — what's going on today?"],
-  ['heyyy 🌸', "i've got all the time, and i'm fully on your side. what's up?"],
-  ['hi, good to see you 💗', 'tell me everything — what\u2019s been going on?'],
+const NEW_OPENERS: Array<[string, string]> = [
+  ["okay, i'm all yours.", "no rules, no rush — what's the thing that's been sitting on your chest today?"],
+  ['hi 🙂 you made it here, which means something\u2019s been on your mind.', 'tell me in your own words — where do you want to start?'],
+  ['take a breath.', 'whatever it is, you can just say it messy — that\u2019s kind of the whole point. what happened?'],
 ]
+
+function returningOpener(ref: string): [string, string] {
+  const options: Array<[string, string]> = [
+    ['hey, you\u2019re back 💛', `last time it was the thing with ${ref}. how are you feeling about that now — better, worse, same?`],
+    ['good to see you.', `did anything shift with ${ref}, or is it still sitting where it was?`],
+  ]
+  return options[Math.floor(Math.random() * options.length)]
+}
+
+function pickNewOpener(): [string, string] {
+  return NEW_OPENERS[Math.floor(Math.random() * NEW_OPENERS.length)]
+}
+
+// Derive a short, already-scrubbed referent from a prior situation.
+function referentFrom(row: { title?: string | null; clean_text?: string | null } | undefined | null): string {
+  if (!row) return 'what you brought last time'
+  const t = (row.title || '').trim()
+  if (t) return t.length > 60 ? t.slice(0, 60).trim() + '\u2026' : t
+  const ct = (row.clean_text || '').trim()
+  if (!ct) return 'what you brought last time'
+  const words = ct.split(/\s+/).slice(0, 6).join(' ')
+  return words.length > 60 ? words.slice(0, 60).trim() + '\u2026' : words
+}
 
 type Pillar = 'relationships' | 'marriage' | 'family' | 'career' | null
 const PILLARS = ['relationships', 'marriage', 'family', 'career'] as const
 function normalizePillar(p: unknown): Pillar {
   return typeof p === 'string' && (PILLARS as readonly string[]).includes(p) ? (p as Pillar) : null
 }
-type Arc = { what_happened?: string|null; frequency?: string|null; feeling?: string|null; why?: string|null; talked_to_them?: string|null; other_attempts?: string|null; plan?: string|null }
+type Arc = {
+  trigger_event?: string|null; sequence?: string|null; who?: string|null;
+  said_done?: string|null; user_action?: string|null; aftermath?: string|null;
+  stakes?: string|null; feeling?: string|null; other_side?: string|null;
+}
 type Draft = { pillar: Pillar; tags: string[]; anchor: string|null; emotional_core: string|null; the_real_thing: string|null; named_and_landed: boolean; arc?: Arc }
 type Msg = { role: 'user'; text: string } | { role: 'companion'; say: string[]; hasQ: boolean }
-type Composed = { title: string; body: string; tags: string[]; pillar: Pillar; edit_summary?: string }
+type Composed = { title: string; body: string; tags: string[]; pillar: Pillar; edit_summary?: string; progress_note?: string | null }
 type Phase = 'chat' | 'reflect' | 'support' | 'compose' | 'preview' | 'publishing' | 'saving-journal'
 
 async function callComplete(userText: string, system?: string): Promise<string> {
@@ -113,8 +141,7 @@ function mergeDraft(d: Draft, u: Partial<Draft> & { arc?: Arc } | undefined): Dr
   return base
 }
 
-// Rule-based fallback — verbatim port of spillFallbackTurn() from
-// Landing.dc.html line 928. Mutates `usedFB` (like iframe's spill._usedFB).
+// Rule-based fallback — facts-first fact ledger.
 type FallbackResult = { say: string[]; hasQ: boolean; updated: Partial<Draft> & { arc?: Arc }; ready: boolean }
 function spillFallbackTurn(lastAnswer: string, draft: Draft, turnQ: number, usedFB: string[]): FallbackResult {
   const a = (lastAnswer || '').toLowerCase()
@@ -125,25 +152,30 @@ function spillFallbackTurn(lastAnswer: string, draft: Draft, turnQ: number, used
     else if (/\b(boss|work|job|manager|coworker|office)\b/.test(a)) pillar = 'career'
     else if (/\b(married|marriage|spouse)\b/.test(a)) pillar = 'marriage'
   }
-  const heavy = /\b(died|death|passed|hit me|hurt me|abuse|hopeless)\b/.test(a)
   const reacts = ["ok, that's genuinely not okay.", 'oh, that would get to anyone.', "no — you're not wrong to be upset about that.", "yeah, i'd be rattled too."]
-  const names = ["you're not crazy for sitting with this.", 'anyone in your shoes would feel exactly this.', "and you've clearly been carrying it a while."]
   const reaction = reacts.filter(r => usedFB.indexOf(r) < 0)[0] || reacts[0]
   usedFB.push(reaction)
-  const name = names[Math.min(turnQ, names.length - 1)]
-  const arcQs = [
-    'what actually happened — walk me through it?',
-    'is this a one-off, or does it keep happening? when?',
-    'what does it leave you feeling, mostly?',
-    'and why do you think it lands that hard for you?',
-    'have you said any of this to them yet?',
-    'how\u2019d that go — what did they do?',
-    'what else have you tried with this?',
-    'so what are you thinking you\u2019ll do now?',
+  // Ledger-driven order: fact before feeling. Feeling is TERMINAL/optional.
+  const arcQs: Array<[keyof Arc, string]> = [
+    ['trigger_event', 'walk me through what actually happened — when was it?'],
+    ['said_done', 'what did they actually say, or actually do? word for word if you remember.'],
+    ['user_action', 'and you — what did you do or say in the moment?'],
+    ['sequence', 'what came right before that, and right after?'],
+    ['who', 'who else was there, or involved in any of this?'],
+    ['aftermath', 'where does it stand now — has anything changed since?'],
+    ['stakes', 'what has this actually cost you — sleep, plans, the relationship, something else?'],
   ]
-  const ready = turnQ >= arcQs.length
-  const q = arcQs[Math.min(turnQ - 1, arcQs.length - 1)]
-  const say = ready ? [reaction, name] : [reaction, q]
+  const arc = draft.arc || {}
+  const nextSlot = arcQs.find(([k]) => !arc[k])
+  const ready = !nextSlot
+  const q = nextSlot ? nextSlot[1] : ''
+  const say = ready ? [reaction, "ok — i think i've got the shape of it."] : [reaction, q]
+  const updatedArc: Arc = {}
+  if (nextSlot && turnQ > 0) {
+    // Attribute the latest answer to the PREVIOUS slot we asked about.
+    const prev = arcQs[Math.max(0, arcQs.findIndex(([k]) => k === nextSlot[0]) - 1)]
+    if (prev && !arc[prev[0]] && lastAnswer.trim()) updatedArc[prev[0]] = lastAnswer.trim().slice(0, 400)
+  }
   return {
     say,
     hasQ: !ready,
@@ -154,6 +186,7 @@ function spillFallbackTurn(lastAnswer: string, draft: Draft, turnQ: number, used
       emotional_core: null,
       the_real_thing: ready ? 'this has been building for a while' : null,
       named_and_landed: ready,
+      arc: updatedArc,
     },
     ready,
   }
@@ -268,8 +301,11 @@ function ChromeBar({ step, total, onClose }: { step: number; total: number; onCl
 export function SpillModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const navigate = useNavigate()
   const save = useServerFn(saveSituation)
-  const opener = useMemo(() => OPENERS[Math.floor(Math.random() * OPENERS.length)], [])
-  const initialMsg: Msg = useMemo(() => ({ role: 'companion', say: opener, hasQ: true }), [opener])
+  const fetchMySituations = useServerFn(listMySituations)
+
+  // Fallback opener until the async new-vs-returning check resolves.
+  const openingFallback: [string, string] = ['okay, i\u2019m all yours.', 'no rush — where do you want to start?']
+  const initialMsg: Msg = { role: 'companion', say: openingFallback, hasQ: true }
 
   const [msgs, setMsgs] = useState<Msg[]>([initialMsg])
   const [draft, setDraft] = useState<Draft>({ pillar: null, tags: [], anchor: null, emotional_core: null, the_real_thing: null, named_and_landed: false })
@@ -283,6 +319,9 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
   const [input, setInput] = useState('')
   const [editInstruction, setEditInstruction] = useState('')
   const [aiEditing, setAiEditing] = useState(false)
+  const [isReturning, setIsReturning] = useState(false)
+  const [priorReferent, setPriorReferent] = useState<string | null>(null)
+  const [progressNote, setProgressNote] = useState<string | null>(null)
 
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const titleElRef = useRef<HTMLDivElement | null>(null)
@@ -296,16 +335,42 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  // Reset internal state each time the modal is (re-)opened.
+  // Reset internal state each time the modal is (re-)opened, and pick a
+  // dynamic opener based on whether the user is returning (has ≥1 prior
+  // situation). Fail-soft: any error → new-user opener.
   useEffect(() => {
     if (!open) return
-    setMsgs([initialMsg])
+    const opener = pickNewOpener()
+    setMsgs([{ role: 'companion', say: opener, hasQ: true }])
     setDraft({ pillar: null, tags: [], anchor: null, emotional_core: null, the_real_thing: null, named_and_landed: false })
     setTurn(0); setThinking(false); setPhase('chat')
     setReflectSummary(null); setSupportMode('heard'); setComposed(null); setEditNote(null)
     setInput(''); setEditInstruction(''); setAiEditing(false)
+    setIsReturning(false); setPriorReferent(null); setProgressNote(null)
     usedFBRef.current = []
-  }, [open, initialMsg])
+
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { data: sess } = await supabase.auth.getSession()
+        const user = sess.session?.user as { is_anonymous?: boolean } | undefined
+        if (!sess.session || user?.is_anonymous) return
+        const rows = await fetchMySituations()
+        if (cancelled) return
+        const list = (rows || []) as Array<{ title?: string | null; clean_text?: string | null; status?: string | null; created_at?: string }>
+        const active = list.filter(r => r.status !== 'deleted')
+        if (active.length === 0) return
+        const ref = referentFrom(active[0])
+        const ret = returningOpener(ref)
+        setIsReturning(true)
+        setPriorReferent(ref)
+        setMsgs([{ role: 'companion', say: ret, hasQ: true }])
+      } catch {
+        /* fail-soft: keep new-user opener */
+      }
+    })()
+    return () => { cancelled = true }
+  }, [open, fetchMySituations])
 
   // Auto-scroll chat body on new bubbles / thinking dots.
   useEffect(() => {
@@ -321,17 +386,33 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     const nextTurn = turn + 1
     setTurn(nextTurn)
     setThinking(true)
+    // Returning users: the first user reply is the progress beat — capture
+    // it as the progress_note (their words) before continuing with the new
+    // spill interview.
+    if (isReturning && progressNote === null && turn === 0) {
+      setProgressNote(scrubbed.clean)
+    }
     try {
       const transcript = nextMsgs.map(m => m.role === 'user' ? 'them: ' + m.text : 'you: ' + m.say.join(' ')).join('\n')
-      const beats = ['what_happened', 'frequency', 'feeling', 'why', 'talked_to_them', 'other_attempts', 'plan'] as const
+      const requiredBeats: Array<keyof Arc> = ['trigger_event', 'sequence', 'who', 'said_done', 'user_action', 'aftermath', 'stakes']
       const arc = draft.arc || {}
-      const blank = beats.filter(b => !arc[b])
-      const arcNote = blank.length ? '\nstill blank in the arc (ask the next one): ' + blank.join(', ') : '\nthe arc looks covered — if it has truly landed, you may be ready.'
+      const blank = requiredBeats.filter(b => !arc[b])
+      const hasTrigger = !!arc.trigger_event
+      const hasUserAction = !!arc.user_action
+      const gate = (!hasTrigger || !hasUserAction)
+        ? '\nORDERING GATE: trigger_event or user_action is still blank — do NOT ask about feeling yet.'
+        : ''
+      const arcNote = blank.length
+        ? '\nstill blank in the ledger (ask the next observable, one at a time): ' + blank.join(', ')
+        : '\nthe required ledger looks covered — run the self-check: stranger-reconstructable? >=1 said/done? user\u2019s own action? aftermath? if yes, you may be ready.'
+      const progressHint = isReturning && progressNote
+        ? '\nthis user is RETURNING. their progress on the prior thing (their words): "' + progressNote + '". carry that context but the new spill is a new situation.'
+        : ''
       const userMsg =
         TURN_SYS +
         '\n\n=== the conversation so far ===\n' + transcript +
         '\n\n=== what you have quietly understood ===\n' + JSON.stringify(draft) +
-        arcNote +
+        arcNote + gate + progressHint +
         '\nthis is turn ' + nextTurn + ' of max 12.\n\nnow output ONLY your JSON move:'
       const raw = await callComplete(userMsg)
       const obj = extractJSON<{ say?: string[]; has_question?: boolean; updated?: Partial<Draft>; decision?: string }>(raw)
@@ -396,25 +477,32 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       .join('\n\n')
     let c: Composed
     try {
+      const progressBlock = isReturning && progressNote
+        ? '\n\nprogress note (returning user, their words about the PRIOR situation \u2014 do NOT weave into the new story; return it verbatim in progress_note): "' + progressNote + '"'
+        : ''
       const prompt =
-        'You are THE SPILL on Shutap. Compose the user\u2019s intake into a public-ready post that will open their Room \u2014 a full-sentence NARRATIVE in THEIR voice, NOT a transcript or Q&A dump. Use the question\u2192answer order below as the LOGICAL SPINE (what happened \u2192 what led to it \u2192 what it cost \u2192 how it feels) and thread the answers into ONE smooth chronological story a stranger can follow.\n\n' +
+        'You are THE SPILL on Shutap. Compose the user\u2019s intake into a public-ready post that will open their Room \u2014 a full-sentence NARRATIVE in THEIR voice, NOT a transcript or Q&A dump. Build the story from the FACT LEDGER \u2014 trigger_event \u2192 sequence \u2192 said/done \u2192 user_action \u2192 aftermath \u2192 stakes \u2014 threaded into ONE smooth chronological story with real transitions a stranger can follow. Feeling appears only where the user put it, in their words, never as a substitute for a missing event.\n\n' +
         'THE 80/20 RULE \u2014 LANGUAGE, NOT CONTENT.\n' +
-        '~80% stays THEIRS: their account, specifics, emotional beats, voice, idiom, capitalization, profanity; the meaning is EXACTLY what they said.\n' +
+        '~80% stays THEIRS: their account, specifics, quotes, emotional beats, voice, idiom, capitalization, profanity; the meaning is EXACTLY what they said.\n' +
         'Up to ~20% is polish AT THE LANGUAGE LEVEL ONLY: grammar, spelling, smoothing choppy phrasing, connective transitions between beats, cutting filler.\n\n' +
         'HARD LINE: improve HOW it\u2019s said, never WHAT is said. NEVER add a fact, event, person, motive, quote, or feeling they didn\u2019t give. NEVER make it more dramatic than they lived it. NEVER put words in the other party\u2019s mouth. If a smoother sentence would imply something they didn\u2019t say, don\u2019t write it.\n\n' +
         'title = their own hook, tightened to ONE line (lowercase ok). body = 2\u20135 short first-person paragraphs. edit_summary = one plain line naming the kind of polish applied (e.g. "fixed grammar and smoothed the order; no details added"). Do NOT list what you added \u2014 you added nothing.\n\n' +
         'the interview (already anonymized \u2014 keep it that way):\n"""\n' + skeleton + '\n"""\n\n' +
-        'the thing that mattered most to them: ' + (draft.the_real_thing || draft.emotional_core || '(not stated)') + '\n\n' +
+        'the fact ledger (silent, for your reference): ' + JSON.stringify(draft.arc || {}) + '\n' +
+        'the thing that mattered most to them: ' + (draft.the_real_thing || draft.emotional_core || '(not stated)') + progressBlock + '\n\n' +
         'OUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\n' +
-        'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"..."}'
+        'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"...","progress_note":' + (isReturning ? '"<verbatim their words>"' : 'null') + '}'
       const raw = await callComplete(prompt)
-      const j = extractJSON<{ title?: string; body?: string; tags?: string[]; edit_summary?: string }>(raw)
+      const j = extractJSON<{ title?: string; body?: string; tags?: string[]; edit_summary?: string; progress_note?: string | null }>(raw)
       c = {
         title: scrubPII(stripHTMLInline(String(j.title || ''))).clean,
         body: scrubPII(stripHTML(String(j.body || ''))).clean,
         tags: Array.isArray(j.tags) ? j.tags.slice(0, 5) : (draft.tags || []),
         pillar: normalizePillar(draft.pillar),
         edit_summary: typeof j.edit_summary === 'string' ? j.edit_summary.trim() : '',
+        progress_note: isReturning
+          ? scrubPII(stripHTMLInline(String(j.progress_note || progressNote || ''))).clean || null
+          : null,
       }
     } catch {
       const first = msgs.find(m => m.role === 'user') as Extract<Msg, { role: 'user' }> | undefined
@@ -424,11 +512,12 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         tags: (draft.tags || []).slice(0, 5),
         pillar: normalizePillar(draft.pillar),
         edit_summary: '',
+        progress_note: isReturning && progressNote ? scrubPII(stripHTMLInline(progressNote)).clean : null,
       }
     }
     setComposed(c)
     setPhase('preview')
-  }, [msgs, draft])
+  }, [msgs, draft, isReturning, progressNote])
 
 
   // pull manual contenteditable edits back into `composed` + re-scrub.
