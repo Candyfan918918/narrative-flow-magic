@@ -610,6 +610,10 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       scan_band: dbBand[band],
       is_public: isPublic,
       support_mode: 'heard' as const,
+      scan_reasoning: result.reasoning ?? null,
+      scan_basis: 'model_prior' as const,
+      scan_corpus_n: null,
+      scan_cultural_note: result.cultural_note ?? null,
     }
     setPhase('saving')
     try {
