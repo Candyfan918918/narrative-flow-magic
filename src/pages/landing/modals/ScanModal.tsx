@@ -625,7 +625,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
 
   const pct = phase === 'result' ? 100 : Math.min(90, (qa.length + (phase === 'card' ? 1 : 0)) * 8)
   const col = result ? scoreColor(result.score) : '#7F77DD'
-  const band = result ? bandFromScore(result.score) : 'settling'
+  const band: ScanBandKey = result ? bandFromScore(result.score) : 'within'
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#100b1c', display: 'flex', flexDirection: 'column' }}>
