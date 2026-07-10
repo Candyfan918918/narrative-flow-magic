@@ -141,8 +141,7 @@ function mergeDraft(d: Draft, u: Partial<Draft> & { arc?: Arc } | undefined): Dr
   return base
 }
 
-// Rule-based fallback — verbatim port of spillFallbackTurn() from
-// Landing.dc.html line 928. Mutates `usedFB` (like iframe's spill._usedFB).
+// Rule-based fallback — facts-first fact ledger.
 type FallbackResult = { say: string[]; hasQ: boolean; updated: Partial<Draft> & { arc?: Arc }; ready: boolean }
 function spillFallbackTurn(lastAnswer: string, draft: Draft, turnQ: number, usedFB: string[]): FallbackResult {
   const a = (lastAnswer || '').toLowerCase()
@@ -153,25 +152,30 @@ function spillFallbackTurn(lastAnswer: string, draft: Draft, turnQ: number, used
     else if (/\b(boss|work|job|manager|coworker|office)\b/.test(a)) pillar = 'career'
     else if (/\b(married|marriage|spouse)\b/.test(a)) pillar = 'marriage'
   }
-  const heavy = /\b(died|death|passed|hit me|hurt me|abuse|hopeless)\b/.test(a)
   const reacts = ["ok, that's genuinely not okay.", 'oh, that would get to anyone.', "no — you're not wrong to be upset about that.", "yeah, i'd be rattled too."]
-  const names = ["you're not crazy for sitting with this.", 'anyone in your shoes would feel exactly this.', "and you've clearly been carrying it a while."]
   const reaction = reacts.filter(r => usedFB.indexOf(r) < 0)[0] || reacts[0]
   usedFB.push(reaction)
-  const name = names[Math.min(turnQ, names.length - 1)]
-  const arcQs = [
-    'what actually happened — walk me through it?',
-    'is this a one-off, or does it keep happening? when?',
-    'what does it leave you feeling, mostly?',
-    'and why do you think it lands that hard for you?',
-    'have you said any of this to them yet?',
-    'how\u2019d that go — what did they do?',
-    'what else have you tried with this?',
-    'so what are you thinking you\u2019ll do now?',
+  // Ledger-driven order: fact before feeling. Feeling is TERMINAL/optional.
+  const arcQs: Array<[keyof Arc, string]> = [
+    ['trigger_event', 'walk me through what actually happened — when was it?'],
+    ['said_done', 'what did they actually say, or actually do? word for word if you remember.'],
+    ['user_action', 'and you — what did you do or say in the moment?'],
+    ['sequence', 'what came right before that, and right after?'],
+    ['who', 'who else was there, or involved in any of this?'],
+    ['aftermath', 'where does it stand now — has anything changed since?'],
+    ['stakes', 'what has this actually cost you — sleep, plans, the relationship, something else?'],
   ]
-  const ready = turnQ >= arcQs.length
-  const q = arcQs[Math.min(turnQ - 1, arcQs.length - 1)]
-  const say = ready ? [reaction, name] : [reaction, q]
+  const arc = draft.arc || {}
+  const nextSlot = arcQs.find(([k]) => !arc[k])
+  const ready = !nextSlot
+  const q = nextSlot ? nextSlot[1] : ''
+  const say = ready ? [reaction, "ok — i think i've got the shape of it."] : [reaction, q]
+  const updatedArc: Arc = {}
+  if (nextSlot && turnQ > 0) {
+    // Attribute the latest answer to the PREVIOUS slot we asked about.
+    const prev = arcQs[Math.max(0, arcQs.findIndex(([k]) => k === nextSlot[0]) - 1)]
+    if (prev && !arc[prev[0]] && lastAnswer.trim()) updatedArc[prev[0]] = lastAnswer.trim().slice(0, 400)
+  }
   return {
     say,
     hasQ: !ready,
@@ -182,6 +186,7 @@ function spillFallbackTurn(lastAnswer: string, draft: Draft, turnQ: number, used
       emotional_core: null,
       the_real_thing: ready ? 'this has been building for a while' : null,
       named_and_landed: ready,
+      arc: updatedArc,
     },
     ready,
   }
