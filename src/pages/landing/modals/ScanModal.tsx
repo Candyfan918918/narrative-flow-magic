@@ -39,23 +39,53 @@ type CardRank     = { type: 'rank';     items?: string[] }
 type CardText     = { type: 'text';     placeholder?: string }
 type ScanCard = CardChoice | CardMulti | CardRate | CardSpectrum | CardRank | CardText
 
+type Reasoning = {
+  norm_distance?: string
+  justification?: string
+  boundary?: string
+  stakes?: string
+  pattern?: string
+  power_consent?: string
+}
 type ScanTurn =
   | { done?: false; line?: string; prompt?: string; card?: ScanCard }
-  | { done: true; score?: number | string; signature?: string; read?: string; factors?: string[] }
+  | {
+      done: true
+      score?: number | string
+      band?: string
+      signature?: string
+      read?: string
+      factors?: string[]
+      reasoning?: Reasoning
+      basis?: string
+      corpus_n?: number | null
+      cultural_note?: string | null
+      pillar?: string
+    }
 
 type QA = { prompt: string; answer: string; type?: ScanCard['type'] }
+type ScanBandKey = 'within' | 'uncommon' | 'outside' | 'well_outside' | 'far_outside'
 type Result = {
   score: number
   label: string
   sub: string
   factors: string[]
   pillar: string | null
+  reasoning: Reasoning | null
+  cultural_note: string | null
 }
 
-const bandFromScore = (n: number): 'settling' | 'sitting' | 'weighing' | 'heavy' | 'consuming' =>
-  n < 200 ? 'settling' : n < 400 ? 'sitting' : n < 600 ? 'weighing' : n < 800 ? 'heavy' : 'consuming'
-const dbBand: Record<ReturnType<typeof bandFromScore>, 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'> = {
-  settling: 'quiet', sitting: 'real', weighing: 'hot', heavy: 'heavy', consuming: 'serious',
+const bandFromScore = (n: number): ScanBandKey =>
+  n < 200 ? 'within' : n < 400 ? 'uncommon' : n < 600 ? 'outside' : n < 800 ? 'well_outside' : 'far_outside'
+const bandPhrase: Record<ScanBandKey, string> = {
+  within: 'within normal',
+  uncommon: 'uncommon',
+  outside: 'outside normal',
+  well_outside: 'well outside normal',
+  far_outside: 'far outside normal',
+}
+const dbBand: Record<ScanBandKey, 'quiet' | 'real' | 'hot' | 'heavy' | 'serious'> = {
+  within: 'quiet', uncommon: 'real', outside: 'hot', well_outside: 'heavy', far_outside: 'serious',
 }
 const scoreColor = (score: number): string =>
   score < 200 ? '#9e8f9c' : score < 400 ? '#7F77DD' : score < 600 ? '#c87c4a' : score < 800 ? '#e7548a' : '#c1216b'
