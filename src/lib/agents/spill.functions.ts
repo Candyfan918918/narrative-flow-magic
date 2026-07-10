@@ -98,7 +98,7 @@ export const runSpill = createServerFn({ method: 'POST' })
         pillar: data.pillar,
         clean_text: scrub.clean_text,
         initial_scan: scan.scan,
-        scan_band: scan.band,
+        scan_band: bandToDb[scan.band],
         reflection: scan.reflection,
         is_public: data.is_public,
       })
