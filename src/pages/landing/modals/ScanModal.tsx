@@ -590,6 +590,65 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
     setPhase('loading')
   }, [current])
 
+  // ─────────── compose (public "post to a room" only) ───────────
+  const runCompose = useCallback(async () => {
+    if (!result) return
+    setPhase('composing')
+    const freeText = qaRef.current
+      .filter(x => x.type === 'text' && String(x.answer || '').trim())
+      .map(x => String(x.answer).trim())
+    const skeleton = qaRef.current
+      .map((x, i) => `Q${i + 1} (${x.type || 'text'}): ${x.prompt}\nA${i + 1}: ${x.answer}`)
+      .join('\n\n')
+    const fallbackBody = (freeText.length ? freeText.join('\n\n') : qaRef.current.map(x => String(x.answer)).filter(Boolean).join('\n\n')).trim()
+    const fallbackTitle = (freeText[0] || result.label).replace(/\s+/g, ' ').trim().slice(0, 72) || result.label
+
+    let c: Composed
+    try {
+      const prompt =
+        'You are THE SCAN on Shutap. Compose the user\u2019s scan conversation into a public-ready post that will open their Room \u2014 a full-sentence first-person NARRATIVE in THEIR voice, NOT a Q&A dump and NOT the scan\u2019s 2-sentence "read". Use the Q/A transcript as the logical spine (what happened \u2192 who / what was said or done \u2192 justification the other party gave \u2192 frequency \u2192 stakes). Free-text answers carry the story; widget answers (choice/multi/rate/spectrum/rank) add texture \u2014 weave them as supporting detail; do NOT quote raw widget strings like "3/10 (toward \u2018years now\u2019)" verbatim.\n\n' +
+        'THE 80/20 RULE \u2014 LANGUAGE, NOT CONTENT.\n' +
+        '~80% stays THEIRS: their account, specifics, quotes, emotional beats, voice, idiom, capitalization, profanity; the meaning is EXACTLY what they said.\n' +
+        'Up to ~20% is polish AT THE LANGUAGE LEVEL ONLY: grammar, spelling, smoothing choppy phrasing, connective transitions between beats, cutting filler.\n\n' +
+        'HARD LINE: improve HOW it\u2019s said, never WHAT is said. NEVER add a fact, event, person, motive, quote, or feeling they didn\u2019t give. NEVER make it more dramatic than they lived it. NEVER put words in the other party\u2019s mouth. NEVER paste in the scan\u2019s "read" or "signature". If a smoother sentence would imply something they didn\u2019t say, don\u2019t write it.\n\n' +
+        'title = their own hook, tightened to ONE line (lowercase ok). body = 2\u20135 short first-person paragraphs. edit_summary = one plain line naming the kind of polish applied (e.g. "fixed grammar and smoothed the order; no details added"). Do NOT list what you added \u2014 you added nothing.\n\n' +
+        'the scan conversation (already anonymized \u2014 keep it that way):\n"""\n' + skeleton + '\n"""\n\n' +
+        'OUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\n' +
+        'return STRICT JSON only: {"title":"...","body":"...","edit_summary":"..."}'
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData.session?.access_token
+      const res = await fetch('/api/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], system: SCAN_SYSTEM, maxTokens: 1500 }),
+      })
+      if (!res.ok) throw new Error('compose http ' + res.status)
+      const j = (await res.json()) as { text?: string; error?: string }
+      const raw = j.text ?? ''
+      const cleaned = raw.replace(/```json/gi, '').replace(/```/g, '')
+      const m = cleaned.match(/\{[\s\S]*\}/)
+      if (!m) throw new Error('no json')
+      const parsed = JSON.parse(m[0]) as { title?: string; body?: string; edit_summary?: string }
+      const t = scrubPII(stripHTMLInline(String(parsed.title || ''))).slice(0, 120)
+      const b = scrubPII(stripHTML(String(parsed.body || '')))
+      if (!t || !b) throw new Error('empty compose')
+      c = {
+        title: t,
+        body: b,
+        edit_summary: typeof parsed.edit_summary === 'string' ? parsed.edit_summary.trim().slice(0, 200) : '',
+      }
+    } catch (e) {
+      console.warn('[scan compose] falling back to user words', e)
+      c = {
+        title: scrubPII(stripHTMLInline(fallbackTitle)),
+        body: scrubPII(stripHTML(fallbackBody || result.label)),
+        edit_summary: '',
+      }
+    }
+    setComposed(c)
+    setPhase('preview')
+  }, [result])
+
   // ─────────── persist ───────────
   const doPersist = useCallback(async (isPublic: boolean) => {
     if (!result) return
@@ -599,8 +658,8 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       : result.pillar === 'friendship' ? 'relationships'
       : result.pillar === 'self' ? 'relationships'
       : 'relationships') as 'relationships' | 'marriage' | 'family' | 'career'
-    const title = result.label
-    const body = result.sub
+    const title = isPublic && composed ? composed.title : result.label
+    const body = isPublic && composed ? composed.body : result.sub
     const payload = {
       kind: 'scan' as const,
       pillar,
