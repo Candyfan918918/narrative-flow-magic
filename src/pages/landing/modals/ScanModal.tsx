@@ -110,15 +110,27 @@ function scrubPII(text: string): string {
 function sanitizeTurn(t: ScanTurn): ScanTurn {
   if (!t || typeof t !== 'object') return t
   if ((t as { done?: boolean }).done) {
-    const d = t as { done: true; score?: number | string; signature?: string; read?: string; factors?: string[] }
+    const d = t as {
+      done: true; score?: number | string; band?: string; signature?: string; read?: string;
+      factors?: string[]; reasoning?: Reasoning; basis?: string; corpus_n?: number | null;
+      cultural_note?: string | null; pillar?: string
+    }
     const factors = Array.isArray(d.factors)
       ? d.factors.map(f => stripHTMLInline(String(f || ''))).filter(Boolean)
       : d.factors
+    const cleanReasoning: Reasoning | undefined = d.reasoning
+      ? Object.fromEntries(
+          Object.entries(d.reasoning).map(([k, v]) => [k, v != null ? stripHTMLInline(String(v)) : v]),
+        ) as Reasoning
+      : d.reasoning
     return {
       ...d,
+      band: d.band != null ? stripHTMLInline(String(d.band)) : d.band,
       signature: d.signature != null ? stripHTMLInline(String(d.signature)) : d.signature,
       read: d.read != null ? stripHTML(String(d.read)) : d.read,
       factors,
+      reasoning: cleanReasoning,
+      cultural_note: d.cultural_note != null ? stripHTMLInline(String(d.cultural_note)) : d.cultural_note,
     }
   }
   const c = t as { done?: false; line?: string; prompt?: string; card?: ScanCard }
