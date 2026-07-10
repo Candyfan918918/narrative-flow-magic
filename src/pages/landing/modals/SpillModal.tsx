@@ -386,17 +386,33 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     const nextTurn = turn + 1
     setTurn(nextTurn)
     setThinking(true)
+    // Returning users: the first user reply is the progress beat — capture
+    // it as the progress_note (their words) before continuing with the new
+    // spill interview.
+    if (isReturning && progressNote === null && turn === 0) {
+      setProgressNote(scrubbed.clean)
+    }
     try {
       const transcript = nextMsgs.map(m => m.role === 'user' ? 'them: ' + m.text : 'you: ' + m.say.join(' ')).join('\n')
-      const beats = ['what_happened', 'frequency', 'feeling', 'why', 'talked_to_them', 'other_attempts', 'plan'] as const
+      const requiredBeats: Array<keyof Arc> = ['trigger_event', 'sequence', 'who', 'said_done', 'user_action', 'aftermath', 'stakes']
       const arc = draft.arc || {}
-      const blank = beats.filter(b => !arc[b])
-      const arcNote = blank.length ? '\nstill blank in the arc (ask the next one): ' + blank.join(', ') : '\nthe arc looks covered — if it has truly landed, you may be ready.'
+      const blank = requiredBeats.filter(b => !arc[b])
+      const hasTrigger = !!arc.trigger_event
+      const hasUserAction = !!arc.user_action
+      const gate = (!hasTrigger || !hasUserAction)
+        ? '\nORDERING GATE: trigger_event or user_action is still blank — do NOT ask about feeling yet.'
+        : ''
+      const arcNote = blank.length
+        ? '\nstill blank in the ledger (ask the next observable, one at a time): ' + blank.join(', ')
+        : '\nthe required ledger looks covered — run the self-check: stranger-reconstructable? >=1 said/done? user\u2019s own action? aftermath? if yes, you may be ready.'
+      const progressHint = isReturning && progressNote
+        ? '\nthis user is RETURNING. their progress on the prior thing (their words): "' + progressNote + '". carry that context but the new spill is a new situation.'
+        : ''
       const userMsg =
         TURN_SYS +
         '\n\n=== the conversation so far ===\n' + transcript +
         '\n\n=== what you have quietly understood ===\n' + JSON.stringify(draft) +
-        arcNote +
+        arcNote + gate + progressHint +
         '\nthis is turn ' + nextTurn + ' of max 12.\n\nnow output ONLY your JSON move:'
       const raw = await callComplete(userMsg)
       const obj = extractJSON<{ say?: string[]; has_question?: boolean; updated?: Partial<Draft>; decision?: string }>(raw)
