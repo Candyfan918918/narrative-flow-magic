@@ -426,12 +426,13 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         'title = their own hook, tightened to ONE line (lowercase ok). body = 2\u20135 short first-person paragraphs. edit_summary = one plain line naming the kind of polish applied (e.g. "fixed grammar and smoothed the order; no details added"). Do NOT list what you added \u2014 you added nothing.\n\n' +
         'the interview (already anonymized \u2014 keep it that way):\n"""\n' + skeleton + '\n"""\n\n' +
         'the thing that mattered most to them: ' + (draft.the_real_thing || draft.emotional_core || '(not stated)') + '\n\n' +
+        'OUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\n' +
         'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"..."}'
       const raw = await callComplete(prompt)
       const j = extractJSON<{ title?: string; body?: string; tags?: string[]; edit_summary?: string }>(raw)
       c = {
-        title: scrubPII(String(j.title || '').trim()).clean,
-        body: scrubPII(String(j.body || '').trim()).clean,
+        title: scrubPII(stripHTMLInline(String(j.title || ''))).clean,
+        body: scrubPII(stripHTML(String(j.body || ''))).clean,
         tags: Array.isArray(j.tags) ? j.tags.slice(0, 5) : (draft.tags || []),
         pillar: normalizePillar(draft.pillar),
         edit_summary: typeof j.edit_summary === 'string' ? j.edit_summary.trim() : '',
@@ -439,8 +440,8 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     } catch {
       const first = msgs.find(m => m.role === 'user') as Extract<Msg, { role: 'user' }> | undefined
       c = {
-        title: (first?.text || 'my situation').replace(/\s+/g, ' ').slice(0, 72),
-        body: convo,
+        title: scrubPII(stripHTMLInline(first?.text || 'my situation')).clean.slice(0, 72) || 'my situation',
+        body: scrubPII(stripHTML(convo)).clean,
         tags: (draft.tags || []).slice(0, 5),
         pillar: normalizePillar(draft.pillar),
         edit_summary: '',
@@ -449,6 +450,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     setComposed(c)
     setPhase('preview')
   }, [msgs, draft])
+
 
   // pull manual contenteditable edits back into `composed` + re-scrub.
   const syncPreviewDOM = useCallback(() => {
