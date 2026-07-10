@@ -171,6 +171,32 @@ function scrubPII(text: string): { clean: string; changes: Array<{ type: string;
   return { clean: t.trim(), changes }
 }
 
+// Strip HTML/markup that models sometimes emit into text fields. Preview renders
+// with white-space: pre-wrap, so raw tags print literally on screen — normalize
+// them to plain text with real newlines before storing.
+function stripHTML(text: string): string {
+  let t = String(text || '')
+  t = t.replace(/<\s*\/?\s*br\s*\/?\s*>/gi, '\n')
+  t = t.replace(/&lt;\s*\/?\s*br\s*\/?\s*&gt;/gi, '\n')
+  t = t.replace(/<\s*\/?\s*p\s*>/gi, '\n')
+  t = t.replace(/&lt;\s*\/?\s*p\s*&gt;/gi, '\n')
+  t = t.replace(/<\/?[a-z][^>]*>/gi, '')
+  t = t.replace(/&lt;\/?[a-z][^&]*&gt;/gi, '')
+  t = t.replace(/&nbsp;/gi, ' ')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/gi, '&')
+  t = t.replace(/\n{3,}/g, '\n\n')
+  return t.trim()
+}
+
+function stripHTMLInline(text: string): string {
+  return stripHTML(text).replace(/[\r\n]+/g, ' ').replace(/[ \t]{2,}/g, ' ').trim()
+}
+
+
 // Append a just-published room to localStorage['shutap_user_situations'] so
 // StreamPage / RoomPage hash lookups can find and open it. De-dupes by id,
 // newest first, capped at 50.
@@ -400,12 +426,13 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         'title = their own hook, tightened to ONE line (lowercase ok). body = 2\u20135 short first-person paragraphs. edit_summary = one plain line naming the kind of polish applied (e.g. "fixed grammar and smoothed the order; no details added"). Do NOT list what you added \u2014 you added nothing.\n\n' +
         'the interview (already anonymized \u2014 keep it that way):\n"""\n' + skeleton + '\n"""\n\n' +
         'the thing that mattered most to them: ' + (draft.the_real_thing || draft.emotional_core || '(not stated)') + '\n\n' +
+        'OUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\n' +
         'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"..."}'
       const raw = await callComplete(prompt)
       const j = extractJSON<{ title?: string; body?: string; tags?: string[]; edit_summary?: string }>(raw)
       c = {
-        title: scrubPII(String(j.title || '').trim()).clean,
-        body: scrubPII(String(j.body || '').trim()).clean,
+        title: scrubPII(stripHTMLInline(String(j.title || ''))).clean,
+        body: scrubPII(stripHTML(String(j.body || ''))).clean,
         tags: Array.isArray(j.tags) ? j.tags.slice(0, 5) : (draft.tags || []),
         pillar: normalizePillar(draft.pillar),
         edit_summary: typeof j.edit_summary === 'string' ? j.edit_summary.trim() : '',
@@ -413,8 +440,8 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     } catch {
       const first = msgs.find(m => m.role === 'user') as Extract<Msg, { role: 'user' }> | undefined
       c = {
-        title: (first?.text || 'my situation').replace(/\s+/g, ' ').slice(0, 72),
-        body: convo,
+        title: scrubPII(stripHTMLInline(first?.text || 'my situation')).clean.slice(0, 72) || 'my situation',
+        body: scrubPII(stripHTML(convo)).clean,
         tags: (draft.tags || []).slice(0, 5),
         pillar: normalizePillar(draft.pillar),
         edit_summary: '',
@@ -423,6 +450,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     setComposed(c)
     setPhase('preview')
   }, [msgs, draft])
+
 
   // pull manual contenteditable edits back into `composed` + re-scrub.
   const syncPreviewDOM = useCallback(() => {
@@ -442,7 +470,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     try {
       const prompt =
         'You are editing the user\u2019s OWN Shutap post on their instruction. Their voice and facts are sacred. You may shorten, reorder, tighten, fix typos, or do EXACTLY what they asked \u2014 using ONLY material already in the post. Keep their slang, cadence, caps, profanity, mess. NEVER add an event, name, motive, quote, or detail they didn\u2019t give; never soften or sharpen what happened. If the instruction needs a fact that isn\u2019t there, do NOT invent it \u2014 set needs_input and ask (short) what to add.\n\ncurrent title: ' + JSON.stringify(composed.title) +
-        '\ncurrent body:\n"""' + composed.body + '"""\n\ntheir instruction: "' + ins + '"\n\nreturn STRICT JSON only: {"title":"...","body":"...","changed":"<one short line on what you changed>","needs_input":false}'
+        '\ncurrent body:\n"""' + composed.body + '"""\n\ntheir instruction: "' + ins + '"\n\nOUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\nreturn STRICT JSON only: {"title":"...","body":"...","changed":"<one short line on what you changed>","needs_input":false}'
       const raw = await callComplete(prompt)
       const j = extractJSON<{ title?: string; body?: string; changed?: string; needs_input?: boolean }>(raw)
       if (j.needs_input) {
@@ -450,11 +478,12 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       } else {
         setComposed(prev => prev && ({
           ...prev,
-          title: j.title ? scrubPII(String(j.title).trim()).clean : prev.title,
-          body: j.body ? scrubPII(String(j.body).trim()).clean : prev.body,
+          title: j.title ? scrubPII(stripHTMLInline(String(j.title))).clean : prev.title,
+          body: j.body ? scrubPII(stripHTML(String(j.body))).clean : prev.body,
         }))
         setEditNote('done — ' + (j.changed || 'tweaked it. take a look.'))
       }
+
       setEditInstruction('')
     } catch {
       setEditNote('couldn\u2019t make that edit — try saying it another way.')
