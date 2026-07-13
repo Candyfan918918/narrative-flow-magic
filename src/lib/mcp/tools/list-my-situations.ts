@@ -28,6 +28,9 @@ export default defineTool({
     }
     const supabase = supabaseForUser(ctx);
     const userId = ctx.getUserId();
+    if (!userId) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
     const { data: alias, error: aliasErr } = await supabase
       .from("aliases")
       .select("user_id")
@@ -42,7 +45,13 @@ export default defineTool({
         structuredContent: { rows: [] },
       };
     }
-    let q = supabase
+    // Use admin client: `situations.alias_id` SELECT is revoked from the
+    // `authenticated` role, so a user-JWT query filtering on alias_id fails
+    // with "permission denied for column alias_id". The user identity comes
+    // from the verified MCP token (ctx.getUserId()), so scoping the query to
+    // that userId server-side is safe.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let q = supabaseAdmin
       .from("situations")
       .select("id, pillar, clean_text, initial_scan, status, created_at")
       .eq("alias_id", userId)
