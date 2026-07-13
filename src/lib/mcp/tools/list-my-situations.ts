@@ -28,6 +28,9 @@ export default defineTool({
     }
     const supabase = supabaseForUser(ctx);
     const userId = ctx.getUserId();
+    if (!userId) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
     const { data: alias, error: aliasErr } = await supabase
       .from("aliases")
       .select("user_id")
