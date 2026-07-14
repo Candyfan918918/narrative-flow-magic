@@ -53,7 +53,7 @@ export function SiteFooter() {
             fontFamily: 'Newsreader,serif',
             fontStyle: 'italic',
             fontSize: 12,
-            color: '#9e7a8c',
+            color: '#6b4a5c',
           }}
         >
           18+ · pseudonymous · not a medical or legal service
