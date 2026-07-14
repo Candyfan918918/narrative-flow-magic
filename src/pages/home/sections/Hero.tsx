@@ -93,7 +93,7 @@ export function Hero() {
                       {' '}
                     </div>
                     {' '}
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '11px', letterSpacing: '.2em', textTransform: 'uppercase', color: '#e7548a' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '11px', letterSpacing: '.2em', textTransform: 'uppercase', color: '#a01a55' }}>
                       <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#e7548a', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }}>
                       </span>
                       <span data-livecount="">
