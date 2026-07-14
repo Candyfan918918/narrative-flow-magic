@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
  */
 export function SeoPage({ children }: { children: ReactNode }) {
   const navLink = { fontFamily: "'Newsreader',serif" as const, fontStyle: 'italic' as const, fontSize: 14, color: '#6b4a5c', textDecoration: 'none' };
-  const footLink = { fontFamily: "'Newsreader',serif" as const, fontStyle: 'italic' as const, fontSize: 12.5, color: '#9e7a8c', textDecoration: 'none' };
+  const footLink = { fontFamily: "'Newsreader',serif" as const, fontStyle: 'italic' as const, fontSize: 13, color: '#6b4a5c', textDecoration: 'none' };
   return (
     <div style={{ minHeight: '100vh', background: '#fdf0f5', color: '#0b080f' }}>
       <header style={{ borderBottom: '.5px solid rgba(11,8,15,.08)' }}>
