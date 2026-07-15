@@ -9,6 +9,8 @@ import { EyeMark } from './EyeMark'
 import { runCompanion } from '@/lib/agents/companion.functions'
 import { getDueCheckin, recordCheckinResponse, snoozeCheckin } from '@/lib/checkins.functions'
 import { supabase } from '@/integrations/supabase/client'
+import { useCurrentAlias } from '@/hooks/use-current-alias'
+
 
 const NEWSREADER = "'Newsreader', Georgia, serif"
 const SORA = "'Sora', system-ui, sans-serif"
@@ -27,6 +29,8 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
 }) {
   const navigate = useNavigate()
   const ask = useServerFn(runCompanion)
+  const { alias: currentAlias } = useCurrentAlias()
+
   const fetchDue = useServerFn(getDueCheckin)
   const submitCheckin = useServerFn(recordCheckinResponse)
   const snoozeFn = useServerFn(snoozeCheckin)
@@ -109,7 +113,7 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
     setHistory(nextHistory)
     if (inputRef.current) inputRef.current.value = ''
     try {
-      const res = await ask({ data: { mode: 'ask', messages: nextHistory } })
+      const res = await ask({ data: { mode: 'ask', messages: nextHistory, alias: currentAlias?.name } })
       const text = (res?.text || '').trim() || "i'm here — say a bit more?"
       setReply(text)
       setHistory((h) => [...h, { role: 'assistant', content: text }])
