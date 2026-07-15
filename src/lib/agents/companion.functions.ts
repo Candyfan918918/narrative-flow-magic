@@ -147,11 +147,17 @@ export const runCompanion = createServerFn({ method: 'POST' })
       return { text: CRISIS_COPY, crisis: true }
     }
 
-    const system =
+    const baseSystem =
       data.mode === 'spill' ? SPILL_SYS
       : data.mode === 'felt_heard' ? FELT_HEARD_SYS
       : data.mode === 'checkin' ? CHECKIN_SYS
       : ASK_SYS
+
+    const aliasNote = data.alias?.trim()
+      ? `\n\nTHE USER'S ALIAS IS "${data.alias.trim()}". when you address them by name, use this exact alias. NEVER output a placeholder token like [user alias], [alias], or [name] — either use their real alias or address them directly with no name at all.`
+      : `\n\nYOU DO NOT KNOW THE USER'S ALIAS. do not use any name for them, and NEVER output a placeholder token like [user alias], [alias], or [name]. just talk to them directly.`
+
+    const system = baseSystem + aliasNote
 
     const messages: AgentMessage[] = [...data.messages]
     if (data.context && data.mode === 'felt_heard') {
@@ -174,6 +180,7 @@ matched stories: ${(c.matched_excerpts ?? []).slice(0, 2).join(' | ')}`,
     }
 
     const res = await callAgent({ system, messages, maxTokens: 400 })
+
     if (res.error || !res.text) {
       if (data.mode === 'felt_heard') {
         return { text: `ok wow. ${data.context?.reflection ?? "that's a lot."} ${data.context?.resonance_line ?? ''}\n\nwant me to check in on you?` }
