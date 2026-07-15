@@ -497,11 +497,25 @@ export function RoomDetail({
         </div>
 
         {/* reactions */}
-        <div style={{ marginBottom: 22 }}>
-          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 9 }}>
-            how the room is holding this
-          </div>
-          <div style={{ height: 10, borderRadius: 5, overflow: 'hidden', display: 'flex', gap: 1, marginBottom: 13 }}>{bars}</div>
+        {(() => {
+          const totalReactions = REACTIONS.reduce((s, rx) => s + (room.reactions[rx.k] || 0), 0)
+          return (
+            <div style={{ marginBottom: 22 }}>
+              <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 9 }}>
+                {totalReactions === 0 ? 'be the first to feel this' : 'how the room is holding this'}
+              </div>
+              {totalReactions === 0 ? (
+                <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13.5, color: '#6b4a5c', marginBottom: 13 }}>
+                  nobody has reacted yet. your one tap says "i'm here."
+                </div>
+              ) : (
+                <div style={{ height: 10, borderRadius: 5, overflow: 'hidden', display: 'flex', gap: 1, marginBottom: 13 }}>{bars}</div>
+              )}
+            </div>
+          )
+        })()}
+        <div style={{ marginBottom: 22, marginTop: -22 }}>
+
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {REACTIONS.map((rx) => {
               const isActive = active.has(rx.k)
