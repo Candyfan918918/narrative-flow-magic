@@ -1,0 +1,1 @@
+DELETE FROM public.mirror_patterns WHERE is_demo = true;
