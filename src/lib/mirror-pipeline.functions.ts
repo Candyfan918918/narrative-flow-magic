@@ -304,6 +304,7 @@ export async function crystallizeMirrorSignal(args: {
     const insertRow: Record<string, unknown> = {
       user_id: userId,
       is_demo: false,
+      is_seed: !!data.is_seed,
       name: reading.trait.name,
       emoji: reading.trait.emoji,
       district,
