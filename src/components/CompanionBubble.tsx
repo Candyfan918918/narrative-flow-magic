@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { EyeMark } from './EyeMark'
 import { getDueCheckin } from '@/lib/checkins.functions'
+import { getUnseenCompanionCount, markCompanionSeen } from '@/lib/admin.functions'
 import { supabase } from '@/integrations/supabase/client'
 
 /* The companion: a draggable, semi-transparent pink circle with the brand eyes
