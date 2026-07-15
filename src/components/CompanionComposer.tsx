@@ -29,6 +29,8 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
 }) {
   const navigate = useNavigate()
   const ask = useServerFn(runCompanion)
+  const { alias: currentAlias } = useCurrentAlias()
+
   const fetchDue = useServerFn(getDueCheckin)
   const submitCheckin = useServerFn(recordCheckinResponse)
   const snoozeFn = useServerFn(snoozeCheckin)
