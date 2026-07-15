@@ -114,8 +114,16 @@ const REASONING_LABELS: Record<string, string> = {
 };
 
 function StoryPage() {
-  const { row, relates, siblings } = Route.useLoaderData() as LoaderData;
+  const { row, relates, siblings, resonance } = Route.useLoaderData() as LoaderData;
   const reasoning = (row.scan_reasoning ?? null) as Record<string, { note?: string; weight?: number }> | null;
+  const resonanceLine =
+    resonance.display_count && resonance.display_count >= 5
+      ? `${resonance.display_count}+ similar stories`
+      : resonance.stories.length > 0
+        ? resonance.fallback
+          ? "other people carrying something in the same room"
+          : `${resonance.stories.length} similar stories`
+        : "no matches yet — you might be the first";
 
   return (
     <SeoPage>
