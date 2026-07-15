@@ -183,7 +183,7 @@ export function CompanionBubble({
       <div style={{ pointerEvents: 'none', display: 'inline-flex', transform: 'translateX(-2px)' }}>
         <EyeMark size={34} />
       </div>
-      {hasDue && (
+      {hasDot && (
         <span
           aria-hidden
           style={{
