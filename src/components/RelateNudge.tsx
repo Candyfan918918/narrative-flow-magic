@@ -56,7 +56,11 @@ export function RelateNudge({ currentRoomId, currentIsCrisis }: { currentRoomId:
     if (relating || related) return
     setRelating(true)
     try {
-      await relate({ data: { roomId: cold.room_id } })
+      const { data: sess } = await supabase.auth.getSession()
+      const uid = sess.session?.user?.id
+      if (uid) {
+        await supabase.from('room_relates').insert({ room_id: cold.room_id, user_id: uid } as never)
+      }
       setRelated(true)
     } catch { /* noop */ } finally { setRelating(false) }
   }
