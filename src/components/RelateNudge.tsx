@@ -17,7 +17,6 @@ export function RelateNudge({ currentRoomId, currentIsCrisis }: { currentRoomId:
   const [related, setRelated] = useState(false)
   const shownRef = useRef(false)
   const fetchCold = useServerFn(getColdNudge)
-  const relate = useServerFn(addRelate)
 
   useEffect(() => {
     if (currentIsCrisis) return
