@@ -72,16 +72,17 @@ export async function listSiblingStories(args: {
   return rows.slice(0, args.limit ?? 4) as never;
 }
 
-/** Rows eligible to appear in the stories sitemap. */
+/** Rows eligible to appear in the stories sitemap (real, non-seed only). */
 export async function listIndexableStoriesForSitemap(limit = 5000): Promise<
-  Array<{ pillar: PillarSlug; slug: string; updated_at: string; is_seed: boolean; room_id: string | null }>
+  Array<{ pillar: PillarSlug; slug: string; updated_at: string }>
 > {
   const sb = await admin();
   const { data } = await sb
     .from("situations")
-    .select("pillar, slug, updated_at, is_seed, room_id, is_public, crisis_flag, deleted_at")
+    .select("pillar, slug, updated_at")
     .eq("is_public", true)
     .eq("crisis_flag", false)
+    .eq("is_seed", false)
     .is("deleted_at", null)
     .not("slug", "is", null)
     .order("updated_at", { ascending: false })
@@ -90,7 +91,19 @@ export async function listIndexableStoriesForSitemap(limit = 5000): Promise<
     pillar: r.pillar as PillarSlug,
     slug: String(r.slug),
     updated_at: String(r.updated_at),
-    is_seed: Boolean(r.is_seed),
-    room_id: (r.room_id as string | null) ?? null,
   }));
+}
+
+/** Count of real (non-seed) stories eligible for indexing. */
+export async function countIndexableStories(): Promise<number> {
+  const sb = await admin();
+  const { count } = await sb
+    .from("situations")
+    .select("id", { count: "exact", head: true })
+    .eq("is_public", true)
+    .eq("crisis_flag", false)
+    .eq("is_seed", false)
+    .is("deleted_at", null)
+    .not("slug", "is", null);
+  return count ?? 0;
 }
