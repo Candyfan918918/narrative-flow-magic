@@ -472,24 +472,38 @@ export const listRoomComments = createServerFn({ method: 'GET' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { data: rows, error } = await supabaseAdmin
       .from('comments')
-      .select('id, alias_id, clean_text, edited, created_at')
+      .select('id, alias_id, clean_text, edited, created_at, is_companion')
       .eq('room_id', data.roomId)
       .is('deleted_at', null)
       .order('created_at', { ascending: true })
       .limit(200)
     if (error) throw new Error(error.message)
-    const list = (rows ?? []) as Array<{ id: string; alias_id: string; clean_text: string; edited: boolean; created_at: string }>
-    if (list.length === 0) return [] as Array<{ id: string; clean_text: string; edited: boolean; created_at: string; is_mine: boolean; display_name: string; emoji: string }>
-    const ids = Array.from(new Set(list.map((r) => r.alias_id)))
-    const { data: aliases } = await supabaseAdmin
-      .from('aliases')
-      .select('user_id, display_name, emoji')
-      .in('user_id', ids)
+    const list = (rows ?? []) as Array<{ id: string; alias_id: string; clean_text: string; edited: boolean; created_at: string; is_companion: boolean }>
+    if (list.length === 0) return [] as Array<{ id: string; clean_text: string; edited: boolean; created_at: string; is_mine: boolean; is_companion: boolean; display_name: string; emoji: string }>
+    const humanIds = Array.from(new Set(list.filter((r) => !r.is_companion).map((r) => r.alias_id)))
     const aliasMap = new Map<string, { display_name: string; emoji: string }>()
-    for (const a of (aliases ?? []) as Array<{ user_id: string; display_name: string; emoji: string }>) {
-      aliasMap.set(a.user_id, { display_name: a.display_name, emoji: a.emoji })
+    if (humanIds.length) {
+      const { data: aliases } = await supabaseAdmin
+        .from('aliases')
+        .select('user_id, display_name, emoji')
+        .in('user_id', humanIds)
+      for (const a of (aliases ?? []) as Array<{ user_id: string; display_name: string; emoji: string }>) {
+        aliasMap.set(a.user_id, { display_name: a.display_name, emoji: a.emoji })
+      }
     }
     return list.map((r) => {
+      if (r.is_companion) {
+        return {
+          id: r.id,
+          clean_text: r.clean_text,
+          edited: r.edited,
+          created_at: r.created_at,
+          is_mine: false,
+          is_companion: true,
+          display_name: 'the companion',
+          emoji: '👁',
+        }
+      }
       const chip = aliasMap.get(r.alias_id)
       return {
         id: r.id,
@@ -497,6 +511,7 @@ export const listRoomComments = createServerFn({ method: 'GET' })
         edited: r.edited,
         created_at: r.created_at,
         is_mine: r.alias_id === context.userId,
+        is_companion: false,
         display_name: chip?.display_name ?? 'someone',
         emoji: chip?.emoji ?? '🙂',
       }
