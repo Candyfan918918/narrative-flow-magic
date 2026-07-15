@@ -64,6 +64,7 @@ export function RelateNudge({ currentRoomId, currentIsCrisis }: { currentRoomId:
         await supabase.from('room_relates').insert({ room_id: cold.room_id, user_id: uid } as never)
       }
       setRelated(true)
+      void trackEvent('cold_relate_nudge_accepted', { room_id: cold.room_id })
     } catch { /* noop */ } finally { setRelating(false) }
   }
 
