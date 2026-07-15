@@ -10,6 +10,61 @@ async function assertAdmin(ctx: unknown): Promise<void> {
   if (error || !data) throw new Error('Forbidden')
 }
 
+// Lightweight boolean gate for the /admin route beforeLoad — never throws.
+export const amIAdmin = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<boolean> => {
+    const c = context as { supabase: { rpc: (fn: 'has_role', args: { _user_id: string; _role: 'admin' }) => PromiseLike<{ data: unknown }> }; userId: string }
+    try {
+      const { data } = await c.supabase.rpc('has_role', { _user_id: c.userId, _role: 'admin' })
+      return Boolean(data)
+    } catch { return false }
+  })
+
+// Count of companion comments on the caller's rooms since they last opened
+// the bubble. Used to light the pink dot for unseen AI replies.
+export const getUnseenCompanionCount = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<number> => {
+    const c = context as { supabase: { from: (t: string) => { select: (s: string, opts?: unknown) => { eq: (col: string, v: unknown) => unknown } } }; userId: string }
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: prof } = await supabaseAdmin
+      .from('profiles')
+      .select('companion_seen_at')
+      .eq('user_id', c.userId)
+      .maybeSingle()
+    const seenAt = (prof as { companion_seen_at: string | null } | null)?.companion_seen_at ?? '1970-01-01T00:00:00Z'
+    // Rooms owned by this user
+    const { data: myRooms } = await supabaseAdmin
+      .from('situations')
+      .select('room_id')
+      .eq('alias_id', c.userId)
+      .not('room_id', 'is', null)
+      .limit(500)
+    const roomIds = ((myRooms ?? []) as Array<{ room_id: string | null }>).map((r) => r.room_id).filter(Boolean) as string[]
+    if (roomIds.length === 0) return 0
+    const { count } = await supabaseAdmin
+      .from('comments')
+      .select('id', { count: 'exact', head: true })
+      .in('room_id', roomIds)
+      .eq('is_companion', true)
+      .gt('created_at', seenAt)
+    void c
+    return count ?? 0
+  })
+
+export const markCompanionSeen = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ ok: true }> => {
+    const c = context as { userId: string }
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    await supabaseAdmin
+      .from('profiles')
+      .update({ companion_seen_at: new Date().toISOString() } as never)
+      .eq('user_id', c.userId)
+    return { ok: true }
+  })
+
 const SORT_COLUMNS = ['last_visit_at', 'last_login_at', 'signup_at', 'visit_count', 'login_count', 'email'] as const
 type SortCol = typeof SORT_COLUMNS[number]
 
