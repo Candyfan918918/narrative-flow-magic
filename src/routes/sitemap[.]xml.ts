@@ -3,8 +3,7 @@ import type {} from "@tanstack/react-start";
 import { SITE_URL } from "@/lib/site";
 import { OUTCOMES, isOutcomeIndexable } from "@/lib/seo/outcomes";
 import { PROFILES, isProfileIndexable } from "@/lib/seo/profiles";
-import { listIndexableStoriesForSitemap, getRelateCount } from "@/lib/seo/story.server";
-import { STORY_INDEX_MIN_RELATES } from "@/lib/seo/story";
+import { countIndexableStories } from "@/lib/seo/story.server";
 import { renderSitemapIndex } from "@/lib/seo/sitemap";
 
 export const Route = createFileRoute("/sitemap.xml")({
@@ -22,17 +21,10 @@ export const Route = createFileRoute("/sitemap.xml")({
           children.push({ loc: `${SITE_URL}/sitemaps/profiles.xml` });
         }
 
-        // Stories: only advertise the child sitemap when at least one
-        // story qualifies for indexing (seed OR relates >= threshold).
-        const storyRows = await listIndexableStoriesForSitemap(5000);
-        let storyIndexableCount = 0;
-        for (const r of storyRows) {
-          if (r.is_seed) { storyIndexableCount++; continue; }
-          const c = await getRelateCount(r.room_id);
-          if (c >= STORY_INDEX_MIN_RELATES) storyIndexableCount++;
-          if (storyIndexableCount > 0) break;
-        }
-        if (storyIndexableCount > 0) {
+        // Stories: advertise the child sitemap when at least one real
+        // (non-seed) public, non-crisis, non-deleted story exists.
+        const storyCount = await countIndexableStories();
+        if (storyCount > 0) {
           children.push({ loc: `${SITE_URL}/sitemaps/stories.xml` });
         }
 
