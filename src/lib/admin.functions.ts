@@ -202,11 +202,9 @@ type RoomListItem = {
 }
 
 async function decorateRooms(
-  sb: Awaited<ReturnType<typeof import('@/integrations/supabase/client.server').__type>> extends never ? never : unknown,
   situations: Array<{ id: string; room_id: string | null; title: string | null; clean_text: string; pillar: string | null; initial_scan: number | null; scan_band: string | null; created_at: string; alias_id: string }>,
 ): Promise<RoomListItem[]> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  void sb
   const rows = situations.filter((s) => !!s.room_id)
   const roomIds = rows.map((s) => s.room_id!) 
   if (roomIds.length === 0) return []
