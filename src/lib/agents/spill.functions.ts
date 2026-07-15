@@ -16,6 +16,8 @@ const SpillInput = z.object({
   pillar: z.enum(['relationships', 'marriage', 'family', 'career']).default('relationships'),
   is_public: z.boolean().default(true),
   alias: z.string().optional(),
+  // Admin-only. Silently downgraded to false for non-admin callers below.
+  is_seed: z.boolean().optional().default(false),
 })
 
 export type SpillPayoff = {
