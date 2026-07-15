@@ -4,9 +4,6 @@ import { SITE_URL } from "@/lib/site";
 
 export type JsonValue = string | number | boolean | null | { [k: string]: JsonValue } | JsonValue[];
 
-/** Minimum real relates before a non-seed story becomes indexable. */
-export const STORY_INDEX_MIN_RELATES = 3;
-
 export type PillarSlug = "relationships" | "marriage" | "family" | "career";
 
 export interface StoryRow {
