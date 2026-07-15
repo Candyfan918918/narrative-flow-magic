@@ -39,6 +39,16 @@ export const runSpill = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => SpillInput.parse(data))
   .handler(async ({ data, context }): Promise<SpillPayoff> => {
+    // Only admins can mint seed content.
+    let isSeed = false
+    if (data.is_seed) {
+      const { data: ok } = await context.supabase.rpc('has_role', {
+        _user_id: context.userId,
+        _role: 'admin',
+      })
+      isSeed = Boolean(ok)
+    }
+
     // 1. Scrubber
     const scrub = await runScrub(data.raw)
 
