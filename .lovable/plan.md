@@ -1,58 +1,64 @@
+# Response Floor + Admin Console — Plan (updated)
 
-# Response Floor + Admin Console + Demo Purge
+Most of this build already landed in the previous turn. Below is what's done vs. what's still open, plus the remaining files to touch. Nothing here changes Spill/Scan agent logic, Mirror, or billing.
 
-Schema prep (already applied this turn): `comments.is_companion` bool, `profiles.companion_seen_at` timestamptz, plus two indexes for companion lookups and the cold-room queue.
+## Status snapshot
 
-## 1. Companion in-thread comment
-- **Extend** `upsertRoomForSituation` in `src/lib/situations.functions.ts` to accept an optional `companion_text`, and — after room creation — insert one comment with `is_companion=true`, `alias_id=<author>` (so the row is owner-writable under existing RLS), scrubbed via `runScrub`. Fail-soft.
-- **Modify** `saveSituation` to generate the companion reflection via `runCompanion({mode:'felt_heard'})` for public spills/scans and pass it to the helper. Reuses existing agent — no prompt changes.
-- **Update** `listRoomComments` return shape to expose `is_companion` and force `display_name="the companion"` + `emoji="👁"` on those rows; `is_mine=false`.
-- **Update** `src/components/CommentsThread.tsx` to render companion comments with the eye avatar and a small "house AI" badge; skip edit/delete controls.
-- **Pink-dot signal**: reuse the existing "due check-in" indicator on `CompanionBubble`. Add `getUnseenCompanionReply` server fn (compare newest own-room companion comment to `profiles.companion_seen_at`) and mark `companion_seen_at=now()` when the user opens the room. `CompanionBubble` ORs this with the check-in dot.
+**Already shipped last turn**
+- DB migration: `comments.is_companion`, `profiles.companion_seen_at`, cold-room + unseen-reply indexes.
+- Companion comment auto-inserted as first comment on public room creation (via `saveSituation` → `upsertRoomForSituation`); scrubbed through the existing PII / crisis paths.
+- `listRoomComments` server fn returns `is_companion` and forces display name "the companion" (never a user alias).
+- `CommentsThread.tsx` renders the companion comment with eye avatar, "the companion" name, and "house AI" badge; edit/delete hidden for companion rows.
+- Admin server fns: `adminNewRooms`, `adminNeedsResponse`, `adminLiquidityStats` — all gated by `has_role(auth.uid(), 'admin')`, real data only.
+- Notification layer: `notify.server.ts` emails `hello@shutap.com` via Resend on public room creation (headline, ~200 char excerpt, Scan score, `/room?id=…` and `/admin` deep links).
+- Resonance strip: `listResonanceMatches` (matcher first, same-pillar fallback), wired through `getPublicStory` and SSR-rendered on `/story/$pillar/$slug` with "N+ similar stories" or fallback line.
+- Post-read `RelateNudge` component + `getColdNudge` server fn — session-guarded, suppressed on crisis rooms, one-tap relate.
+- "Be the first to feel this" zero-state on room reactions.
+- `/admin` page rebuilt with real KPIs (coverage %, 24h coverage, cold rooms >72h, median TTFR) and "Needs response" / "New rooms" tabs.
+- Demo purge: only 15 `mirror_patterns` demo rows existed; exported to `/mnt/documents/shutap-demo-purge-20260715-102053/` then deleted. No `is_seed=true` rows in `situations`, `rooms`, or `comments`.
 
-## 2. Resonance strip on the story page
-- **SSR-render** in `src/routes/story.$pillar.$slug.tsx`: extend `getPublicStory` server fn to also return 3 matches from `findMatches` (falls back to same-pillar recent when empty). Render a strip: "N similar stories" (real N, honest floor rules) + 3 linked cards (title + first line + link to their `/story/...`). Same-pillar fallback when matcher returns none.
+## Still open — this turn
 
-## 3. Admin console at `/admin`
-- **Gate**: `has_role(auth.uid(),'admin')`. Anyone else → 404 via `notFound()`. `head()` emits `robots: noindex`. Excluded from sitemap.
-- **Rebuild** `src/pages/Admin.tsx` from scratch (deletes the current 662-line mock). Three sections, real data via new server fns in `src/lib/admin.functions.ts`:
-  - `adminNeedsResponse` → public rooms with 0 human relates AND 0 non-companion comments, oldest first
-  - `adminNewRooms` → latest 50 public rooms
-  - `adminLiquidityStats` → response coverage %, human-relate coverage (24h), cold-room count (>72h zero human), median time-to-first-human-relate
-- **Notification**: new `notifyRoomCreated(roomId)` called at end of `upsertRoomForSituation` (fire-and-forget). Sends via `sendResendEmail` to `hello@shutap.com` with headline, first 200 chars, Scan score, room + admin links.
+### A. Admin gating end-to-end
+- Mechanism: reuse existing `public.user_roles` + `has_role(uid, 'admin')` (already the source of truth on server fns). Grant your account admin by inserting one row in `user_roles` (I'll surface the UUID + one-line SQL for you to run; no code needs your email hardcoded).
+- `/admin` route: keep `ssr:false` + `robots:noindex` (already set). Add a client-side `beforeLoad` that calls a lightweight `amIAdmin` server fn and throws `notFound()` for non-admins so unauthorized users see the app's 404, not a "forbidden" card.
+- Sitemap: confirm `/admin` and `/admin/*` are absent from `sitemap.xml` and children (they already are — admin routes aren't enumerated; will double-check).
 
-## 4. Post-read relate nudge
-- **New component** `src/components/RelateNudge.tsx`: slide-up card triggered when user scrolls past 80% of a story. Fetches one cold-queue room via new `getColdNudge` server fn. One tap = relate. Session-guarded (`sessionStorage`). Suppressed when current room OR target is crisis-flagged.
-- **Wire** into `src/routes/story.$pillar.$slug.tsx` (signed-in only via client check).
+### B. Companion-bubble pink dot for unseen companion replies
+- Currently `CompanionBubble` shows the dot only for due check-ins. Extend the same indicator to fire when the signed-in author has unseen companion comments on their own rooms.
+- New server fn `getUnseenCompanionCount` (uses `profiles.companion_seen_at` + `comments.is_companion` on rooms owned by the caller).
+- `CompanionBubble` ORs `hasDue || hasUnseenCompanion`; tapping the bubble stamps `companion_seen_at = now()` via `markCompanionSeen`.
 
-## 5. Honest reaction zero-state
-- Edit `RoomDetail.tsx` reactions block: when total count is 0, render "be the first to feel this" instead of numeric zeros. Audit `RoomTile.tsx` for the same.
+### C. Analytics events
+- Emit `cold_relate_nudge_shown` when `RelateNudge` renders and `cold_relate_nudge_accepted` on tap — via existing `track()` helper. Also emit `companion_comment_created` on server insert.
 
-## 6. Demo data purge
-- **Export first** — run a `SELECT ... WHERE is_seed=true` across the tables below and write a JSON archive to `/mnt/documents/shutap-demo-purge-<ts>.json` via `psql COPY`.
-- **Tables to touch** (delete cascade order):
-  1. `mirror_signals WHERE is_seed=true`
-  2. `mirror_patterns WHERE is_demo=true`
-  3. `checkin_responses` and `checkins` for seed situations
-  4. `outcomes WHERE is_seed=true`
-  5. `pii_scrub_log` for seed situations
-  6. `comments WHERE room_id IN (seed rooms)`
-  7. `room_reactions` and `room_relates` for seed rooms
-  8. `rooms` created from seed situations
-  9. `situations WHERE is_seed=true`
-- Migration will run in one transaction. Nothing user-facing references seeds after — sitemap already excludes them; matcher excludes them.
+### D. Honest-counts audit (read-only sweep, tiny fixes if needed)
+- Audit call sites of `room.relates`, `room.reactions`, `room.sitting`, `room.comments` in `RoomTile`, `RoomDetail`, `Stream`, home strips, Hall pages, pillar densities. Any hardcoded floors (`|| 3`, `Math.max(1, …)`) or seed constants get replaced with the raw value + a zero-state string. Report each site touched.
 
-## Open decision left for you
-Whether seeds count toward the resonance "N people lived this" number. Current matcher already excludes seeds (`is_seed=false` in `match_situations` RPC), so post-purge this is moot — leaving as-is.
+### E. Seed-safety guards (future-proofing after the purge)
+- Add `is_seed=false` filter to any list query that doesn't already have it: `Stream.tsx` realtime + initial fetch, pillar densities, Hall of Fame aggregator, matcher (already excludes seeds via SQL — verify).
+- Add a small admin-only "demo import" affordance? **No** — user asked to purge and not touch agent logic; skip.
 
-## Files
-- Edit: `src/lib/situations.functions.ts`, `src/components/CommentsThread.tsx`, `src/components/CompanionBubble.tsx`, `src/lib/checkins.functions.ts` (or new `src/lib/companion-signals.functions.ts`), `src/routes/story.$pillar.$slug.tsx`, `src/lib/seo/story.server.ts`, `src/lib/story.functions.ts`, `src/components/RoomDetail.tsx`, `src/components/RoomTile.tsx`, `src/pages/Admin.tsx`, `src/lib/admin.functions.ts`, `src/routes/admin.tsx`
-- Create: `src/components/RelateNudge.tsx`, `src/lib/notify.server.ts` (Resend wrapper for admin email)
-- Migration: single purge migration + verification counts
-- Export artifact: `/mnt/documents/shutap-demo-purge-<ts>.json`
+## Files this turn will change
 
-## Not touched
-- Spill/Scan agent prompts and state machines
-- Mirror pipeline, billing, subscriptions
-- `src/lib/email/designs/`, `src/lib/error-page.ts`, `public/email/`
-- `src/integrations/supabase/*` generated files
+- `src/lib/admin.functions.ts` — add `amIAdmin`, `getUnseenCompanionCount`, `markCompanionSeen`.
+- `src/routes/admin.tsx` — `beforeLoad` calls `amIAdmin`; throw `notFound()` otherwise.
+- `src/pages/Admin.tsx` — remove the "forbidden card" branch (unreachable after 404 gate); minor copy pass.
+- `src/components/CompanionBubble.tsx` — merge unseen-companion signal into the pink dot; call `markCompanionSeen` on open.
+- `src/components/RelateNudge.tsx` — add `track('cold_relate_nudge_shown' | '…accepted')`.
+- `src/lib/situations.functions.ts` — emit `companion_comment_created` after insert.
+- Sweep (read-then-patch as needed): `src/components/RoomTile.tsx`, `src/pages/Stream.tsx`, `src/pages/Halls.tsx`, `src/pages/home/sections/RoomsStrip.tsx`, `src/lib/pillars.functions.ts` — enforce `is_seed=false`, remove any invented floors.
+
+## Tables touched (this turn)
+
+- Reads only: `user_roles`, `profiles`, `comments`, `situations`, `rooms`.
+- Writes: `profiles.companion_seen_at` (via `markCompanionSeen`). No new migrations required.
+
+## One thing I need from you
+
+Confirm your Supabase `auth.users.id` (or the email on your account) so I can print the exact one-line SQL to grant yourself `admin` in `user_roles`. I will not hardcode it in app code.
+
+## Out of scope (per your constraints)
+
+- Spill/Scan agent prompts, Mirror pipeline, billing/Stripe.
+- Any new demo/seed content — purge remains permanent.
