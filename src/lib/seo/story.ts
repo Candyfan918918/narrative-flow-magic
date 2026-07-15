@@ -29,7 +29,6 @@ export interface StoryGateInput {
   is_seed: boolean;
   crisis_flag: boolean;
   deleted_at: string | null;
-  relates_count: number;
 }
 
 /** A row is publicly renderable ONLY when the gate passes. */
@@ -40,11 +39,10 @@ export function isStoryRenderable(s: StoryGateInput): boolean {
   return true;
 }
 
-/** A rendered story is indexable when it has real traction OR is a seed. */
+/** Real (non-seed) public, non-crisis, non-deleted stories are indexable. */
 export function isStoryIndexable(s: StoryGateInput): boolean {
   if (!isStoryRenderable(s)) return false;
-  if (s.is_seed) return true;
-  return s.relates_count >= STORY_INDEX_MIN_RELATES;
+  return s.is_seed === false;
 }
 
 const STOP = new Set([
