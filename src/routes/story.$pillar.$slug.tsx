@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
 import { getPublicStory } from "@/lib/story.functions";
+import { RelateNudge } from "@/components/RelateNudge";
 import {
   buildStoryJsonLd,
   isStoryIndexable,
@@ -11,10 +12,12 @@ import {
   type StoryRow,
 } from "@/lib/seo/story";
 
+type StoryLite = Pick<StoryRow, "id" | "slug" | "pillar" | "title" | "clean_text" | "initial_scan">;
 type LoaderData = {
   row: StoryRow;
   relates: number;
-  siblings: Array<Pick<StoryRow, "id" | "slug" | "pillar" | "title" | "clean_text" | "initial_scan">>;
+  siblings: StoryLite[];
+  resonance: { count: number; display_count: number | null; stories: StoryLite[]; fallback: boolean };
 };
 
 export const Route = createFileRoute("/story/$pillar/$slug")({
@@ -111,8 +114,16 @@ const REASONING_LABELS: Record<string, string> = {
 };
 
 function StoryPage() {
-  const { row, relates, siblings } = Route.useLoaderData() as LoaderData;
+  const { row, relates, siblings, resonance } = Route.useLoaderData() as LoaderData;
   const reasoning = (row.scan_reasoning ?? null) as Record<string, { note?: string; weight?: number }> | null;
+  const resonanceLine =
+    resonance.display_count && resonance.display_count >= 5
+      ? `${resonance.display_count}+ similar stories`
+      : resonance.stories.length > 0
+        ? resonance.fallback
+          ? "other people carrying something in the same room"
+          : `${resonance.stories.length} similar stories`
+        : "no matches yet — you might be the first";
 
   return (
     <SeoPage>
@@ -162,6 +173,30 @@ function StoryPage() {
           </section>
         )}
 
+        <section className="space-y-3 rounded-md border border-border p-5">
+          <p className="text-sm uppercase tracking-wider text-muted-foreground">{resonanceLine}</p>
+          {resonance.stories.length > 0 && (
+            <ul className="space-y-3">
+              {resonance.stories.map((s) => s.slug ? (
+                <li key={s.id}>
+                  <Link
+                    to="/story/$pillar/$slug"
+                    params={{ pillar: s.pillar, slug: s.slug }}
+                    className="block hover:underline"
+                  >
+                    <div className="text-base font-medium">{storyQueryTitle(s)}</div>
+                    {s.clean_text && (
+                      <div className="text-sm text-muted-foreground line-clamp-2">
+                        {s.clean_text.split(/\n|\. /)[0]?.slice(0, 160)}
+                      </div>
+                    )}
+                  </Link>
+                </li>
+              ) : null)}
+            </ul>
+          )}
+        </section>
+
         <section className="rounded-md border border-border p-5">
           <p className="text-sm text-muted-foreground">carrying something similar?</p>
           <Link to="/" className="mt-2 inline-block text-lg font-medium underline">
@@ -190,6 +225,7 @@ function StoryPage() {
           </section>
         )}
       </article>
+      <RelateNudge currentRoomId={row.room_id ?? null} currentIsCrisis={row.crisis_flag ?? false} />
     </SeoPage>
   );
 }

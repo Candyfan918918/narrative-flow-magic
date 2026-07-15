@@ -150,3 +150,39 @@ export const relateQueueStats = createServerFn({ method: 'GET' })
       median_minutes_to_first_response: median,
     }
   })
+
+// Cold-nudge picker: one un-responded public room (>=1h old, non-crisis),
+// used by the post-read RelateNudge. Public read — no admin gate.
+export const getColdNudge = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ excludeRoomId: z.string().uuid().optional() }).parse(d ?? {}))
+  .handler(async ({ data, context }): Promise<{ room_id: string; title: string; first_line: string; pillar: string | null } | null> => {
+    await context
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const hourAgo = new Date(Date.now() - 3600000).toISOString()
+    let q = supabaseAdmin
+      .from('situations')
+      .select('room_id, title, clean_text, pillar, created_at')
+      .eq('is_public', true)
+      .eq('is_seed', false)
+      .eq('crisis_flag', false)
+      .is('deleted_at', null)
+      .is('human_response_at', null)
+      .not('room_id', 'is', null)
+      .lt('created_at', hourAgo)
+      .order('created_at', { ascending: true })
+      .limit(5)
+    const { data: rows } = await q
+    const list = (rows ?? []) as Array<{ room_id: string; title: string | null; clean_text: string; pillar: string | null }>
+    const filtered = data.excludeRoomId ? list.filter((r) => r.room_id !== data.excludeRoomId) : list
+    const pick = filtered[0]
+    if (!pick) return null
+    const first = (pick.clean_text || '').split(/\n|\. /)[0]?.slice(0, 160) || ''
+    return {
+      room_id: pick.room_id,
+      title: pick.title || first.slice(0, 80) || 'someone shared this',
+      first_line: first,
+      pillar: pick.pillar,
+    }
+  })
+

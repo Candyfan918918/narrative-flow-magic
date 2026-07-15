@@ -75,15 +75,16 @@ export function CommentsThread({ roomId }: { roomId: string }) {
         )}
         {comments.map((c) => {
           const mine = c.is_mine
+          const isCompanion = c.is_companion
           const editing = editingId === c.id
-          const who = mine ? 'you' : (c.display_name || 'someone')
-          const emoji = c.emoji || (mine ? '🩷' : '🙂')
+          const who = isCompanion ? 'the companion' : mine ? 'you' : (c.display_name || 'someone')
+          const emoji = isCompanion ? '👁' : (c.emoji || (mine ? '🩷' : '🙂'))
           return (
             <div
               key={c.id}
               style={{
-                background: '#fff',
-                border: '.5px solid rgba(11,8,15,.08)',
+                background: isCompanion ? '#fff5f9' : '#fff',
+                border: isCompanion ? '.5px solid rgba(231,84,138,.35)' : '.5px solid rgba(11,8,15,.08)',
                 borderRadius: 14,
                 padding: '12px 14px',
               }}
@@ -99,8 +100,28 @@ export function CommentsThread({ roomId }: { roomId: string }) {
                   color: '#9e7a8c',
                 }}
               >
-                <span><span aria-hidden style={{ marginRight: 6 }}>{emoji}</span>{who}{c.edited ? ' · edited' : ''} · {timeAgo(c.created_at)}</span>
-                {mine && !editing && (
+                <span>
+                  <span aria-hidden style={{ marginRight: 6 }}>{emoji}</span>
+                  {who}
+                  {isCompanion && (
+                    <span
+                      style={{
+                        marginLeft: 8,
+                        padding: '2px 7px',
+                        borderRadius: 999,
+                        background: 'rgba(231,84,138,.14)',
+                        color: '#c1216b',
+                        fontSize: 10,
+                        letterSpacing: '.06em',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      house AI
+                    </span>
+                  )}
+                  {c.edited ? ' · edited' : ''} · {timeAgo(c.created_at)}
+                </span>
+                {mine && !isCompanion && !editing && (
                   <span style={{ display: 'flex', gap: 8 }}>
                     <button
                       onClick={() => {
