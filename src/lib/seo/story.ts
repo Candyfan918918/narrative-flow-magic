@@ -15,7 +15,7 @@ export interface StoryRow {
   title: string | null;
   initial_scan: number | null;
   scan_band: string | null;
-  scan_reasoning: unknown;
+  scan_reasoning: JsonValue | null;
   is_public: boolean;
   is_seed: boolean;
   crisis_flag: boolean;
