@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
 import { getPublicStory } from "@/lib/story.functions";
+import { RelateNudge } from "@/components/RelateNudge";
 import {
   buildStoryJsonLd,
   isStoryIndexable,
@@ -11,10 +12,12 @@ import {
   type StoryRow,
 } from "@/lib/seo/story";
 
+type StoryLite = Pick<StoryRow, "id" | "slug" | "pillar" | "title" | "clean_text" | "initial_scan">;
 type LoaderData = {
   row: StoryRow;
   relates: number;
-  siblings: Array<Pick<StoryRow, "id" | "slug" | "pillar" | "title" | "clean_text" | "initial_scan">>;
+  siblings: StoryLite[];
+  resonance: { count: number; display_count: number | null; stories: StoryLite[]; fallback: boolean };
 };
 
 export const Route = createFileRoute("/story/$pillar/$slug")({
