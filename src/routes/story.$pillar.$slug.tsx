@@ -173,6 +173,30 @@ function StoryPage() {
           </section>
         )}
 
+        <section className="space-y-3 rounded-md border border-border p-5">
+          <p className="text-sm uppercase tracking-wider text-muted-foreground">{resonanceLine}</p>
+          {resonance.stories.length > 0 && (
+            <ul className="space-y-3">
+              {resonance.stories.map((s) => s.slug ? (
+                <li key={s.id}>
+                  <Link
+                    to="/story/$pillar/$slug"
+                    params={{ pillar: s.pillar, slug: s.slug }}
+                    className="block hover:underline"
+                  >
+                    <div className="text-base font-medium">{storyQueryTitle(s)}</div>
+                    {s.clean_text && (
+                      <div className="text-sm text-muted-foreground line-clamp-2">
+                        {s.clean_text.split(/\n|\. /)[0]?.slice(0, 160)}
+                      </div>
+                    )}
+                  </Link>
+                </li>
+              ) : null)}
+            </ul>
+          )}
+        </section>
+
         <section className="rounded-md border border-border p-5">
           <p className="text-sm text-muted-foreground">carrying something similar?</p>
           <Link to="/" className="mt-2 inline-block text-lg font-medium underline">
@@ -201,6 +225,7 @@ function StoryPage() {
           </section>
         )}
       </article>
+      <RelateNudge currentRoomId={row.room_id ?? null} currentIsCrisis={row.crisis_flag ?? false} />
     </SeoPage>
   );
 }
