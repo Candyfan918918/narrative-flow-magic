@@ -2,6 +2,8 @@
 // JSON-LD builder. Shared by the story route and the sitemap child.
 import { SITE_URL } from "@/lib/site";
 
+export type JsonValue = string | number | boolean | null | { [k: string]: JsonValue } | JsonValue[];
+
 /** Minimum real relates before a non-seed story becomes indexable. */
 export const STORY_INDEX_MIN_RELATES = 3;
 
