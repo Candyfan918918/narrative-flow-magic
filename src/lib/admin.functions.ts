@@ -181,8 +181,10 @@ export const adminListEvents = createServerFn({ method: 'POST' })
     const { data: rows, error } = await query
     if (error) throw new Error(error.message)
     return rows ?? []
+  })
 
 // ---------- response floor console ----------
+
 
 type RoomListItem = {
   room_id: string
