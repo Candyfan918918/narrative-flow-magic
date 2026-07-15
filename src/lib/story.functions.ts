@@ -11,13 +11,12 @@ const Input = z.object({
 export const getPublicStory = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }) => {
-    const { getStoryBySlug, listSiblingStories } = await import("@/lib/seo/story.server");
+    const { getStoryBySlug, listSiblingStories, listResonanceMatches } = await import("@/lib/seo/story.server");
     const hit = await getStoryBySlug(data.pillar, data.slug);
     if (!hit) return null;
-    const siblings = await listSiblingStories({
-      pillar: data.pillar,
-      excludeId: hit.row.id,
-      limit: 4,
-    });
-    return { row: hit.row, relates: hit.relates, siblings };
+    const [siblings, resonance] = await Promise.all([
+      listSiblingStories({ pillar: data.pillar, excludeId: hit.row.id, limit: 4 }),
+      listResonanceMatches({ pillar: data.pillar, excludeId: hit.row.id, query_text: hit.row.clean_text, limit: 3 }),
+    ]);
+    return { row: hit.row, relates: hit.relates, siblings, resonance };
   });
