@@ -113,7 +113,7 @@ export function CompanionComposer({ open, onClose, onSpill, onScan }: {
     setHistory(nextHistory)
     if (inputRef.current) inputRef.current.value = ''
     try {
-      const res = await ask({ data: { mode: 'ask', messages: nextHistory } })
+      const res = await ask({ data: { mode: 'ask', messages: nextHistory, alias: currentAlias?.name } })
       const text = (res?.text || '').trim() || "i'm here — say a bit more?"
       setReply(text)
       setHistory((h) => [...h, { role: 'assistant', content: text }])
