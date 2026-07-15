@@ -34,6 +34,7 @@ export function RelateNudge({ currentRoomId, currentIsCrisis }: { currentRoomId:
         const c = await fetchCold({ data: currentRoomId ? { excludeRoomId: currentRoomId } : {} })
         if (cancelled || !c) return
         setCold(c as Cold)
+        track('cold_relate_nudge_shown', { room_id: c.room_id }).catch(() => {})
         try { sessionStorage.setItem(SESSION_KEY, '1') } catch { /* noop */ }
       } catch { /* fail silent */ }
     }
