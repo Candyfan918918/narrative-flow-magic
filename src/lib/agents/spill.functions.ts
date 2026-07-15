@@ -113,7 +113,8 @@ export const runSpill = createServerFn({ method: 'POST' })
         scan_band: bandToDb[scan.band],
         reflection: scan.reflection,
         is_public: data.is_public,
-      })
+        is_seed: isSeed,
+      } as never)
       .select('id')
       .single()
 
