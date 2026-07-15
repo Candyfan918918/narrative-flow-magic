@@ -1,118 +1,120 @@
+# Response Floor + Admin Console — Build Plan
 
-# Public Story Route + Seed Ingestion Path
+## 1. Companion comment in-thread
 
-## Part A — Public Story Route (SSR, indexable)
+**Where**: `src/lib/agents/spill.functions.ts` (after step 6 where `companion` reflection is generated, only when `data.is_public && sit?.id && !isSeed`).
 
-### 1. URL pattern
-`/story/$pillar/$slug`
-- `$pillar` = the situation's pillar tag (e.g. `family`, `work`, `love`).
-- `$slug` = human-readable slug derived from the situation (query-shaped, e.g. `mom-keeps-comparing-me-to-my-sister`).
-- Matches Phase F route family (`/pillar/$name`, `/stream`, existing tag routes).
-- Slug stored on `situations.slug`, unique per pillar, auto-generated on insert via trigger; backfill existing public rows.
+- Insert a row into `public.comments` via `supabaseAdmin` with:
+  - `situation_id = sit.id`
+  - `author_id = null` (new column) OR a reserved sentinel UUID stored in a new `is_companion boolean` column — **propose `is_companion boolean not null default false`** on `comments` (simpler, avoids nullable FK migration).
+  - `clean_text = companion.message` (already scrubber-safe because the model wrote it from scrubbed input; still run through `scrubPII` for defense-in-depth).
+- Extend `listRoomComments` in `src/lib/situations.functions.ts` to return `is_companion`, and override `display_name = 'the companion'`, `emoji = '👁'`, and never mark as `is_mine`.
+- `src/components/CommentsThread.tsx`: render companion comments with the `EyeMark` avatar, name "the companion," and a small pill badge "house AI." Skip edit/delete controls.
+- **Pink dot on companion bubble**: reuse the existing check-in-due indicator. Extend `getDueCheckin` (`src/lib/checkins.functions.ts`) OR add a sibling server fn `hasUnseenCompanionResponse` that returns true when the author has any public situation whose companion comment `created_at > profiles.companion_seen_at`. Add `companion_seen_at timestamptz` on `profiles`; clear it when the author views their own room. `CompanionBubble.tsx` ORs both signals to show the dot.
 
-### 2. Gating (server-side in loader)
-Story renders publicly only if ALL true:
-- `visibility = 'public'`
-- `crisis_flag = false`
-- `is_deleted = false`
-- Resonance/quality gate met — reuse the existing threshold config (same value Stream and Hall of Fame already read; no new knob).
+**Not touched**: private/journal (`is_public=false`) path skips insert. Scan-only rooms (from ScanModal) also get the companion comment when they hit `publishScanRoom` — audit that call site and mirror the insert there too.
 
-Behavior:
-- Private OR crisis-flagged OR deleted → throw `notFound()` (real 404, never rendered).
-- Public but below resonance threshold → render page, but emit `<meta name="robots" content="noindex,follow">` and omit from sitemap.
-- Public + above threshold → full index + sitemap entry.
+## 2. Resonance strip on room page (SSR)
 
-### 3. On-page content
-- Scrubbed `clean_text` (never raw text).
-- Scan verdict: numeric score (0–999) + band label.
-- Six-dimension reasoning breakdown from `situations.reasoning`.
-- Real relate count (`room_relates` count for the linked room, or denormalized `relate_count`) — no fake numbers.
-- Outcome block from `outcomes` table if present.
-- Primary CTA: "Spill yours" → opens SpillModal on landing.
-- 3–4 internal links to sibling stories in the same pillar (order by resonance desc, exclude current).
+**Where**: `src/routes/room.tsx` currently uses `ssr: false` + client `RoomPage` reading localStorage. This must change for public rooms only.
 
-### 4. SEO head (route `head()`)
-- `title`: query-shaped, generated from situation. Helper in `src/lib/seo/story.ts`.
-- `description`: 150–160 char summary derived from clean_text opening + verdict band.
-- `canonical`: `https://shutap.com/story/{pillar}/{slug}` on leaf route only.
-- `og:title`, `og:description`, `og:type=article`, `og:url` self-referencing.
-- Structured data: **`DiscussionForumPosting`** (not QAPage). Rationale: stories are first-person lived experiences with community resonance (relates, room reactions) — matches forum-post schema. QAPage requires accepted-answer semantics that stories don't have; the Scan verdict is not an "answer".
+- Convert `/room` route: keep `ssr: false` for local-only rooms (from localStorage) but add a new SSR-capable route `/story/$pillar/$slug` (already exists) as the canonical public room URL. If the request is `?id=<uuid>`, keep the current client behavior. **The public canonical is `/story/...`** — that's where the SSR resonance strip belongs.
+- `src/routes/story.$pillar.$slug.tsx`: in the loader, call `findMatches` server-side with the story's `clean_text` + `pillar`, `exclude_id = story.id`. Pass top 2–3 into the component.
+- Render a `ResonanceStrip` component above the CTA: shows "N similar stories" (only when `display_count >= 5`; else the story-line copy) and 2–3 `<Link to="/story/$pillar/$slug">` cards.
+- Fallback: when matcher returns zero, query `supabaseAdmin.from('situations').select(...).eq('pillar', pillar).eq('is_public', true).eq('is_seed', false).eq('crisis_flag', false).neq('id', story.id).order('created_at', desc).limit(3)`.
+- New helper file: `src/components/story/ResonanceStrip.tsx`.
 
-### 5. Sitemap flow
-Add:
-- New leaf `src/routes/sitemaps/stories[.]xml.ts` — queries public + non-crisis + above-threshold situations with slugs; emits `<url>` per story.
-- Register that leaf in the existing sitemap index route.
-- Cache headers matching existing leaves.
+## 3. Admin console at `/admin`
 
-### 6. Noindex until gated
-Handled by (4) + (5): below-threshold rows emit `noindex,follow` and are excluded from sitemap; promotion to indexed happens automatically when resonance crosses the threshold — no manual step.
+**Admin gating mechanism**: use the existing `user_roles` table + `has_role(uid, 'admin')` (already wired in `src/lib/admin.functions.ts`). Propose: grant the admin role to the owner account via a one-off migration seed keyed on the account's `auth.users.email` lookup (looked up server-side; email not hard-coded in client). If the admin account is unknown at migration time, the plan will emit a placeholder migration and I'll ask for the email before running it.
 
-## Part B — Seed Ingestion Path
+- Rewrite `src/pages/Admin.tsx`: strip out the mock KPIs, spark charts, and seed-based content. Replace with three sections backed by real server fns.
+- Move route to `src/routes/_authenticated/admin.tsx` (subtree already gates auth). Add an in-route `beforeLoad` that calls a new `getIsAdmin` server fn (uses `has_role`), throws `notFound()` on false → true 404 for non-admins. Keep `robots: noindex`. Ensure the sitemap builders (`src/routes/sitemap[.]xml.ts`, etc.) don't list `/admin`.
+- Remove the old `src/routes/admin.tsx` (top-level, ssr:false) after moving.
+- New server functions in `src/lib/admin.functions.ts`, each wrapping `requireAdmin` middleware:
+  - `adminNeedsResponse` — public, non-seed, non-crisis situations with zero non-companion, non-author comments AND zero human relates; ordered oldest first.
+  - `adminNewRooms` — reverse-chronological latest public rooms with the same column set.
+  - `adminLiquidityStats` — response coverage %, human-relate coverage % (24h window), cold-room count (>72h zero human engagement), avg time-to-first-human-relate. Real computed numbers; expose `{ value, sample_size }` so honest zeros surface.
+- Sections render as tables with columns: headline (deriveTitle), age (relative), pillar, Scan score, comment count (excluding companion), relate count, deep link `/story/$pillar/$slug`.
 
-### 1. Mechanism
-Admin-only **server function** (`createServerFn` + `requireSupabaseAuth` + `has_role('admin')` check), not a route or edge function. Reasons: reuses existing auth-middleware pattern, avoids a public URL surface, keeps same worker runtime as organic pipeline, invocable from a small admin UI or ad-hoc.
+**Notification layer**: on public room creation (end of `runSpill` when `is_public && !isSeed && !crisis`), fire an internal call to `src/lib/email/send.server.ts` (or `sendResendEmail`) with To: `hello@shutap.com`, Subject: `[new room] <headline>`, body: headline + first 200 chars of `clean_text` + Scan score + links to `/story/...` and `/_authenticated/admin`. Fail-soft (log, never throw). Use the existing `IDENTITIES` from `src/lib/email/identities.ts`.
 
-Contract: accepts `{ drafts: Array<{ raw_text, pillar_hint? }> }`, runs each sequentially through the identical organic path:
+## 4. Post-read relate nudge
 
-```
-Scrubber → runSpill (situation created) → runScan (six-dim reasoning) → mirror-pipeline ingest
-```
+**Where**: `src/components/RoomDetail.tsx` (and the story page component). Only for signed-in users, non-crisis current room.
 
-No direct DB inserts. Same functions organic users hit — with one extra flag threaded through.
+- New server fn `getColdRoomNudge` in `src/lib/relate-queue.functions.ts`: returns one public, non-seed, non-crisis room with zero human relates and age > 24h, excluding current id, excluding rooms the caller already interacted with. Uses `supabaseAdmin` filtered by criteria.
+- New `<ColdRelateNudge>` component: same slide-up pattern as `RoomShareSheet`. Shows headline + first sentence + two actions ("omg same" relate + "open room" link).
+- Trigger: `IntersectionObserver` on the bottom of the room body. Session cap via `sessionStorage['cold_relate_shown']`. Skip entirely if `room.crisis_flag` or nudge target `crisis_flag`.
+- On "omg same": call existing relate mutation with the nudge target id. Suppress once fired.
+- Tracking events: `cold_relate_nudge_shown` and `cold_relate_nudge_accepted` via existing `trackEvent` in `src/lib/tracking.ts`.
 
-### 2. `is_seed=true` propagation
-Single boolean column `is_seed` (default false) on:
-- `situations`
-- `mirror_signals`
-- `mirror_patterns`
-- `outcomes`
+## 5. Honest reaction states
 
-Threaded via an optional param on `runSpill`, `runScan`, and `mirror-pipeline` handlers (default false so organic path is untouched). No agent prompts change — flag is data-layer only.
+- Audit `src/components/RoomDetail.tsx`, `src/components/RoomTile.tsx`, `src/pages/Stream.tsx` for any hard-coded reaction default `>0`. Fix zero-state copy: "be the first to feel this."
+- `src/data/seed.ts` still ships mock `reactions: { heard: 3, same: 2, ... }` used by `RoomPage` (localStorage) — after the demo purge (§6) this file's SHUTAP_SEED must be neutered to `{ rooms: [] }` (retain type export). Any component relying on `SHUTAP_SEED.rooms` for non-empty demo data must render honest empty states.
 
-### 3. Exclusion from claims
-- Hall of Fame filters `is_seed=false`.
-- Any aggregate presented as "real users" (landing counters, pillar-page user metrics, admin user dashboards) filters `is_seed=false`.
-- Seeds ARE eligible to render as public stories (that's the point) and are counted only in story-level surfaces.
+## 6. Demo data purge
 
-### 4. Open decision (flagged, not decided)
-**Do seeds count toward the resonance "N people lived this" number, or is that computed real-only?**
-- Option A (count seeds): more stories cross the gate faster, more indexed pages sooner, but the displayed number is partly synthetic.
-- Option B (real-only): displayed count is always truthful; seeds carry only their own weight and need real relates to be promoted.
-- Recommendation to discuss: **Option B**, with seeds visible pre-gate as `noindex` so they can accumulate real relates organically. Decide before implementation.
+**Tables to touch** (list per constraint):
+
+- `public.situations` — delete `is_seed = true`
+- `public.comments` — delete rows whose `situation_id` is in the deleted set OR flagged demo
+- `public.room_reactions` — same cascade
+- `public.room_relates` — same cascade
+- `public.rooms` — legacy table, delete demo rows
+- `public.mirror_signals` — delete `is_seed = true`
+- `public.mirror_patterns` — delete `is_demo = true`
+- `public.mirror_shape` — recompute after deletion
+- `public.checkins`, `public.checkin_responses`, `public.outcomes` — cascade via `situation_id` of deleted situations
+- `public.pii_scrub_log` — cascade
+- `public.pillar_status` — recompute counts
+- Client-side: `localStorage['shutap_user_situations']`, `localStorage['shutap_modqueue']`, `SHUTAP_SEED` in `src/data/seed.ts`
+
+**Export first**: new admin server fn `adminExportDemoData` that streams a single JSON blob with all `is_seed`/`is_demo` rows across the tables above, plus any rows sourced from `invented_stories.json` (if that file still exists in the repo, include a snapshot; the plan will grep and confirm before deletion). Downloadable from the admin console → "Export & purge demo data" button → hits `adminPurgeDemoData` which runs the DELETEs in a transaction after the export succeeds.
+
+**Verification** (after purge):
+- Hall of Fame page counts source real rows only (audit `src/pages/Halls.tsx`).
+- Pillar densities via `pillar_status` — trigger recompute or verify it excludes seeds.
+- Matcher already excludes seeds (confirmed in `match_situations` RPC).
+- Resonance strip counts, stream feed, admin liquidity — all real.
+
+## Migrations required
+
+1. `alter table public.comments add column is_companion boolean not null default false;` + RLS: allow admin inserts via `supabaseAdmin` (bypasses RLS anyway); update SELECT policies to keep companion comments readable by everyone who can read the situation.
+2. `alter table public.profiles add column companion_seen_at timestamptz;`
+3. Seed admin role for the owner account (needs user email — will ask before running).
+
+## Files to change / create
+
+**Modify**:
+- `src/lib/agents/spill.functions.ts` — insert companion comment, fire admin email
+- `src/lib/situations.functions.ts` — expose `is_companion`, `publishScanRoom` companion comment
+- `src/components/CommentsThread.tsx` — companion rendering
+- `src/components/CompanionBubble.tsx` — OR unseen-companion signal into pink dot
+- `src/lib/checkins.functions.ts` or new `src/lib/companion-inbox.functions.ts`
+- `src/routes/story.$pillar.$slug.tsx` — SSR resonance strip in loader
+- `src/components/RoomDetail.tsx` — cold-relate nudge, honest zero-states
+- `src/pages/Admin.tsx` — full rewrite: real data tables
+- `src/lib/admin.functions.ts` — new server fns
+- `src/lib/relate-queue.functions.ts` — cold nudge picker
+- `src/data/seed.ts` — empty rooms array
+- `src/pages/Stream.tsx`, `src/components/RoomTile.tsx` — audit reaction defaults
+- `src/routes/admin.tsx` → move to `src/routes/_authenticated/admin.tsx`
+
+**Create**:
+- `src/components/story/ResonanceStrip.tsx`
+- `src/components/ColdRelateNudge.tsx`
+- Migration files for `comments.is_companion`, `profiles.companion_seen_at`, admin role seed
 
 ## Constraints honored
-- No agent prompt or behavior changes.
-- Schema additions limited to: `situations.slug` (+ trigger), `is_seed` on four tables.
-- Reuses existing resonance threshold config; no new knob.
-- Paywalled surfaces untouched.
+- No Spill/Scan agent logic, Mirror, or billing prompts change
+- New comment/relate writes reuse existing `scrubPII` + crisis-guard paths
+- Companion comment goes through PII scrubber for defense-in-depth
+- Admin route: 404 for non-admins, noindex, absent from sitemap
+- All new counts computed from real (non-seed) data
 
-## Files to change
-
-**New**
-- `src/routes/story.$pillar.$slug.tsx` — SSR route, loader, gating, head, JSON-LD.
-- `src/routes/sitemaps/stories[.]xml.ts` — stories sitemap leaf.
-- `src/lib/seo/story.ts` — query-shaped title, description, JSON-LD builders (client-safe).
-- `src/lib/seo/story.server.ts` — server-only gate helpers.
-- `src/lib/stories.functions.ts` — `getPublicStory({ pillar, slug })`, `listSiblingStories(pillar, excludeId)`, `listIndexableStories()` for sitemap.
-- `src/lib/seed-ingest.functions.ts` — admin `runSeedBatch({ drafts })`.
-
-**Modified**
-- `src/routes/sitemap[.]xml.ts` — register the stories leaf in the index.
-- `src/lib/agents/spill.functions.ts` — accept + persist `is_seed`.
-- `src/lib/agents/scan.functions.ts` — accept + persist `is_seed` on reasoning row.
-- `src/lib/mirror-pipeline.functions.ts` — accept + persist `is_seed` on signals/patterns/outcomes.
-- Hall of Fame / aggregate query sites (likely `src/lib/hall-of-fame.functions.ts` and landing "N stories" counters) — add `is_seed=false` filter.
-
-**Migration (single file)**
-- Add `situations.slug text` + unique index `(pillar, slug)` + auto-slugify trigger on insert + backfill existing public rows.
-- Add `is_seed boolean not null default false` to `situations`, `mirror_signals`, `mirror_patterns`, `outcomes`.
-
-## Verification before shipping
-- Type/build passes.
-- `/story/family/{known-slug}` renders with real data; private + crisis rows 404.
-- Below-threshold story shows `noindex` and is absent from `stories.xml`.
-- Admin seed run produces situation + reasoning + mirror rows all carrying `is_seed=true`.
-
-Awaiting: confirm URL pattern (`/story/$pillar/$slug`), confirm JSON-LD choice (`DiscussionForumPosting`), and decide the resonance/seed-counting question in Part B step 4.
-
-Note: this phase was already scaffolded in a prior turn — `story.$pillar.$slug.tsx`, `sitemaps/stories[.]xml.ts`, `seo/story.ts`, `seo/story.server.ts`, `seed-ingest.functions.ts`, and the migration are in place. On approval I'll audit each against this spec, add the missing `stories.functions.ts` split (currently inline in the route), verify the sitemap index registration, verify `is_seed` threading through the three agent files, and add the Hall-of-Fame / aggregate filters if not already present.
+## Open questions (need answer before build)
+1. **Admin account email** to seed `user_roles` for `has_role('admin')`.
+2. Should the SSR resonance strip live on `/room?id=<uuid>` (client route) too, or only on `/story/$pillar/$slug`? The spec says "on the room page" — I read that as the canonical public URL (`/story`), which is what crawlers see. Confirm.
+3. Cold-room threshold in the admin — spec says >72h zero *human* engagement; confirm that "human engagement" = human relates only (not companion comments, not scans).
