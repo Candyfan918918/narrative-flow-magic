@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { supabase } from '@/integrations/supabase/client'
 import { getColdNudge } from '@/lib/relate-queue.functions'
-import { addRelate } from '@/lib/situations.functions'
 
 const SESSION_KEY = 'shutap_cold_nudge_shown_v1'
 
