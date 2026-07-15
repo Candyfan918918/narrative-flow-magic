@@ -169,6 +169,7 @@ export const runSpill = createServerFn({ method: 'POST' })
               : data.pillar === 'marriage' ? 'love'
               : 'love',
             pre_scrubbed: true,
+            is_seed: isSeed,
           },
         })
       } catch (err) { console.error('[mirror-ingest] spill', err) }
