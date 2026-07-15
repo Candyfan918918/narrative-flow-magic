@@ -26,7 +26,7 @@ export const amIAdmin = createServerFn({ method: 'GET' })
 export const getUnseenCompanionCount = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<number> => {
-    const c = context as { supabase: { from: (t: string) => { select: (s: string, opts?: unknown) => { eq: (col: string, v: unknown) => unknown } } }; userId: string }
+    const c = context as { userId: string }
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { data: prof } = await supabaseAdmin
       .from('profiles')
