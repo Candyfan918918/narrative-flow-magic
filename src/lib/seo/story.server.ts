@@ -46,7 +46,6 @@ export async function getStoryBySlug(pillar: PillarSlug, slug: string): Promise<
     is_seed: row.is_seed,
     crisis_flag: row.crisis_flag,
     deleted_at: row.deleted_at,
-    relates_count: 0,
   })) return null;
   const relates = await getRelateCount(row.room_id);
   return { row, relates };
