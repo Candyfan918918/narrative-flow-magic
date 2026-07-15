@@ -38,6 +38,9 @@ const IngestInput = z.object({
   // runScrub (saveSituation, createComment, spill) so phase 2 can skip the
   // duplicate LLM scrub round-trip.
   pre_scrubbed: z.boolean().optional().default(false),
+  // Admin-only seed marker; propagates to mirror_signals and any
+  // pattern crystallized from a seed signal.
+  is_seed: z.boolean().optional().default(false),
 })
 
 type PatternRow = {
