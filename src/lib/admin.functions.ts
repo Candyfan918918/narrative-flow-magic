@@ -181,4 +181,158 @@ export const adminListEvents = createServerFn({ method: 'POST' })
     const { data: rows, error } = await query
     if (error) throw new Error(error.message)
     return rows ?? []
+
+// ---------- response floor console ----------
+
+type RoomListItem = {
+  room_id: string
+  situation_id: string
+  title: string
+  clean_text: string
+  pillar: string | null
+  initial_scan: number | null
+  scan_band: string | null
+  created_at: string
+  age_hours: number
+  human_relates: number
+  human_comments: number
+  companion_comments: number
+}
+
+async function decorateRooms(
+  sb: Awaited<ReturnType<typeof import('@/integrations/supabase/client.server').__type>> extends never ? never : unknown,
+  situations: Array<{ id: string; room_id: string | null; title: string | null; clean_text: string; pillar: string | null; initial_scan: number | null; scan_band: string | null; created_at: string; alias_id: string }>,
+): Promise<RoomListItem[]> {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  void sb
+  const rows = situations.filter((s) => !!s.room_id)
+  const roomIds = rows.map((s) => s.room_id!) 
+  if (roomIds.length === 0) return []
+  const [relatesRes, commentsRes] = await Promise.all([
+    supabaseAdmin.from('room_relates').select('room_id').in('room_id', roomIds),
+    supabaseAdmin.from('comments').select('room_id, alias_id, is_companion').in('room_id', roomIds).is('deleted_at', null),
+  ])
+  const relateCount: Record<string, number> = {}
+  for (const r of (relatesRes.data ?? []) as Array<{ room_id: string }>) {
+    relateCount[r.room_id] = (relateCount[r.room_id] ?? 0) + 1
+  }
+  const humanCmt: Record<string, number> = {}
+  const compCmt: Record<string, number> = {}
+  for (const c of (commentsRes.data ?? []) as Array<{ room_id: string; alias_id: string; is_companion: boolean }>) {
+    if (c.is_companion) compCmt[c.room_id] = (compCmt[c.room_id] ?? 0) + 1
+    else humanCmt[c.room_id] = (humanCmt[c.room_id] ?? 0) + 1
+  }
+  const now = Date.now()
+  return rows.map((s) => ({
+    room_id: s.room_id!,
+    situation_id: s.id,
+    title: s.title || (s.clean_text || '').split(/[.\n!?]/)[0]?.slice(0, 80) || 'untitled',
+    clean_text: (s.clean_text || '').slice(0, 220),
+    pillar: s.pillar,
+    initial_scan: s.initial_scan,
+    scan_band: s.scan_band,
+    created_at: s.created_at,
+    age_hours: Math.max(0, Math.round((now - new Date(s.created_at).getTime()) / 3600000)),
+    human_relates: relateCount[s.room_id!] ?? 0,
+    human_comments: humanCmt[s.room_id!] ?? 0,
+    companion_comments: compCmt[s.room_id!] ?? 0,
+  }))
+}
+
+export const adminNewRooms = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ limit: z.number().int().min(1).max(200).optional() }).parse(d ?? {}))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: rows } = await supabaseAdmin
+      .from('situations')
+      .select('id, alias_id, room_id, title, clean_text, pillar, initial_scan, scan_band, created_at')
+      .eq('is_public', true)
+      .eq('is_seed', false)
+      .eq('crisis_flag', false)
+      .is('deleted_at', null)
+      .not('room_id', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(data.limit ?? 50)
+    return decorateRooms(null, (rows ?? []) as never)
   })
+
+export const adminNeedsResponse = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ limit: z.number().int().min(1).max(200).optional() }).parse(d ?? {}))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: rows } = await supabaseAdmin
+      .from('situations')
+      .select('id, alias_id, room_id, title, clean_text, pillar, initial_scan, scan_band, created_at, human_response_at')
+      .eq('is_public', true)
+      .eq('is_seed', false)
+      .eq('crisis_flag', false)
+      .is('deleted_at', null)
+      .is('human_response_at', null)
+      .not('room_id', 'is', null)
+      .order('created_at', { ascending: true })
+      .limit((data.limit ?? 50) * 3)
+    const decorated = await decorateRooms(null, (rows ?? []) as never)
+    return decorated
+      .filter((r) => r.human_relates === 0 && r.human_comments === 0)
+      .slice(0, data.limit ?? 50)
+  })
+
+export const adminLiquidityStats = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    await context
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const now = Date.now()
+    const iso = (ms: number) => new Date(ms).toISOString()
+    const d1 = iso(now - 24 * 3600 * 1000)
+    const d3 = iso(now - 72 * 3600 * 1000)
+
+    // Base pool: real public rooms
+    const { data: allRooms } = await supabaseAdmin
+      .from('situations')
+      .select('id, room_id, created_at, human_response_at')
+      .eq('is_public', true)
+      .eq('is_seed', false)
+      .eq('crisis_flag', false)
+      .is('deleted_at', null)
+      .not('room_id', 'is', null)
+      .limit(5000)
+    const pool = (allRooms ?? []) as Array<{ id: string; room_id: string; created_at: string; human_response_at: string | null }>
+    const total = pool.length
+    const responded = pool.filter((r) => !!r.human_response_at).length
+    const coverage = total > 0 ? Math.round((responded / total) * 100) : 0
+    const cold = pool.filter((r) => !r.human_response_at && new Date(r.created_at).getTime() < now - 72 * 3600 * 1000).length
+
+    // 24h coverage: rooms created in last 24h
+    const last24 = pool.filter((r) => new Date(r.created_at).getTime() >= now - 24 * 3600 * 1000)
+    const last24Responded = last24.filter((r) => !!r.human_response_at).length
+    const coverage24 = last24.length > 0 ? Math.round((last24Responded / last24.length) * 100) : 0
+
+    // Median TTFR (hours) — for rooms that have a response
+    const ttfr: number[] = []
+    for (const r of pool) {
+      if (r.human_response_at) {
+        const h = (new Date(r.human_response_at).getTime() - new Date(r.created_at).getTime()) / 3600000
+        if (h >= 0) ttfr.push(h)
+      }
+    }
+    ttfr.sort((a, b) => a - b)
+    const medianTtfrHours = ttfr.length > 0 ? Number(ttfr[Math.floor(ttfr.length / 2)].toFixed(1)) : null
+
+    void d1; void d3
+    return {
+      total_public_rooms: total,
+      response_coverage_pct: coverage,
+      coverage_24h_pct: coverage24,
+      new_rooms_24h: last24.length,
+      cold_rooms_over_72h: cold,
+      median_ttfr_hours: medianTtfrHours,
+    }
+  })
+
