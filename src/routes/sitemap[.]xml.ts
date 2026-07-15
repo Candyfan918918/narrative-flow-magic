@@ -22,6 +22,20 @@ export const Route = createFileRoute("/sitemap.xml")({
           children.push({ loc: `${SITE_URL}/sitemaps/profiles.xml` });
         }
 
+        // Stories: only advertise the child sitemap when at least one
+        // story qualifies for indexing (seed OR relates >= threshold).
+        const storyRows = await listIndexableStoriesForSitemap(5000);
+        let storyIndexableCount = 0;
+        for (const r of storyRows) {
+          if (r.is_seed) { storyIndexableCount++; continue; }
+          const c = await getRelateCount(r.room_id);
+          if (c >= STORY_INDEX_MIN_RELATES) storyIndexableCount++;
+          if (storyIndexableCount > 0) break;
+        }
+        if (storyIndexableCount > 0) {
+          children.push({ loc: `${SITE_URL}/sitemaps/stories.xml` });
+        }
+
         return new Response(renderSitemapIndex(children), {
           headers: {
             "Content-Type": "application/xml",
