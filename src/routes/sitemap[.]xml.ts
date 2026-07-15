@@ -3,6 +3,8 @@ import type {} from "@tanstack/react-start";
 import { SITE_URL } from "@/lib/site";
 import { OUTCOMES, isOutcomeIndexable } from "@/lib/seo/outcomes";
 import { PROFILES, isProfileIndexable } from "@/lib/seo/profiles";
+import { listIndexableStoriesForSitemap, getRelateCount } from "@/lib/seo/story.server";
+import { STORY_INDEX_MIN_RELATES } from "@/lib/seo/story";
 import { renderSitemapIndex } from "@/lib/seo/sitemap";
 
 export const Route = createFileRoute("/sitemap.xml")({
