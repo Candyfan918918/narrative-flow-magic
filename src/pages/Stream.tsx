@@ -164,7 +164,7 @@ export function StreamPage() {
           support: ((r.support as Room['support']) || 'heard'),
           hours: relativeHours(r.created_at as string),
           relates: 0,
-          sitting: 1,
+          sitting: 0,
           reactions: { heard: 0, same: 0, strong: 0, time: 0, brave: 0 },
           kind: 'spill',
           initial_scan: null,

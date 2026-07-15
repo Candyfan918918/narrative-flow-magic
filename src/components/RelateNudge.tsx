@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { supabase } from '@/integrations/supabase/client'
 import { getColdNudge } from '@/lib/relate-queue.functions'
+import { trackEvent } from '@/lib/tracking'
 
 const SESSION_KEY = 'shutap_cold_nudge_shown_v1'
 
@@ -33,6 +34,7 @@ export function RelateNudge({ currentRoomId, currentIsCrisis }: { currentRoomId:
         const c = await fetchCold({ data: currentRoomId ? { excludeRoomId: currentRoomId } : {} })
         if (cancelled || !c) return
         setCold(c as Cold)
+        void trackEvent('cold_relate_nudge_shown', { room_id: c.room_id })
         try { sessionStorage.setItem(SESSION_KEY, '1') } catch { /* noop */ }
       } catch { /* fail silent */ }
     }
@@ -62,6 +64,7 @@ export function RelateNudge({ currentRoomId, currentIsCrisis }: { currentRoomId:
         await supabase.from('room_relates').insert({ room_id: cold.room_id, user_id: uid } as never)
       }
       setRelated(true)
+      void trackEvent('cold_relate_nudge_accepted', { room_id: cold.room_id })
     } catch { /* noop */ } finally { setRelating(false) }
   }
 

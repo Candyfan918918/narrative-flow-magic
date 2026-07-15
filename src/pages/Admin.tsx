@@ -138,19 +138,8 @@ export function AdminPage() {
   const needsQ = useQuery({ queryKey: ['admin', 'needs'], queryFn: () => fetchNeeds({ data: {} }), enabled: tab === 'needs' })
   const newQ = useQuery({ queryKey: ['admin', 'new'], queryFn: () => fetchNew({ data: {} }), enabled: tab === 'new' })
 
-  const forbidden = statsQ.error && /forbidden/i.test(String((statsQ.error as Error).message))
+  // Route beforeLoad already 404s non-admins; no forbidden branch needed.
 
-  if (forbidden) {
-    return (
-      <div style={{ minHeight: '100vh', background: BG, color: '#e8dfea', display: 'grid', placeItems: 'center', padding: 40 }}>
-        <div style={{ ...CARD, maxWidth: 400, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 8 }}>admin only</div>
-          <div style={{ color: '#9a8fa2', fontSize: 13, marginBottom: 14 }}>this console is gated. sign in as an admin.</div>
-          <Link to="/" style={{ color: '#f7b8d4' }}>← home</Link>
-        </div>
-      </div>
-    )
-  }
 
   const s = statsQ.data
   return (

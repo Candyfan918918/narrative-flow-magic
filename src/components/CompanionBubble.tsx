@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { EyeMark } from './EyeMark'
 import { getDueCheckin } from '@/lib/checkins.functions'
+import { getUnseenCompanionCount, markCompanionSeen } from '@/lib/admin.functions'
 import { supabase } from '@/integrations/supabase/client'
 
 /* The companion: a draggable, semi-transparent pink circle with the brand eyes
@@ -18,7 +19,11 @@ export function CompanionBubble({
   const onOpenRef = useRef(onOpen)
   useEffect(() => { onOpenRef.current = onOpen }, [onOpen])
   const fetchDue = useServerFn(getDueCheckin)
+  const fetchUnseen = useServerFn(getUnseenCompanionCount)
+  const markSeen = useServerFn(markCompanionSeen)
   const [hasDue, setHasDue] = useState(false)
+  const [hasUnseen, setHasUnseen] = useState(false)
+  const hasDot = hasDue || hasUnseen
 
   useEffect(() => {
     let cancelled = false
@@ -28,12 +33,31 @@ export function CompanionBubble({
         const u = sess.session?.user as { is_anonymous?: boolean } | undefined
         const real = !!sess.session && !u?.is_anonymous
         if (!real) return
-        const d = await fetchDue()
-        if (!cancelled && d) setHasDue(true)
+        const [d, n] = await Promise.all([
+          fetchDue().catch(() => null),
+          fetchUnseen().catch(() => 0),
+        ])
+        if (cancelled) return
+        if (d) setHasDue(true)
+        if ((n ?? 0) > 0) setHasUnseen(true)
       } catch { /* fail silent */ }
     })()
     return () => { cancelled = true }
-  }, [fetchDue])
+  }, [fetchDue, fetchUnseen])
+
+  // When the user taps the bubble AND there were unseen companion replies,
+  // stamp companion_seen_at so the dot clears on next check.
+  useEffect(() => {
+    const prev = onOpenRef.current
+    onOpenRef.current = () => {
+      if (hasUnseen) {
+        setHasUnseen(false)
+        void markSeen().catch(() => {})
+      }
+      prev()
+    }
+  }, [hasUnseen, markSeen])
+
 
   useEffect(() => {
     const el = ref.current
@@ -159,7 +183,7 @@ export function CompanionBubble({
       <div style={{ pointerEvents: 'none', display: 'inline-flex', transform: 'translateX(-2px)' }}>
         <EyeMark size={34} />
       </div>
-      {hasDue && (
+      {hasDot && (
         <span
           aria-hidden
           style={{
