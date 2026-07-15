@@ -59,6 +59,7 @@ import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as StoryPillarSlugRouteImport } from './routes/story.$pillar.$slug'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
@@ -324,6 +325,11 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const StoryPillarSlugRoute = StoryPillarSlugRouteImport.update({
+  id: '/story/$pillar/$slug',
+  path: '/story/$pillar/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiFeedbackEventsRoute = ApiFeedbackEventsRouteImport.update({
   id: '/api/feedback/events',
   path: '/api/feedback/events',
@@ -455,6 +461,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/story/$pillar/$slug': typeof StoryPillarSlugRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
@@ -519,6 +526,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/story/$pillar/$slug': typeof StoryPillarSlugRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
@@ -585,6 +593,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/story/$pillar/$slug': typeof StoryPillarSlugRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
@@ -651,6 +660,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/checkin/$id'
     | '/api/feedback/events'
+    | '/story/$pillar/$slug'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
     | '/api/public/hooks/reengagement-emails'
@@ -715,6 +725,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/checkin/$id'
     | '/api/feedback/events'
+    | '/story/$pillar/$slug'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
     | '/api/public/hooks/reengagement-emails'
@@ -780,6 +791,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/checkin/$id'
     | '/api/feedback/events'
+    | '/story/$pillar/$slug'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
     | '/api/public/hooks/reengagement-emails'
@@ -839,6 +851,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
+  StoryPillarSlugRoute: typeof StoryPillarSlugRoute
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicHooksMirrorEvolutionRoute: typeof ApiPublicHooksMirrorEvolutionRoute
   ApiPublicHooksReengagementEmailsRoute: typeof ApiPublicHooksReengagementEmailsRoute
@@ -1198,6 +1211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/story/$pillar/$slug': {
+      id: '/story/$pillar/$slug'
+      path: '/story/$pillar/$slug'
+      fullPath: '/story/$pillar/$slug'
+      preLoaderRoute: typeof StoryPillarSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/feedback/events': {
       id: '/api/feedback/events'
       path: '/api/feedback/events'
@@ -1395,6 +1415,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
+  StoryPillarSlugRoute: StoryPillarSlugRoute,
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicHooksMirrorEvolutionRoute: ApiPublicHooksMirrorEvolutionRoute,
   ApiPublicHooksReengagementEmailsRoute: ApiPublicHooksReengagementEmailsRoute,
