@@ -156,6 +156,7 @@ async function enqueueMirrorSignal(args: {
       ref_id: data.ref_id,
       text_scrubbed: data.raw_text ?? '',
       pattern_id: null,
+      is_seed: !!data.is_seed,
     } as never)
     .select('id')
     .single()
