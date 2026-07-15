@@ -107,3 +107,53 @@ export async function countIndexableStories(): Promise<number> {
     .not("slug", "is", null);
   return count ?? 0;
 }
+
+/** Resonance strip: matcher-driven similar stories with a same-pillar fallback. */
+export async function listResonanceMatches(args: {
+  pillar: PillarSlug;
+  excludeId: string;
+  query_text: string;
+  limit?: number;
+}): Promise<{
+  count: number;
+  display_count: number | null;
+  stories: Array<Pick<StoryRow, "id" | "slug" | "pillar" | "title" | "clean_text" | "initial_scan">>;
+  fallback: boolean;
+}> {
+  const limit = args.limit ?? 3;
+  const sb = await admin();
+  // Try matcher first via findMatches (respects seed/crisis/private/deleted).
+  let ids: string[] = [];
+  let count = 0;
+  let display_count: number | null = null;
+  try {
+    const { findMatches } = await import("@/lib/agents/matcher.functions");
+    const res = await findMatches({
+      data: { pillar: args.pillar, query_text: (args.query_text || "").slice(0, 4000), tags: [], exclude_id: args.excludeId },
+    });
+    count = res.count;
+    display_count = res.display_count;
+    ids = res.stories.map((s) => s.id).slice(0, limit);
+  } catch {
+    /* fail soft */
+  }
+  let stories: Array<Pick<StoryRow, "id" | "slug" | "pillar" | "title" | "clean_text" | "initial_scan">> = [];
+  if (ids.length > 0) {
+    const { data } = await sb
+      .from("situations")
+      .select("id, slug, pillar, title, clean_text, initial_scan")
+      .in("id", ids)
+      .eq("is_public", true)
+      .eq("crisis_flag", false)
+      .is("deleted_at", null)
+      .not("slug", "is", null);
+    stories = ((data ?? []) as Array<Record<string, unknown>>) as never;
+  }
+  let fallback = false;
+  if (stories.length === 0) {
+    fallback = true;
+    const sibs = await listSiblingStories({ pillar: args.pillar, excludeId: args.excludeId, limit });
+    stories = sibs;
+  }
+  return { count, display_count, stories, fallback };
+}
