@@ -16,6 +16,8 @@ const SpillInput = z.object({
   pillar: z.enum(['relationships', 'marriage', 'family', 'career']).default('relationships'),
   is_public: z.boolean().default(true),
   alias: z.string().optional(),
+  // Admin-only. Silently downgraded to false for non-admin callers below.
+  is_seed: z.boolean().optional().default(false),
 })
 
 export type SpillPayoff = {
@@ -37,6 +39,16 @@ export const runSpill = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => SpillInput.parse(data))
   .handler(async ({ data, context }): Promise<SpillPayoff> => {
+    // Only admins can mint seed content.
+    let isSeed = false
+    if (data.is_seed) {
+      const { data: ok } = await context.supabase.rpc('has_role', {
+        _user_id: context.userId,
+        _role: 'admin',
+      })
+      isSeed = Boolean(ok)
+    }
+
     // 1. Scrubber
     const scrub = await runScrub(data.raw)
 
@@ -101,7 +113,8 @@ export const runSpill = createServerFn({ method: 'POST' })
         scan_band: bandToDb[scan.band],
         reflection: scan.reflection,
         is_public: data.is_public,
-      })
+        is_seed: isSeed,
+      } as never)
       .select('id')
       .single()
 
@@ -156,6 +169,7 @@ export const runSpill = createServerFn({ method: 'POST' })
               : data.pillar === 'marriage' ? 'love'
               : 'love',
             pre_scrubbed: true,
+            is_seed: isSeed,
           },
         })
       } catch (err) { console.error('[mirror-ingest] spill', err) }

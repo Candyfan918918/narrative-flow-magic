@@ -46,6 +46,7 @@ import { Route as WhatHappensSlugRouteImport } from './routes/what-happens.$slug
 import { Route as VentTopicRouteImport } from './routes/vent.$topic'
 import { Route as UPseudonymRouteImport } from './routes/u.$pseudonym'
 import { Route as SubscribeReturnRouteImport } from './routes/subscribe.return'
+import { Route as SitemapsStoriesDotxmlRouteImport } from './routes/sitemaps/stories[.]xml'
 import { Route as SitemapsProfilesDotxmlRouteImport } from './routes/sitemaps/profiles[.]xml'
 import { Route as SitemapsOutcomesDotxmlRouteImport } from './routes/sitemaps/outcomes[.]xml'
 import { Route as SitemapsCoreDotxmlRouteImport } from './routes/sitemaps/core[.]xml'
@@ -58,6 +59,7 @@ import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as StoryPillarSlugRouteImport } from './routes/story.$pillar.$slug'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
@@ -256,6 +258,11 @@ const SubscribeReturnRoute = SubscribeReturnRouteImport.update({
   path: '/return',
   getParentRoute: () => SubscribeRoute,
 } as any)
+const SitemapsStoriesDotxmlRoute = SitemapsStoriesDotxmlRouteImport.update({
+  id: '/sitemaps/stories.xml',
+  path: '/sitemaps/stories.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapsProfilesDotxmlRoute = SitemapsProfilesDotxmlRouteImport.update({
   id: '/sitemaps/profiles.xml',
   path: '/sitemaps/profiles.xml',
@@ -318,6 +325,11 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const StoryPillarSlugRoute = StoryPillarSlugRouteImport.update({
+  id: '/story/$pillar/$slug',
+  path: '/story/$pillar/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiFeedbackEventsRoute = ApiFeedbackEventsRouteImport.update({
   id: '/api/feedback/events',
   path: '/api/feedback/events',
@@ -437,6 +449,7 @@ export interface FileRoutesByFullPath {
   '/sitemaps/core.xml': typeof SitemapsCoreDotxmlRoute
   '/sitemaps/outcomes.xml': typeof SitemapsOutcomesDotxmlRoute
   '/sitemaps/profiles.xml': typeof SitemapsProfilesDotxmlRoute
+  '/sitemaps/stories.xml': typeof SitemapsStoriesDotxmlRoute
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/vent/$topic': typeof VentTopicRoute
@@ -448,6 +461,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/story/$pillar/$slug': typeof StoryPillarSlugRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
@@ -500,6 +514,7 @@ export interface FileRoutesByTo {
   '/sitemaps/core.xml': typeof SitemapsCoreDotxmlRoute
   '/sitemaps/outcomes.xml': typeof SitemapsOutcomesDotxmlRoute
   '/sitemaps/profiles.xml': typeof SitemapsProfilesDotxmlRoute
+  '/sitemaps/stories.xml': typeof SitemapsStoriesDotxmlRoute
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/vent/$topic': typeof VentTopicRoute
@@ -511,6 +526,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/story/$pillar/$slug': typeof StoryPillarSlugRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
@@ -565,6 +581,7 @@ export interface FileRoutesById {
   '/sitemaps/core.xml': typeof SitemapsCoreDotxmlRoute
   '/sitemaps/outcomes.xml': typeof SitemapsOutcomesDotxmlRoute
   '/sitemaps/profiles.xml': typeof SitemapsProfilesDotxmlRoute
+  '/sitemaps/stories.xml': typeof SitemapsStoriesDotxmlRoute
   '/subscribe/return': typeof SubscribeReturnRoute
   '/u/$pseudonym': typeof UPseudonymRoute
   '/vent/$topic': typeof VentTopicRoute
@@ -576,6 +593,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/story/$pillar/$slug': typeof StoryPillarSlugRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
   '/api/public/hooks/reengagement-emails': typeof ApiPublicHooksReengagementEmailsRoute
@@ -630,6 +648,7 @@ export interface FileRouteTypes {
     | '/sitemaps/core.xml'
     | '/sitemaps/outcomes.xml'
     | '/sitemaps/profiles.xml'
+    | '/sitemaps/stories.xml'
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/vent/$topic'
@@ -641,6 +660,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/checkin/$id'
     | '/api/feedback/events'
+    | '/story/$pillar/$slug'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
     | '/api/public/hooks/reengagement-emails'
@@ -693,6 +713,7 @@ export interface FileRouteTypes {
     | '/sitemaps/core.xml'
     | '/sitemaps/outcomes.xml'
     | '/sitemaps/profiles.xml'
+    | '/sitemaps/stories.xml'
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/vent/$topic'
@@ -704,6 +725,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/checkin/$id'
     | '/api/feedback/events'
+    | '/story/$pillar/$slug'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
     | '/api/public/hooks/reengagement-emails'
@@ -757,6 +779,7 @@ export interface FileRouteTypes {
     | '/sitemaps/core.xml'
     | '/sitemaps/outcomes.xml'
     | '/sitemaps/profiles.xml'
+    | '/sitemaps/stories.xml'
     | '/subscribe/return'
     | '/u/$pseudonym'
     | '/vent/$topic'
@@ -768,6 +791,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/checkin/$id'
     | '/api/feedback/events'
+    | '/story/$pillar/$slug'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
     | '/api/public/hooks/reengagement-emails'
@@ -820,12 +844,14 @@ export interface RootRouteChildren {
   SitemapsCoreDotxmlRoute: typeof SitemapsCoreDotxmlRoute
   SitemapsOutcomesDotxmlRoute: typeof SitemapsOutcomesDotxmlRoute
   SitemapsProfilesDotxmlRoute: typeof SitemapsProfilesDotxmlRoute
+  SitemapsStoriesDotxmlRoute: typeof SitemapsStoriesDotxmlRoute
   UPseudonymRoute: typeof UPseudonymRoute
   VentTopicRoute: typeof VentTopicRoute
   WhatHappensSlugRoute: typeof WhatHappensSlugRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
+  StoryPillarSlugRoute: typeof StoryPillarSlugRoute
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicHooksMirrorEvolutionRoute: typeof ApiPublicHooksMirrorEvolutionRoute
   ApiPublicHooksReengagementEmailsRoute: typeof ApiPublicHooksReengagementEmailsRoute
@@ -1094,6 +1120,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubscribeReturnRouteImport
       parentRoute: typeof SubscribeRoute
     }
+    '/sitemaps/stories.xml': {
+      id: '/sitemaps/stories.xml'
+      path: '/sitemaps/stories.xml'
+      fullPath: '/sitemaps/stories.xml'
+      preLoaderRoute: typeof SitemapsStoriesDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemaps/profiles.xml': {
       id: '/sitemaps/profiles.xml'
       path: '/sitemaps/profiles.xml'
@@ -1176,6 +1209,13 @@ declare module '@tanstack/react-router' {
       path: '/.mcp/list-tools'
       fullPath: '/.mcp/list-tools'
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/story/$pillar/$slug': {
+      id: '/story/$pillar/$slug'
+      path: '/story/$pillar/$slug'
+      fullPath: '/story/$pillar/$slug'
+      preLoaderRoute: typeof StoryPillarSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/feedback/events': {
@@ -1368,12 +1408,14 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapsCoreDotxmlRoute: SitemapsCoreDotxmlRoute,
   SitemapsOutcomesDotxmlRoute: SitemapsOutcomesDotxmlRoute,
   SitemapsProfilesDotxmlRoute: SitemapsProfilesDotxmlRoute,
+  SitemapsStoriesDotxmlRoute: SitemapsStoriesDotxmlRoute,
   UPseudonymRoute: UPseudonymRoute,
   VentTopicRoute: VentTopicRoute,
   WhatHappensSlugRoute: WhatHappensSlugRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
+  StoryPillarSlugRoute: StoryPillarSlugRoute,
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicHooksMirrorEvolutionRoute: ApiPublicHooksMirrorEvolutionRoute,
   ApiPublicHooksReengagementEmailsRoute: ApiPublicHooksReengagementEmailsRoute,

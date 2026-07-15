@@ -505,6 +505,7 @@ export type Database = {
           id: string
           insight: string
           is_demo: boolean
+          is_seed: boolean
           last_seen: string
           name: string
           position: Json | null
@@ -529,6 +530,7 @@ export type Database = {
           id?: string
           insight?: string
           is_demo?: boolean
+          is_seed?: boolean
           last_seen?: string
           name?: string
           position?: Json | null
@@ -553,6 +555,7 @@ export type Database = {
           id?: string
           insight?: string
           is_demo?: boolean
+          is_seed?: boolean
           last_seen?: string
           name?: string
           position?: Json | null
@@ -627,6 +630,7 @@ export type Database = {
           created_at: string
           embedding: string | null
           id: string
+          is_seed: boolean
           pattern_id: string | null
           ref_id: string
           source: string
@@ -637,6 +641,7 @@ export type Database = {
           created_at?: string
           embedding?: string | null
           id?: string
+          is_seed?: boolean
           pattern_id?: string | null
           ref_id: string
           source: string
@@ -647,6 +652,7 @@ export type Database = {
           created_at?: string
           embedding?: string | null
           id?: string
+          is_seed?: boolean
           pattern_id?: string | null
           ref_id?: string
           source?: string
@@ -669,6 +675,7 @@ export type Database = {
           captured_at: string
           decision_summary: string
           id: string
+          is_seed: boolean
           resolution: Database["public"]["Enums"]["situation_status"]
           situation_id: string
           trajectory_curve: Json
@@ -679,6 +686,7 @@ export type Database = {
           captured_at?: string
           decision_summary: string
           id?: string
+          is_seed?: boolean
           resolution: Database["public"]["Enums"]["situation_status"]
           situation_id: string
           trajectory_curve?: Json
@@ -689,6 +697,7 @@ export type Database = {
           captured_at?: string
           decision_summary?: string
           id?: string
+          is_seed?: boolean
           resolution?: Database["public"]["Enums"]["situation_status"]
           situation_id?: string
           trajectory_curve?: Json
@@ -977,6 +986,7 @@ export type Database = {
           scan_reasoning: Json | null
           scan_signature: string | null
           signature: string | null
+          slug: string | null
           status: Database["public"]["Enums"]["situation_status"]
           support_mode: string | null
           tags: string[]
@@ -1016,6 +1026,7 @@ export type Database = {
           scan_reasoning?: Json | null
           scan_signature?: string | null
           signature?: string | null
+          slug?: string | null
           status?: Database["public"]["Enums"]["situation_status"]
           support_mode?: string | null
           tags?: string[]
@@ -1055,6 +1066,7 @@ export type Database = {
           scan_reasoning?: Json | null
           scan_signature?: string | null
           signature?: string | null
+          slug?: string | null
           status?: Database["public"]["Enums"]["situation_status"]
           support_mode?: string | null
           tags?: string[]
@@ -1314,6 +1326,7 @@ export type Database = {
         Args: { p_alias_id: string; p_situation_id: string }
         Returns: undefined
       }
+      situations_slugify: { Args: { _text: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

@@ -38,6 +38,9 @@ const IngestInput = z.object({
   // runScrub (saveSituation, createComment, spill) so phase 2 can skip the
   // duplicate LLM scrub round-trip.
   pre_scrubbed: z.boolean().optional().default(false),
+  // Admin-only seed marker; propagates to mirror_signals and any
+  // pattern crystallized from a seed signal.
+  is_seed: z.boolean().optional().default(false),
 })
 
 type PatternRow = {
@@ -153,6 +156,7 @@ async function enqueueMirrorSignal(args: {
       ref_id: data.ref_id,
       text_scrubbed: data.raw_text ?? '',
       pattern_id: null,
+      is_seed: !!data.is_seed,
     } as never)
     .select('id')
     .single()
@@ -300,6 +304,7 @@ export async function crystallizeMirrorSignal(args: {
     const insertRow: Record<string, unknown> = {
       user_id: userId,
       is_demo: false,
+      is_seed: !!data.is_seed,
       name: reading.trait.name,
       emoji: reading.trait.emoji,
       district,
