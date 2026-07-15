@@ -299,6 +299,7 @@ export type Database = {
           deleted_at: string | null
           edited: boolean
           id: string
+          is_companion: boolean
           room_id: string
           updated_at: string
         }
@@ -309,6 +310,7 @@ export type Database = {
           deleted_at?: string | null
           edited?: boolean
           id?: string
+          is_companion?: boolean
           room_id: string
           updated_at?: string
         }
@@ -319,6 +321,7 @@ export type Database = {
           deleted_at?: string | null
           edited?: boolean
           id?: string
+          is_companion?: boolean
           room_id?: string
           updated_at?: string
         }
@@ -778,6 +781,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          companion_seen_at: string | null
           created_at: string
           email: string | null
           email_prefs_token: string | null
@@ -804,6 +808,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          companion_seen_at?: string | null
           created_at?: string
           email?: string | null
           email_prefs_token?: string | null
@@ -830,6 +835,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          companion_seen_at?: string | null
           created_at?: string
           email?: string | null
           email_prefs_token?: string | null
