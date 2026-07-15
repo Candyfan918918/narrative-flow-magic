@@ -173,15 +173,65 @@ export const saveSituation = createServerFn({ method: 'POST' })
           .maybeSingle()
         const displayName = (aliasRow.data as { display_name?: string } | null)?.display_name ?? 'someone'
         const emoji = (aliasRow.data as { emoji?: string } | null)?.emoji ?? '🩷'
+        const title = data.title ?? deriveTitle(insertRow.body || insertRow.clean_text)
+        const body = insertRow.body || insertRow.clean_text
         roomId = await upsertRoomForSituation(context.supabase, sit.id, {
           author_id: context.userId,
           alias: displayName,
           emoji,
-          title: data.title ?? deriveTitle(insertRow.body || insertRow.clean_text),
-          body: insertRow.body || insertRow.clean_text,
+          title,
+          body,
           support: 'heard',
           hall: hallFromBand(data.scan_band),
         })
+        // Response floor: seed the room with the companion's reflection as
+        // the first in-thread comment + notify admin. Both fire-and-forget.
+        if (roomId) {
+          const rid = roomId
+          void (async () => {
+            try {
+              const { runCompanion } = await import('@/lib/agents/companion.functions')
+              const reflection = await runCompanion({
+                data: {
+                  mode: 'felt_heard',
+                  crisis_flag: false,
+                  alias: displayName,
+                  messages: [{ role: 'user', content: (insertRow.clean_text || insertRow.body || '').slice(0, 4000) }],
+                  context: {
+                    pillar: data.pillar,
+                    scan: insertRow.initial_scan ?? undefined,
+                    scan_band: insertRow.scan_band ?? undefined,
+                    reflection: '',
+                    resonance_line: '',
+                    matched_excerpts: [],
+                  },
+                },
+              })
+              const text = (reflection?.text || '').trim()
+              if (text) {
+                const scrub = await runScrub(text)
+                const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+                await supabaseAdmin.from('comments').insert({
+                  room_id: rid,
+                  alias_id: context.userId,
+                  clean_text: scrub.clean_text || text,
+                  is_companion: true,
+                } as never)
+              }
+            } catch (err) { console.error('[companion-comment]', err) }
+            try {
+              const { notifyRoomCreated } = await import('@/lib/notify.server')
+              await notifyRoomCreated({
+                roomId: rid,
+                title,
+                clean_text: insertRow.clean_text || insertRow.body || '',
+                pillar: data.pillar,
+                scan: insertRow.initial_scan ?? null,
+                scan_band: insertRow.scan_band ?? null,
+              })
+            } catch (err) { console.error('[notify-room-created]', err) }
+          })()
+        }
       }
       return roomId
     })()
