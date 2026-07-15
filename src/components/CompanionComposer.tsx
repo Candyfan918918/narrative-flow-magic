@@ -9,6 +9,8 @@ import { EyeMark } from './EyeMark'
 import { runCompanion } from '@/lib/agents/companion.functions'
 import { getDueCheckin, recordCheckinResponse, snoozeCheckin } from '@/lib/checkins.functions'
 import { supabase } from '@/integrations/supabase/client'
+import { useCurrentAlias } from '@/hooks/use-current-alias'
+
 
 const NEWSREADER = "'Newsreader', Georgia, serif"
 const SORA = "'Sora', system-ui, sans-serif"
