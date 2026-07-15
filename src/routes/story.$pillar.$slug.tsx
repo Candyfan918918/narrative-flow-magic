@@ -47,7 +47,6 @@ export const Route = createFileRoute("/story/$pillar/$slug")({
       is_seed: row.is_seed,
       crisis_flag: row.crisis_flag,
       deleted_at: row.deleted_at,
-      relates_count: relates,
     });
     const meta: Array<Record<string, string>> = [
       { title },
