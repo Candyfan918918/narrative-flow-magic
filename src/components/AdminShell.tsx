@@ -6,13 +6,14 @@ import { useNoIndex } from '@/components/NoIndex'
 export type AdminVariant = 'dark' | 'light'
 
 const NAV: Array<{ to: string; label: string }> = [
-  { to: '/admin', label: 'overview' },
-  { to: '/admin/analytics', label: 'analytics' },
+  { to: '/admin', label: 'analytics' },
+  { to: '/admin/overview', label: 'overview' },
   { to: '/admin/users', label: 'users' },
   { to: '/admin/events', label: 'events' },
   { to: '/admin/feedback', label: 'feedback' },
   { to: '/admin/relate', label: 'relate SLA' },
 ]
+
 
 interface Props {
   variant?: AdminVariant

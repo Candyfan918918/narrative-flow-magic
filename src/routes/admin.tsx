@@ -1,20 +1,19 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { AdminPage } from '@/pages/Admin'
+import { AdminAnalyticsPage } from '@/pages/AdminAnalytics'
 import { amIAdmin } from '@/lib/admin.functions'
 
 export const Route = createFileRoute('/admin')({
   ssr: false,
-  head: () => ({ meta: [{ title: 'Admin — Shutap' }, { name: 'robots', content: 'noindex' }] }),
+  head: () => ({ meta: [{ title: 'Admin · Analytics — Shutap' }, { name: 'robots', content: 'noindex' }] }),
   beforeLoad: async () => {
     try {
       const ok = await amIAdmin()
       if (!ok) throw notFound()
     } catch (e) {
-      // notFound() throws — rethrow it; anything else (network / unauth) → 404
       throw notFound()
     }
   },
-  component: AdminPage,
+  component: AdminAnalyticsPage,
   notFoundComponent: () => (
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#fdf0f5', color: '#0b080f', fontFamily: 'Sora,sans-serif' }}>
       <div style={{ textAlign: 'center' }}>
