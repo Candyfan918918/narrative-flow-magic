@@ -19,14 +19,6 @@ function variantFor(pathname: string): Variant {
   return 'light'
 }
 
-const ADMIN_NAV: { to: string; label: string }[] = [
-  { to: '/admin', label: 'admin' },
-  { to: '/admin/analytics', label: 'analytics' },
-  { to: '/admin/users', label: 'users' },
-  { to: '/admin/events', label: 'events' },
-  { to: '/admin/feedback', label: 'feedback' },
-  { to: '/admin/relate-queue', label: 'relate queue' },
-]
 
 function parseRgb(s: string): [number, number, number, number] | null {
   const m = s.match(/rgba?\(([^)]+)\)/i)
