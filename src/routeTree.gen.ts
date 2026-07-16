@@ -54,8 +54,6 @@ import { Route as IsItNormalSlugRouteImport } from './routes/is-it-normal.$slug'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email.unsubscribe'
 import { Route as EmailPreferencesRouteImport } from './routes/email.preferences'
 import { Route as ApiCompleteRouteImport } from './routes/api/complete'
-import { Route as AdminRelateQueueRouteImport } from './routes/admin_.relate-queue'
-import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
@@ -63,6 +61,8 @@ import { Route as StoryPillarSlugRouteImport } from './routes/story.$pillar.$slu
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminRelateRouteImport } from './routes/_authenticated/admin.relate'
+import { Route as AuthenticatedAdminFeedbackRouteImport } from './routes/_authenticated/admin.feedback'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
@@ -298,16 +298,6 @@ const ApiCompleteRoute = ApiCompleteRouteImport.update({
   path: '/api/complete',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRelateQueueRoute = AdminRelateQueueRouteImport.update({
-  id: '/admin_/relate-queue',
-  path: '/admin/relate-queue',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
-  id: '/feedback',
-  path: '/feedback',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -345,6 +335,18 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/admin/users',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRelateRoute =
+  AuthenticatedAdminRelateRouteImport.update({
+    id: '/admin/relate',
+    path: '/admin/relate',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminFeedbackRoute =
+  AuthenticatedAdminFeedbackRouteImport.update({
+    id: '/admin/feedback',
+    path: '/admin/feedback',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminEventsRoute =
   AuthenticatedAdminEventsRouteImport.update({
     id: '/admin/events',
@@ -408,7 +410,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
@@ -440,8 +442,6 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/profile': typeof AuthenticatedProfileRoute
-  '/admin/feedback': typeof AdminFeedbackRoute
-  '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/email/preferences': typeof EmailPreferencesRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -458,6 +458,8 @@ export interface FileRoutesByFullPath {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
+  '/admin/relate': typeof AuthenticatedAdminRelateRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
@@ -473,7 +475,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
@@ -505,8 +507,6 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/profile': typeof AuthenticatedProfileRoute
-  '/admin/feedback': typeof AdminFeedbackRoute
-  '/admin/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/email/preferences': typeof EmailPreferencesRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -523,6 +523,8 @@ export interface FileRoutesByTo {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
+  '/admin/relate': typeof AuthenticatedAdminRelateRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
@@ -540,7 +542,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/$': typeof SplatRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/ai-disclosure': typeof AiDisclosureRoute
   '/career': typeof CareerRoute
   '/contact': typeof ContactRoute
@@ -572,8 +574,6 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
-  '/admin/feedback': typeof AdminFeedbackRoute
-  '/admin_/relate-queue': typeof AdminRelateQueueRoute
   '/api/complete': typeof ApiCompleteRoute
   '/email/preferences': typeof EmailPreferencesRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -590,6 +590,8 @@ export interface FileRoutesById {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/_authenticated/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
+  '/_authenticated/admin/relate': typeof AuthenticatedAdminRelateRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
@@ -639,8 +641,6 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/profile'
-    | '/admin/feedback'
-    | '/admin/relate-queue'
     | '/api/complete'
     | '/email/preferences'
     | '/email/unsubscribe'
@@ -657,6 +657,8 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/admin/analytics'
     | '/admin/events'
+    | '/admin/feedback'
+    | '/admin/relate'
     | '/admin/users'
     | '/checkin/$id'
     | '/api/feedback/events'
@@ -704,8 +706,6 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/profile'
-    | '/admin/feedback'
-    | '/admin/relate-queue'
     | '/api/complete'
     | '/email/preferences'
     | '/email/unsubscribe'
@@ -722,6 +722,8 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/admin/analytics'
     | '/admin/events'
+    | '/admin/feedback'
+    | '/admin/relate'
     | '/admin/users'
     | '/checkin/$id'
     | '/api/feedback/events'
@@ -770,8 +772,6 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/profile'
-    | '/admin/feedback'
-    | '/admin_/relate-queue'
     | '/api/complete'
     | '/email/preferences'
     | '/email/unsubscribe'
@@ -788,6 +788,8 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/events'
+    | '/_authenticated/admin/feedback'
+    | '/_authenticated/admin/relate'
     | '/_authenticated/admin/users'
     | '/_authenticated/checkin/$id'
     | '/api/feedback/events'
@@ -805,7 +807,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   SplatRoute: typeof SplatRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRouteWithChildren
+  AdminRoute: typeof AdminRoute
   AiDisclosureRoute: typeof AiDisclosureRoute
   CareerRoute: typeof CareerRoute
   ContactRoute: typeof ContactRoute
@@ -836,7 +838,6 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
-  AdminRelateQueueRoute: typeof AdminRelateQueueRoute
   ApiCompleteRoute: typeof ApiCompleteRoute
   EmailPreferencesRoute: typeof EmailPreferencesRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
@@ -1176,20 +1177,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/relate-queue': {
-      id: '/admin_/relate-queue'
-      path: '/admin/relate-queue'
-      fullPath: '/admin/relate-queue'
-      preLoaderRoute: typeof AdminRelateQueueRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/feedback': {
-      id: '/admin/feedback'
-      path: '/feedback'
-      fullPath: '/admin/feedback'
-      preLoaderRoute: typeof AdminFeedbackRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -1237,6 +1224,20 @@ declare module '@tanstack/react-router' {
       path: '/admin/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/relate': {
+      id: '/_authenticated/admin/relate'
+      path: '/admin/relate'
+      fullPath: '/admin/relate'
+      preLoaderRoute: typeof AuthenticatedAdminRelateRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/feedback': {
+      id: '/_authenticated/admin/feedback'
+      path: '/admin/feedback'
+      fullPath: '/admin/feedback'
+      preLoaderRoute: typeof AuthenticatedAdminFeedbackRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/events': {
@@ -1316,6 +1317,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
+  AuthenticatedAdminFeedbackRoute: typeof AuthenticatedAdminFeedbackRoute
+  AuthenticatedAdminRelateRoute: typeof AuthenticatedAdminRelateRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedCheckinIdRoute: typeof AuthenticatedCheckinIdRoute
 }
@@ -1324,22 +1327,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
+  AuthenticatedAdminFeedbackRoute: AuthenticatedAdminFeedbackRoute,
+  AuthenticatedAdminRelateRoute: AuthenticatedAdminRelateRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedCheckinIdRoute: AuthenticatedCheckinIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
-
-interface AdminRouteChildren {
-  AdminFeedbackRoute: typeof AdminFeedbackRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminFeedbackRoute: AdminFeedbackRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface HallsRouteChildren {
   HallsHallRegionWindowRoute: typeof HallsHallRegionWindowRoute
@@ -1368,7 +1363,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   SplatRoute: SplatRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRouteWithChildren,
+  AdminRoute: AdminRoute,
   AiDisclosureRoute: AiDisclosureRoute,
   CareerRoute: CareerRoute,
   ContactRoute: ContactRoute,
@@ -1400,7 +1395,6 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
-  AdminRelateQueueRoute: AdminRelateQueueRoute,
   ApiCompleteRoute: ApiCompleteRoute,
   EmailPreferencesRoute: EmailPreferencesRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,

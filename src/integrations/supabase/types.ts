@@ -1195,36 +1195,54 @@ export type Database = {
           country: string | null
           id: string
           is_revisit: boolean
+          landing_path: string | null
           path: string | null
           referrer: string | null
           session_id: string
           started_at: string
           user_agent: string | null
           user_id: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           city?: string | null
           country?: string | null
           id?: string
           is_revisit?: boolean
+          landing_path?: string | null
           path?: string | null
           referrer?: string | null
           session_id: string
           started_at?: string
           user_agent?: string | null
           user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           city?: string | null
           country?: string | null
           id?: string
           is_revisit?: boolean
+          landing_path?: string | null
           path?: string | null
           referrer?: string | null
           session_id?: string
           started_at?: string
           user_agent?: string | null
           user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }
@@ -1237,12 +1255,18 @@ export type Database = {
           id: string | null
           is_bot: boolean | null
           is_revisit: boolean | null
+          landing_path: string | null
           path: string | null
           referrer: string | null
           session_id: string | null
           started_at: string | null
           user_agent: string | null
           user_id: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           city?: string | null
@@ -1250,12 +1274,18 @@ export type Database = {
           id?: string | null
           is_bot?: never
           is_revisit?: boolean | null
+          landing_path?: string | null
           path?: string | null
           referrer?: string | null
           session_id?: string | null
           started_at?: string | null
           user_agent?: string | null
           user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           city?: string | null
@@ -1263,12 +1293,18 @@ export type Database = {
           id?: string | null
           is_bot?: never
           is_revisit?: boolean | null
+          landing_path?: string | null
           path?: string | null
           referrer?: string | null
           session_id?: string | null
           started_at?: string | null
           user_agent?: string | null
           user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }

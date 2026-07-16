@@ -1,21 +1,22 @@
-/* Phase 2d — Human-relate SLA ops queue.
- * Admin-only view of un-responded public spills, oldest first, so the
- * launch-era welcoming committee can hit the 30-min first-reaction target. */
+// Relate SLA queue — auth-gated under /admin/relate.
+import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from '@/compat/router'
+import { Link } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { listRelateQueue, relateQueueStats, type RelateQueueRow } from '@/lib/relate-queue.functions'
 import { backfillEmbeddings } from '@/lib/embeddings-backfill.functions'
 import { schedulerHealth, type SchedulerHealth } from '@/lib/scheduler-health.functions'
-import { useNoIndex } from '@/components/NoIndex'
+import { AdminShell } from '@/components/AdminShell'
 
-
+export const Route = createFileRoute('/_authenticated/admin/relate')({
+  head: () => ({ meta: [{ title: 'Admin · Relate SLA — Shutap' }, { name: 'robots', content: 'noindex' }] }),
+  component: AdminRelatePage,
+})
 
 const PILLARS = ['all', 'relationships', 'marriage', 'family', 'career'] as const
 type PillarFilter = (typeof PILLARS)[number]
 
-export function AdminRelateQueuePage() {
-  useNoIndex()
+function AdminRelatePage() {
   const list = useServerFn(listRelateQueue)
   const stats = useServerFn(relateQueueStats)
   const [rows, setRows] = useState<RelateQueueRow[]>([])
@@ -44,56 +45,39 @@ export function AdminRelateQueuePage() {
   const past = useMemo(() => rows.filter((r) => r.past_sla).length, [rows])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fdf0f5', fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", sans-serif', color: '#0b080f' }}>
-      <div style={{ maxWidth: 980, margin: '0 auto', padding: '28px 22px 80px' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-          <div>
-            <div style={{ fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase', color: '#9e7a8c' }}>admin · launch ops</div>
-            <h1 style={{ fontSize: 28, margin: '4px 0 0', letterSpacing: -0.5 }}>relate queue</h1>
-            <p style={{ margin: '6px 0 0', color: '#6b4a5c', fontSize: 14, maxWidth: 620 }}>
-              every public spill without a human reaction yet. oldest first. target: a real response within {sla} minutes — no astroturf, no fake "me too".
-            </p>
-          </div>
-          <nav style={{ display: 'flex', gap: 10, fontSize: 13, alignItems: 'center' }}>
-            <Link to="/admin" style={navStyle}>admin</Link>
-            <Link to="/admin/feedback" style={navStyle}>feedback</Link>
-            <BackfillButton />
-          </nav>
+    <AdminShell
+      title="relate SLA"
+      subtitle={`every public spill without a human reaction yet. oldest first. target: real response within ${sla} min — no astroturf.`}
+      right={<BackfillButton />}
+    >
+      {summary && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 16 }}>
+          <Stat label="7-day SLA hit-rate" value={`${summary.sla_pct}%`} sub={`${summary.within_sla} / ${summary.total_public_spills} spills`} />
+          <Stat label="median first-response" value={summary.median_minutes_to_first_response != null ? `${summary.median_minutes_to_first_response} min` : '—'} sub="last 7 days" />
+          <Stat label="open in queue" value={String(rows.length)} sub={`${past} past SLA`} accent={past > 0 ? '#c1216b' : undefined} />
         </div>
+      )}
 
+      <SchedulerHealthCard />
 
-        {summary && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginTop: 22 }}>
-            <Stat label="7-day SLA hit-rate" value={`${summary.sla_pct}%`} sub={`${summary.within_sla} / ${summary.total_public_spills} spills`} />
-            <Stat label="median first-response" value={summary.median_minutes_to_first_response != null ? `${summary.median_minutes_to_first_response} min` : '—'} sub="last 7 days" />
-            <Stat label="open in queue" value={String(rows.length)} sub={`${past} past SLA`} accent={past > 0 ? '#c1216b' : undefined} />
-          </div>
-        )}
-
-        <SchedulerHealthCard />
-
-
-        <div style={{ display: 'flex', gap: 8, margin: '22px 0 12px', flexWrap: 'wrap' }}>
-          {PILLARS.map((p) => (
-            <button key={p} onClick={() => setPillar(p)} style={chipStyle(p === pillar)}>
-              {p}
-            </button>
-          ))}
-        </div>
-
-        {loading && <div style={{ color: '#6b4a5c', fontSize: 14 }}>loading…</div>}
-        {error && <div style={{ color: '#c1216b', fontSize: 14 }}>error: {error}</div>}
-        {!loading && !error && rows.length === 0 && (
-          <div style={{ background: '#fff', borderRadius: 16, padding: 24, color: '#6b4a5c', textAlign: 'center', border: '1px solid rgba(11,8,15,.08)' }}>
-            no spills waiting. SLA is being met. 💚
-          </div>
-        )}
-
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 12 }}>
-          {rows.map((r) => <QueueCard key={r.situation_id} row={r} />)}
-        </ul>
+      <div style={{ display: 'flex', gap: 8, margin: '22px 0 12px', flexWrap: 'wrap' }}>
+        {PILLARS.map((p) => (
+          <button key={p} onClick={() => setPillar(p)} style={chipStyle(p === pillar)}>{p}</button>
+        ))}
       </div>
-    </div>
+
+      {loading && <div style={{ color: '#6b4a5c', fontSize: 14 }}>loading…</div>}
+      {error && <div style={{ color: '#c1216b', fontSize: 14 }}>error: {error}</div>}
+      {!loading && !error && rows.length === 0 && (
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, color: '#6b4a5c', textAlign: 'center', border: '1px solid rgba(11,8,15,.08)' }}>
+          no spills waiting. SLA is being met. 💚
+        </div>
+      )}
+
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 12 }}>
+        {rows.map((r) => <QueueCard key={r.situation_id} row={r} />)}
+      </ul>
+    </AdminShell>
   )
 }
 
@@ -111,10 +95,9 @@ function QueueCard({ row }: { row: RelateQueueRow }) {
       </div>
       {row.title && <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{row.title}</div>}
       <p style={{ margin: '0 0 12px', fontSize: 14, lineHeight: 1.55, color: '#3a2a32' }}>{row.body}</p>
-      <Link
-        to={`/room?id=${row.situation_id}`}
-        style={{ display: 'inline-block', background: '#0b080f', color: '#fff', textDecoration: 'none', padding: '8px 16px', borderRadius: 999, fontSize: 13, fontWeight: 600 }}
-      >open & respond →</Link>
+      <Link to="/room" search={{ id: row.situation_id }} style={{ display: 'inline-block', background: '#0b080f', color: '#fff', textDecoration: 'none', padding: '8px 16px', borderRadius: 999, fontSize: 13, fontWeight: 600 }}>
+        open & respond →
+      </Link>
     </li>
   )
 }
@@ -130,9 +113,7 @@ function Stat({ label, value, sub, accent }: { label: string; value: string; sub
 }
 
 function Badge({ children, color }: { children: React.ReactNode; color: string }) {
-  return (
-    <span style={{ background: color + '22', color, fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 999, textTransform: 'lowercase', letterSpacing: 0.3 }}>{children}</span>
-  )
+  return <span style={{ background: color + '22', color, fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 999, textTransform: 'lowercase', letterSpacing: 0.3 }}>{children}</span>
 }
 
 function BackfillButton() {
@@ -151,7 +132,7 @@ function BackfillButton() {
         } finally { setBusy(false) }
       }}
       disabled={busy}
-      style={{ ...navStyle, cursor: 'pointer', fontWeight: 600, color: '#c1216b' }}
+      style={{ padding: '7px 14px', border: '1px solid rgba(11,8,15,.12)', background: '#fff', borderRadius: 999, cursor: 'pointer', fontWeight: 600, color: '#c1216b', fontSize: 12 }}
       title="Backfill embeddings for situations missing a vector"
     >
       {busy ? 'embedding…' : msg ? `embed · ${msg}` : 'embed batch'}
@@ -186,14 +167,6 @@ function SchedulerHealthCard() {
       </div>
     </div>
   )
-}
-
-
-
-
-const navStyle: React.CSSProperties = {
-  color: '#6b4a5c', textDecoration: 'none', padding: '6px 12px', borderRadius: 999,
-  border: '1px solid rgba(11,8,15,.12)', background: '#fff',
 }
 
 const chipStyle = (active: boolean): React.CSSProperties => ({

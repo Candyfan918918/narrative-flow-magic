@@ -30,6 +30,30 @@ export async function trackEvent(name: string, properties: Record<string, unknow
   } catch { /* noop */ }
 }
 
+const LANDING_KEY = 'shutap_landing_path'
+const UTM_KEY = 'shutap_utm'
+
+function readUtmFromLocation(): {
+  utm_source: string | null; utm_medium: string | null; utm_campaign: string | null;
+  utm_term: string | null; utm_content: string | null;
+} {
+  const empty = { utm_source: null, utm_medium: null, utm_campaign: null, utm_term: null, utm_content: null }
+  try {
+    const p = new URLSearchParams(window.location.search)
+    const get = (k: string) => {
+      const v = p.get(k)
+      return v && v.trim() ? v.trim().slice(0, 200) : null
+    }
+    return {
+      utm_source: get('utm_source'),
+      utm_medium: get('utm_medium'),
+      utm_campaign: get('utm_campaign'),
+      utm_term: get('utm_term'),
+      utm_content: get('utm_content'),
+    }
+  } catch { return empty }
+}
+
 /** Idempotent per browser session — safe to call on every page. */
 export async function recordVisitOnce(path: string): Promise<void> {
   if (typeof window === 'undefined') return
@@ -39,10 +63,28 @@ export async function recordVisitOnce(path: string): Promise<void> {
   } catch { /* noop */ }
   const session_id = getSessionId()
   const referrer = document.referrer || ''
+  // Capture landing path + UTM once per session; persist so downstream events could reuse.
+  let landing_path: string | null = null
+  let utm = { utm_source: null, utm_medium: null, utm_campaign: null, utm_term: null, utm_content: null } as ReturnType<typeof readUtmFromLocation>
   try {
-    await recordVisit({ data: { session_id, path, referrer } })
+    landing_path = sessionStorage.getItem(LANDING_KEY)
+    if (!landing_path) {
+      landing_path = path
+      sessionStorage.setItem(LANDING_KEY, landing_path)
+    }
+    const storedUtm = sessionStorage.getItem(UTM_KEY)
+    if (storedUtm) {
+      utm = JSON.parse(storedUtm)
+    } else {
+      utm = readUtmFromLocation()
+      sessionStorage.setItem(UTM_KEY, JSON.stringify(utm))
+    }
+  } catch { /* noop */ }
+  try {
+    await recordVisit({ data: { session_id, path, referrer, landing_path, ...utm } })
   } catch { /* noop */ }
 }
+
 
 interface SupabaseUserLike {
   id: string

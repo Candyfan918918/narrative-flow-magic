@@ -137,6 +137,12 @@ const VisitIn = z.object({
   session_id: z.string().min(1).max(120),
   path: z.string().max(500).optional(),
   referrer: z.string().max(1000).optional(),
+  utm_source: z.string().max(120).optional().nullable(),
+  utm_medium: z.string().max(120).optional().nullable(),
+  utm_campaign: z.string().max(200).optional().nullable(),
+  utm_term: z.string().max(200).optional().nullable(),
+  utm_content: z.string().max(200).optional().nullable(),
+  landing_path: z.string().max(500).optional().nullable(),
 })
 
 export const recordVisit = createServerFn({ method: 'POST' })
@@ -168,10 +174,17 @@ export const recordVisit = createServerFn({ method: 'POST' })
       country: geo.country,
       city: geo.city,
       is_revisit: isRevisit,
+      utm_source: data.utm_source ?? null,
+      utm_medium: data.utm_medium ?? null,
+      utm_campaign: data.utm_campaign ?? null,
+      utm_term: data.utm_term ?? null,
+      utm_content: data.utm_content ?? null,
+      landing_path: data.landing_path ?? null,
     } as never)
     if (error) return { ok: false, reason: error.message }
     return { ok: true, geo, isRevisit }
   })
+
 
 // ---------- events ----------
 
