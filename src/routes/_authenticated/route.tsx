@@ -1,12 +1,13 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import type { Session } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
 
-async function resolveSession() {
+async function resolveSession(): Promise<Session | null> {
   const { data } = await supabase.auth.getSession()
   if (data.session) return data.session
 
   // Wait briefly for local session restoration (INITIAL_SESSION) before concluding signed out.
-  return await new Promise<typeof data.session>((resolve) => {
+  return await new Promise<Session | null>((resolve) => {
     let done = false
     const finish = (session: typeof data.session) => {
       if (done) return
