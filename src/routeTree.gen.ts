@@ -62,6 +62,7 @@ import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/eve
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminRelateRouteImport } from './routes/_authenticated/admin.relate'
+import { Route as AuthenticatedAdminOverviewRouteImport } from './routes/_authenticated/admin.overview'
 import { Route as AuthenticatedAdminFeedbackRouteImport } from './routes/_authenticated/admin.feedback'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
@@ -341,6 +342,12 @@ const AuthenticatedAdminRelateRoute =
     path: '/admin/relate',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminOverviewRoute =
+  AuthenticatedAdminOverviewRouteImport.update({
+    id: '/admin/overview',
+    path: '/admin/overview',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminFeedbackRoute =
   AuthenticatedAdminFeedbackRouteImport.update({
     id: '/admin/feedback',
@@ -459,6 +466,7 @@ export interface FileRoutesByFullPath {
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
+  '/admin/overview': typeof AuthenticatedAdminOverviewRoute
   '/admin/relate': typeof AuthenticatedAdminRelateRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -524,6 +532,7 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
+  '/admin/overview': typeof AuthenticatedAdminOverviewRoute
   '/admin/relate': typeof AuthenticatedAdminRelateRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -591,6 +600,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
+  '/_authenticated/admin/overview': typeof AuthenticatedAdminOverviewRoute
   '/_authenticated/admin/relate': typeof AuthenticatedAdminRelateRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
@@ -658,6 +668,7 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/events'
     | '/admin/feedback'
+    | '/admin/overview'
     | '/admin/relate'
     | '/admin/users'
     | '/checkin/$id'
@@ -723,6 +734,7 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/events'
     | '/admin/feedback'
+    | '/admin/overview'
     | '/admin/relate'
     | '/admin/users'
     | '/checkin/$id'
@@ -789,6 +801,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/feedback'
+    | '/_authenticated/admin/overview'
     | '/_authenticated/admin/relate'
     | '/_authenticated/admin/users'
     | '/_authenticated/checkin/$id'
@@ -1233,6 +1246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRelateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/overview': {
+      id: '/_authenticated/admin/overview'
+      path: '/admin/overview'
+      fullPath: '/admin/overview'
+      preLoaderRoute: typeof AuthenticatedAdminOverviewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/feedback': {
       id: '/_authenticated/admin/feedback'
       path: '/admin/feedback'
@@ -1318,6 +1338,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminFeedbackRoute: typeof AuthenticatedAdminFeedbackRoute
+  AuthenticatedAdminOverviewRoute: typeof AuthenticatedAdminOverviewRoute
   AuthenticatedAdminRelateRoute: typeof AuthenticatedAdminRelateRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedCheckinIdRoute: typeof AuthenticatedCheckinIdRoute
@@ -1328,6 +1349,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminFeedbackRoute: AuthenticatedAdminFeedbackRoute,
+  AuthenticatedAdminOverviewRoute: AuthenticatedAdminOverviewRoute,
   AuthenticatedAdminRelateRoute: AuthenticatedAdminRelateRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedCheckinIdRoute: AuthenticatedCheckinIdRoute,
