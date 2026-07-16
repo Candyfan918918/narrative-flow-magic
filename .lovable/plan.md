@@ -1,64 +1,43 @@
-# Response Floor + Admin Console — Plan (updated)
+## Goal
 
-Most of this build already landed in the previous turn. Below is what's done vs. what's still open, plus the remaining files to touch. Nothing here changes Spill/Scan agent logic, Mirror, or billing.
+On `/admin` (and `/admin/analytics`), split visit stats into **humans** vs **bots** so the numbers reflect real people, not crawlers.
 
-## Status snapshot
+## Approach
 
-**Already shipped last turn**
-- DB migration: `comments.is_companion`, `profiles.companion_seen_at`, cold-room + unseen-reply indexes.
-- Companion comment auto-inserted as first comment on public room creation (via `saveSituation` → `upsertRoomForSituation`); scrubbed through the existing PII / crisis paths.
-- `listRoomComments` server fn returns `is_companion` and forces display name "the companion" (never a user alias).
-- `CommentsThread.tsx` renders the companion comment with eye avatar, "the companion" name, and "house AI" badge; edit/delete hidden for companion rows.
-- Admin server fns: `adminNewRooms`, `adminNeedsResponse`, `adminLiquidityStats` — all gated by `has_role(auth.uid(), 'admin')`, real data only.
-- Notification layer: `notify.server.ts` emails `hello@shutap.com` via Resend on public room creation (headline, ~200 char excerpt, Scan score, `/room?id=…` and `/admin` deep links).
-- Resonance strip: `listResonanceMatches` (matcher first, same-pillar fallback), wired through `getPublicStory` and SSR-rendered on `/story/$pillar/$slug` with "N+ similar stories" or fallback line.
-- Post-read `RelateNudge` component + `getColdNudge` server fn — session-guarded, suppressed on crisis rooms, one-tap relate.
-- "Be the first to feel this" zero-state on room reactions.
-- `/admin` page rebuilt with real KPIs (coverage %, 24h coverage, cold rooms >72h, median TTFR) and "Needs response" / "New rooms" tabs.
-- Demo purge: only 15 `mirror_patterns` demo rows existed; exported to `/mnt/documents/shutap-demo-purge-20260715-102053/` then deleted. No `is_seed=true` rows in `situations`, `rooms`, or `comments`.
+The `public.visits` table already stores `user_agent` but has no bot flag. Rather than schema changes, classify at query time using a UA regex — same technique analytics tools use for a first pass. Signed-in visits (`user_id IS NOT NULL`) are always treated as human.
 
-## Still open — this turn
+Bot UA pattern (case-insensitive):
+`bot|crawler|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|pinterest|vkshare|w3c_validator|whatsapp|telegram|discordbot|linkedinbot|twitterbot|applebot|yandex|duckduckbot|petalbot|semrush|ahrefs|mj12|dotbot|headlesschrome|phantomjs|puppeteer|playwright|axios|python-requests|curl|wget|node-fetch|go-http-client|httpclient|monitor|uptimerobot|pingdom|gtmetrix|lighthouse|pagespeed|preview`
 
-### A. Admin gating end-to-end
-- Mechanism: reuse existing `public.user_roles` + `has_role(uid, 'admin')` (already the source of truth on server fns). Grant your account admin by inserting one row in `user_roles` (I'll surface the UUID + one-line SQL for you to run; no code needs your email hardcoded).
-- `/admin` route: keep `ssr:false` + `robots:noindex` (already set). Add a client-side `beforeLoad` that calls a lightweight `amIAdmin` server fn and throws `notFound()` for non-admins so unauthorized users see the app's 404, not a "forbidden" card.
-- Sitemap: confirm `/admin` and `/admin/*` are absent from `sitemap.xml` and children (they already are — admin routes aren't enumerated; will double-check).
+Empty/null UA → bot (no real browser sends empty UA).
 
-### B. Companion-bubble pink dot for unseen companion replies
-- Currently `CompanionBubble` shows the dot only for due check-ins. Extend the same indicator to fire when the signed-in author has unseen companion comments on their own rooms.
-- New server fn `getUnseenCompanionCount` (uses `profiles.companion_seen_at` + `comments.is_companion` on rooms owned by the caller).
-- `CompanionBubble` ORs `hasDue || hasUnseenCompanion`; tapping the bubble stamps `companion_seen_at = now()` via `markCompanionSeen`.
+## Changes
 
-### C. Analytics events
-- Emit `cold_relate_nudge_shown` when `RelateNudge` renders and `cold_relate_nudge_accepted` on tap — via existing `track()` helper. Also emit `companion_comment_created` on server insert.
+### 1. `src/lib/admin.functions.ts`
+- Add a shared `BOT_UA_RE` constant and a small SQL fragment builder.
+- Rework the visit KPIs in `adminAnalytics` (and the liquidity/visit counts in `adminLiquidityStats` if they read visits) to return **both** buckets:
+  - `visits: { total, d7, d30, new_30d, returning_30d }` → keep as "all"
+  - add `visits_human: { total, d7, d30, new_30d, returning_30d }`
+  - add `visits_bot:   { total, d7, d30 }`
+- Because supabase-js can't express regex easily on a `count` query, switch these counts to a single `rpc` or use `supabaseAdmin.rpc('exec_sql', ...)` — cleaner path: add a SQL view `public.visits_classified` (SECURITY INVOKER, admin-only via RLS) with a computed `is_bot boolean`, then run the same count queries against the view. View is created in a migration; no data migration needed.
+- DAU/WAU/MAU already come from `admin_active_users()` (events + non-anonymous profiles) so they're human-only by construction — leave alone, but note it in the UI.
+- Top countries: add a second query filtered to `is_bot = false` and return `top_countries_human`.
 
-### D. Honest-counts audit (read-only sweep, tiny fixes if needed)
-- Audit call sites of `room.relates`, `room.reactions`, `room.sitting`, `room.comments` in `RoomTile`, `RoomDetail`, `Stream`, home strips, Hall pages, pillar densities. Any hardcoded floors (`|| 3`, `Math.max(1, …)`) or seed constants get replaced with the raw value + a zero-state string. Report each site touched.
+### 2. Migration
+- `CREATE OR REPLACE VIEW public.visits_classified AS SELECT v.*, (v.user_id IS NULL AND (v.user_agent IS NULL OR v.user_agent ~* '<pattern>')) AS is_bot FROM public.visits v;`
+- `GRANT SELECT ON public.visits_classified TO authenticated;` (RLS on underlying table already restricts to admin/self).
 
-### E. Seed-safety guards (future-proofing after the purge)
-- Add `is_seed=false` filter to any list query that doesn't already have it: `Stream.tsx` realtime + initial fetch, pillar densities, Hall of Fame aggregator, matcher (already excludes seeds via SQL — verify).
-- Add a small admin-only "demo import" affordance? **No** — user asked to purge and not touch agent logic; skip.
+### 3. `src/routes/_authenticated/admin.analytics.tsx`
+- In the "headline" grid: replace the three visit cards with a **Humans / Bots** toggle (segmented control) that swaps the numbers, defaulting to Humans. Show a small "(bots: N)" caption under each human card.
+- "top countries" panel: use `top_countries_human`, add a tiny toggle in the panel header to peek at bot countries.
+- Add a one-line footnote: "Bots detected by user-agent heuristics; signed-in sessions always counted as human."
 
-## Files this turn will change
+### 4. `src/pages/Admin.tsx`
+- Liquidity KPIs don't display visits directly, so no changes here unless we want a "human visits · 24h" chip. Skip for this pass.
 
-- `src/lib/admin.functions.ts` — add `amIAdmin`, `getUnseenCompanionCount`, `markCompanionSeen`.
-- `src/routes/admin.tsx` — `beforeLoad` calls `amIAdmin`; throw `notFound()` otherwise.
-- `src/pages/Admin.tsx` — remove the "forbidden card" branch (unreachable after 404 gate); minor copy pass.
-- `src/components/CompanionBubble.tsx` — merge unseen-companion signal into the pink dot; call `markCompanionSeen` on open.
-- `src/components/RelateNudge.tsx` — add `track('cold_relate_nudge_shown' | '…accepted')`.
-- `src/lib/situations.functions.ts` — emit `companion_comment_created` after insert.
-- Sweep (read-then-patch as needed): `src/components/RoomTile.tsx`, `src/pages/Stream.tsx`, `src/pages/Halls.tsx`, `src/pages/home/sections/RoomsStrip.tsx`, `src/lib/pillars.functions.ts` — enforce `is_seed=false`, remove any invented floors.
+## Out of scope
+- No new tracking-time bot flag column (would require backfill). Can revisit later if we want persistent classification or richer signals (Cloudflare bot score, etc.).
+- No changes to events/DAU logic.
 
-## Tables touched (this turn)
-
-- Reads only: `user_roles`, `profiles`, `comments`, `situations`, `rooms`.
-- Writes: `profiles.companion_seen_at` (via `markCompanionSeen`). No new migrations required.
-
-## One thing I need from you
-
-Confirm your Supabase `auth.users.id` (or the email on your account) so I can print the exact one-line SQL to grant yourself `admin` in `user_roles`. I will not hardcode it in app code.
-
-## Out of scope (per your constraints)
-
-- Spill/Scan agent prompts, Mirror pipeline, billing/Stripe.
-- Any new demo/seed content — purge remains permanent.
+## Verification
+- Load `/admin/analytics` as the admin account, toggle Humans/Bots, confirm bot count ≈ known crawler traffic and human numbers drop meaningfully. Spot-check one bot country (often `US` for cloud UAs) disappears from the human list.

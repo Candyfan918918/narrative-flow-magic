@@ -1230,7 +1230,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      visits_classified: {
+        Row: {
+          city: string | null
+          country: string | null
+          id: string | null
+          is_bot: boolean | null
+          is_revisit: boolean | null
+          path: string | null
+          referrer: string | null
+          session_id: string | null
+          started_at: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          id?: string | null
+          is_bot?: never
+          is_revisit?: boolean | null
+          path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          started_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          id?: string | null
+          is_bot?: never
+          is_revisit?: boolean | null
+          path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          started_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_active_users: {
