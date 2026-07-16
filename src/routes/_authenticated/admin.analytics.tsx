@@ -133,9 +133,18 @@ function AdminAnalyticsPage() {
                 <ProviderTable providers={data.providers} />
               </div>
               <div style={panel}>
-                <h2 style={sectionH2}>top countries · 30d</h2>
-                <CountryTable rows={data.top_countries} />
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <h2 style={{ ...sectionH2, margin: 0 }}>top countries · 30d</h2>
+                  <button
+                    onClick={() => setCountryAudience((v) => (v === 'human' ? 'all' : 'human'))}
+                    style={{ background: 'transparent', border: '.5px solid rgba(11,8,15,.15)', borderRadius: 999, padding: '3px 10px', fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase', color: '#6b4a5c', cursor: 'pointer', fontFamily: "'Sora',sans-serif", fontWeight: 700 }}
+                  >
+                    {countryAudience === 'human' ? 'humans' : 'all'}
+                  </button>
+                </div>
+                <CountryTable rows={countries} />
               </div>
+
             </section>
 
             <section style={{ marginBottom: 24 }}>
