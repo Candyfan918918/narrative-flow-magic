@@ -1,35 +1,22 @@
-// Admin console — response floor & liquidity.
-// Access is gated by has_role('admin') on the server. On the client we still
-// call the admin server fns; unauthorized users see an empty/permission
-// state (server throws Forbidden). The route also emits robots:noindex.
+// Admin console — overview: product KPIs, response floor, scheduler health.
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import {
   adminNewRooms,
   adminNeedsResponse,
   adminLiquidityStats,
+  adminProductKpis,
 } from '@/lib/admin.functions'
+import { schedulerHealth } from '@/lib/scheduler-health.functions'
+import { AdminShell } from '@/components/AdminShell'
 
-const BG = '#0f0916'
 const CARD: React.CSSProperties = {
   background: '#181020',
   border: '.5px solid rgba(255,255,255,.08)',
   borderRadius: 14,
   padding: '18px 20px',
   color: '#e8dfea',
-}
-const CHIP: React.CSSProperties = {
-  display: 'inline-block',
-  padding: '2px 8px',
-  borderRadius: 999,
-  background: 'rgba(231,84,138,.16)',
-  color: '#f7b8d4',
-  fontSize: 11,
-  fontFamily: 'Sora, sans-serif',
-  fontWeight: 600,
-  letterSpacing: '.04em',
 }
 
 type RoomListItem = {
@@ -117,11 +104,11 @@ function RoomTable({ title, rows, empty }: { title: string; rows: RoomListItem[]
   )
 }
 
-function Kpi({ label, value, sub }: { label: string; value: string; sub?: string }) {
+function Kpi({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: string }) {
   return (
     <div style={CARD}>
-      <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 28, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.02em' }}>{value}</div>
-      <div style={{ fontSize: 12, color: '#9a8fa2', marginTop: 6 }}>{label}</div>
+      <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 26, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.02em', color: accent ?? '#e8dfea' }}>{value}</div>
+      <div style={{ fontSize: 11, color: '#9a8fa2', marginTop: 6, letterSpacing: '.04em', textTransform: 'uppercase', fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>{label}</div>
       {sub && <div style={{ fontSize: 11, color: '#6fcf97', marginTop: 6 }}>{sub}</div>}
     </div>
   )
@@ -133,78 +120,108 @@ export function AdminPage() {
   const fetchStats = useServerFn(adminLiquidityStats)
   const fetchNeeds = useServerFn(adminNeedsResponse)
   const fetchNew = useServerFn(adminNewRooms)
+  const fetchKpis = useServerFn(adminProductKpis)
+  const fetchScheduler = useServerFn(schedulerHealth)
 
   const statsQ = useQuery({ queryKey: ['admin', 'stats'], queryFn: () => fetchStats({ data: {} }) })
+  const kpisQ = useQuery({ queryKey: ['admin', 'kpis'], queryFn: () => fetchKpis({ data: {} }) })
+  const schedQ = useQuery({ queryKey: ['admin', 'sched'], queryFn: () => fetchScheduler() })
   const needsQ = useQuery({ queryKey: ['admin', 'needs'], queryFn: () => fetchNeeds({ data: {} }), enabled: tab === 'needs' })
   const newQ = useQuery({ queryKey: ['admin', 'new'], queryFn: () => fetchNew({ data: {} }), enabled: tab === 'new' })
 
-  // Route beforeLoad already 404s non-admins; no forbidden branch needed.
-
-
   const s = statsQ.data
-  return (
-    <div style={{ minHeight: '100vh', background: BG, color: '#e8dfea', padding: '32px 24px' }}>
-      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
-          <h1 style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 26, margin: 0, letterSpacing: '-.02em' }}>admin</h1>
-          <span style={CHIP}>response floor</span>
-        </div>
-        <p style={{ color: '#9a8fa2', fontSize: 13, marginTop: 0, marginBottom: 22 }}>real data. every public room deserves a human within the SLA.</p>
+  const k = kpisQ.data
+  const h = schedQ.data
 
-        {/* Liquidity stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14, marginBottom: 22 }}>
+  return (
+    <AdminShell variant="dark" title="overview" subtitle="real data. every public room deserves a human within the SLA.">
+      {/* Product KPIs */}
+      <div style={{ marginBottom: 22 }}>
+        <SectionLabel>product · 24h / 7d</SectionLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
+          <Kpi label="spills · 24h" value={String(k?.spills_24h ?? '—')} sub={k ? `${k.spills_7d} · 7d` : undefined} />
+          <Kpi label="scans · 24h" value={String(k?.scans_24h ?? '—')} sub={k ? `${k.scans_7d} · 7d` : undefined} />
+          <Kpi label="replies · 24h" value={String(k?.comments_24h ?? '—')} sub={k ? `${k.comments_7d} · 7d` : undefined} />
+          <Kpi label="crisis · 7d" value={String(k?.crisis_flags_7d ?? '—')} accent={(k?.crisis_flags_7d ?? 0) > 0 ? '#f7b8d4' : undefined} />
+          <Kpi label="mirror · active" value={String(k?.mirror_subs_active ?? '—')} sub={k ? `${k.mirror_subs_trialing} trialing` : undefined} />
+        </div>
+      </div>
+
+      {/* Liquidity / response floor */}
+      <div style={{ marginBottom: 22 }}>
+        <SectionLabel>response floor</SectionLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
           <Kpi label="public rooms" value={String(s?.total_public_rooms ?? '—')} />
           <Kpi label="response coverage" value={s ? `${s.response_coverage_pct}%` : '—'} />
           <Kpi label="24h coverage" value={s ? `${s.coverage_24h_pct}%` : '—'} sub={s ? `${s.new_rooms_24h} new` : undefined} />
-          <Kpi label="cold rooms (>72h)" value={String(s?.cold_rooms_over_72h ?? '—')} />
+          <Kpi label="cold rooms (>72h)" value={String(s?.cold_rooms_over_72h ?? '—')} accent={(s?.cold_rooms_over_72h ?? 0) > 0 ? '#f7b8d4' : undefined} />
           <Kpi label="median TTFR" value={s?.median_ttfr_hours != null ? `${s.median_ttfr_hours}h` : '—'} />
         </div>
+      </div>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+      {/* Scheduler health */}
+      {h && (
+        <div style={{ marginBottom: 22 }}>
+          <SectionLabel>retention scheduler · 24h</SectionLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
+            <Kpi label="sent" value={String(h.sent_24h)} />
+            <Kpi label="failed" value={String(h.failed_24h)} accent={h.failed_24h > 0 ? '#f7b8d4' : undefined} />
+            <Kpi label="retrying" value={String(h.retrying)} />
+            <Kpi label="overdue" value={String(h.scheduled_overdue)} sub={h.oldest_overdue_minutes != null ? `oldest ${h.oldest_overdue_minutes}m` : undefined} accent={h.scheduled_overdue > 10 ? '#f7b8d4' : undefined} />
+          </div>
+        </div>
+      )}
+
+      {/* Rooms subordinate tab */}
+      <div style={{ marginTop: 22, marginBottom: 12 }}>
+        <SectionLabel>rooms</SectionLabel>
+        <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,.04)', border: '.5px solid rgba(255,255,255,.08)', borderRadius: 999, padding: 3, marginBottom: 12 }}>
           {(['needs', 'new'] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               style={{
-                padding: '8px 16px',
+                padding: '6px 14px',
                 borderRadius: 999,
                 border: 0,
-                background: tab === t ? '#e7548a' : 'rgba(255,255,255,.06)',
+                background: tab === t ? '#e7548a' : 'transparent',
                 color: tab === t ? '#fff' : '#c9bcd0',
                 fontFamily: 'Sora,sans-serif',
-                fontWeight: 600,
-                fontSize: 12,
+                fontWeight: 700,
+                fontSize: 11,
                 letterSpacing: '.06em',
                 textTransform: 'uppercase',
                 cursor: 'pointer',
               }}
             >
-              {t === 'needs' ? 'needs response' : 'new rooms'}
+              {t === 'needs' ? 'needs response' : 'newest'}
             </button>
           ))}
         </div>
-
-        {tab === 'needs' && (
-          <RoomTable
-            title="rooms waiting on a human"
-            rows={needsQ.data as RoomListItem[] | undefined}
-            empty={needsQ.isLoading ? 'loading…' : 'nothing waiting — every room has a human. 🩷'}
-          />
-        )}
-        {tab === 'new' && (
-          <RoomTable
-            title="latest public rooms"
-            rows={newQ.data as RoomListItem[] | undefined}
-            empty={newQ.isLoading ? 'loading…' : 'no public rooms yet.'}
-          />
-        )}
-
-        <div style={{ marginTop: 24, fontSize: 12, color: '#6e6675', textAlign: 'center' }}>
-          <Link to="/admin/feedback" style={{ color: '#9a8fa2', marginRight: 14 }}>feedback →</Link>
-          <Link to="/admin_/relate-queue" style={{ color: '#9a8fa2' }}>relate SLA →</Link>
-        </div>
       </div>
+
+      {tab === 'needs' && (
+        <RoomTable
+          title="rooms waiting on a human"
+          rows={needsQ.data as RoomListItem[] | undefined}
+          empty={needsQ.isLoading ? 'loading…' : 'nothing waiting — every room has a human. 🩷'}
+        />
+      )}
+      {tab === 'new' && (
+        <RoomTable
+          title="latest public rooms"
+          rows={newQ.data as RoomListItem[] | undefined}
+          empty={newQ.isLoading ? 'loading…' : 'no public rooms yet.'}
+        />
+      )}
+    </AdminShell>
+  )
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9a8fa2', marginBottom: 10 }}>
+      {children}
     </div>
   )
 }

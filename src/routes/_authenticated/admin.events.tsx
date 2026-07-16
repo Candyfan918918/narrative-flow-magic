@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { adminListEvents } from '@/lib/admin.functions'
-import { supabase } from '@/integrations/supabase/client'
+import { AdminShell } from '@/components/AdminShell'
 
 export const Route = createFileRoute('/_authenticated/admin/events')({
   head: () => ({ meta: [{ title: 'Admin · Events — Shutap' }, { name: 'robots', content: 'noindex' }] }),
@@ -19,7 +19,6 @@ interface EventRow {
 }
 
 function AdminEventsPage() {
-  const navigate = useNavigate()
   const load = useServerFn(adminListEvents)
   const [rows, setRows] = useState<EventRow[] | null>(null)
   const [name, setName] = useState('')
@@ -29,9 +28,6 @@ function AdminEventsPage() {
   useEffect(() => {
     let dead = false
     ;(async () => {
-      const { data } = await supabase.auth.getSession()
-      const u = data.session?.user as { is_anonymous?: boolean } | undefined
-      if (!data.session || u?.is_anonymous) { navigate({ to: '/welcome' }); return }
       try {
         const r = await load({ data: { name: name || undefined, user_id: userId || undefined, limit: 200 } })
         if (!dead) setRows(r as EventRow[])
@@ -40,50 +36,44 @@ function AdminEventsPage() {
       }
     })()
     return () => { dead = true }
-  }, [load, navigate, name, userId])
+  }, [load, name, userId])
 
   return (
-    <div style={{ padding: 24, fontFamily: "'Inter',sans-serif", background: '#fdf0f5', minHeight: '100vh' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ marginBottom: 20 }}>
-          <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 26, fontWeight: 800, color: '#0b080f', margin: 0 }}>events</h1>
-        </div>
-
-        <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="event name (e.g. spill_created)" style={inp} />
-          <input value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="user id (uuid)" style={inp} />
-        </div>
-        {err && <div style={{ color: '#c1216b', marginBottom: 12 }}>{err}</div>}
-        {!rows ? (
-          <div style={{ color: '#6b4a5c' }}>loading…</div>
-        ) : rows.length === 0 ? (
-          <div style={{ color: '#6b4a5c', fontStyle: 'italic' }}>no events</div>
-        ) : (
-          <div style={{ background: '#fff', borderRadius: 14, border: '.5px solid rgba(11,8,15,.08)', overflow: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-              <thead>
-                <tr style={{ background: '#faf3f6', textAlign: 'left', color: '#6b4a5c' }}>
-                  <th style={th}>time</th>
-                  <th style={th}>event</th>
-                  <th style={th}>user</th>
-                  <th style={th}>props</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.id} style={{ borderTop: '.5px solid rgba(11,8,15,.05)' }}>
-                    <td style={td}>{new Date(r.ts).toLocaleString()}</td>
-                    <td style={{ ...td, fontWeight: 600 }}>{r.name}</td>
-                    <td style={{ ...td, fontFamily: 'monospace', fontSize: 11 }}>{r.user_id || '—'}</td>
-                    <td style={{ ...td, fontFamily: 'monospace', fontSize: 11, maxWidth: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{JSON.stringify(r.properties)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+    <AdminShell title="events">
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="event name (e.g. spill_created)" style={inp} />
+        <input value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="user id (uuid)" style={inp} />
       </div>
-    </div>
+      {err && <div style={{ color: '#c1216b', marginBottom: 12 }}>{err}</div>}
+      {!rows ? (
+        <div style={{ color: '#6b4a5c' }}>loading…</div>
+      ) : rows.length === 0 ? (
+        <div style={{ color: '#6b4a5c', fontStyle: 'italic' }}>no events</div>
+      ) : (
+        <div style={{ background: '#fff', borderRadius: 14, border: '.5px solid rgba(11,8,15,.08)', overflow: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+            <thead>
+              <tr style={{ background: '#faf3f6', textAlign: 'left', color: '#6b4a5c' }}>
+                <th style={th}>time</th>
+                <th style={th}>event</th>
+                <th style={th}>user</th>
+                <th style={th}>props</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} style={{ borderTop: '.5px solid rgba(11,8,15,.05)' }}>
+                  <td style={td}>{new Date(r.ts).toLocaleString()}</td>
+                  <td style={{ ...td, fontWeight: 600 }}>{r.name}</td>
+                  <td style={{ ...td, fontFamily: 'monospace', fontSize: 11 }}>{r.user_id || '—'}</td>
+                  <td style={{ ...td, fontFamily: 'monospace', fontSize: 11, maxWidth: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{JSON.stringify(r.properties)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </AdminShell>
   )
 }
 
