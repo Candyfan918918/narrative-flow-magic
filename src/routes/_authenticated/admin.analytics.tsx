@@ -40,6 +40,8 @@ function AdminAnalyticsPage() {
   const load = useServerFn(adminAnalytics)
   const [data, setData] = useState<Analytics | null>(null)
   const [err, setErr] = useState<string | null>(null)
+  const [audience, setAudience] = useState<'human' | 'bot' | 'all'>('human')
+  const [countryAudience, setCountryAudience] = useState<'human' | 'all'>('human')
 
   useEffect(() => {
     let dead = false
@@ -57,21 +59,48 @@ function AdminAnalyticsPage() {
     return () => { dead = true }
   }, [load, navigate])
 
+  const visits = data ? (audience === 'human' ? data.visits_human : audience === 'bot' ? { ...data.visits_bot, new_30d: 0, returning_30d: 0 } : data.visits) : null
+  const bots = data?.visits_bot
+  const countries = data ? (countryAudience === 'human' ? data.top_countries_human : data.top_countries) : []
+
   return (
     <div style={{ padding: 24, fontFamily: "'Inter',sans-serif", background: '#fdf0f5', minHeight: '100vh' }}>
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <div style={{ marginBottom: 20, display: 'flex', alignItems: 'baseline', gap: 12 }}>
+        <div style={{ marginBottom: 20, display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
           <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: 26, fontWeight: 800, color: '#0b080f', margin: 0 }}>analytics</h1>
           {data && <span style={{ fontSize: 12, color: '#9e7a8c' }}>as of {fmt(data.generated_at)}</span>}
+          <div style={{ marginLeft: 'auto', display: 'inline-flex', background: '#fff', border: '.5px solid rgba(11,8,15,.12)', borderRadius: 999, padding: 3 }}>
+            {(['human', 'bot', 'all'] as const).map((k) => (
+              <button
+                key={k}
+                onClick={() => setAudience(k)}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: 999,
+                  border: 0,
+                  background: audience === k ? '#c1216b' : 'transparent',
+                  color: audience === k ? '#fff' : '#6b4a5c',
+                  fontFamily: "'Sora',sans-serif",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '.08em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                }}
+              >
+                {k === 'human' ? 'humans' : k === 'bot' ? 'bots' : 'all'}
+              </button>
+            ))}
+          </div>
         </div>
 
         {err && <div style={{ color: '#c1216b', marginBottom: 12 }}>{err}</div>}
-        {!data ? (
+        {!data || !visits ? (
           <div style={{ color: '#6b4a5c' }}>loading…</div>
         ) : (
           <>
             <section style={{ marginBottom: 24 }}>
-              <h2 style={sectionH2}>headline</h2>
+              <h2 style={sectionH2}>headline · {audience === 'human' ? 'humans' : audience === 'bot' ? 'bots' : 'all traffic'}</h2>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                 <Card label="real users" value={data.users.total_real} />
                 <Card label="new · 7d" value={data.users.new_7d} />
@@ -79,12 +108,24 @@ function AdminAnalyticsPage() {
                 <Card label="dau" value={data.activity.dau} sub="unique users · 24h" />
                 <Card label="wau" value={data.activity.wau} sub="unique users · 7d" />
                 <Card label="mau" value={data.activity.mau} sub="unique users · 30d" />
-                <Card label="total visits" value={data.visits.total} />
-                <Card label="visits · 7d" value={data.visits.d7} />
-                <Card label="visits · 30d" value={data.visits.d30} sub={`${data.visits.new_30d} new · ${data.visits.returning_30d} returning`} />
+                <Card label="total visits" value={visits.total} sub={audience === 'human' && bots ? `bots: ${bots.total}` : undefined} />
+                <Card label="visits · 7d" value={visits.d7} sub={audience === 'human' && bots ? `bots: ${bots.d7}` : undefined} />
+                <Card
+                  label="visits · 30d"
+                  value={visits.d30}
+                  sub={
+                    audience === 'bot'
+                      ? undefined
+                      : `${visits.new_30d} new · ${visits.returning_30d} returning${audience === 'human' && bots ? ` · bots: ${bots.d30}` : ''}`
+                  }
+                />
                 <Card label="guest→sign_up events" value={data.users.guest_converted} />
               </div>
+              <div style={{ marginTop: 8, fontSize: 11, color: '#9e7a8c' }}>
+                bots detected by user-agent heuristics on the visits table. signed-in sessions are always counted as human. dau/wau/mau are already human-only (event-based).
+              </div>
             </section>
+
 
             <section style={{ marginBottom: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div style={panel}>
