@@ -9,7 +9,7 @@ async function resolveSession(): Promise<Session | null> {
   // Wait briefly for local session restoration (INITIAL_SESSION) before concluding signed out.
   return await new Promise<Session | null>((resolve) => {
     let done = false
-    const finish = (session: typeof data.session) => {
+    const finish = (session: Session | null) => {
       if (done) return
       done = true
       try { subscription.unsubscribe() } catch {}
