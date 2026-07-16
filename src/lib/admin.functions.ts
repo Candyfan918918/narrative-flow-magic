@@ -439,3 +439,241 @@ export const adminLiquidityStats = createServerFn({ method: 'POST' })
     }
   })
 
+// ---------- growth (rolling 24h / 7d / 30d) ----------
+
+export type GrowthDelta = { curr: number; prev: number; delta_pct: number | null }
+export type GrowthSeriesPoint = { date: string; n: number }
+export type GrowthBlock = { day: GrowthDelta; week: GrowthDelta; month: GrowthDelta; series30d: GrowthSeriesPoint[] }
+export interface GrowthPayload {
+  signups: GrowthBlock
+  visits: GrowthBlock
+  generated_at: string
+}
+
+function bucketByDay(timestamps: string[], now: number, days: number): GrowthSeriesPoint[] {
+  const dayMs = 24 * 3600 * 1000
+  const start = now - days * dayMs
+  const buckets: Record<string, number> = {}
+  for (let i = 0; i < days; i++) {
+    const d = new Date(start + i * dayMs).toISOString().slice(0, 10)
+    buckets[d] = 0
+  }
+  for (const t of timestamps) {
+    const ms = new Date(t).getTime()
+    if (ms < start) continue
+    const key = new Date(ms).toISOString().slice(0, 10)
+    if (buckets[key] !== undefined) buckets[key]++
+  }
+  return Object.entries(buckets).map(([date, n]) => ({ date, n }))
+}
+
+function deltaWindow(timestamps: string[], now: number, windowMs: number): GrowthDelta {
+  const currStart = now - windowMs
+  const prevStart = now - 2 * windowMs
+  let curr = 0
+  let prev = 0
+  for (const t of timestamps) {
+    const ms = new Date(t).getTime()
+    if (ms >= currStart) curr++
+    else if (ms >= prevStart) prev++
+  }
+  const delta_pct = prev > 0 ? Math.round(((curr - prev) / prev) * 100) : (curr > 0 ? null : 0)
+  return { curr, prev, delta_pct }
+}
+
+export const adminGrowth = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
+  .handler(async ({ context }): Promise<GrowthPayload> => {
+    await assertAdmin(context)
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const now = Date.now()
+    const since = new Date(now - 60 * 24 * 3600 * 1000).toISOString()
+
+    const [signupsRes, visitsRes] = await Promise.all([
+      supabaseAdmin
+        .from('profiles')
+        .select('signup_at')
+        .eq('is_anonymous', false)
+        .gte('signup_at', since)
+        .limit(100000),
+      supabaseAdmin
+        .from('visits_classified')
+        .select('started_at')
+        .eq('is_bot', false)
+        .gte('started_at', since)
+        .limit(200000),
+    ])
+
+    const signupTs = ((signupsRes.data ?? []) as Array<{ signup_at: string | null }>)
+      .map((r) => r.signup_at).filter((v): v is string => !!v)
+    const visitTs = ((visitsRes.data ?? []) as Array<{ started_at: string | null }>)
+      .map((r) => r.started_at).filter((v): v is string => !!v)
+
+    const dayMs = 24 * 3600 * 1000
+    const build = (ts: string[]): GrowthBlock => ({
+      day: deltaWindow(ts, now, dayMs),
+      week: deltaWindow(ts, now, 7 * dayMs),
+      month: deltaWindow(ts, now, 30 * dayMs),
+      series30d: bucketByDay(ts, now, 30),
+    })
+
+    return { signups: build(signupTs), visits: build(visitTs), generated_at: new Date(now).toISOString() }
+  })
+
+// ---------- acquisition (30d, humans only) ----------
+
+const SEARCH_HOSTS = /(google|bing|duckduckgo|yahoo|yandex|baidu|ecosia|brave|qwant|kagi)\./i
+const SOCIAL_HOSTS = /(twitter|x\.com|reddit|facebook|instagram|tiktok|linkedin|pinterest|threads\.net|bsky\.app|mastodon|youtube|discord|whatsapp|t\.me|telegram|snapchat)/i
+
+function hostnameOf(url: string | null): string | null {
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    return u.hostname.replace(/^www\./, '')
+  } catch { return null }
+}
+
+type Channel = 'direct' | 'search' | 'social' | 'referral' | 'utm'
+
+function classifyChannel(referrer: string | null, utmSource: string | null, siteHost: string): Channel {
+  if (utmSource) return 'utm'
+  const host = hostnameOf(referrer)
+  if (!host) return 'direct'
+  if (host === siteHost || host.endsWith('.' + siteHost)) return 'direct'
+  if (SEARCH_HOSTS.test(host)) return 'search'
+  if (SOCIAL_HOSTS.test(host)) return 'social'
+  return 'referral'
+}
+
+export interface AcquisitionPayload {
+  window_days: number
+  total_visits: number
+  channels: Record<Channel, number>
+  top_referrers: Array<[string, number]>
+  top_utm_sources: Array<[string, number]>
+  top_utm_campaigns: Array<[string, number]>
+  top_landing_paths: Array<[string, number]>
+  captured_utm_count: number
+}
+
+export const adminAcquisition = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
+  .handler(async ({ context }): Promise<AcquisitionPayload> => {
+    await assertAdmin(context)
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const since = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString()
+
+    const { data: rows } = await supabaseAdmin
+      .from('visits_classified')
+      .select('referrer, utm_source, utm_campaign, landing_path')
+      .eq('is_bot', false)
+      .gte('started_at', since)
+      .limit(200000)
+
+    const list = (rows ?? []) as Array<{
+      referrer: string | null; utm_source: string | null;
+      utm_campaign: string | null; landing_path: string | null;
+    }>
+
+    const channels: Record<Channel, number> = { direct: 0, search: 0, social: 0, referral: 0, utm: 0 }
+    const refCounts: Record<string, number> = {}
+    const utmSrcCounts: Record<string, number> = {}
+    const utmCampCounts: Record<string, number> = {}
+    const landingCounts: Record<string, number> = {}
+    let capturedUtm = 0
+
+    const siteHost = (process.env.SITE_HOST ?? 'shutap.com').replace(/^www\./, '')
+
+    for (const r of list) {
+      channels[classifyChannel(r.referrer, r.utm_source, siteHost)]++
+      const host = hostnameOf(r.referrer)
+      if (host && host !== siteHost && !host.endsWith('.' + siteHost)) {
+        refCounts[host] = (refCounts[host] ?? 0) + 1
+      }
+      if (r.utm_source) {
+        capturedUtm++
+        utmSrcCounts[r.utm_source] = (utmSrcCounts[r.utm_source] ?? 0) + 1
+      }
+      if (r.utm_campaign) utmCampCounts[r.utm_campaign] = (utmCampCounts[r.utm_campaign] ?? 0) + 1
+      if (r.landing_path) landingCounts[r.landing_path] = (landingCounts[r.landing_path] ?? 0) + 1
+    }
+
+    const rank = (m: Record<string, number>, n = 10): Array<[string, number]> =>
+      Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, n)
+
+    return {
+      window_days: 30,
+      total_visits: list.length,
+      channels,
+      top_referrers: rank(refCounts),
+      top_utm_sources: rank(utmSrcCounts),
+      top_utm_campaigns: rank(utmCampCounts),
+      top_landing_paths: rank(landingCounts),
+      captured_utm_count: capturedUtm,
+    }
+  })
+
+// ---------- product KPIs (for /admin overview) ----------
+
+export interface ProductKpis {
+  spills_24h: number
+  spills_7d: number
+  scans_24h: number
+  scans_7d: number
+  comments_24h: number
+  comments_7d: number
+  crisis_flags_7d: number
+  mirror_subs_active: number
+  mirror_subs_trialing: number
+}
+
+export const adminProductKpis = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
+  .handler(async ({ context }): Promise<ProductKpis> => {
+    await assertAdmin(context)
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const now = Date.now()
+    const iso = (ms: number) => new Date(ms).toISOString()
+    const d1 = iso(now - 24 * 3600 * 1000)
+    const d7 = iso(now - 7 * 24 * 3600 * 1000)
+
+    const [
+      spills24, spills7, scans24, scans7, comm24, comm7, crisis7, subsActive, subsTrialing,
+    ] = await Promise.all([
+      supabaseAdmin.from('situations').select('id', { count: 'exact', head: true })
+        .eq('is_seed', false).is('deleted_at', null).gte('created_at', d1),
+      supabaseAdmin.from('situations').select('id', { count: 'exact', head: true })
+        .eq('is_seed', false).is('deleted_at', null).gte('created_at', d7),
+      supabaseAdmin.from('situations').select('id', { count: 'exact', head: true })
+        .eq('is_seed', false).is('deleted_at', null).not('initial_scan', 'is', null).gte('created_at', d1),
+      supabaseAdmin.from('situations').select('id', { count: 'exact', head: true })
+        .eq('is_seed', false).is('deleted_at', null).not('initial_scan', 'is', null).gte('created_at', d7),
+      supabaseAdmin.from('comments').select('id', { count: 'exact', head: true })
+        .eq('is_companion', false).is('deleted_at', null).gte('created_at', d1),
+      supabaseAdmin.from('comments').select('id', { count: 'exact', head: true })
+        .eq('is_companion', false).is('deleted_at', null).gte('created_at', d7),
+      supabaseAdmin.from('situations').select('id', { count: 'exact', head: true })
+        .eq('crisis_flag', true).gte('created_at', d7),
+      supabaseAdmin.from('subscriptions').select('id', { count: 'exact', head: true })
+        .eq('status', 'active'),
+      supabaseAdmin.from('subscriptions').select('id', { count: 'exact', head: true })
+        .eq('status', 'trialing'),
+    ])
+
+    return {
+      spills_24h: spills24.count ?? 0,
+      spills_7d: spills7.count ?? 0,
+      scans_24h: scans24.count ?? 0,
+      scans_7d: scans7.count ?? 0,
+      comments_24h: comm24.count ?? 0,
+      comments_7d: comm7.count ?? 0,
+      crisis_flags_7d: crisis7.count ?? 0,
+      mirror_subs_active: subsActive.count ?? 0,
+      mirror_subs_trialing: subsTrialing.count ?? 0,
+    }
+  })
+
+
