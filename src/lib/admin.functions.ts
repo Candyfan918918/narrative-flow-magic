@@ -146,8 +146,10 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
     const [
       totalReal, newSignups7, newSignups30,
       totalVisits, visits7, visits30, revisits30,
+      totalVisitsHuman, visits7Human, visits30Human, revisits30Human,
+      totalVisitsBot, visits7Bot, visits30Bot,
       convertedGuests, recentSignins,
-      activeUsersRes, providerRowsRes, countryRowsRes, eventRowsRes,
+      activeUsersRes, providerRowsRes, countryRowsRes, countryRowsHumanRes, eventRowsRes,
     ] = await Promise.all([
       supabaseAdmin.from('profiles').select('user_id', { count: 'exact', head: true }).eq('is_anonymous', false),
       supabaseAdmin.from('profiles').select('user_id', { count: 'exact', head: true }).eq('is_anonymous', false).gte('signup_at', d7),
@@ -156,11 +158,28 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
       supabaseAdmin.from('visits').select('id', { count: 'exact', head: true }).gte('started_at', d7),
       supabaseAdmin.from('visits').select('id', { count: 'exact', head: true }).gte('started_at', d30),
       supabaseAdmin.from('visits').select('id', { count: 'exact', head: true }).gte('started_at', d30).eq('is_revisit', true),
+      // Human buckets — is_bot = false in the classified view
+      supabaseAdmin.from('visits_classified').select('id', { count: 'exact', head: true }).eq('is_bot', false),
+      supabaseAdmin.from('visits_classified').select('id', { count: 'exact', head: true }).eq('is_bot', false).gte('started_at', d7),
+      supabaseAdmin.from('visits_classified').select('id', { count: 'exact', head: true }).eq('is_bot', false).gte('started_at', d30),
+      supabaseAdmin.from('visits_classified').select('id', { count: 'exact', head: true }).eq('is_bot', false).gte('started_at', d30).eq('is_revisit', true),
+      // Bot buckets
+      supabaseAdmin.from('visits_classified').select('id', { count: 'exact', head: true }).eq('is_bot', true),
+      supabaseAdmin.from('visits_classified').select('id', { count: 'exact', head: true }).eq('is_bot', true).gte('started_at', d7),
+      supabaseAdmin.from('visits_classified').select('id', { count: 'exact', head: true }).eq('is_bot', true).gte('started_at', d30),
       supabaseAdmin.from('events').select('user_id', { count: 'exact', head: true }).eq('name', 'sign_up'),
       supabaseAdmin.from('profiles').select('user_id, email, full_name, first_name, last_name, provider, last_login_at').eq('is_anonymous', false).not('last_login_at', 'is', null).order('last_login_at', { ascending: false }).limit(20),
       supabaseAdmin.rpc('admin_active_users' as never),
       supabaseAdmin.rpc('admin_provider_counts' as never),
       supabaseAdmin.rpc('admin_country_counts' as never),
+      // Human-only top countries · 30d
+      supabaseAdmin
+        .from('visits_classified')
+        .select('country')
+        .eq('is_bot', false)
+        .not('country', 'is', null)
+        .gte('started_at', d30)
+        .limit(50000),
       supabaseAdmin.rpc('admin_event_counts' as never),
     ])
 
@@ -178,6 +197,17 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
     const countryRows = ((countryRowsRes.data ?? []) as Array<{ country: string; cnt: number | string }>)
     const topCountries: Array<[string, number]> = countryRows.slice(0, 10).map((r) => [r.country, Number(r.cnt)])
 
+    // Aggregate human-only country counts client-side (30d window)
+    const humanCountryCounts: Record<string, number> = {}
+    for (const r of ((countryRowsHumanRes.data ?? []) as Array<{ country: string | null }>)) {
+      const c = r.country
+      if (!c) continue
+      humanCountryCounts[c] = (humanCountryCounts[c] ?? 0) + 1
+    }
+    const topCountriesHuman: Array<[string, number]> = Object.entries(humanCountryCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+
     const eventTable = ((eventRowsRes.data ?? []) as Array<{ name: string; d7: number | string; d30: number | string }>)
       .map((r) => ({ name: r.name, d7: Number(r.d7), d30: Number(r.d30) }))
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -185,6 +215,10 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
     const visits30Total = visits30.count ?? 0
     const revisits = revisits30.count ?? 0
     const newVisits = Math.max(0, visits30Total - revisits)
+
+    const visits30HumanTotal = visits30Human.count ?? 0
+    const revisitsHuman = revisits30Human.count ?? 0
+    const newVisitsHuman = Math.max(0, visits30HumanTotal - revisitsHuman)
 
     return {
       generated_at: iso(now),
@@ -202,8 +236,21 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
         new_30d: newVisits,
         returning_30d: revisits,
       },
+      visits_human: {
+        total: totalVisitsHuman.count ?? 0,
+        d7: visits7Human.count ?? 0,
+        d30: visits30HumanTotal,
+        new_30d: newVisitsHuman,
+        returning_30d: revisitsHuman,
+      },
+      visits_bot: {
+        total: totalVisitsBot.count ?? 0,
+        d7: visits7Bot.count ?? 0,
+        d30: visits30Bot.count ?? 0,
+      },
       providers,
       top_countries: topCountries,
+      top_countries_human: topCountriesHuman,
       events: eventTable,
       recent_signins: (recentSignins.data ?? []) as Array<{
         user_id: string; email: string | null; full_name: string | null;
@@ -212,6 +259,7 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
       }>,
     }
   })
+
 
 
 export const adminListEvents = createServerFn({ method: 'POST' })
