@@ -80,7 +80,7 @@ export function GlobalHeader() {
   const areaRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
   const isWelcome = pathname === '/welcome'
-  const isAdminPath = pathname === '/admin' || pathname.startsWith('/admin/')
+
   // The immersive homepage ("/") ships with its own header inside the
   // reference markup; suppress the global one so we don't stack two bars.
   const isHome = pathname === '/'
