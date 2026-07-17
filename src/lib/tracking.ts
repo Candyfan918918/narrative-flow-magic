@@ -2,7 +2,7 @@
 // server fns AND (when configured) into PostHog. Silent no-op when things
 // aren't ready — never throws, never blocks render.
 import { recordVisit, trackEventFn, upsertMyProfile } from './tracking.functions'
-import { posthog, posthogIdentify } from './posthog'
+import { phCapture, posthogIdentify } from './posthog'
 
 const SESSION_KEY = 'shutap_session_id'
 const VISIT_SENT_KEY = 'shutap_visit_sent'
