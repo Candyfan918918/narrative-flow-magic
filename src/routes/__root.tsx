@@ -128,6 +128,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           description:
             "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
           slogan: "Shutap. Speak Up.",
+          url: "https://shutap.com",
+          logo: "https://shutap.com/og/shutap-og.png",
+          image: "https://shutap.com/og/shutap-og.png",
         }),
       },
     ],
