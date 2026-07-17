@@ -2,7 +2,7 @@
 // server fns AND (when configured) into PostHog. Silent no-op when things
 // aren't ready — never throws, never blocks render.
 import { recordVisit, trackEventFn, upsertMyProfile } from './tracking.functions'
-import { posthog, posthogIdentify } from './posthog'
+import { phCapture, posthogIdentify } from './posthog'
 
 const SESSION_KEY = 'shutap_session_id'
 const VISIT_SENT_KEY = 'shutap_visit_sent'
@@ -24,7 +24,7 @@ export function getSessionId(): string {
 
 export async function trackEvent(name: string, properties: Record<string, unknown> = {}): Promise<void> {
   const session_id = getSessionId()
-  try { posthog()?.capture(name, properties) } catch { /* noop */ }
+  void phCapture(name, properties)
   try {
     await trackEventFn({ data: { session_id, name, properties } })
   } catch { /* noop */ }
