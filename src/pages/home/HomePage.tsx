@@ -69,7 +69,7 @@ function hashKey(input: { pillar?: string | null; title?: string | null; body?: 
   return (h >>> 0).toString(36)
 }
 
-export function HomePage() {
+export function HomePage({ openRoomsCount = 0 }: { openRoomsCount?: number } = {}) {
   const navigate = useNavigate()
   const router = useRouter()
   const save = useServerFn(saveSituation)
