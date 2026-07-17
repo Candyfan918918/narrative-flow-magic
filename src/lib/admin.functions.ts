@@ -146,10 +146,11 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
     const [
       totalReal, newSignups7, newSignups30,
       totalVisits, visits7, visits30, revisits30,
-      totalVisitsHuman, visits7Human, visits30Human, revisits30Human,
+      totalVisitsHuman, visits7Human, visits30Human, revisitsHuman30,
       totalVisitsBot, visits7Bot, visits30Bot,
       convertedGuests, recentSignins,
       activeUsersRes, providerRowsRes, countryRowsRes, countryRowsHumanRes, eventRowsRes,
+      uniqueVisitorRowsRes,
     ] = await Promise.all([
       supabaseAdmin.from('profiles').select('user_id', { count: 'exact', head: true }).eq('is_anonymous', false),
       supabaseAdmin.from('profiles').select('user_id', { count: 'exact', head: true }).eq('is_anonymous', false).gte('signup_at', d7),
@@ -181,7 +182,13 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
         .gte('started_at', d30)
         .limit(50000),
       supabaseAdmin.rpc('admin_event_counts' as never),
+      // Rows for unique-visitor dedupe (all buckets, all-time — dedupe in JS)
+      supabaseAdmin
+        .from('visits_classified')
+        .select('user_id, session_id, started_at, is_bot')
+        .limit(200000),
     ])
+
 
     const activeRow = (Array.isArray(activeUsersRes.data) ? activeUsersRes.data[0] : activeUsersRes.data) as
       | { dau?: number | string; wau?: number | string; mau?: number | string } | null
@@ -217,8 +224,33 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
     const newVisits = Math.max(0, visits30Total - revisits)
 
     const visits30HumanTotal = visits30Human.count ?? 0
-    const revisitsHuman = revisits30Human.count ?? 0
+    const revisitsHuman = revisitsHuman30.count ?? 0
     const newVisitsHuman = Math.max(0, visits30HumanTotal - revisitsHuman)
+
+    // Unique visitors — dedupe on user_id (fallback to session_id)
+    type UvRow = { user_id: string | null; session_id: string | null; started_at: string | null; is_bot: boolean | null }
+    const uvRows = (uniqueVisitorRowsRes.data ?? []) as UvRow[]
+    const keyOf = (r: UvRow): string | null => r.user_id ?? r.session_id ?? null
+    const nowMs = now
+    const ms7 = nowMs - 7 * 24 * 3600 * 1000
+    const ms30 = nowMs - 30 * 24 * 3600 * 1000
+    const bucketUnique = (predicate: (r: UvRow) => boolean) => {
+      const total = new Set<string>()
+      const s7 = new Set<string>()
+      const s30 = new Set<string>()
+      for (const r of uvRows) {
+        if (!predicate(r)) continue
+        const k = keyOf(r); if (!k) continue
+        total.add(k)
+        const ts = r.started_at ? new Date(r.started_at).getTime() : 0
+        if (ts >= ms7) s7.add(k)
+        if (ts >= ms30) s30.add(k)
+      }
+      return { total: total.size, d7: s7.size, d30: s30.size }
+    }
+    const uniqueAll = bucketUnique(() => true)
+    const uniqueHuman = bucketUnique((r) => r.is_bot === false)
+    const uniqueBot = bucketUnique((r) => r.is_bot === true)
 
     return {
       generated_at: iso(now),
@@ -248,6 +280,9 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
         d7: visits7Bot.count ?? 0,
         d30: visits30Bot.count ?? 0,
       },
+      unique_visitors: uniqueAll,
+      unique_visitors_human: uniqueHuman,
+      unique_visitors_bot: uniqueBot,
       providers,
       top_countries: topCountries,
       top_countries_human: topCountriesHuman,
@@ -259,6 +294,7 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
       }>,
     }
   })
+
 
 
 
@@ -447,6 +483,7 @@ export type GrowthBlock = { day: GrowthDelta; week: GrowthDelta; month: GrowthDe
 export interface GrowthPayload {
   signups: GrowthBlock
   visits: GrowthBlock
+  unique_visitors: GrowthBlock
   generated_at: string
 }
 
@@ -481,6 +518,43 @@ function deltaWindow(timestamps: string[], now: number, windowMs: number): Growt
   return { curr, prev, delta_pct }
 }
 
+type KeyedTs = { t: string; k: string }
+
+function bucketByDayDistinct(items: KeyedTs[], now: number, days: number): GrowthSeriesPoint[] {
+  const dayMs = 24 * 3600 * 1000
+  const start = now - days * dayMs
+  const dates: string[] = []
+  const sets: Record<string, Set<string>> = {}
+  for (let i = 0; i < days; i++) {
+    const d = new Date(start + i * dayMs).toISOString().slice(0, 10)
+    dates.push(d)
+    sets[d] = new Set()
+  }
+  for (const { t, k } of items) {
+    const ms = new Date(t).getTime()
+    if (ms < start) continue
+    const key = new Date(ms).toISOString().slice(0, 10)
+    if (sets[key]) sets[key].add(k)
+  }
+  return dates.map((d) => ({ date: d, n: sets[d].size }))
+}
+
+function deltaWindowDistinct(items: KeyedTs[], now: number, windowMs: number): GrowthDelta {
+  const currStart = now - windowMs
+  const prevStart = now - 2 * windowMs
+  const curr = new Set<string>()
+  const prev = new Set<string>()
+  for (const { t, k } of items) {
+    const ms = new Date(t).getTime()
+    if (ms >= currStart) curr.add(k)
+    else if (ms >= prevStart) prev.add(k)
+  }
+  const c = curr.size
+  const p = prev.size
+  const delta_pct = p > 0 ? Math.round(((c - p) / p) * 100) : (c > 0 ? null : 0)
+  return { curr: c, prev: p, delta_pct }
+}
+
 export const adminGrowth = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
@@ -499,7 +573,7 @@ export const adminGrowth = createServerFn({ method: 'POST' })
         .limit(100000),
       supabaseAdmin
         .from('visits_classified')
-        .select('started_at')
+        .select('started_at, user_id, session_id')
         .eq('is_bot', false)
         .gte('started_at', since)
         .limit(200000),
@@ -507,8 +581,11 @@ export const adminGrowth = createServerFn({ method: 'POST' })
 
     const signupTs = ((signupsRes.data ?? []) as Array<{ signup_at: string | null }>)
       .map((r) => r.signup_at).filter((v): v is string => !!v)
-    const visitTs = ((visitsRes.data ?? []) as Array<{ started_at: string | null }>)
-      .map((r) => r.started_at).filter((v): v is string => !!v)
+    const visitRows = ((visitsRes.data ?? []) as Array<{ started_at: string | null; user_id: string | null; session_id: string | null }>)
+    const visitTs = visitRows.map((r) => r.started_at).filter((v): v is string => !!v)
+    const uniqueItems: KeyedTs[] = visitRows
+      .map((r) => ({ t: r.started_at, k: r.user_id ?? r.session_id }))
+      .filter((x): x is KeyedTs => !!x.t && !!x.k)
 
     const dayMs = 24 * 3600 * 1000
     const build = (ts: string[]): GrowthBlock => ({
@@ -517,9 +594,21 @@ export const adminGrowth = createServerFn({ method: 'POST' })
       month: deltaWindow(ts, now, 30 * dayMs),
       series30d: bucketByDay(ts, now, 30),
     })
+    const buildDistinct = (items: KeyedTs[]): GrowthBlock => ({
+      day: deltaWindowDistinct(items, now, dayMs),
+      week: deltaWindowDistinct(items, now, 7 * dayMs),
+      month: deltaWindowDistinct(items, now, 30 * dayMs),
+      series30d: bucketByDayDistinct(items, now, 30),
+    })
 
-    return { signups: build(signupTs), visits: build(visitTs), generated_at: new Date(now).toISOString() }
+    return {
+      signups: build(signupTs),
+      visits: build(visitTs),
+      unique_visitors: buildDistinct(uniqueItems),
+      generated_at: new Date(now).toISOString(),
+    }
   })
+
 
 // ---------- acquisition (30d, humans only) ----------
 
