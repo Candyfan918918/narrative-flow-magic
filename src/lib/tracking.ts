@@ -3,6 +3,8 @@
 // aren't ready — never throws, never blocks render.
 import { recordVisit, trackEventFn, upsertMyProfile } from './tracking.functions'
 import { phCapture, posthogIdentify } from './posthog'
+import { isProdHost } from './env'
+
 
 const SESSION_KEY = 'shutap_session_id'
 const VISIT_SENT_KEY = 'shutap_visit_sent'
