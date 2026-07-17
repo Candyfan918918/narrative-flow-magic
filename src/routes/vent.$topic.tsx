@@ -47,7 +47,10 @@ export const Route = createFileRoute('/vent/$topic')({
     const title = `Vent about ${t.label} — Shutap`
     const desc = t.intro
     const faqItems = FAQ_ITEMS(t)
-    const qaMain = loaderData.rooms[0]
+    // QAPage JSON-LD is only emitted when we have REAL (non-seed) rooms for
+    // the topic. Seed-sourced rooms must never appear in structured Q&A data.
+    const realRooms = loaderData.rooms.filter((r) => !isSeedRoom(r))
+    const qaMain = realRooms[0]
     return {
       meta: [
         { title },
@@ -81,8 +84,8 @@ export const Route = createFileRoute('/vent/$topic')({
                   '@type': 'Question',
                   name: qaMain.title,
                   text: (qaMain.body || '').slice(0, 500),
-                  answerCount: loaderData.rooms.length,
-                  suggestedAnswer: loaderData.rooms.slice(1, 5).map((r) => ({
+                  answerCount: realRooms.length,
+                  suggestedAnswer: realRooms.slice(1, 5).map((r) => ({
                     '@type': 'Answer',
                     text: (r.body || '').slice(0, 500),
                     url: `${SITE_URL}/stream#room-${encodeURIComponent(r.id)}`,
