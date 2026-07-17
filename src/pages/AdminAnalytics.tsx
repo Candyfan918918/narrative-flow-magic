@@ -160,17 +160,21 @@ export function AdminAnalyticsPage() {
               </div>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-              <Card label="total" value={visits.total} />
+              <Card label="visits · total" value={visits.total} />
               <Card label="visits · 7d" value={visits.d7} />
               <Card
                 label="visits · 30d"
                 value={visits.d30}
                 sub={audience === 'bot' ? undefined : `${visits.new_30d} new · ${visits.returning_30d} returning`}
               />
+              {unique && <Card label="unique visitors" value={unique.total} />}
+              {unique && <Card label="unique · 7d" value={unique.d7} />}
+              {unique && <Card label="unique · 30d" value={unique.d30} />}
             </div>
             <div style={{ marginTop: 8, fontSize: 11, color: '#9e7a8c' }}>
-              bots detected by user-agent heuristics; signed-in sessions always count as human.
+              visits = sessions; unique visitors = distinct people (per auth user). bots detected by user-agent heuristics; signed-in sessions always count as human.
             </div>
+
           </section>
 
           {/* Providers + countries */}
