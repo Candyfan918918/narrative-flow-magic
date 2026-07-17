@@ -224,8 +224,33 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
     const newVisits = Math.max(0, visits30Total - revisits)
 
     const visits30HumanTotal = visits30Human.count ?? 0
-    const revisitsHuman = revisits30Human.count ?? 0
+    const revisitsHuman = revisitsHuman30.count ?? 0
     const newVisitsHuman = Math.max(0, visits30HumanTotal - revisitsHuman)
+
+    // Unique visitors — dedupe on user_id (fallback to session_id)
+    type UvRow = { user_id: string | null; session_id: string | null; started_at: string | null; is_bot: boolean | null }
+    const uvRows = (uniqueVisitorRowsRes.data ?? []) as UvRow[]
+    const keyOf = (r: UvRow): string | null => r.user_id ?? r.session_id ?? null
+    const nowMs = now
+    const ms7 = nowMs - 7 * 24 * 3600 * 1000
+    const ms30 = nowMs - 30 * 24 * 3600 * 1000
+    const bucketUnique = (predicate: (r: UvRow) => boolean) => {
+      const total = new Set<string>()
+      const s7 = new Set<string>()
+      const s30 = new Set<string>()
+      for (const r of uvRows) {
+        if (!predicate(r)) continue
+        const k = keyOf(r); if (!k) continue
+        total.add(k)
+        const ts = r.started_at ? new Date(r.started_at).getTime() : 0
+        if (ts >= ms7) s7.add(k)
+        if (ts >= ms30) s30.add(k)
+      }
+      return { total: total.size, d7: s7.size, d30: s30.size }
+    }
+    const uniqueAll = bucketUnique(() => true)
+    const uniqueHuman = bucketUnique((r) => r.is_bot === false)
+    const uniqueBot = bucketUnique((r) => r.is_bot === true)
 
     return {
       generated_at: iso(now),
@@ -255,6 +280,9 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
         d7: visits7Bot.count ?? 0,
         d30: visits30Bot.count ?? 0,
       },
+      unique_visitors: uniqueAll,
+      unique_visitors_human: uniqueHuman,
+      unique_visitors_bot: uniqueBot,
       providers,
       top_countries: topCountries,
       top_countries_human: topCountriesHuman,
@@ -266,6 +294,7 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
       }>,
     }
   })
+
 
 
 
