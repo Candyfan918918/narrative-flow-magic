@@ -92,6 +92,43 @@ async function callComplete(userText: string, system?: string): Promise<string> 
   return j.text
 }
 
+/** Read cached alias display name for the client-side companion calls. */
+function getAliasName(): string | null {
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem('shutap_alias') : null
+    if (!raw) return null
+    const a = JSON.parse(raw) as { name?: string }
+    const n = (a?.name || '').trim()
+    return n || null
+  } catch { return null }
+}
+
+/** Alias directive to append to the USER message (never to the hash-allowlisted
+ *  system prompt) so the model stops emitting "[user_alias]" placeholders. */
+function aliasNoteFor(name: string | null): string {
+  return name
+    ? `\n\nthe user's alias is "${name}". when you address them by name, use this exact alias. NEVER output a placeholder token like [user_alias], [user alias], [alias], or [name].`
+    : `\n\nyou do NOT know the user's alias. do not use any name for them, and NEVER output a placeholder token like [user_alias], [user alias], [alias], or [name] — just talk to them directly.`
+}
+
+/** Defense in depth — strip any placeholder tokens the model still leaks. */
+const PLACEHOLDER_RE = /\[\s*(user[ _-]?alias|user[ _-]?name|alias|name)\s*\]/gi
+export function sanitizePlaceholders(text: string, aliasName: string | null): string {
+  if (!text) return text
+  let out = String(text)
+  if (aliasName) {
+    out = out.replace(PLACEHOLDER_RE, aliasName)
+  } else {
+    out = out.replace(PLACEHOLDER_RE, '')
+    // clean up orphaned punctuation / whitespace left behind
+    out = out.replace(/,\s*([.!?…])/g, '$1')
+    out = out.replace(/\s+([,.!?…])/g, '$1')
+    out = out.replace(/[ \t]{2,}/g, ' ')
+    out = out.replace(/ +\n/g, '\n')
+  }
+  return out
+}
+
 function extractJSON<T>(raw: string): T {
   const cleaned = (raw || '').replace(/```json/gi, '').replace(/```/g, '')
   const m = cleaned.match(/\{[\s\S]*\}/)
@@ -408,15 +445,18 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       const progressHint = isReturning && progressNote
         ? '\nthis user is RETURNING. their progress on the prior thing (their words): "' + progressNote + '". carry that context but the new spill is a new situation.'
         : ''
+      const aliasName = getAliasName()
       const userMsg =
         TURN_SYS +
         '\n\n=== the conversation so far ===\n' + transcript +
         '\n\n=== what you have quietly understood ===\n' + JSON.stringify(draft) +
         arcNote + gate + progressHint +
-        '\nthis is turn ' + nextTurn + ' of max 12.\n\nnow output ONLY your JSON move:'
+        '\nthis is turn ' + nextTurn + ' of max 12.\n\nnow output ONLY your JSON move:' +
+        aliasNoteFor(aliasName)
       const raw = await callComplete(userMsg)
       const obj = extractJSON<{ say?: string[]; has_question?: boolean; updated?: Partial<Draft>; decision?: string }>(raw)
-      const say = (Array.isArray(obj.say) ? obj.say.filter(Boolean).slice(0, 3) : ['ok — i\u2019m with you. keep going.']) as string[]
+      const sayRaw = (Array.isArray(obj.say) ? obj.say.filter(Boolean).slice(0, 3) : ['ok — i\u2019m with you. keep going.']) as string[]
+      const say = sayRaw.map(s => sanitizePlaceholders(String(s), aliasName))
       const merged = mergeDraft(draft, obj.updated as Draft | undefined)
       setDraft(merged)
       const after: Msg[] = [...nextMsgs, { role: 'companion', say: say.length ? say : ['ok — i\u2019m with you. keep going.'], hasQ: !!obj.has_question }]
@@ -426,10 +466,11 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       if (ready) { setPhase('reflect'); void runReflect(after, merged) }
     } catch {
       // Scripted fallback — verbatim behavior from spillFallbackTurn() in iframe.
+      const aliasName = getAliasName()
       const fb = spillFallbackTurn(scrubbed.clean, draft, nextTurn, usedFBRef.current)
       const merged = mergeDraft(draft, fb.updated as Draft)
       setDraft(merged)
-      const after: Msg[] = [...nextMsgs, { role: 'companion', say: fb.say, hasQ: fb.hasQ }]
+      const after: Msg[] = [...nextMsgs, { role: 'companion', say: fb.say.map(s => sanitizePlaceholders(s, aliasName)), hasQ: fb.hasQ }]
       setMsgs(after)
       setThinking(false)
       if (fb.ready) { setPhase('reflect'); void runReflect(after, merged) }
@@ -441,13 +482,14 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
   const runReflect = useCallback(async (allMsgs: Msg[], mergedDraft: Draft) => {
     setThinking(true)
     let summary = ''
+    const aliasName = getAliasName()
     try {
       const convo = allMsgs.filter((m): m is Extract<Msg, { role: 'user' }> => m.role === 'user').map(m => m.text).join(' / ')
       const real = mergedDraft.the_real_thing || ''
       const prompt = 'Say the whole thing back to them, centered on the real thing, in their words, relaxed and warm, lowercase, starting "ok so — stripped down, ". keep it to 1-2 sentences. end with "that about right?" no advice, no diagnosis, no preamble.'
       const reflectSystem = 'You are THE SPILL on Shutap — the user\'s closest friend, lowercase, warm, texty. Reply in PLAIN PROSE ONLY. Never output JSON, code fences, backticks, keys, or braces.'
-      const raw = await callComplete('their words: ' + convo + '\nthe real thing underneath: ' + real + '\n\n' + prompt, reflectSystem)
-      summary = sanitizeReflect(raw)
+      const raw = await callComplete('their words: ' + convo + '\nthe real thing underneath: ' + real + '\n\n' + prompt + aliasNoteFor(aliasName), reflectSystem)
+      summary = sanitizePlaceholders(sanitizeReflect(raw), aliasName)
     } catch {
       summary = REFLECT_FALLBACK
     }
@@ -476,6 +518,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       .map((p, i) => `Q${i + 1} (companion asked): ${p.q}\nA${i + 1} (they answered): ${p.a}`)
       .join('\n\n')
     let c: Composed
+    const aliasName = getAliasName()
     try {
       const progressBlock = isReturning && progressNote
         ? '\n\nprogress note (returning user, their words about the PRIOR situation \u2014 do NOT weave into the new story; return it verbatim in progress_note): "' + progressNote + '"'
@@ -491,12 +534,13 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         'the fact ledger (silent, for your reference): ' + JSON.stringify(draft.arc || {}) + '\n' +
         'the thing that mattered most to them: ' + (draft.the_real_thing || draft.emotional_core || '(not stated)') + progressBlock + '\n\n' +
         'OUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\n' +
-        'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"...","progress_note":' + (isReturning ? '"<verbatim their words>"' : 'null') + '}'
+        'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"...","progress_note":' + (isReturning ? '"<verbatim their words>"' : 'null') + '}' +
+        aliasNoteFor(aliasName)
       const raw = await callComplete(prompt)
       const j = extractJSON<{ title?: string; body?: string; tags?: string[]; edit_summary?: string; progress_note?: string | null }>(raw)
       c = {
-        title: scrubPII(stripHTMLInline(String(j.title || ''))).clean,
-        body: scrubPII(stripHTML(String(j.body || ''))).clean,
+        title: sanitizePlaceholders(scrubPII(stripHTMLInline(String(j.title || ''))).clean, aliasName),
+        body: sanitizePlaceholders(scrubPII(stripHTML(String(j.body || ''))).clean, aliasName),
         tags: Array.isArray(j.tags) ? j.tags.slice(0, 5) : (draft.tags || []),
         pillar: normalizePillar(draft.pillar),
         edit_summary: typeof j.edit_summary === 'string' ? j.edit_summary.trim() : '',
@@ -535,10 +579,12 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     const ins = editInstruction.trim(); if (!ins || !composed) return
     syncPreviewDOM()
     setAiEditing(true)
+    const aliasName = getAliasName()
     try {
       const prompt =
         'You are editing the user\u2019s OWN Shutap post on their instruction. Their voice and facts are sacred. You may shorten, reorder, tighten, fix typos, or do EXACTLY what they asked \u2014 using ONLY material already in the post. Keep their slang, cadence, caps, profanity, mess. NEVER add an event, name, motive, quote, or detail they didn\u2019t give; never soften or sharpen what happened. If the instruction needs a fact that isn\u2019t there, do NOT invent it \u2014 set needs_input and ask (short) what to add.\n\ncurrent title: ' + JSON.stringify(composed.title) +
-        '\ncurrent body:\n"""' + composed.body + '"""\n\ntheir instruction: "' + ins + '"\n\nOUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\nreturn STRICT JSON only: {"title":"...","body":"...","changed":"<one short line on what you changed>","needs_input":false}'
+        '\ncurrent body:\n"""' + composed.body + '"""\n\ntheir instruction: "' + ins + '"\n\nOUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\nreturn STRICT JSON only: {"title":"...","body":"...","changed":"<one short line on what you changed>","needs_input":false}' +
+        aliasNoteFor(aliasName)
       const raw = await callComplete(prompt)
       const j = extractJSON<{ title?: string; body?: string; changed?: string; needs_input?: boolean }>(raw)
       if (j.needs_input) {
@@ -546,8 +592,8 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       } else {
         setComposed(prev => prev && ({
           ...prev,
-          title: j.title ? scrubPII(stripHTMLInline(String(j.title))).clean : prev.title,
-          body: j.body ? scrubPII(stripHTML(String(j.body))).clean : prev.body,
+          title: j.title ? sanitizePlaceholders(scrubPII(stripHTMLInline(String(j.title))).clean, aliasName) : prev.title,
+          body: j.body ? sanitizePlaceholders(scrubPII(stripHTML(String(j.body))).clean, aliasName) : prev.body,
         }))
         setEditNote('done — ' + (j.changed || 'tweaked it. take a look.'))
       }
