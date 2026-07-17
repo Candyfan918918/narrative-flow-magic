@@ -2,6 +2,7 @@
 // initPostHog() is idempotent — returns the same memoized promise on every
 // call. The promise NEVER rejects; on failure _ph resolves to null.
 import type { PostHog } from 'posthog-js'
+import { isProdHost } from './env'
 
 let _ph: PostHog | null = null
 let _initPromise: Promise<void> | null = null
@@ -13,6 +14,13 @@ export function posthog(): PostHog | null {
 export function initPostHog(): Promise<void> {
   if (typeof window === 'undefined') return Promise.resolve()
   if (_initPromise) return _initPromise
+  if (!isProdHost()) {
+    console.info('PostHog disabled on non-production host')
+    _ph = null
+    _initPromise = Promise.resolve()
+    return _initPromise
+  }
+
   // TEMP: hardcoded to verify PostHog delivery end-to-end. Once confirmed,
   // revert to import.meta.env.VITE_POSTHOG_KEY / VITE_POSTHOG_HOST.
   const key = 'phc_AbkqMae5LW3GCw9Be7Sqp4VChsY6vSDYKYEjL3tZSupE'
