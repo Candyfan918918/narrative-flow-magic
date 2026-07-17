@@ -92,6 +92,43 @@ async function callComplete(userText: string, system?: string): Promise<string> 
   return j.text
 }
 
+/** Read cached alias display name for the client-side companion calls. */
+function getAliasName(): string | null {
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem('shutap_alias') : null
+    if (!raw) return null
+    const a = JSON.parse(raw) as { name?: string }
+    const n = (a?.name || '').trim()
+    return n || null
+  } catch { return null }
+}
+
+/** Alias directive to append to the USER message (never to the hash-allowlisted
+ *  system prompt) so the model stops emitting "[user_alias]" placeholders. */
+function aliasNoteFor(name: string | null): string {
+  return name
+    ? `\n\nthe user's alias is "${name}". when you address them by name, use this exact alias. NEVER output a placeholder token like [user_alias], [user alias], [alias], or [name].`
+    : `\n\nyou do NOT know the user's alias. do not use any name for them, and NEVER output a placeholder token like [user_alias], [user alias], [alias], or [name] — just talk to them directly.`
+}
+
+/** Defense in depth — strip any placeholder tokens the model still leaks. */
+const PLACEHOLDER_RE = /\[\s*(user[ _-]?alias|user[ _-]?name|alias|name)\s*\]/gi
+export function sanitizePlaceholders(text: string, aliasName: string | null): string {
+  if (!text) return text
+  let out = String(text)
+  if (aliasName) {
+    out = out.replace(PLACEHOLDER_RE, aliasName)
+  } else {
+    out = out.replace(PLACEHOLDER_RE, '')
+    // clean up orphaned punctuation / whitespace left behind
+    out = out.replace(/,\s*([.!?…])/g, '$1')
+    out = out.replace(/\s+([,.!?…])/g, '$1')
+    out = out.replace(/[ \t]{2,}/g, ' ')
+    out = out.replace(/ +\n/g, '\n')
+  }
+  return out
+}
+
 function extractJSON<T>(raw: string): T {
   const cleaned = (raw || '').replace(/```json/gi, '').replace(/```/g, '')
   const m = cleaned.match(/\{[\s\S]*\}/)
