@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { HomePage } from '@/pages/home/HomePage'
 import { HOME_FAQ } from '@/pages/home/HomeFAQ'
 import { SITE_URL } from '@/lib/site'
+import { countOpenRooms } from '@/lib/rooms-count.functions'
 
 const HOME_TITLE = "Shutap — vent about relationships, marriage, family, work"
 const HOME_DESCRIPTION =
@@ -14,6 +15,10 @@ export const Route = createFileRoute('/')({
   headers: () => ({
     'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
   }),
+  loader: async () => {
+    const openRooms = await countOpenRooms().catch(() => 0)
+    return { openRooms }
+  },
   head: () => ({
     meta: [
       { title: HOME_TITLE },
@@ -52,6 +57,10 @@ export const Route = createFileRoute('/')({
       },
     ],
   }),
-  component: HomePage,
+  component: HomeRouteComponent,
 })
 
+function HomeRouteComponent() {
+  const { openRooms } = Route.useLoaderData()
+  return <HomePage openRoomsCount={openRooms} />
+}
