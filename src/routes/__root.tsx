@@ -102,7 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Pseudonymous venting community. Spill what's going on; see what actually happened next for people who've lived your exact thing.",
       },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Shutap — speak up." },
+      { name: "twitter:title", content: "Shutap. Speak Up." },
       {
         name: "twitter:description",
         content:

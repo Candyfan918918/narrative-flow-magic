@@ -82,7 +82,7 @@ export const TEMPLATES: Record<TemplateId, TemplateEntry> = {
     htmlDesign: welcomeHtml,
     buildBodyText: (v) => `${g(v)}
 
-you're in. no real names here, no verdicts, no jury. just a room full of people who've been where you are, and lived to tell what happened next.
+you're in. no real names here — pseudonymous, a safe space. just a room full of people who've been where you are, and lived to tell what happened next.
 
 start your first vent: ${v.deep_link ?? v.cta_url ?? 'https://shutap.com'}`,
   },

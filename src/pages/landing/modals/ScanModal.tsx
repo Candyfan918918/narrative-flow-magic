@@ -233,7 +233,7 @@ async function callScanAI(qa: QA[], aliasName: string | null): Promise<ScanTurn>
 // probes, no feeling ladders. Used only if the LLM call fails.
 function scanFallback(n: number, hasText: boolean): ScanTurn {
   const seq: ScanTurn[] = [
-    { line: "ok, i'm here. we're going to figure out how far outside normal this actually is — no verdicts, no sides.", prompt: "what's this mostly about?", card: { type: 'choice', options: ['a partner / spouse', 'a family member', 'a friend', 'a boss or coworker', 'a stranger / situation', 'something else'] } },
+    { line: "ok, i'm here. we're going to figure out how far outside normal this actually is — a safe space, fully on your side.", prompt: "what's this mostly about?", card: { type: 'choice', options: ['a partner / spouse', 'a family member', 'a friend', 'a boss or coworker', 'a stranger / situation', 'something else'] } },
     { line: "okay. tell me the shape of it —", prompt: 'what actually happened? a few words in your own words.', card: { type: 'text', placeholder: 'just say it…' } },
     { line: 'got it.', prompt: 'what did they actually say or do — the specifics?', card: { type: 'text', placeholder: 'their words / the actions…' } },
     { line: 'okay — and this next one really matters.', prompt: 'did they give a reason for it?', card: { type: 'choice', options: ['no reason at all', 'a weak/thin reason', 'a reason but it doesn\'t hold up', 'a reason i understand', 'something else…'] } },
