@@ -160,6 +160,9 @@ function RootComponent() {
   const isHome = pathname === '/';
 
   useEffect(() => {
+    // Kick off PostHog import ASAP so bouncy visitors still get page_view
+    // + Pageleave. Non-blocking; idempotent via memoized promise.
+    void import("@/lib/posthog").then((m) => m.initPostHog());
     let mounted = true
     const run = async () => {
       const { supabase } = await import("@/integrations/supabase/client");
