@@ -445,15 +445,18 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       const progressHint = isReturning && progressNote
         ? '\nthis user is RETURNING. their progress on the prior thing (their words): "' + progressNote + '". carry that context but the new spill is a new situation.'
         : ''
+      const aliasName = getAliasName()
       const userMsg =
         TURN_SYS +
         '\n\n=== the conversation so far ===\n' + transcript +
         '\n\n=== what you have quietly understood ===\n' + JSON.stringify(draft) +
         arcNote + gate + progressHint +
-        '\nthis is turn ' + nextTurn + ' of max 12.\n\nnow output ONLY your JSON move:'
+        '\nthis is turn ' + nextTurn + ' of max 12.\n\nnow output ONLY your JSON move:' +
+        aliasNoteFor(aliasName)
       const raw = await callComplete(userMsg)
       const obj = extractJSON<{ say?: string[]; has_question?: boolean; updated?: Partial<Draft>; decision?: string }>(raw)
-      const say = (Array.isArray(obj.say) ? obj.say.filter(Boolean).slice(0, 3) : ['ok — i\u2019m with you. keep going.']) as string[]
+      const sayRaw = (Array.isArray(obj.say) ? obj.say.filter(Boolean).slice(0, 3) : ['ok — i\u2019m with you. keep going.']) as string[]
+      const say = sayRaw.map(s => sanitizePlaceholders(String(s), aliasName))
       const merged = mergeDraft(draft, obj.updated as Draft | undefined)
       setDraft(merged)
       const after: Msg[] = [...nextMsgs, { role: 'companion', say: say.length ? say : ['ok — i\u2019m with you. keep going.'], hasQ: !!obj.has_question }]
@@ -463,10 +466,11 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       if (ready) { setPhase('reflect'); void runReflect(after, merged) }
     } catch {
       // Scripted fallback — verbatim behavior from spillFallbackTurn() in iframe.
+      const aliasName = getAliasName()
       const fb = spillFallbackTurn(scrubbed.clean, draft, nextTurn, usedFBRef.current)
       const merged = mergeDraft(draft, fb.updated as Draft)
       setDraft(merged)
-      const after: Msg[] = [...nextMsgs, { role: 'companion', say: fb.say, hasQ: fb.hasQ }]
+      const after: Msg[] = [...nextMsgs, { role: 'companion', say: fb.say.map(s => sanitizePlaceholders(s, aliasName)), hasQ: fb.hasQ }]
       setMsgs(after)
       setThinking(false)
       if (fb.ready) { setPhase('reflect'); void runReflect(after, merged) }
