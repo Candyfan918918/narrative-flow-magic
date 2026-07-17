@@ -146,10 +146,11 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
     const [
       totalReal, newSignups7, newSignups30,
       totalVisits, visits7, visits30, revisits30,
-      totalVisitsHuman, visits7Human, visits30Human, revisits30Human,
+      totalVisitsHuman, visits7Human, visits30Human, revisitsHuman30,
       totalVisitsBot, visits7Bot, visits30Bot,
       convertedGuests, recentSignins,
       activeUsersRes, providerRowsRes, countryRowsRes, countryRowsHumanRes, eventRowsRes,
+      uniqueVisitorRowsRes,
     ] = await Promise.all([
       supabaseAdmin.from('profiles').select('user_id', { count: 'exact', head: true }).eq('is_anonymous', false),
       supabaseAdmin.from('profiles').select('user_id', { count: 'exact', head: true }).eq('is_anonymous', false).gte('signup_at', d7),
@@ -181,7 +182,13 @@ export const adminAnalytics = createServerFn({ method: 'POST' })
         .gte('started_at', d30)
         .limit(50000),
       supabaseAdmin.rpc('admin_event_counts' as never),
+      // Rows for unique-visitor dedupe (all buckets, all-time — dedupe in JS)
+      supabaseAdmin
+        .from('visits_classified')
+        .select('user_id, session_id, started_at, is_bot')
+        .limit(200000),
     ])
+
 
     const activeRow = (Array.isArray(activeUsersRes.data) ? activeUsersRes.data[0] : activeUsersRes.data) as
       | { dau?: number | string; wau?: number | string; mau?: number | string } | null
