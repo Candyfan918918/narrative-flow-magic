@@ -60,12 +60,15 @@ export function AuthStep() {
   }
 
   const doEmail = async () => {
+    const nameTrim = name.trim().replace(/\s+/g, ' ')
+    if (!nameTrim) { setMsg({ kind: 'err', text: 'enter your name' }); return }
     const v = email.trim()
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { setMsg({ kind: 'err', text: 'enter a valid email' }); return }
     setBusy(true); setMsg(null)
     try {
       const emailRedirectTo = window.location.origin + '/welcome'
-      const { error: otpErr } = await supabase.auth.signInWithOtp({ email: v, options: { emailRedirectTo, shouldCreateUser: true } })
+      const parts = splitName(nameTrim)
+      const { error: otpErr } = await supabase.auth.signInWithOtp({ email: v, options: { emailRedirectTo, shouldCreateUser: true, data: parts } })
       if (otpErr) { setMsg({ kind: 'err', text: otpErr.message }); return }
       setEmailPhase('code')
       setMsg({ kind: 'ok', text: 'we emailed you a 6-digit code — enter it below (the magic link also works).' })
@@ -79,8 +82,15 @@ export function AuthStep() {
     if (!/^\d{6}$/.test(token)) { setMsg({ kind: 'err', text: 'enter the 6-digit code from the email' }); return }
     setBusy(true); setMsg(null)
     try {
-      const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: 'email' })
+      const { data, error } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: 'email' })
       if (error) { setMsg({ kind: 'err', text: error.message }); return }
+      const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>
+      const hasName = typeof meta.first_name === 'string' && meta.first_name.trim().length > 0
+        || typeof meta.full_name === 'string' && (meta.full_name as string).trim().length > 0
+      const nameTrim = name.trim().replace(/\s+/g, ' ')
+      if (!hasName && nameTrim) {
+        try { await supabase.auth.updateUser({ data: splitName(nameTrim) }) } catch { /* noop */ }
+      }
       setMsg({ kind: 'ok', text: 'verified.' })
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'verification failed' })
