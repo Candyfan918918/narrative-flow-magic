@@ -1,5 +1,6 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
+import { SITE_URL } from "@/lib/site";
 import {
   HALLS,
   MIN_HALL_ENTRIES,
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/halls/$hall/$region/$window")({
     return { hall, region, window, view };
   },
   head: ({ params, loaderData }) => {
-    const url = `/halls/${params.hall}/${params.region}/${params.window}`;
+    const url = `${SITE_URL}/halls/${params.hall}/${params.region}/${params.window}`;
     const indexable =
       !!loaderData?.view && loaderData.view.entries.length >= MIN_HALL_ENTRIES;
     const meta = loaderData

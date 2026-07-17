@@ -16,13 +16,13 @@ import { FAQ } from './sections/FAQ'
 import { Finale } from './sections/Finale'
 import { CompanionSheet } from './sections/CompanionSheet'
 
-export function HomeImmersive() {
+export function HomeImmersive({ openRoomsCount = 0 }: { openRoomsCount?: number } = {}) {
   return (
     <>
       <EyeGradients />
       <HomeHeader />
       <main>
-        <Hero />
+        <Hero openRoomsCount={openRoomsCount} />
         <div data-screen-label="Chapters" style={{ background: '#100c14', display: 'flex', flexDirection: 'column' }}>
           <div style={{ order: 2 }}><Chapter01Spill /></div>
           <div style={{ order: 1 }}><Chapter02Scan /></div>

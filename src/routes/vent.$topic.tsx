@@ -12,6 +12,11 @@ import { Words, Reveal } from '@/components/motion'
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
 
+function isSeedRoom(r: Room): boolean {
+  // Rooms in this path come from SHUTAP_SEED — treat as seed unless the row
+  // explicitly says is_seed=false. Real rooms will set is_seed=false.
+  return r.is_seed !== false
+}
 function roomsForTopic(slug: string): Room[] {
   return (SHUTAP_SEED.rooms || []).filter((r) => (r.category || '').toLowerCase() === slug).slice(0, 8)
 }
@@ -42,7 +47,10 @@ export const Route = createFileRoute('/vent/$topic')({
     const title = `Vent about ${t.label} — Shutap`
     const desc = t.intro
     const faqItems = FAQ_ITEMS(t)
-    const qaMain = loaderData.rooms[0]
+    // QAPage JSON-LD is only emitted when we have REAL (non-seed) rooms for
+    // the topic. Seed-sourced rooms must never appear in structured Q&A data.
+    const realRooms = loaderData.rooms.filter((r) => !isSeedRoom(r))
+    const qaMain = realRooms[0]
     return {
       meta: [
         { title },
@@ -76,8 +84,8 @@ export const Route = createFileRoute('/vent/$topic')({
                   '@type': 'Question',
                   name: qaMain.title,
                   text: (qaMain.body || '').slice(0, 500),
-                  answerCount: loaderData.rooms.length,
-                  suggestedAnswer: loaderData.rooms.slice(1, 5).map((r) => ({
+                  answerCount: realRooms.length,
+                  suggestedAnswer: realRooms.slice(1, 5).map((r) => ({
                     '@type': 'Answer',
                     text: (r.body || '').slice(0, 500),
                     url: `${SITE_URL}/stream#room-${encodeURIComponent(r.id)}`,
@@ -137,6 +145,11 @@ function VentTopicPage() {
         <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 18.5, color: '#4a3040', lineHeight: 1.6, maxWidth: '52ch', margin: '0 0 22px' }}>
           {topic.intro}
         </p>
+        {rooms.some(isSeedRoom) && (
+          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 14, color: '#9e7a8c', margin: '0 0 22px', maxWidth: '52ch' }}>
+            some stories below are illustrative examples — real rooms are filling in.
+          </p>
+        )}
 
         <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 12.5, color: '#c1216b', marginBottom: 26, display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '.05em' }}>
           {total > 0 ? `${total} public rooms · ${sittingNow} sitting in now` : 'rooms are forming.'}
@@ -177,7 +190,7 @@ function VentTopicPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 16 }}>
             {rooms.map((r: Room) => (
               <Reveal key={r.id} fx="pop">
-                <VentRoomCard room={r} />
+                <VentRoomCard room={r} seed={isSeedRoom(r)} />
               </Reveal>
             ))}
           </div>
@@ -222,11 +235,16 @@ function VentTopicPage() {
   )
 }
 
-function VentRoomCard({ room }: { room: Room }) {
+function VentRoomCard({ room, seed = false }: { room: Room; seed?: boolean }) {
   const snippet = (room.body || '').replace(/\s+/g, ' ').trim().slice(0, 180) + ((room.body || '').length > 180 ? '…' : '')
   const topComment = room.comments && room.comments[0]
   return (
     <article style={{ background: '#fff', borderRadius: 18, padding: 20, border: '.5px solid rgba(11,8,15,.06)', boxShadow: '0 10px 28px -22px rgba(60,10,30,.28)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {seed && (
+        <span style={{ alignSelf: 'flex-start', fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.22em', textTransform: 'uppercase', color: '#9e7a8c', background: '#f7e8f0', padding: '3px 8px', borderRadius: 999 }}>
+          example story
+        </span>
+      )}
       <header style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ width: 34, height: 34, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg,#f7e8f0,#f060a0)', fontSize: 18 }}>{room.emoji}</span>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
