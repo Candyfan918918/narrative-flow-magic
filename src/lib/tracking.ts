@@ -24,7 +24,7 @@ export function getSessionId(): string {
 
 export async function trackEvent(name: string, properties: Record<string, unknown> = {}): Promise<void> {
   const session_id = getSessionId()
-  try { posthog()?.capture(name, properties) } catch { /* noop */ }
+  void phCapture(name, properties)
   try {
     await trackEventFn({ data: { session_id, name, properties } })
   } catch { /* noop */ }
