@@ -145,6 +145,11 @@ function VentTopicPage() {
         <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 18.5, color: '#4a3040', lineHeight: 1.6, maxWidth: '52ch', margin: '0 0 22px' }}>
           {topic.intro}
         </p>
+        {rooms.some(isSeedRoom) && (
+          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 14, color: '#9e7a8c', margin: '0 0 22px', maxWidth: '52ch' }}>
+            some stories below are illustrative examples — real rooms are filling in.
+          </p>
+        )}
 
         <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 12.5, color: '#c1216b', marginBottom: 26, display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '.05em' }}>
           {total > 0 ? `${total} public rooms · ${sittingNow} sitting in now` : 'rooms are forming.'}
