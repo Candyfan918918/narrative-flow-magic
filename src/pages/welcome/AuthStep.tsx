@@ -122,20 +122,34 @@ export function AuthStep() {
           <div style={{ flex: 1, height: .5, background: 'rgba(255,255,255,.12)' }} />
         </div>
         {emailPhase === 'input' && (
-          <div style={{ display: 'flex', gap: 9 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
             <input
-              type="email"
-              placeholder="your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              autoComplete="name"
+              placeholder="your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && doEmail()}
-              style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
+              style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
             />
-            <button
-              onClick={doEmail}
-              disabled={busy}
-              style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >go →</button>
+            <div style={{ display: 'flex', gap: 9 }}>
+              <input
+                type="email"
+                placeholder="your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && doEmail()}
+                style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
+              />
+              <button
+                onClick={doEmail}
+                disabled={busy}
+                style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
+              >go →</button>
+            </div>
+            {msg && msg.kind === 'err' && (
+              <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, color: ACCENT }}>{msg.text}</div>
+            )}
           </div>
         )}
         {emailPhase === 'code' && (
