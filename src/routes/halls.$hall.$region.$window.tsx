@@ -1,4 +1,5 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { ogImageMeta } from "@/lib/seo/meta";
 import { SeoPage } from "@/components/seo/SeoPage";
 import { SITE_URL } from "@/lib/site";
 import {
@@ -49,6 +50,7 @@ export const Route = createFileRoute("/halls/$hall/$region/$window")({
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
       { property: "og:url", content: url },
+      ...ogImageMeta(),
     ];
     if (!indexable) metaTags.push({ name: "robots", content: "noindex, follow" });
     void meta;

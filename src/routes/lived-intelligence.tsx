@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ogImageMeta } from "@/lib/seo/meta";
 import { SITE_URL } from "@/lib/site";
 
 const TITLE =
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/lived-intelligence")({
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "article" },
       { property: "og:url", content: URL },
-      { name: "twitter:card", content: "summary" },
+      ...ogImageMeta(),
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
     ],

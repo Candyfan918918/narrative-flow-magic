@@ -1,6 +1,7 @@
 /* Programmatic SEO topic pages at /vent/:topic.
  * Reads real rooms from the app's existing seed source (same source Stream
  * uses today). Emits FAQPage + QAPage JSON-LD. No writes, no schema changes. */
+import { ogImageMeta } from "@/lib/seo/meta";
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { SHUTAP_SEED } from '@/data/seed'
 import type { Room } from '@/data/types'
@@ -59,6 +60,7 @@ export const Route = createFileRoute('/vent/$topic')({
         { property: 'og:description', content: desc },
         { property: 'og:type', content: 'website' },
         { property: 'og:url', content: url },
+        ...ogImageMeta(),
       ],
       links: [{ rel: 'canonical', href: url }],
       scripts: [

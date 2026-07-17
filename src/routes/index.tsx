@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { ogImageMeta } from "@/lib/seo/meta";
 import { HomePage } from '@/pages/home/HomePage'
 import { HOME_FAQ } from '@/pages/home/HomeFAQ'
 import { SITE_URL } from '@/lib/site'
@@ -27,6 +28,7 @@ export const Route = createFileRoute('/')({
       { property: "og:description", content: HOME_OG_DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:url", content: HOME_URL },
+      ...ogImageMeta(),
     ],
     links: [
       { rel: "canonical", href: HOME_URL },

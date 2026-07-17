@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { ogImageMeta } from "@/lib/seo/meta";
 import { DocLayout } from '@/components/site/DocLayout'
 import { SITE_URL } from '@/lib/site'
 
@@ -16,7 +17,7 @@ export const Route = createFileRoute('/disclaimer')({
       { property: 'og:description', content: DESCRIPTION },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: URL },
-      { name: 'twitter:card', content: 'summary' },
+      ...ogImageMeta(),
       { name: 'twitter:title', content: TITLE },
       { name: 'twitter:description', content: DESCRIPTION },
     ],

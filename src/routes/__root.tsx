@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ogImageMeta } from "@/lib/seo/meta";
 import {
   Outlet,
   Link,
@@ -101,7 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Pseudonymous venting community. Spill what's going on; see what actually happened next for people who've lived your exact thing.",
       },
-      { name: "twitter:card", content: "summary" },
+      ...ogImageMeta(),
       { name: "twitter:title", content: "Shutap. Speak Up." },
       {
         name: "twitter:description",
@@ -127,6 +128,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           description:
             "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
           slogan: "Shutap. Speak Up.",
+          url: "https://shutap.com",
+          logo: "https://shutap.com/og/shutap-og.png",
+          image: "https://shutap.com/og/shutap-og.png",
         }),
       },
     ],

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ogImageMeta } from "@/lib/seo/meta";
 import { SITE_URL } from "@/lib/site";
 
 const PATH = "/relationships";
@@ -46,7 +47,7 @@ export const Route = createFileRoute("/relationships")({
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:url", content: `${SITE_URL}${PATH}` },
-      { name: "twitter:card", content: "summary" },
+      ...ogImageMeta(),
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
     ],
