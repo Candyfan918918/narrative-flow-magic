@@ -7,7 +7,15 @@ import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
 import { EyeMark, oauthBtn, ACCENT, TEXT, SOFT, MUTED, type Msg } from './shared'
 
+function splitName(raw: string): { first_name: string; last_name: string | null; full_name: string } {
+  const full = raw.trim().replace(/\s+/g, ' ')
+  const idx = full.indexOf(' ')
+  if (idx === -1) return { first_name: full, last_name: null, full_name: full }
+  return { first_name: full.slice(0, idx), last_name: full.slice(idx + 1).trim() || null, full_name: full }
+}
+
 export function AuthStep() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [emailPhase, setEmailPhase] = useState<'input' | 'code'>('input')
   const [code, setCode] = useState('')
@@ -52,12 +60,15 @@ export function AuthStep() {
   }
 
   const doEmail = async () => {
+    const nameTrim = name.trim().replace(/\s+/g, ' ')
+    if (!nameTrim) { setMsg({ kind: 'err', text: 'enter your name' }); return }
     const v = email.trim()
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { setMsg({ kind: 'err', text: 'enter a valid email' }); return }
     setBusy(true); setMsg(null)
     try {
       const emailRedirectTo = window.location.origin + '/welcome'
-      const { error: otpErr } = await supabase.auth.signInWithOtp({ email: v, options: { emailRedirectTo, shouldCreateUser: true } })
+      const parts = splitName(nameTrim)
+      const { error: otpErr } = await supabase.auth.signInWithOtp({ email: v, options: { emailRedirectTo, shouldCreateUser: true, data: parts } })
       if (otpErr) { setMsg({ kind: 'err', text: otpErr.message }); return }
       setEmailPhase('code')
       setMsg({ kind: 'ok', text: 'we emailed you a 6-digit code — enter it below (the magic link also works).' })
@@ -71,8 +82,15 @@ export function AuthStep() {
     if (!/^\d{6}$/.test(token)) { setMsg({ kind: 'err', text: 'enter the 6-digit code from the email' }); return }
     setBusy(true); setMsg(null)
     try {
-      const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: 'email' })
+      const { data, error } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: 'email' })
       if (error) { setMsg({ kind: 'err', text: error.message }); return }
+      const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>
+      const hasName = typeof meta.first_name === 'string' && meta.first_name.trim().length > 0
+        || typeof meta.full_name === 'string' && (meta.full_name as string).trim().length > 0
+      const nameTrim = name.trim().replace(/\s+/g, ' ')
+      if (!hasName && nameTrim) {
+        try { await supabase.auth.updateUser({ data: splitName(nameTrim) }) } catch { /* noop */ }
+      }
       setMsg({ kind: 'ok', text: 'verified.' })
     } catch (e) {
       setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'verification failed' })
@@ -104,20 +122,34 @@ export function AuthStep() {
           <div style={{ flex: 1, height: .5, background: 'rgba(255,255,255,.12)' }} />
         </div>
         {emailPhase === 'input' && (
-          <div style={{ display: 'flex', gap: 9 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
             <input
-              type="email"
-              placeholder="your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              autoComplete="name"
+              placeholder="your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && doEmail()}
-              style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
+              style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
             />
-            <button
-              onClick={doEmail}
-              disabled={busy}
-              style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >go →</button>
+            <div style={{ display: 'flex', gap: 9 }}>
+              <input
+                type="email"
+                placeholder="your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && doEmail()}
+                style={{ flex: 1, background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 12, padding: '13px 15px', color: TEXT, fontFamily: "'Inter',sans-serif", fontSize: 15, outline: 'none' }}
+              />
+              <button
+                onClick={doEmail}
+                disabled={busy}
+                style={{ padding: '13px 18px', background: ACCENT, border: 'none', borderRadius: 12, color: '#fff', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' }}
+              >go →</button>
+            </div>
+            {msg && msg.kind === 'err' && (
+              <div style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, color: ACCENT }}>{msg.text}</div>
+            )}
           </div>
         )}
         {emailPhase === 'code' && (
