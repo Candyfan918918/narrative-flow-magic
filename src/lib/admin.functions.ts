@@ -483,6 +483,7 @@ export type GrowthBlock = { day: GrowthDelta; week: GrowthDelta; month: GrowthDe
 export interface GrowthPayload {
   signups: GrowthBlock
   visits: GrowthBlock
+  unique_visitors: GrowthBlock
   generated_at: string
 }
 
@@ -517,6 +518,43 @@ function deltaWindow(timestamps: string[], now: number, windowMs: number): Growt
   return { curr, prev, delta_pct }
 }
 
+type KeyedTs = { t: string; k: string }
+
+function bucketByDayDistinct(items: KeyedTs[], now: number, days: number): GrowthSeriesPoint[] {
+  const dayMs = 24 * 3600 * 1000
+  const start = now - days * dayMs
+  const dates: string[] = []
+  const sets: Record<string, Set<string>> = {}
+  for (let i = 0; i < days; i++) {
+    const d = new Date(start + i * dayMs).toISOString().slice(0, 10)
+    dates.push(d)
+    sets[d] = new Set()
+  }
+  for (const { t, k } of items) {
+    const ms = new Date(t).getTime()
+    if (ms < start) continue
+    const key = new Date(ms).toISOString().slice(0, 10)
+    if (sets[key]) sets[key].add(k)
+  }
+  return dates.map((d) => ({ date: d, n: sets[d].size }))
+}
+
+function deltaWindowDistinct(items: KeyedTs[], now: number, windowMs: number): GrowthDelta {
+  const currStart = now - windowMs
+  const prevStart = now - 2 * windowMs
+  const curr = new Set<string>()
+  const prev = new Set<string>()
+  for (const { t, k } of items) {
+    const ms = new Date(t).getTime()
+    if (ms >= currStart) curr.add(k)
+    else if (ms >= prevStart) prev.add(k)
+  }
+  const c = curr.size
+  const p = prev.size
+  const delta_pct = p > 0 ? Math.round(((c - p) / p) * 100) : (c > 0 ? null : 0)
+  return { curr: c, prev: p, delta_pct }
+}
+
 export const adminGrowth = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({}).parse(d ?? {}))
@@ -535,7 +573,7 @@ export const adminGrowth = createServerFn({ method: 'POST' })
         .limit(100000),
       supabaseAdmin
         .from('visits_classified')
-        .select('started_at')
+        .select('started_at, user_id, session_id')
         .eq('is_bot', false)
         .gte('started_at', since)
         .limit(200000),
@@ -543,8 +581,11 @@ export const adminGrowth = createServerFn({ method: 'POST' })
 
     const signupTs = ((signupsRes.data ?? []) as Array<{ signup_at: string | null }>)
       .map((r) => r.signup_at).filter((v): v is string => !!v)
-    const visitTs = ((visitsRes.data ?? []) as Array<{ started_at: string | null }>)
-      .map((r) => r.started_at).filter((v): v is string => !!v)
+    const visitRows = ((visitsRes.data ?? []) as Array<{ started_at: string | null; user_id: string | null; session_id: string | null }>)
+    const visitTs = visitRows.map((r) => r.started_at).filter((v): v is string => !!v)
+    const uniqueItems: KeyedTs[] = visitRows
+      .map((r) => ({ t: r.started_at, k: r.user_id ?? r.session_id }))
+      .filter((x): x is KeyedTs => !!x.t && !!x.k)
 
     const dayMs = 24 * 3600 * 1000
     const build = (ts: string[]): GrowthBlock => ({
@@ -553,9 +594,21 @@ export const adminGrowth = createServerFn({ method: 'POST' })
       month: deltaWindow(ts, now, 30 * dayMs),
       series30d: bucketByDay(ts, now, 30),
     })
+    const buildDistinct = (items: KeyedTs[]): GrowthBlock => ({
+      day: deltaWindowDistinct(items, now, dayMs),
+      week: deltaWindowDistinct(items, now, 7 * dayMs),
+      month: deltaWindowDistinct(items, now, 30 * dayMs),
+      series30d: bucketByDayDistinct(items, now, 30),
+    })
 
-    return { signups: build(signupTs), visits: build(visitTs), generated_at: new Date(now).toISOString() }
+    return {
+      signups: build(signupTs),
+      visits: build(visitTs),
+      unique_visitors: buildDistinct(uniqueItems),
+      generated_at: new Date(now).toISOString(),
+    }
   })
+
 
 // ---------- acquisition (30d, humans only) ----------
 
