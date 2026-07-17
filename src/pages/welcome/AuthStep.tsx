@@ -7,7 +7,15 @@ import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
 import { EyeMark, oauthBtn, ACCENT, TEXT, SOFT, MUTED, type Msg } from './shared'
 
+function splitName(raw: string): { first_name: string; last_name: string | null; full_name: string } {
+  const full = raw.trim().replace(/\s+/g, ' ')
+  const idx = full.indexOf(' ')
+  if (idx === -1) return { first_name: full, last_name: null, full_name: full }
+  return { first_name: full.slice(0, idx), last_name: full.slice(idx + 1).trim() || null, full_name: full }
+}
+
 export function AuthStep() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [emailPhase, setEmailPhase] = useState<'input' | 'code'>('input')
   const [code, setCode] = useState('')
