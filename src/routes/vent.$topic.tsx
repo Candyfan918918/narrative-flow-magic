@@ -60,6 +60,7 @@ export const Route = createFileRoute('/vent/$topic')({
         { property: 'og:description', content: desc },
         { property: 'og:type', content: 'website' },
         { property: 'og:url', content: url },
+        ...ogImageMeta(),
       ],
       links: [{ rel: 'canonical', href: url }],
       scripts: [
