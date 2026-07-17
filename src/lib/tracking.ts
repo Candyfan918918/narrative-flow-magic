@@ -25,12 +25,14 @@ export function getSessionId(): string {
 }
 
 export async function trackEvent(name: string, properties: Record<string, unknown> = {}): Promise<void> {
+  if (!isProdHost()) return
   const session_id = getSessionId()
   void phCapture(name, properties)
   try {
     await trackEventFn({ data: { session_id, name, properties } })
   } catch { /* noop */ }
 }
+
 
 const LANDING_KEY = 'shutap_landing_path'
 const UTM_KEY = 'shutap_utm'
@@ -59,10 +61,12 @@ function readUtmFromLocation(): {
 /** Idempotent per browser session — safe to call on every page. */
 export async function recordVisitOnce(path: string): Promise<void> {
   if (typeof window === 'undefined') return
+  if (!isProdHost()) return
   try {
     if (sessionStorage.getItem(VISIT_SENT_KEY)) return
     sessionStorage.setItem(VISIT_SENT_KEY, '1')
   } catch { /* noop */ }
+
   const session_id = getSessionId()
   const referrer = document.referrer || ''
   // Capture landing path + UTM once per session; persist so downstream events could reuse.
