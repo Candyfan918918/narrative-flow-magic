@@ -736,7 +736,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
         navigate('/welcome')
         return
       }
-      setSaveNote("couldn't save — " + msg)
+      setSaveNote("couldn't save — something hiccuped on our side. try again in a sec.")
       setPhase('result')
     }
   }, [result, composed, save, navigate])
