@@ -365,15 +365,8 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
     cleanup.push(() => cancelAnimationFrame(autoRaf))
   }
 
-  /* ── live counter drift ── */
-  const live = q('[data-livecount]')
-  if (live) {
-    let n = parseInt(live.textContent || '31', 10) || 31
-    idle(() => {
-      const iv = setInterval(() => { n = Math.max(24, Math.min(45, n + (Math.random() < 0.5 ? -1 : 1))); if (live) live.textContent = String(n) }, 4200)
-      intervals.push(iv)
-    })
-  }
+  /* live counter: real count is rendered server-side in Hero.tsx from the
+   * route loader. No client-side random drift — the number is real or hidden. */
 
   /* ── companion sheet (bubble → sheet, canned reply) ── */
   const cRoot = q('[data-comp="root"]') as HTMLElement | null
