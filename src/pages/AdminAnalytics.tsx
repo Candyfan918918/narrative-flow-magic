@@ -63,7 +63,11 @@ export function AdminAnalyticsPage() {
   const visits = data
     ? (audience === 'human' ? data.visits_human : audience === 'bot' ? { ...data.visits_bot, new_30d: 0, returning_30d: 0 } : data.visits)
     : null
+  const unique = data
+    ? (audience === 'human' ? data.unique_visitors_human : audience === 'bot' ? data.unique_visitors_bot : data.unique_visitors)
+    : null
   const countries = data ? (audience === 'human' ? data.top_countries_human : data.top_countries) : []
+
 
   return (
     <AdminShell
