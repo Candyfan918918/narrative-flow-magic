@@ -221,9 +221,10 @@ async function callScanAI(qa: QA[], aliasName: string | null): Promise<ScanTurn>
     else out = out.replace(ph, '').replace(/,\s*([.!?…])/g, '$1').replace(/\s+([,.!?…])/g, '$1').replace(/[ \t]{2,}/g, ' ')
     return out
   }
-  if (turn.line != null) turn.line = strip(turn.line) as string
-  if (turn.prompt != null) turn.prompt = strip(turn.prompt) as string
-  if (turn.read != null) turn.read = strip(turn.read) as string
+  const t = turn as Record<string, unknown>
+  if (typeof t.line === 'string') t.line = strip(t.line as string) as string
+  if (typeof t.prompt === 'string') t.prompt = strip(t.prompt as string) as string
+  if (typeof t.read === 'string') t.read = strip(t.read as string) as string
   return turn
 }
 
