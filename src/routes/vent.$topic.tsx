@@ -235,11 +235,16 @@ function VentTopicPage() {
   )
 }
 
-function VentRoomCard({ room }: { room: Room }) {
+function VentRoomCard({ room, seed = false }: { room: Room; seed?: boolean }) {
   const snippet = (room.body || '').replace(/\s+/g, ' ').trim().slice(0, 180) + ((room.body || '').length > 180 ? '…' : '')
   const topComment = room.comments && room.comments[0]
   return (
     <article style={{ background: '#fff', borderRadius: 18, padding: 20, border: '.5px solid rgba(11,8,15,.06)', boxShadow: '0 10px 28px -22px rgba(60,10,30,.28)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {seed && (
+        <span style={{ alignSelf: 'flex-start', fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.22em', textTransform: 'uppercase', color: '#9e7a8c', background: '#f7e8f0', padding: '3px 8px', borderRadius: 999 }}>
+          example story
+        </span>
+      )}
       <header style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ width: 34, height: 34, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg,#f7e8f0,#f060a0)', fontSize: 18 }}>{room.emoji}</span>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
