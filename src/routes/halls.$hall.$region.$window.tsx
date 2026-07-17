@@ -30,7 +30,7 @@ export const Route = createFileRoute("/halls/$hall/$region/$window")({
     return { hall, region, window, view };
   },
   head: ({ params, loaderData }) => {
-    const url = `/halls/${params.hall}/${params.region}/${params.window}`;
+    const url = `${SITE_URL}/halls/${params.hall}/${params.region}/${params.window}`;
     const indexable =
       !!loaderData?.view && loaderData.view.entries.length >= MIN_HALL_ENTRIES;
     const meta = loaderData
