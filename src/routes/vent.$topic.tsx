@@ -190,7 +190,7 @@ function VentTopicPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 16 }}>
             {rooms.map((r: Room) => (
               <Reveal key={r.id} fx="pop">
-                <VentRoomCard room={r} />
+                <VentRoomCard room={r} seed={isSeedRoom(r)} />
               </Reveal>
             ))}
           </div>
