@@ -518,6 +518,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       .map((p, i) => `Q${i + 1} (companion asked): ${p.q}\nA${i + 1} (they answered): ${p.a}`)
       .join('\n\n')
     let c: Composed
+    const aliasName = getAliasName()
     try {
       const progressBlock = isReturning && progressNote
         ? '\n\nprogress note (returning user, their words about the PRIOR situation \u2014 do NOT weave into the new story; return it verbatim in progress_note): "' + progressNote + '"'
@@ -533,12 +534,13 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
         'the fact ledger (silent, for your reference): ' + JSON.stringify(draft.arc || {}) + '\n' +
         'the thing that mattered most to them: ' + (draft.the_real_thing || draft.emotional_core || '(not stated)') + progressBlock + '\n\n' +
         'OUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\n' +
-        'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"...","progress_note":' + (isReturning ? '"<verbatim their words>"' : 'null') + '}'
+        'return STRICT JSON only: {"title":"...","body":"...","tags":["short","lowercase","tags"],"edit_summary":"...","progress_note":' + (isReturning ? '"<verbatim their words>"' : 'null') + '}' +
+        aliasNoteFor(aliasName)
       const raw = await callComplete(prompt)
       const j = extractJSON<{ title?: string; body?: string; tags?: string[]; edit_summary?: string; progress_note?: string | null }>(raw)
       c = {
-        title: scrubPII(stripHTMLInline(String(j.title || ''))).clean,
-        body: scrubPII(stripHTML(String(j.body || ''))).clean,
+        title: sanitizePlaceholders(scrubPII(stripHTMLInline(String(j.title || ''))).clean, aliasName),
+        body: sanitizePlaceholders(scrubPII(stripHTML(String(j.body || ''))).clean, aliasName),
         tags: Array.isArray(j.tags) ? j.tags.slice(0, 5) : (draft.tags || []),
         pillar: normalizePillar(draft.pillar),
         edit_summary: typeof j.edit_summary === 'string' ? j.edit_summary.trim() : '',
