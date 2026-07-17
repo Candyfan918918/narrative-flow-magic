@@ -28,6 +28,7 @@ export const Route = createFileRoute('/')({
       { property: "og:description", content: HOME_OG_DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:url", content: HOME_URL },
+      ...ogImageMeta(),
     ],
     links: [
       { rel: "canonical", href: HOME_URL },
