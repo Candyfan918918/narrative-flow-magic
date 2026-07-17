@@ -579,10 +579,12 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     const ins = editInstruction.trim(); if (!ins || !composed) return
     syncPreviewDOM()
     setAiEditing(true)
+    const aliasName = getAliasName()
     try {
       const prompt =
         'You are editing the user\u2019s OWN Shutap post on their instruction. Their voice and facts are sacred. You may shorten, reorder, tighten, fix typos, or do EXACTLY what they asked \u2014 using ONLY material already in the post. Keep their slang, cadence, caps, profanity, mess. NEVER add an event, name, motive, quote, or detail they didn\u2019t give; never soften or sharpen what happened. If the instruction needs a fact that isn\u2019t there, do NOT invent it \u2014 set needs_input and ask (short) what to add.\n\ncurrent title: ' + JSON.stringify(composed.title) +
-        '\ncurrent body:\n"""' + composed.body + '"""\n\ntheir instruction: "' + ins + '"\n\nOUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\nreturn STRICT JSON only: {"title":"...","body":"...","changed":"<one short line on what you changed>","needs_input":false}'
+        '\ncurrent body:\n"""' + composed.body + '"""\n\ntheir instruction: "' + ins + '"\n\nOUTPUT FORMAT: return PLAIN TEXT only in the title and body fields \u2014 no HTML tags, no markdown, no <br>; use real newline characters (\\n\\n) between paragraphs.\n\nreturn STRICT JSON only: {"title":"...","body":"...","changed":"<one short line on what you changed>","needs_input":false}' +
+        aliasNoteFor(aliasName)
       const raw = await callComplete(prompt)
       const j = extractJSON<{ title?: string; body?: string; changed?: string; needs_input?: boolean }>(raw)
       if (j.needs_input) {
@@ -590,8 +592,8 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
       } else {
         setComposed(prev => prev && ({
           ...prev,
-          title: j.title ? scrubPII(stripHTMLInline(String(j.title))).clean : prev.title,
-          body: j.body ? scrubPII(stripHTML(String(j.body))).clean : prev.body,
+          title: j.title ? sanitizePlaceholders(scrubPII(stripHTMLInline(String(j.title))).clean, aliasName) : prev.title,
+          body: j.body ? sanitizePlaceholders(scrubPII(stripHTML(String(j.body))).clean, aliasName) : prev.body,
         }))
         setEditNote('done — ' + (j.changed || 'tweaked it. take a look.'))
       }
