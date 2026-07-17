@@ -94,15 +94,17 @@ export function Hero({ openRoomsCount = 0 }: { openRoomsCount?: number } = {}) {
                       {' '}
                     </div>
                     {' '}
+                    {showLive ? (
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '11px', letterSpacing: '.2em', textTransform: 'uppercase', color: '#a01a55' }}>
                       <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#e7548a', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }}>
                       </span>
                       <span data-livecount="">
-                        31
+                        {openRoomsCount}
                       </span>
                       {'\u00A0'}
                       rooms open now
                     </div>
+                    ) : null}
                     {' '}
                   </div>
                   {' '}
