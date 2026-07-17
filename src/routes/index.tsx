@@ -5,7 +5,9 @@ import { SITE_URL } from '@/lib/site'
 
 const HOME_TITLE = "Shutap — vent about relationships, marriage, family, work"
 const HOME_DESCRIPTION =
-  "Spill what's actually going on — relationship, marriage, family, or work. Pseudonymous, judgment-free. Say what you can't say anywhere else."
+  "Spill what's actually going on — relationships, marriage, family, or work. Pseudonymous venting with AI-guided support — someone in here has lived your exact thing."
+const HOME_OG_DESCRIPTION =
+  "whatever it is — someone in here has lived it. spill your stories: relationships, marriage, family, work — and see what happened next."
 const HOME_URL = `${SITE_URL}/`
 
 export const Route = createFileRoute('/')({
@@ -17,7 +19,7 @@ export const Route = createFileRoute('/')({
       { title: HOME_TITLE },
       { name: "description", content: HOME_DESCRIPTION },
       { property: "og:title", content: "Shutap. Speak Up." },
-      { property: "og:description", content: HOME_DESCRIPTION },
+      { property: "og:description", content: HOME_OG_DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:url", content: HOME_URL },
     ],
