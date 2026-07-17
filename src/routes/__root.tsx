@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ogImageMeta } from "@/lib/seo/meta";
 import {
   Outlet,
   Link,

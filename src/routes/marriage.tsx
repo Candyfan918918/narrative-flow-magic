@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ogImageMeta } from "@/lib/seo/meta";
 import { PillarPage } from "@/components/seo/PillarPage";
 import { SITE_URL } from "@/lib/site";
 

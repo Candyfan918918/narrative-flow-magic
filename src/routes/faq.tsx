@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ogImageMeta } from "@/lib/seo/meta";
 import { ContentPage } from "@/components/seo/ContentPage";
 import { SITE_URL } from "@/lib/site";
 

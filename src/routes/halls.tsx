@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router'
+import { ogImageMeta } from "@/lib/seo/meta";
 import { HallOfFamePageNative } from '@/pages/Halls'
 import { SITE_URL } from '@/lib/site'
 
