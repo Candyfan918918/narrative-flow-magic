@@ -68,12 +68,12 @@ const OptionalTolerantPillar = z.preprocess(
 
 const ScanReasoningSchema = z
   .object({
-    norm_distance: z.string().max(200).optional(),
-    justification: z.string().max(200).optional(),
-    boundary: z.string().max(200).optional(),
-    stakes: z.string().max(200).optional(),
-    pattern: z.string().max(60).optional(),
-    power_consent: z.string().max(200).optional(),
+    norm_distance: z.string().transform((s) => s.slice(0, 200)).optional(),
+    justification: z.string().transform((s) => s.slice(0, 200)).optional(),
+    boundary: z.string().transform((s) => s.slice(0, 200)).optional(),
+    stakes: z.string().transform((s) => s.slice(0, 200)).optional(),
+    pattern: z.string().transform((s) => s.slice(0, 60)).optional(),
+    power_consent: z.string().transform((s) => s.slice(0, 200)).optional(),
   })
   .partial()
   .passthrough()
