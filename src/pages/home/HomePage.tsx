@@ -182,7 +182,7 @@ export function HomePage({ openRoomsCount = 0 }: { openRoomsCount?: number } = {
   return (
     <div ref={rootRef} className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
       <CursorTrail />
-      <HomeImmersive />
+      <HomeImmersive openRoomsCount={openRoomsCount} />
       <SpillModal open={spillOpen} onClose={() => setSpillOpen(false)} />
       <ScanModal open={scanOpen} onClose={() => setScanOpen(false)} />
     </div>
