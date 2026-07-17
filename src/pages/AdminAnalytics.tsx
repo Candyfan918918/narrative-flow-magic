@@ -82,9 +82,11 @@ export function AdminAnalyticsPage() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
                 <GrowthBlockCard title="signups" block={growth.signups} />
                 <GrowthBlockCard title="visits" block={growth.visits} />
+                <GrowthBlockCard title="unique visitors" block={growth.unique_visitors} />
               </div>
             </section>
           )}
+
 
           {/* Acquisition — second */}
           {acq && (
