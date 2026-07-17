@@ -29,10 +29,20 @@ export function HomeFooter() {
     <footer style={{ background: '#fdf0f5', borderTop: '.5px solid rgba(11,8,15,.06)', padding: '54px 22px 46px', color: '#6b4a5c', fontFamily: "'Inter',system-ui,sans-serif" }}>
       <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, textAlign: 'center' }}>
         <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 16, color: '#4a3040' }}>shutap — a room for what you're carrying.</div>
-        <div style={{ display: 'inline-flex', gap: 14, fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.16em', textTransform: 'uppercase' }}>
+        <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.16em', textTransform: 'uppercase' }}>
           <Link to="/stream" style={{ color: '#6b4a5c', textDecoration: 'none' }}>rooms</Link>
           <Link to="/halls" style={{ color: '#6b4a5c', textDecoration: 'none' }}>halls</Link>
           <Link to="/vent/$topic" params={{ topic: 'family' }} style={{ color: '#6b4a5c', textDecoration: 'none' }}>topics</Link>
+        </div>
+        <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: 'Inter', fontSize: 12, color: '#9e7a8c' }}>
+          <Link to="/relationships" style={{ color: '#9e7a8c', textDecoration: 'none' }}>relationships</Link>
+          <Link to="/marriage" style={{ color: '#9e7a8c', textDecoration: 'none' }}>marriage</Link>
+          <Link to="/family" style={{ color: '#9e7a8c', textDecoration: 'none' }}>family</Link>
+          <Link to="/career" style={{ color: '#9e7a8c', textDecoration: 'none' }}>career & work</Link>
+          <Link to="/lived-intelligence" style={{ color: '#9e7a8c', textDecoration: 'none' }}>what is lived intelligence?</Link>
+          <Link to="/about" style={{ color: '#9e7a8c', textDecoration: 'none' }}>about</Link>
+          <Link to="/how-it-works" style={{ color: '#9e7a8c', textDecoration: 'none' }}>how it works</Link>
+          <Link to="/faq" style={{ color: '#9e7a8c', textDecoration: 'none' }}>faq</Link>
         </div>
         <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: 'Inter', fontSize: 12, color: '#9e7a8c' }}>
           <Link to="/terms" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Terms</Link>
