@@ -176,7 +176,11 @@ ${transcript || '(none yet — open with a warm greeting that uses the alias and
         band: BAND_LABEL[bandKey],
         signature: sanitizeLine(parsed.signature, 60) || 'A Read',
         read: sanitizeLine(parsed.read, 400) || 'this one is real.',
-        reasoning: (parsed.reasoning ?? {}) as Reasoning,
+        reasoning: Object.fromEntries(
+          Object.entries((parsed.reasoning ?? {}) as Record<string, unknown>).map(([k, v]) =>
+            typeof v === 'string' ? [k, sanitizeLine(v, k === 'pattern' ? 60 : 200)] : [k, v],
+          ),
+        ) as Reasoning,
         factors: Array.isArray(parsed.factors)
           ? parsed.factors.slice(0, 6).map((f) => sanitizeLine(String(f), 40))
           : [],

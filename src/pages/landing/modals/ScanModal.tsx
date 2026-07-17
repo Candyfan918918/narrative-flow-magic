@@ -686,7 +686,13 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
       scan_band: dbBand[band],
       is_public: isPublic,
       support_mode: 'heard' as const,
-      scan_reasoning: result.reasoning ?? null,
+      scan_reasoning: result.reasoning
+        ? (Object.fromEntries(
+            Object.entries(result.reasoning).map(([k, v]) =>
+              typeof v === 'string' ? [k, v.slice(0, k === 'pattern' ? 60 : 200)] : [k, v],
+            ),
+          ) as Reasoning)
+        : null,
       scan_basis: 'model_prior' as const,
       scan_corpus_n: null,
       scan_cultural_note: result.cultural_note ?? null,
@@ -730,7 +736,7 @@ export function ScanModal({ open, onClose }: { open: boolean; onClose: () => voi
         navigate('/welcome')
         return
       }
-      setSaveNote("couldn't save — " + msg)
+      setSaveNote("couldn't save — something hiccuped on our side. try again in a sec.")
       setPhase('result')
     }
   }, [result, composed, save, navigate])
