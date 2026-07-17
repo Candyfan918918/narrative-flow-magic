@@ -50,6 +50,7 @@ export const Route = createFileRoute("/halls/$hall/$region/$window")({
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
       { property: "og:url", content: url },
+      ...ogImageMeta(),
     ];
     if (!indexable) metaTags.push({ name: "robots", content: "noindex, follow" });
     void meta;
