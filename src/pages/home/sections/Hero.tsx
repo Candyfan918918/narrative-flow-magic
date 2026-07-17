@@ -1,6 +1,7 @@
 /* Section: Hero — byte-for-byte port of /tmp/bundle/template.html.  
  * Every data-* hook preserved verbatim so mountImmersive drives interactivity. */
-export function Hero() {
+export function Hero({ openRoomsCount = 0 }: { openRoomsCount?: number } = {}) {
+  const showLive = openRoomsCount > 0
   return (
     <>
             {/* ══ HERO ══ */}
