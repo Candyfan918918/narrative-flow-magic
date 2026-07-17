@@ -32,6 +32,10 @@ const OTHERS = [
   { href: "/relationships", label: "Relationships" },
   { href: "/family", label: "Family" },
   { href: "/career", label: "Career" },
+  { href: "/lived-intelligence", label: "Lived intelligence" },
+  { href: "/about", label: "About" },
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 export const Route = createFileRoute("/marriage")({

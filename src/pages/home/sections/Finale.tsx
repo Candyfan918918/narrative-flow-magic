@@ -24,6 +24,16 @@ export function Finale() {
             </div>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px 16px', justifyContent: 'center', fontFamily: "'Inter',sans-serif", fontSize: '12px' }}>
+            <a href="/relationships" data-link="/relationships" data-hover="" style={foot}>relationships</a>
+            <a href="/marriage" data-link="/marriage" data-hover="" style={foot}>marriage</a>
+            <a href="/family" data-link="/family" data-hover="" style={foot}>family</a>
+            <a href="/career" data-link="/career" data-hover="" style={foot}>career & work</a>
+            <a href="/lived-intelligence" data-link="/lived-intelligence" data-hover="" style={foot}>what is lived intelligence?</a>
+            <a href="/about" data-link="/about" data-hover="" style={foot}>about</a>
+            <a href="/how-it-works" data-link="/how-it-works" data-hover="" style={foot}>how it works</a>
+            <a href="/faq" data-link="/faq" data-hover="" style={foot}>faq</a>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px 16px', justifyContent: 'center', fontFamily: "'Inter',sans-serif", fontSize: '12px' }}>
             <a href="/terms" data-link="/terms" data-hover="" style={foot}>Terms</a>
             <a href="/privacy" data-link="/privacy" data-hover="" style={foot}>Privacy</a>
             <a href="/guidelines" data-link="/guidelines" data-hover="" style={foot}>Guidelines</a>
