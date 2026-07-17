@@ -18,7 +18,7 @@ export const Route = createFileRoute("/lived-intelligence")({
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "article" },
       { property: "og:url", content: URL },
-      { name: "twitter:card", content: "summary" },
+      ...ogImageMeta(),
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESCRIPTION },
     ],

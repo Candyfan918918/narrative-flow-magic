@@ -26,7 +26,7 @@ export const Route = createFileRoute('/halls')({
       { property: 'og:description', content: DESCRIPTION },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: `${SITE_URL}${PATH}` },
-      { name: 'twitter:card', content: 'summary' },
+      ...ogImageMeta(),
       { name: 'twitter:title', content: TITLE },
       { name: 'twitter:description', content: DESCRIPTION },
     ],

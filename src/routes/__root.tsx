@@ -101,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Pseudonymous venting community. Spill what's going on; see what actually happened next for people who've lived your exact thing.",
       },
-      { name: "twitter:card", content: "summary" },
+      ...ogImageMeta(),
       { name: "twitter:title", content: "Shutap. Speak Up." },
       {
         name: "twitter:description",
