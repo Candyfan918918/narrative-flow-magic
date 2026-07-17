@@ -12,6 +12,11 @@ import { Words, Reveal } from '@/components/motion'
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
 
+function isSeedRoom(r: Room): boolean {
+  // Rooms in this path come from SHUTAP_SEED — treat as seed unless the row
+  // explicitly says is_seed=false. Real rooms will set is_seed=false.
+  return r.is_seed !== false
+}
 function roomsForTopic(slug: string): Room[] {
   return (SHUTAP_SEED.rooms || []).filter((r) => (r.category || '').toLowerCase() === slug).slice(0, 8)
 }
