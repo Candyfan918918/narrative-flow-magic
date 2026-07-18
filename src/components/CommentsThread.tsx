@@ -24,6 +24,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
   const qc = useQueryClient()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editDraft, setEditDraft] = useState('')
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const fetchComments = useServerFn(listRoomComments)
   const update = useServerFn(updateComment)
@@ -37,6 +38,10 @@ export function CommentsThread({ roomId }: { roomId: string }) {
   })
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ['comments', roomId] })
+  const surfaceError = (action: string) => (err: unknown) => {
+    const msg = err instanceof Error ? err.message : String(err)
+    setErrorMsg(`couldn't ${action} — ${msg}`)
+  }
 
   const save = useMutation({
     mutationFn: ({ id, text }: { id: string; text: string }) =>
@@ -44,12 +49,15 @@ export function CommentsThread({ roomId }: { roomId: string }) {
     onSuccess: () => {
       setEditingId(null)
       setEditDraft('')
+      setErrorMsg(null)
       invalidate()
     },
+    onError: surfaceError('save edit'),
   })
   const del = useMutation({
     mutationFn: (id: string) => remove({ data: { id } }),
-    onSuccess: invalidate,
+    onSuccess: () => { setErrorMsg(null); invalidate() },
+    onError: surfaceError('delete comment'),
   })
 
   return (
@@ -66,6 +74,26 @@ export function CommentsThread({ roomId }: { roomId: string }) {
       >
         WHAT OTHERS SAID
       </div>
+
+      {errorMsg && (
+        <div
+          role="alert"
+          style={{
+            marginBottom: 12,
+            padding: '10px 14px',
+            borderRadius: 12,
+            background: '#fff0f3',
+            border: '.5px solid rgba(193,33,107,.35)',
+            color: '#c1216b',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: 13,
+          }}
+        >
+          {errorMsg}
+        </div>
+      )}
+
+
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {comments.length === 0 && (
