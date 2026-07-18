@@ -4,17 +4,31 @@
  * All data-* hooks preserved so mountImmersive's drag/auto-drift keep
  * working unchanged. */
 import { SHUTAP_SEED } from '@/data/seed'
+import type { NewestRoom } from '@/lib/newest-rooms.functions'
 
-export function RoomsStrip() {
-  const seed = (SHUTAP_SEED.rooms || []).slice(0, 8).map((r) => ({
-    emoji: r.emoji,
-    alias: r.alias,
-    hours: r.hours,
-    title: r.title,
+function ageLabel(iso: string): string {
+  const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000)
+  if (s < 60) return 'just now'
+  if (s < 3600) return `${Math.floor(s / 60)}m`
+  if (s < 86400) return `${Math.floor(s / 3600)}h`
+  return `${Math.floor(s / 86400)}d`
+}
+
+export function RoomsStrip({ newestRooms = [] }: { newestRooms?: NewestRoom[] } = {}) {
+  const live = newestRooms.slice(0, 8).map((r) => ({
+    id: r.id, emoji: r.emoji, alias: r.alias, hours: ageLabel(r.created_at),
+    title: r.title, sitting: r.sitting, relates: 0, href: `/stream#room-${r.id}`,
+  }))
+  const padCount = Math.max(0, 8 - live.length)
+  const seed = (SHUTAP_SEED.rooms || []).slice(0, padCount).map((r, i) => ({
+    id: `seed-${i}`,
+    emoji: r.emoji, alias: r.alias, hours: r.hours, title: r.title,
     sitting: (r as unknown as { sitting?: number }).sitting ?? 0,
     relates: (r as unknown as { relates?: number }).relates ?? 0,
+    href: '/stream',
   }))
-  const list = seed.concat(seed)
+  const combined = [...live, ...seed]
+  const list = combined.concat(combined)
   return (
     <section data-screen-label="Rooms strip" style={{ position: 'relative', background: '#fdf0f5', padding: 'clamp(80px,11vh,130px) 0 clamp(56px,8vh,90px)', overflow: 'hidden' }}>
       <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '0 30px 26px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
