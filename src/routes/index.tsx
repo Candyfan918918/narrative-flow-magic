@@ -4,6 +4,7 @@ import { HomePage } from '@/pages/home/HomePage'
 import { HOME_FAQ } from '@/pages/home/HomeFAQ'
 import { SITE_URL } from '@/lib/site'
 import { countOpenRooms } from '@/lib/rooms-count.functions'
+import { listNewestRooms } from '@/lib/newest-rooms.functions'
 
 const HOME_TITLE = "Shutap — vent about relationships, marriage, family, work"
 const HOME_DESCRIPTION =
