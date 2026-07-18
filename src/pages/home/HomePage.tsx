@@ -79,7 +79,9 @@ function hashKey(input: { pillar?: string | null; title?: string | null; body?: 
   return (h >>> 0).toString(36)
 }
 
-export function HomePage({ openRoomsCount = 0 }: { openRoomsCount?: number } = {}) {
+import type { NewestRoom } from '@/lib/newest-rooms.functions'
+
+export function HomePage({ openRoomsCount = 0, newestRooms = [] }: { openRoomsCount?: number; newestRooms?: NewestRoom[] } = {}) {
   const navigate = useNavigate()
   const router = useRouter()
   const save = useServerFn(saveSituation)
