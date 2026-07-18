@@ -29,12 +29,24 @@ function StepFallback() {
 export function WelcomeNativePage() {
   useNoIndex()
 
+  // Detect an OAuth/magic-link callback: supabase-js parses these on load,
+  // but getSession() can resolve before the exchange finishes. When any of
+  // these markers are present, we start in "checking" and wait for
+  // INITIAL_SESSION / SIGNED_IN rather than briefly rendering AuthStep.
+  const looksLikeAuthCallback = (() => {
+    if (typeof window === 'undefined') return false
+    const h = window.location.hash || ''
+    const s = window.location.search || ''
+    return h.includes('access_token=') || h.includes('provider_token=') || h.includes('error=')
+      || /[?&](code|token_hash|error)=/.test(s)
+  })()
+
   const initialStep: Step = (() => {
     try { if (sessionStorage.getItem('shutap_age_rejected') === '1') return 'age' } catch { /* noop */ }
     return 'auth'
   })()
   const [step, setStep] = useState<Step>(initialStep)
-  const [checking, setChecking] = useState(false)
+  const [checking, setChecking] = useState<boolean>(looksLikeAuthCallback)
   const [ageBlocked, setAgeBlocked] = useState<boolean>(() => {
     try { return sessionStorage.getItem('shutap_age_rejected') === '1' } catch { return false }
   })
@@ -46,9 +58,12 @@ export function WelcomeNativePage() {
   // is signed in. Anonymous pseudonymous sessions must still see the auth sheet.
   useEffect(() => {
     let cancelled = false
+    let advanced = false
     const isAnon = (u: unknown) => Boolean((u as { is_anonymous?: boolean } | undefined)?.is_anonymous)
 
     const advanceForRealUser = async () => {
+      if (advanced) return
+      advanced = true
       setChecking(true)
       // Lazy-import server-fn modules so cold /welcome doesn't ship them.
       const [{ recordLegalAcceptance }, { getMyAlias }] = await Promise.all([
@@ -56,9 +71,26 @@ export function WelcomeNativePage() {
         import('@/lib/alias.functions'),
       ])
       void recordLegalAcceptance({ data: {} }).catch(() => {})
+
+      // Retry getMyAlias once on transport/auth failure — the bearer may not
+      // be attached yet immediately after the OAuth round trip. Only fall
+      // through to 'age' when the row genuinely doesn't exist.
+      const tryGetAlias = async (): Promise<Awaited<ReturnType<typeof getMyAlias>> | 'error'> => {
+        try { return await getMyAlias() } catch { return 'error' }
+      }
+      let existing = await tryGetAlias()
+      if (existing === 'error') {
+        await new Promise((r) => setTimeout(r, 600))
+        existing = await tryGetAlias()
+      }
+      if (cancelled) return
       try {
-        const existing = await getMyAlias()
-        if (cancelled) return
+        if (existing === 'error') {
+          // Still failing — don't force onboarding. Leave user on auth-step
+          // so a refresh recovers cleanly rather than resetting alias.
+          setStep('auth')
+          return
+        }
         if (existing?.display_name && existing.birth_year) {
           const a: AliasResult = {
             emotion: existing.emotion || '',
@@ -73,24 +105,43 @@ export function WelcomeNativePage() {
         } else {
           setStep('age')
         }
-      } catch { if (!cancelled) setStep('age') } finally { if (!cancelled) setChecking(false) }
+      } finally { if (!cancelled) setChecking(false) }
     }
 
     const run = async () => {
       const { data } = await supabase.auth.getSession()
       if (cancelled) return
-      if (!data.session || isAnon(data.session.user)) { setStep('auth'); return }
+      if (!data.session || isAnon(data.session.user)) {
+        // If this looks like an in-flight OAuth callback, don't flash AuthStep —
+        // stay in checking and let onAuthStateChange fire INITIAL_SESSION/SIGNED_IN.
+        if (!looksLikeAuthCallback) { setStep('auth'); setChecking(false) }
+        return
+      }
       await advanceForRealUser()
     }
     void run()
 
+    // Safety net: if the callback markers were present but no auth event
+    // arrives within 4s, drop back to the auth step so the user isn't stuck.
+    const stuckTimer = looksLikeAuthCallback ? window.setTimeout(() => {
+      if (cancelled || advanced) return
+      setStep('auth')
+      setChecking(false)
+    }, 4000) : null
+
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event !== 'SIGNED_IN' && event !== 'USER_UPDATED') return
+      // INITIAL_SESSION fires once after supabase-js hydrates the session
+      // from URL/storage — treat it like SIGNED_IN when a real session lands.
+      if (event !== 'SIGNED_IN' && event !== 'USER_UPDATED' && event !== 'INITIAL_SESSION') return
       if (!session || isAnon(session.user)) return
       void advanceForRealUser()
     })
-    return () => { cancelled = true; sub.subscription.unsubscribe() }
-  }, [])
+    return () => {
+      cancelled = true
+      if (stuckTimer !== null) window.clearTimeout(stuckTimer)
+      sub.subscription.unsubscribe()
+    }
+  }, [looksLikeAuthCallback])
 
   return (
     <div style={{ background: BG, color: TEXT, minHeight: '100vh', fontFamily: "'Inter',system-ui,sans-serif", WebkitFontSmoothing: 'antialiased' }}>
