@@ -18,8 +18,11 @@ export const Route = createFileRoute('/')({
     'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
   }),
   loader: async () => {
-    const openRooms = await countOpenRooms().catch(() => 0)
-    return { openRooms }
+    const [openRooms, newestRooms] = await Promise.all([
+      countOpenRooms().catch(() => 0),
+      listNewestRooms().catch(() => []),
+    ])
+    return { openRooms, newestRooms }
   },
   head: () => ({
     meta: [
