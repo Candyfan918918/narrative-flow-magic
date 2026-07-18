@@ -51,7 +51,7 @@ export function RoomsStrip({ newestRooms = [] }: { newestRooms?: NewestRoom[] } 
             <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
               <span style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: '16px', flex: 'none' }}>{r.emoji}</span>
               <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '13.5px', color: '#9e7a8c' }}>{r.alias}</span>
-              <span style={{ marginLeft: 'auto', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '12px', color: '#9e7a8c' }}>{r.hours} ago</span>
+              <span style={{ marginLeft: 'auto', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '12px', color: '#9e7a8c' }}>{r.hours}</span>
             </div>
             <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: '17px', lineHeight: 1.3, letterSpacing: '-.01em', color: '#0b080f', flex: 1 }}>{r.title}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '13px', color: '#6b4a5c' }}>
