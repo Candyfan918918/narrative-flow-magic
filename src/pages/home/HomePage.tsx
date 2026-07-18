@@ -79,7 +79,9 @@ function hashKey(input: { pillar?: string | null; title?: string | null; body?: 
   return (h >>> 0).toString(36)
 }
 
-export function HomePage({ openRoomsCount = 0 }: { openRoomsCount?: number } = {}) {
+import type { NewestRoom } from '@/lib/newest-rooms.functions'
+
+export function HomePage({ openRoomsCount = 0, newestRooms = [] }: { openRoomsCount?: number; newestRooms?: NewestRoom[] } = {}) {
   const navigate = useNavigate()
   const router = useRouter()
   const save = useServerFn(saveSituation)
@@ -192,7 +194,7 @@ export function HomePage({ openRoomsCount = 0 }: { openRoomsCount?: number } = {
   return (
     <div ref={rootRef} className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
       <CursorTrail />
-      <HomeImmersive openRoomsCount={openRoomsCount} />
+      <HomeImmersive openRoomsCount={openRoomsCount} newestRooms={newestRooms} />
       <SpillModal open={spillOpen} onClose={() => setSpillOpen(false)} />
       <ScanModal open={scanOpen} onClose={() => setScanOpen(false)} />
     </div>

@@ -4,17 +4,31 @@
  * All data-* hooks preserved so mountImmersive's drag/auto-drift keep
  * working unchanged. */
 import { SHUTAP_SEED } from '@/data/seed'
+import type { NewestRoom } from '@/lib/newest-rooms.functions'
 
-export function RoomsStrip() {
-  const seed = (SHUTAP_SEED.rooms || []).slice(0, 8).map((r) => ({
-    emoji: r.emoji,
-    alias: r.alias,
-    hours: r.hours,
-    title: r.title,
+function ageLabel(iso: string): string {
+  const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000)
+  if (s < 60) return 'just now'
+  if (s < 3600) return `${Math.floor(s / 60)}m`
+  if (s < 86400) return `${Math.floor(s / 3600)}h`
+  return `${Math.floor(s / 86400)}d`
+}
+
+export function RoomsStrip({ newestRooms = [] }: { newestRooms?: NewestRoom[] } = {}) {
+  const live = newestRooms.slice(0, 8).map((r) => ({
+    id: r.id, emoji: r.emoji, alias: r.alias, hours: ageLabel(r.created_at),
+    title: r.title, sitting: r.sitting, relates: 0, href: `/stream#room-${r.id}`,
+  }))
+  const padCount = Math.max(0, 8 - live.length)
+  const seed = (SHUTAP_SEED.rooms || []).slice(0, padCount).map((r, i) => ({
+    id: `seed-${i}`,
+    emoji: r.emoji, alias: r.alias, hours: r.hours, title: r.title,
     sitting: (r as unknown as { sitting?: number }).sitting ?? 0,
     relates: (r as unknown as { relates?: number }).relates ?? 0,
+    href: '/stream',
   }))
-  const list = seed.concat(seed)
+  const combined = [...live, ...seed]
+  const list = combined.concat(combined)
   return (
     <section data-screen-label="Rooms strip" style={{ position: 'relative', background: '#fdf0f5', padding: 'clamp(80px,11vh,130px) 0 clamp(56px,8vh,90px)', overflow: 'hidden' }}>
       <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '0 30px 26px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
@@ -26,9 +40,9 @@ export function RoomsStrip() {
       <div data-strip="" style={{ display: 'flex', gap: '18px', overflowX: 'auto', padding: '6px 30px 22px', cursor: 'grab', userSelect: 'none' }}>
         {list.map((r, i) => (
           <a
-            key={i}
-            href="/stream"
-            data-link="/stream"
+            key={`${r.id}-${i}`}
+            href={r.href}
+            data-link={r.href}
             data-hover=""
             data-reactive=""
             draggable={false}
@@ -37,7 +51,7 @@ export function RoomsStrip() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
               <span style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: '16px', flex: 'none' }}>{r.emoji}</span>
               <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '13.5px', color: '#9e7a8c' }}>{r.alias}</span>
-              <span style={{ marginLeft: 'auto', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '12px', color: '#9e7a8c' }}>{r.hours} ago</span>
+              <span style={{ marginLeft: 'auto', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '12px', color: '#9e7a8c' }}>{r.hours}</span>
             </div>
             <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: '17px', lineHeight: 1.3, letterSpacing: '-.01em', color: '#0b080f', flex: 1 }}>{r.title}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '13px', color: '#6b4a5c' }}>

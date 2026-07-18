@@ -4,6 +4,7 @@ import { HomePage } from '@/pages/home/HomePage'
 import { HOME_FAQ } from '@/pages/home/HomeFAQ'
 import { SITE_URL } from '@/lib/site'
 import { countOpenRooms } from '@/lib/rooms-count.functions'
+import { listNewestRooms } from '@/lib/newest-rooms.functions'
 
 const HOME_TITLE = "Shutap — vent about relationships, marriage, family, work"
 const HOME_DESCRIPTION =
@@ -17,8 +18,11 @@ export const Route = createFileRoute('/')({
     'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
   }),
   loader: async () => {
-    const openRooms = await countOpenRooms().catch(() => 0)
-    return { openRooms }
+    const [openRooms, newestRooms] = await Promise.all([
+      countOpenRooms().catch(() => 0),
+      listNewestRooms().catch(() => []),
+    ])
+    return { openRooms, newestRooms }
   },
   head: () => ({
     meta: [
@@ -63,6 +67,6 @@ export const Route = createFileRoute('/')({
 })
 
 function HomeRouteComponent() {
-  const { openRooms } = Route.useLoaderData()
-  return <HomePage openRoomsCount={openRooms} />
+  const { openRooms, newestRooms } = Route.useLoaderData()
+  return <HomePage openRoomsCount={openRooms} newestRooms={newestRooms} />
 }

@@ -382,7 +382,9 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
     setDraft({ pillar: null, tags: [], anchor: null, emotional_core: null, the_real_thing: null, named_and_landed: false })
     setTurn(0); setThinking(false); setPhase('chat')
     setReflectSummary(null); setSupportMode('heard'); setComposed(null); setEditNote(null)
-    setInput(''); setEditInstruction(''); setAiEditing(false)
+    let prefill = ''
+    try { prefill = sessionStorage.getItem('shutap_spill_prefill') || ''; if (prefill) sessionStorage.removeItem('shutap_spill_prefill') } catch { /* noop */ }
+    setInput(prefill); setEditInstruction(''); setAiEditing(false)
     setIsReturning(false); setPriorReferent(null); setProgressNote(null)
     usedFBRef.current = []
 
