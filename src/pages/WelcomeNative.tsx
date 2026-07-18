@@ -185,7 +185,16 @@ export function WelcomeNativePage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div style={{ width: '100%', maxWidth: 420 }}>
           {checking && <StepFallback />}
-          {!checking && step === 'auth' && <AuthStep />}
+          {!checking && step === 'auth' && (
+            <>
+              <AuthStep />
+              {authError && (
+                <div style={{ marginTop: 12, color: '#ff8a8a', fontSize: 13, textAlign: 'center' }}>
+                  {authError}
+                </div>
+              )}
+            </>
+          )}
           {!checking && step === 'age' && (
             <Suspense fallback={<StepFallback />}>
               <AgeStep
