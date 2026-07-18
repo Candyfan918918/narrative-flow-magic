@@ -75,6 +75,26 @@ export function CommentsThread({ roomId }: { roomId: string }) {
         WHAT OTHERS SAID
       </div>
 
+      {errorMsg && (
+        <div
+          role="alert"
+          style={{
+            marginBottom: 12,
+            padding: '10px 14px',
+            borderRadius: 12,
+            background: '#fff0f3',
+            border: '.5px solid rgba(193,33,107,.35)',
+            color: '#c1216b',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: 13,
+          }}
+        >
+          {errorMsg}
+        </div>
+      )}
+
+
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {comments.length === 0 && (
           <p style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: '#6b4a5c' }}>
