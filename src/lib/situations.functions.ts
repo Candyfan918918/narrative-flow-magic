@@ -583,12 +583,28 @@ export const updateComment = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     const s = await runScrub(data.text)
-    // Ownership enforced by RLS "owner updates own comment".
-    const { error } = await context.supabase
+    // Ownership verified server-side via supabaseAdmin because the
+    // `authenticated` role has no column-SELECT on comments.alias_id
+    // (pseudonymity hardening), which makes the RLS WITH CHECK on
+    // "owner updates own comment" fail with 42501. Same pattern as
+    // deleteSituation.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: owned, error: ownErr } = await supabaseAdmin
+      .from('comments')
+      .select('id, alias_id, is_companion')
+      .eq('id', data.id)
+      .maybeSingle()
+    if (ownErr) throw new Error(ownErr.message)
+    if (!owned || owned.is_companion || owned.alias_id !== context.userId) {
+      throw new Error('Forbidden')
+    }
+    const { data: updated, error } = await supabaseAdmin
       .from('comments')
       .update({ clean_text: s.clean_text || data.text, edited: true } as never)
       .eq('id', data.id)
+      .select('id')
     if (error) throw new Error(error.message)
+    if (!updated || updated.length === 0) throw new Error('Comment not found')
     return { id: data.id, ok: true }
   })
 
@@ -596,12 +612,24 @@ export const deleteComment = createServerFn({ method: 'POST' })
   .middleware([requireRealUser])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    // Soft-delete under RLS "owner updates own comment".
-    const { error } = await context.supabase
+    // Ownership verified server-side (see updateComment for why).
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: owned, error: ownErr } = await supabaseAdmin
+      .from('comments')
+      .select('id, alias_id, is_companion')
+      .eq('id', data.id)
+      .maybeSingle()
+    if (ownErr) throw new Error(ownErr.message)
+    if (!owned || owned.is_companion || owned.alias_id !== context.userId) {
+      throw new Error('Forbidden')
+    }
+    const { data: updated, error } = await supabaseAdmin
       .from('comments')
       .update({ deleted_at: new Date().toISOString() } as never)
       .eq('id', data.id)
+      .select('id')
     if (error) throw new Error(error.message)
+    if (!updated || updated.length === 0) throw new Error('Comment not found')
     return { id: data.id, ok: true }
   })
 
