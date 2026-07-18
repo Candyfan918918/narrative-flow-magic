@@ -115,3 +115,12 @@ html.home-scroll-snap {
     transition: none !important;
   }
 }
+
+/* v3 hero: "just opened" pulse + reduced-motion ticker pause */
+[data-fresh]{display:inline-flex;align-items:center;padding:2px 7px;margin-left:6px;border-radius:999px;font-family:'Sora',sans-serif;font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#1f7a5c;background:rgba(93,202,165,.15);border:1px solid rgba(93,202,165,.45);animation:justOpened 1.6s ease-in-out infinite}
+@keyframes justOpened{0%,100%{opacity:.7;box-shadow:0 0 0 0 rgba(93,202,165,.35)}50%{opacity:1;box-shadow:0 0 0 5px rgba(93,202,165,0)}}
+.home-hero-ticker:hover{animation-play-state:paused}
+@media (prefers-reduced-motion: reduce){
+  [data-fresh]{animation:none}
+  .home-hero-ticker{animation:none}
+}
