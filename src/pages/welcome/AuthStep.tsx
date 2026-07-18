@@ -1,7 +1,7 @@
 /* Auth step: OAuth (Google/Apple) + magic-link email. Imported eagerly so
  * first paint of /welcome doesn't Suspense. Does NOT advance step itself —
  * parent's onAuthStateChange picks up SIGNED_IN and drives the flow. */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Words } from '@/components/motion'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable'
@@ -22,34 +22,8 @@ export function AuthStep() {
   const [msg, setMsg] = useState<Msg>(null)
   const [busy, setBusy] = useState(false)
 
-  // Cached so click handlers don't `await` before triggering redirect —
-  // popup blockers reject a location change that isn't synchronous with the gesture.
-  const [anonSession, setAnonSession] = useState(false)
-  useEffect(() => {
-    let dead = false
-    ;(async () => {
-      const { data } = await supabase.auth.getSession()
-      if (dead) return
-      const u = data.session?.user as { is_anonymous?: boolean } | undefined
-      setAnonSession(Boolean(u?.is_anonymous))
-    })()
-    return () => { dead = true }
-  }, [])
-
   const runOAuth = async (provider: 'google' | 'apple') => {
     const redirectTo = window.location.origin + '/welcome'
-    if (anonSession) {
-      try {
-        const { error } = await supabase.auth.linkIdentity({ provider, options: { redirectTo } })
-        if (!error) return
-        const linkingUnsupported = /manual linking|not enabled|disabled|unsupported/i.test(error.message)
-        const alreadyLinked = /already|exists|registered/i.test(error.message)
-        if (!linkingUnsupported && !alreadyLinked) { setMsg({ kind: 'err', text: error.message }); return }
-        setMsg({ kind: 'err', text: 'signing you in — guest activity may stay with your guest account.' })
-      } catch (e) {
-        setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'link failed — trying regular sign-in' })
-      }
-    }
     const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: redirectTo })
     if (result.error) setMsg({ kind: 'err', text: result.error.message || 'sign-in failed — provider may not be enabled' })
   }
@@ -58,6 +32,9 @@ export function AuthStep() {
     setBusy(true); setMsg(null)
     void runOAuth(provider).finally(() => setBusy(false))
   }
+
+
+
 
   const doEmail = async () => {
     const nameTrim = name.trim().replace(/\s+/g, ' ')

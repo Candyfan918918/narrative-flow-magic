@@ -1,17 +1,24 @@
-# Admin Console Cleanup + Growth View
+## Problem
 
-Note: this scope was implemented in the previous build turn. Audit below shows current state matches the plan; re-issuing so you can approve a no-op or point out gaps.
+On `/welcome`, clicking **Continue with Google** (or Apple) is slow and shows an alarming red note *"signing you in — guest activity may stay with your guest account."* before the redirect actually happens.
 
-## Current state audit
+Root cause is in `src/pages/welcome/AuthStep.tsx` `runOAuth()`:
 
-- `src/components/AdminShell.tsx` — exists, flat nav row (overview · analytics · users · events · feedback · relate SLA), noindex meta.
-- Routes wrapped in AdminShell: `admin.tsx`, `admin.analytics.tsx`, `admin.users.tsx`, `admin.events.tsx`, `admin.feedback.tsx`, `admin.relate.tsx`. Legacy `admin_.relate-queue.tsx` removed.
-- `/admin/analytics`: Users cards (toggle-independent) split from Visits cards (toggle-driven); "bots: N" sublabels removed; single humans/bots/all toggle.
-- Growth section on analytics: `adminGrowth()` in `src/lib/admin.functions.ts` returns D/W/M comparisons + 30-day series for signups and human visits.
-- Acquisition: `visits` migrated with `referrer`, `referrer_domain`, `utm_*`, `landing_path`; `visits_classified` view updated; `src/lib/tracking.ts` + `tracking.functions.ts` capture per session; `adminAcquisition()` returns top referrer domains, UTM source/campaign, landing paths, direct/search/social/referral split.
-- `/admin` overview: product KPI row via `adminProductKpis()` (spills, scans, comments, crisis, mirror subs, trialing) + scheduler health card; ad-hoc footer links removed; needs-response/new-rooms is a subordinate segmented control.
-- `/admin/feedback`: header summary above list.
+1. Because there's an auto-created **anonymous** Supabase session, the code first calls `supabase.auth.linkIdentity({ provider })` — a network round-trip that on Lovable Cloud almost always fails (manual identity linking is not enabled).
+2. On that failure it sets a red `msg` ("signing you in — guest activity may stay with your guest account.") and **only then** calls `lovable.auth.signInWithOAuth(...)`, which does its own round-trip before the browser finally redirects to Google.
 
-## What would change if you approve
+So every OAuth click pays: linkIdentity RTT + error render + signInWithOAuth RTT. That's the "extremely slow with the note".
 
-Nothing — this is a confirmation pass. If you have specific gaps (a missing metric, a card still duplicated, a nav item to add/rename), reply with them and I'll ship a focused follow-up plan.
+## Fix (single file: `src/pages/welcome/AuthStep.tsx`)
+
+- Drop the `linkIdentity` attempt entirely. Go straight to `lovable.auth.signInWithOAuth(provider, { redirect_uri })` on click — same path a non-anonymous user takes.
+- Remove the `anonSession` state + its `useEffect` (`supabase.auth.getSession()` probe) since it's only used to gate the deleted branch. Saves one extra session round-trip on mount too.
+- Keep the existing error handling: only surface `msg` if `signInWithOAuth` returns `result.error` (real failure like provider not enabled).
+- No change to the email/OTP path, no change to `WelcomeNativePage`, no change to `lovable` integration file, no auth/RLS changes.
+
+## Verification
+
+- Anonymous visitor on `/welcome` clicks **Continue with Google** → redirects to Google immediately, no red note in between.
+- Signed-out (no session) visitor: same fast redirect.
+- Real failure (provider disabled) still shows the error message from `signInWithOAuth`.
+- Typecheck + lint clean; diff limited to `src/pages/welcome/AuthStep.tsx`.
