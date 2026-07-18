@@ -40,9 +40,9 @@ export function RoomsStrip({ newestRooms = [] }: { newestRooms?: NewestRoom[] } 
       <div data-strip="" style={{ display: 'flex', gap: '18px', overflowX: 'auto', padding: '6px 30px 22px', cursor: 'grab', userSelect: 'none' }}>
         {list.map((r, i) => (
           <a
-            key={i}
-            href="/stream"
-            data-link="/stream"
+            key={`${r.id}-${i}`}
+            href={r.href}
+            data-link={r.href}
             data-hover=""
             data-reactive=""
             draggable={false}
