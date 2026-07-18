@@ -17,33 +17,57 @@ export const listNewestRooms = createServerFn({ method: 'GET' }).handler(async (
   try {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const cutoff = new Date(Date.now() - 10 * 60 * 1000).toISOString()
-    const { data: rooms, error } = await supabaseAdmin
-      .from('rooms')
-      .select('id, alias, emoji, title, created_at')
+
+    // Only surface rooms whose backing situation is public, non-crisis, and not deleted.
+    const { data: situations, error: sitError } = await supabaseAdmin
+      .from('situations')
+      .select('room_id, created_at')
+      .eq('is_public', true)
+      .eq('crisis_flag', false)
+      .is('deleted_at', null)
+      .not('room_id', 'is', null)
       .lt('created_at', cutoff)
       .order('created_at', { ascending: false })
       .limit(8)
-    if (error || !rooms) return []
+    if (sitError || !situations || situations.length === 0) return []
+
+    const roomIds = situations.map((s) => s.room_id as string)
+    const { data: rooms, error: roomError } = await supabaseAdmin
+      .from('rooms')
+      .select('id, alias, emoji, title, created_at')
+      .in('id', roomIds)
+    if (roomError || !rooms || rooms.length === 0) return []
+
+    const roomMap = new Map(rooms.map((r) => [r.id as string, r]))
+
     // Best-effort "sitting" count via room_relates aggregate.
-    const ids = rooms.map((r) => r.id)
     let counts = new Map<string, number>()
-    if (ids.length) {
-      const { data: rel } = await supabaseAdmin
-        .from('room_relates')
-        .select('room_id')
-        .in('room_id', ids)
-      if (rel) counts = rel.reduce((m, r) => {
-        const k = (r as { room_id: string }).room_id; m.set(k, (m.get(k) || 0) + 1); return m
+    const { data: rel } = await supabaseAdmin
+      .from('room_relates')
+      .select('room_id')
+      .in('room_id', roomIds)
+    if (rel) {
+      counts = rel.reduce((m, r) => {
+        const k = (r as { room_id: string }).room_id
+        m.set(k, (m.get(k) || 0) + 1)
+        return m
       }, new Map<string, number>())
     }
-    return rooms.map((r) => ({
-      id: r.id as string,
-      emoji: (r.emoji as string) || '🫧',
-      alias: (r.alias as string) || 'someone',
-      title: (r.title as string) || 'a situation',
-      created_at: r.created_at as string,
-      sitting: Math.max(1, counts.get(r.id as string) || 0),
-    }))
+
+    return situations
+      .map((s) => {
+        const r = roomMap.get(s.room_id as string)
+        if (!r) return null
+        return {
+          id: r.id as string,
+          emoji: (r.emoji as string) || '🫧',
+          alias: (r.alias as string) || 'someone',
+          title: (r.title as string) || 'a situation',
+          created_at: r.created_at as string,
+          sitting: Math.max(1, counts.get(r.id as string) || 0),
+        }
+      })
+      .filter((r): r is NewestRoom => r !== null)
   } catch {
     return []
   }
