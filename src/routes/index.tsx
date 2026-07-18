@@ -67,6 +67,6 @@ export const Route = createFileRoute('/')({
 })
 
 function HomeRouteComponent() {
-  const { openRooms } = Route.useLoaderData()
-  return <HomePage openRoomsCount={openRooms} />
+  const { openRooms, newestRooms } = Route.useLoaderData()
+  return <HomePage openRoomsCount={openRooms} newestRooms={newestRooms} />
 }
