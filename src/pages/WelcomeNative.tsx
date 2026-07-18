@@ -46,6 +46,7 @@ export function WelcomeNativePage() {
     return 'auth'
   })()
   const [step, setStep] = useState<Step>(initialStep)
+  const [authError, setAuthError] = useState<string | null>(null)
   const [checking, setChecking] = useState<boolean>(looksLikeAuthCallback)
   const [ageBlocked, setAgeBlocked] = useState<boolean>(() => {
     try { return sessionStorage.getItem('shutap_age_rejected') === '1' } catch { return false }
@@ -108,13 +109,42 @@ export function WelcomeNativePage() {
       } finally { if (!cancelled) setChecking(false) }
     }
 
+    const consumeHashTokens = async (): Promise<'consumed' | 'error' | 'none'> => {
+      if (typeof window === 'undefined') return 'none'
+      const raw = window.location.hash?.startsWith('#') ? window.location.hash.slice(1) : ''
+      if (!raw) return 'none'
+      const params = new URLSearchParams(raw)
+      const err = params.get('error_description') || params.get('error')
+      if (err) {
+        try { history.replaceState(null, '', window.location.pathname + window.location.search) } catch { /* noop */ }
+        setAuthError(err.replace(/\+/g, ' '))
+        return 'error'
+      }
+      const access_token = params.get('access_token')
+      const refresh_token = params.get('refresh_token')
+      if (!access_token || !refresh_token) return 'none'
+      try {
+        const { error } = await supabase.auth.setSession({ access_token, refresh_token })
+        try { history.replaceState(null, '', window.location.pathname + window.location.search) } catch { /* noop */ }
+        if (error) { setAuthError(error.message); return 'error' }
+        return 'consumed'
+      } catch (e) {
+        try { history.replaceState(null, '', window.location.pathname + window.location.search) } catch { /* noop */ }
+        setAuthError(e instanceof Error ? e.message : String(e))
+        return 'error'
+      }
+    }
+
     const run = async () => {
+      const hashResult = await consumeHashTokens()
+      if (cancelled) return
+      if (hashResult === 'error') { setStep('auth'); setChecking(false); return }
       const { data } = await supabase.auth.getSession()
       if (cancelled) return
       if (!data.session || isAnon(data.session.user)) {
         // If this looks like an in-flight OAuth callback, don't flash AuthStep —
         // stay in checking and let onAuthStateChange fire INITIAL_SESSION/SIGNED_IN.
-        if (!looksLikeAuthCallback) { setStep('auth'); setChecking(false) }
+        if (!looksLikeAuthCallback && hashResult !== 'consumed') { setStep('auth'); setChecking(false) }
         return
       }
       await advanceForRealUser()
@@ -155,7 +185,16 @@ export function WelcomeNativePage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div style={{ width: '100%', maxWidth: 420 }}>
           {checking && <StepFallback />}
-          {!checking && step === 'auth' && <AuthStep />}
+          {!checking && step === 'auth' && (
+            <>
+              <AuthStep />
+              {authError && (
+                <div style={{ marginTop: 12, color: '#ff8a8a', fontSize: 13, textAlign: 'center' }}>
+                  {authError}
+                </div>
+              )}
+            </>
+          )}
           {!checking && step === 'age' && (
             <Suspense fallback={<StepFallback />}>
               <AgeStep
