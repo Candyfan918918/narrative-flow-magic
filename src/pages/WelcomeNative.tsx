@@ -46,6 +46,7 @@ export function WelcomeNativePage() {
     return 'auth'
   })()
   const [step, setStep] = useState<Step>(initialStep)
+  const [authError, setAuthError] = useState<string | null>(null)
   const [checking, setChecking] = useState<boolean>(looksLikeAuthCallback)
   const [ageBlocked, setAgeBlocked] = useState<boolean>(() => {
     try { return sessionStorage.getItem('shutap_age_rejected') === '1' } catch { return false }
