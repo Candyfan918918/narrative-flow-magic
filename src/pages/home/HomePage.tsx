@@ -194,7 +194,7 @@ export function HomePage({ openRoomsCount = 0, newestRooms = [] }: { openRoomsCo
   return (
     <div ref={rootRef} className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
       <CursorTrail />
-      <HomeImmersive openRoomsCount={openRoomsCount} />
+      <HomeImmersive openRoomsCount={openRoomsCount} newestRooms={newestRooms} />
       <SpillModal open={spillOpen} onClose={() => setSpillOpen(false)} />
       <ScanModal open={scanOpen} onClose={() => setScanOpen(false)} />
     </div>
