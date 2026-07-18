@@ -28,6 +28,13 @@ export function AuthStep() {
     if (result.error) setMsg({ kind: 'err', text: result.error.message || 'sign-in failed — provider may not be enabled' })
   }
 
+  const doOAuth = (provider: 'google' | 'apple') => {
+    setBusy(true); setMsg(null)
+    void runOAuth(provider).finally(() => setBusy(false))
+  }
+
+
+
 
   const doEmail = async () => {
     const nameTrim = name.trim().replace(/\s+/g, ' ')
