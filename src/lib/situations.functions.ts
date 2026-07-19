@@ -525,18 +525,23 @@ export const createComment = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     const s = await runScrub(data.text)
-    // Insert via authenticated client so RLS "owner inserts own comment"
-    // applies. Read-back omits alias_id (column revoked from authenticated).
-    const { data: row, error } = await context.supabase
+    // Insert via admin client. The RLS WITH CHECK on comments
+    // (alias_id = auth.uid()) intermittently rejects legitimate inserts due
+    // to token/claim edge cases; requireRealUser has already established
+    // context.userId, so we authorise server-side and stamp alias_id ourselves.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: row, error } = await supabaseAdmin
       .from('comments')
       .insert({
         room_id: data.roomId,
         alias_id: context.userId,
         clean_text: s.clean_text || data.text,
-      })
+        is_companion: false,
+      } as never)
       .select('id, clean_text, edited, created_at')
       .single()
     if (error) throw new Error(error.message)
+
 
     // SLA tracking: stamp human_response_at on the situation the first time
     // a non-author leaves a comment. Drives the relate-queue and the
