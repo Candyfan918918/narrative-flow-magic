@@ -3,6 +3,7 @@
 // One-shot version used by the Spill orchestrator; ScanModal runs the
 // adaptive multi-turn flow.
 import { createServerFn } from '@tanstack/react-start'
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { z } from 'zod'
 import { callAgent, tryParseJson } from './gateway'
 
