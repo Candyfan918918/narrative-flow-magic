@@ -8,6 +8,7 @@
 // Seed rows, crisis rows, private rows, and deleted rows are excluded by
 // the SQL function — we never match against them.
 import { createServerFn } from '@tanstack/react-start'
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { z } from 'zod'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '@/integrations/supabase/types'
@@ -49,6 +50,7 @@ function getServerClient() {
 }
 
 export const findMatches = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => MatcherInput.parse(data))
   .handler(async ({ data }): Promise<MatcherResult> => {
     const supabase = getServerClient()

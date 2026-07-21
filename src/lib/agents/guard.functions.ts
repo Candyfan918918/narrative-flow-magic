@@ -1,5 +1,6 @@
 // The Guard — crisis classifier. Overrides everything. High recall over precision.
 import { createServerFn } from '@tanstack/react-start'
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { z } from 'zod'
 import { callAgent, tryParseJson } from './gateway'
 
@@ -57,5 +58,6 @@ export async function runClassifyCrisis(cleanText: string): Promise<CrisisResult
 }
 
 export const classifyCrisis = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => GuardInput.parse(data))
   .handler(async ({ data }): Promise<CrisisResult> => runClassifyCrisis(data.clean_text))

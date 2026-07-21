@@ -126,6 +126,7 @@ const ScanInput = z.object({
 })
 
 export const scanIntensity = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => ScanInput.parse(data))
   .handler(async ({ data }): Promise<ScanResult> => {
     const llm = await callAgent({
