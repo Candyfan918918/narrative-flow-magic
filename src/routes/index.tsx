@@ -46,7 +46,7 @@ export const Route = createFileRoute('/')({
           name: "Shutap",
           url: HOME_URL,
           description:
-            "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
+            "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows.",
         }),
       },
       {
