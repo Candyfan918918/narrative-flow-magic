@@ -161,13 +161,19 @@ export function Hero({ openRoomsCount = 0, newestRooms = [] }: { openRoomsCount?
               happening in a room right now
             </div>
             <div style={{ width: 'min(520px,100%)', minHeight: 104, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ alignSelf: 'flex-start', maxWidth: '88%', background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: '16px 16px 16px 5px', padding: '10px 15px', boxShadow: '0 10px 26px -18px rgba(60,10,30,.35)' }}>
-                <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, lineHeight: 1.5, color: '#2e1a26', minHeight: 22, display: 'block', textAlign: 'left' }}>{lxQ}</span>
+              <div style={{ alignSelf: 'flex-start', maxWidth: '88%', background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: '16px 16px 16px 5px', padding: '10px 15px', boxShadow: '0 10px 26px -18px rgba(60,10,30,.35)', opacity: lxQ ? 1 : 0, transform: lxQ ? 'none' : 'translateY(6px)', transition: 'opacity .4s, transform .4s' }}>
+                <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, lineHeight: 1.5, color: '#2e1a26', minHeight: 22, display: 'block', textAlign: 'left' }}>
+                  {lxQ}
+                  {!lxAVisible && lxQ ? (
+                    <span aria-hidden="true" style={{ display: 'inline-block', width: 2, height: '0.95em', marginLeft: 2, background: '#c1216b', verticalAlign: '-2px', animation: 'blinkdot 1s steps(2) infinite' }} />
+                  ) : null}
+                </span>
               </div>
               <div style={{ alignSelf: 'flex-end', maxWidth: '88%', background: 'linear-gradient(155deg,#ff7eb3,#e7548a 60%,#c1216b)', borderRadius: '16px 16px 5px 16px', padding: '10px 15px', opacity: lxAVisible ? 1 : 0, transform: lxAVisible ? 'none' : 'translateY(6px)', transition: 'opacity .5s, transform .5s', boxShadow: '0 12px 26px -16px rgba(193,33,107,.5)' }}>
                 <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, lineHeight: 1.5, color: '#fff', display: 'block', textAlign: 'left' }}>{lxA}</span>
               </div>
             </div>
+
           </div>
 
           {/* Mood line */}
