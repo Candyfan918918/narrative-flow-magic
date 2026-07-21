@@ -196,7 +196,7 @@ export function Hero({ openRoomsCount = 0, newestRooms = [] }: { openRoomsCount?
                 <input
                   ref={inputRef}
                   type="text"
-                  placeholder={PLACEHOLDERS[0]}
+                  placeholder={PLACEHOLDERS[phIdx]}
                   onKeyDown={onSpillKey}
                   onChange={onSpillInput}
                   style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: NEWS, fontStyle: 'italic', fontSize: 16.5, color: '#2e1a26', padding: '10px 0' }}
