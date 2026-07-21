@@ -1,6 +1,7 @@
 // The Companion — four modes: spill, felt_heard, checkin, ask.
 // Free voice, lives in the eye, inherits the Constitution.
 import { createServerFn } from '@tanstack/react-start'
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { z } from 'zod'
 import { COMPANION_CONSTITUTION, CRISIS_COPY } from './constitution'
 import { callAgent, tryParseJson, type AgentMessage } from './gateway'
