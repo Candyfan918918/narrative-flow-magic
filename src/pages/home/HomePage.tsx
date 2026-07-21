@@ -53,10 +53,10 @@ export function HomeFooter() {
           <Link to="/legal" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Disclaimer</Link>
           <a href="mailto:hello@shutap.com" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Contact</a>
         </div>
-        <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', maxWidth: 620, lineHeight: 1.6 }}>
+        <div data-nosnippet style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', maxWidth: 620, lineHeight: 1.6 }}>
           18+ · pseudonymous · your real name never shows · your story, your rules 🤍
           <br />
-          shutap is your group chat, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
+          shutap is a supportive community, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
         </div>
         <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.28em', color: '#c1216b', marginTop: 6 }}>YOU DON'T HAVE TO SHUT UP HERE</div>
       </div>

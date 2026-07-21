@@ -8,11 +8,13 @@ export function ContentPage({
   capsule,
   sections,
   others,
+  nosnippetCapsule,
 }: {
   h1: string;
   capsule: string;
   sections: Section[];
   others?: Other[];
+  nosnippetCapsule?: boolean;
 }) {
   return (
     <main
@@ -44,6 +46,7 @@ export function ContentPage({
         </Words>
 
         <p
+          {...(nosnippetCapsule ? { "data-nosnippet": true } : {})}
           style={{
             fontFamily: "'Newsreader', Georgia, serif",
             fontSize: "clamp(19px, 2.4vw, 23px)",

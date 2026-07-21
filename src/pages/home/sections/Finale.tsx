@@ -44,7 +44,7 @@ export function Finale() {
           </div>
           <div style={{ textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '12px', color: '#9e7a8c', lineHeight: 1.7 }}>
             18+ · pseudonymous · your real name never shows · your story, your rules 🤍<br />
-            shutap is your group chat, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
+            shutap is a supportive community, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
           </div>
           <div style={{ textAlign: 'center', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: '10px', letterSpacing: '.18em', textTransform: 'uppercase', color: '#6b4a5c' }}>you don't have to shut up here</div>
         </div>
