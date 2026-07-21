@@ -142,6 +142,7 @@ async function searchRooms(query: string): Promise<AskRoom[]> {
 }
 
 export const runCompanion = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => CompanionInput.parse(data))
   .handler(async ({ data }): Promise<CompanionResult> => {
     if (data.crisis_flag) {
