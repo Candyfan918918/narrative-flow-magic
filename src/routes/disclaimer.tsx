@@ -56,8 +56,7 @@ function DisclaimerPage() {
           lineHeight: 1.55,
         }}
       >
-        &ldquo;shutap is your group chat, not your therapist. we&rsquo;re here to listen, not to
-        treat. if it&rsquo;s heavy, here&rsquo;s real help →&rdquo;
+        shutap is a supportive community, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
       </div>
     </DocLayout>
   )

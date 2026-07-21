@@ -458,7 +458,7 @@ export function LandingNativePage() {
           </div>
 
           <div style={{ marginTop: 9, fontSize: 11.5, color: '#b09aa6', maxWidth: '42ch', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.5 }}>
-            shutap is your group chat, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
+            shutap is a supportive community, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
           </div>
           <div style={{ marginTop: 12, fontFamily: SORA, fontStyle: 'normal', fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#6b4a5c' }}>you don't have to shut up here</div>
         </footer>

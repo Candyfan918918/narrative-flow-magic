@@ -8,11 +8,13 @@ export function ContentPage({
   capsule,
   sections,
   others,
+  nosnippetCapsule,
 }: {
   h1: string;
   capsule: string;
   sections: Section[];
   others?: Other[];
+  nosnippetCapsule?: boolean;
 }) {
   return (
     <main
