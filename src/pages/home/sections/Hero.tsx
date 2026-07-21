@@ -92,20 +92,19 @@ export function Hero({ openRoomsCount = 0, newestRooms = [] }: { openRoomsCount?
   const inputRef = useRef<HTMLInputElement | null>(null)
   const btnRef = useRef<HTMLAnchorElement | null>(null)
   const [hint, setHint] = useState('')
-  // Rotating placeholder — mutate the attribute via ref (no rerender).
+  const [phIdx, setPhIdx] = useState(0)
+  // Rotating placeholder — React-controlled so parent re-renders (typing demo,
+  // mood clock) can't reconcile the DOM attribute back to index 0.
   useEffect(() => {
-    const el = inputRef.current; if (!el) return
-    let k = 0; let stopped = false
-    const onFocus = () => { stopped = true }
-    el.addEventListener('focus', onFocus)
     const iv = setInterval(() => {
-      if (stopped) return
+      const el = inputRef.current
+      if (!el) return
       if (el.value || document.activeElement === el) return
-      k = (k + 1) % PLACEHOLDERS.length
-      el.placeholder = PLACEHOLDERS[k]
-    }, 1000)
-    return () => { clearInterval(iv); el.removeEventListener('focus', onFocus) }
+      setPhIdx((k) => (k + 1) % PLACEHOLDERS.length)
+    }, 2200)
+    return () => clearInterval(iv)
   }, [])
+
 
   const stashPrefill = () => {
     const v = (inputRef.current?.value || '').trim()
