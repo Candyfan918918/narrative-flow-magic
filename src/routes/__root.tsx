@@ -87,7 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
+          "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows.",
       },
       { name: "author", content: "Shutap" },
       { property: "og:site_name", content: "Shutap" },
@@ -100,14 +100,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Pseudonymous venting community. Spill what's going on; see what actually happened next for people who've lived your exact thing.",
+          "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows.",
       },
       ...ogImageMeta(),
       { name: "twitter:title", content: "Shutap. Speak Up." },
       {
         name: "twitter:description",
         content:
-          "Pseudonymous venting community. Spill what's going on; see what actually happened next for people who've lived your exact thing.",
+          "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows.",
       },
     ],
     links: [
@@ -127,7 +127,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           name: "Shutap",
           alternateName: "Shutap. Speak Up.",
           description:
-            "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
+            "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows.",
           slogan: "Shutap. Speak Up.",
           url: "https://shutap.com",
           logo: "https://shutap.com/og/shutap-og.png",

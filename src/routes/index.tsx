@@ -8,9 +8,9 @@ import { listNewestRooms } from '@/lib/newest-rooms.functions'
 
 const HOME_TITLE = "Shutap — vent about relationships, marriage, family, work"
 const HOME_DESCRIPTION =
-  "Spill what's actually going on — relationships, marriage, family, or work. Pseudonymous venting with AI-guided support — someone in here has lived your exact thing."
+  "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows."
 const HOME_OG_DESCRIPTION =
-  "whatever it is — someone in here has lived it. spill your stories: relationships, marriage, family, work — and see what happened next."
+  "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows."
 const HOME_URL = `${SITE_URL}/`
 
 export const Route = createFileRoute('/')({
@@ -46,7 +46,7 @@ export const Route = createFileRoute('/')({
           name: "Shutap",
           url: HOME_URL,
           description:
-            "Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.",
+            "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows.",
         }),
       },
       {
