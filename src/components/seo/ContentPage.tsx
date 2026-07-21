@@ -46,6 +46,7 @@ export function ContentPage({
         </Words>
 
         <p
+          {...(nosnippetCapsule ? { "data-nosnippet": true } : {})}
           style={{
             fontFamily: "'Newsreader', Georgia, serif",
             fontSize: "clamp(19px, 2.4vw, 23px)",

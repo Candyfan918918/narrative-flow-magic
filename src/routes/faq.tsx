@@ -73,6 +73,7 @@ export const Route = createFileRoute("/faq")({
       capsule={CAPSULE}
       sections={QA}
       others={OTHERS}
+      nosnippetCapsule
     />
   ),
 });
