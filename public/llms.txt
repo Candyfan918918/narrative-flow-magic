@@ -1,6 +1,6 @@
 # Shutap
 
-> Shutap is a pseudonymous community with AI agents' assistance to help people express and vent their personal experiences in a safe space.
+> Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows.
 
 Shutap is the alternative to anonymous-feed venting (Reddit, AITA, Quora). Members keep a consistent pseudonym across stories so voices have a track record, and outcomes are confirmed by the original author rather than inferred from sentiment.
 
