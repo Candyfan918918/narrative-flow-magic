@@ -132,7 +132,7 @@ export function AuthStep() {
             <input
               type="text"
               autoComplete="name"
-              placeholder="your name"
+              placeholder="your name (optional)"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && doEmail()}
