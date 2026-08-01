@@ -82,7 +82,11 @@ export function AuthStep() {
     setBusy(true); setMsg(null)
     try {
       const { data, error } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: 'email' })
-      if (error) { setMsg({ kind: 'err', text: error.message }); return }
+      if (error) {
+        setMsg({ kind: 'err', text: error.message })
+        track('sign_in_failed', { method: 'email_code', reason: error.message })
+        return
+      }
       const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>
       const hasName = typeof meta.first_name === 'string' && meta.first_name.trim().length > 0
         || typeof meta.full_name === 'string' && (meta.full_name as string).trim().length > 0
@@ -92,8 +96,11 @@ export function AuthStep() {
       }
       setMsg({ kind: 'ok', text: 'verified.' })
     } catch (e) {
-      setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'verification failed' })
+      const text = e instanceof Error ? e.message : 'verification failed'
+      setMsg({ kind: 'err', text })
+      track('sign_in_failed', { method: 'email_code', reason: text })
     } finally { setBusy(false) }
+
   }
 
   return (
