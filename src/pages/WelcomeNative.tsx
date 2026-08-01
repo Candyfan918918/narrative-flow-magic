@@ -66,11 +66,13 @@ export function WelcomeNativePage() {
       if (advanced) return
       advanced = true
       setChecking(true)
+      void import('@/lib/tracking').then((m) => m.trackEvent('sign_in_completed', {})).catch(() => {})
       // Lazy-import server-fn modules so cold /welcome doesn't ship them.
       const [{ recordLegalAcceptance }, { getMyAlias }] = await Promise.all([
         import('@/lib/legal.functions'),
         import('@/lib/alias.functions'),
       ])
+
       void recordLegalAcceptance({ data: {} }).catch(() => {})
 
       // Retry getMyAlias once on transport/auth failure — the bearer may not
