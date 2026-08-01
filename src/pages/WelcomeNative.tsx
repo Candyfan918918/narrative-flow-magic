@@ -66,11 +66,13 @@ export function WelcomeNativePage() {
       if (advanced) return
       advanced = true
       setChecking(true)
+      void import('@/lib/tracking').then((m) => m.trackEvent('sign_in_completed', {})).catch(() => {})
       // Lazy-import server-fn modules so cold /welcome doesn't ship them.
       const [{ recordLegalAcceptance }, { getMyAlias }] = await Promise.all([
         import('@/lib/legal.functions'),
         import('@/lib/alias.functions'),
       ])
+
       void recordLegalAcceptance({ data: {} }).catch(() => {})
 
       // Retry getMyAlias once on transport/auth failure — the bearer may not
@@ -109,6 +111,10 @@ export function WelcomeNativePage() {
       } finally { if (!cancelled) setChecking(false) }
     }
 
+    const trackFail = (reason: string) => {
+      void import('@/lib/tracking').then((m) => m.trackEvent('sign_in_return_failed', { reason: reason.slice(0, 200) })).catch(() => {})
+    }
+
     const consumeHashTokens = async (): Promise<'consumed' | 'error' | 'none'> => {
       if (typeof window === 'undefined') return 'none'
       const raw = window.location.hash?.startsWith('#') ? window.location.hash.slice(1) : ''
@@ -118,6 +124,7 @@ export function WelcomeNativePage() {
       if (err) {
         try { history.replaceState(null, '', window.location.pathname + window.location.search) } catch { /* noop */ }
         setAuthError(err.replace(/\+/g, ' '))
+        trackFail('provider: ' + err)
         return 'error'
       }
       const access_token = params.get('access_token')
@@ -126,11 +133,13 @@ export function WelcomeNativePage() {
       try {
         const { error } = await supabase.auth.setSession({ access_token, refresh_token })
         try { history.replaceState(null, '', window.location.pathname + window.location.search) } catch { /* noop */ }
-        if (error) { setAuthError(error.message); return 'error' }
+        if (error) { setAuthError(error.message); trackFail('setSession: ' + error.message); return 'error' }
         return 'consumed'
       } catch (e) {
         try { history.replaceState(null, '', window.location.pathname + window.location.search) } catch { /* noop */ }
-        setAuthError(e instanceof Error ? e.message : String(e))
+        const text = e instanceof Error ? e.message : String(e)
+        setAuthError(text)
+        trackFail('setSession threw: ' + text)
         return 'error'
       }
     }
@@ -157,7 +166,10 @@ export function WelcomeNativePage() {
       if (cancelled || advanced) return
       setStep('auth')
       setChecking(false)
+      setAuthError((prev) => prev ?? 'that sign-in didn’t come through — try once more')
+      trackFail('callback timeout')
     }, 4000) : null
+
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       // INITIAL_SESSION fires once after supabase-js hydrates the session

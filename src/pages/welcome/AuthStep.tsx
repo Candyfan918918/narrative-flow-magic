@@ -22,10 +22,27 @@ export function AuthStep() {
   const [msg, setMsg] = useState<Msg>(null)
   const [busy, setBusy] = useState(false)
 
+  const track = (name: string, props: Record<string, unknown> = {}) => {
+    void import('@/lib/tracking').then((m) => m.trackEvent(name, props)).catch(() => {})
+  }
+
   const runOAuth = async (provider: 'google' | 'apple') => {
-    const redirectTo = window.location.origin + '/welcome'
-    const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: redirectTo })
-    if (result.error) setMsg({ kind: 'err', text: result.error.message || 'sign-in failed — provider may not be enabled' })
+    track('sign_in_started', { method: provider })
+    try {
+      const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin + '/welcome' })
+      if (result.error) {
+        const text = result.error.message || 'sign-in failed — please try again'
+        setMsg({ kind: 'err', text })
+        track('sign_in_failed', { method: provider, reason: text })
+        return
+      }
+      if (result.redirected) return
+      track('sign_in_provider_ok', { method: provider })
+    } catch (e) {
+      const text = e instanceof Error ? e.message : 'sign-in failed — please try again'
+      setMsg({ kind: 'err', text })
+      track('sign_in_failed', { method: provider, reason: text })
+    }
   }
 
   const doOAuth = (provider: 'google' | 'apple') => {
@@ -33,26 +50,31 @@ export function AuthStep() {
     void runOAuth(provider).finally(() => setBusy(false))
   }
 
-
-
-
   const doEmail = async () => {
     const nameTrim = name.trim().replace(/\s+/g, ' ')
-    if (!nameTrim) { setMsg({ kind: 'err', text: 'enter your name' }); return }
     const v = email.trim()
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { setMsg({ kind: 'err', text: 'enter a valid email' }); return }
     setBusy(true); setMsg(null)
+    track('sign_in_started', { method: 'email' })
     try {
       const emailRedirectTo = window.location.origin + '/welcome'
-      const parts = splitName(nameTrim)
-      const { error: otpErr } = await supabase.auth.signInWithOtp({ email: v, options: { emailRedirectTo, shouldCreateUser: true, data: parts } })
-      if (otpErr) { setMsg({ kind: 'err', text: otpErr.message }); return }
+      const parts = nameTrim ? splitName(nameTrim) : undefined
+      const { error: otpErr } = await supabase.auth.signInWithOtp({ email: v, options: { emailRedirectTo, shouldCreateUser: true, ...(parts ? { data: parts } : {}) } })
+      if (otpErr) {
+        setMsg({ kind: 'err', text: otpErr.message })
+        track('sign_in_failed', { method: 'email', reason: otpErr.message })
+        return
+      }
       setEmailPhase('code')
       setMsg({ kind: 'ok', text: 'we emailed you a 6-digit code — enter it below (the magic link also works).' })
+      track('sign_in_code_sent', { method: 'email' })
     } catch (e) {
-      setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'sign-in failed' })
+      const text = e instanceof Error ? e.message : 'sign-in failed'
+      setMsg({ kind: 'err', text })
+      track('sign_in_failed', { method: 'email', reason: text })
     } finally { setBusy(false) }
   }
+
 
   const verifyEmailCode = async () => {
     const token = code.trim()
@@ -60,7 +82,11 @@ export function AuthStep() {
     setBusy(true); setMsg(null)
     try {
       const { data, error } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: 'email' })
-      if (error) { setMsg({ kind: 'err', text: error.message }); return }
+      if (error) {
+        setMsg({ kind: 'err', text: error.message })
+        track('sign_in_failed', { method: 'email_code', reason: error.message })
+        return
+      }
       const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>
       const hasName = typeof meta.first_name === 'string' && meta.first_name.trim().length > 0
         || typeof meta.full_name === 'string' && (meta.full_name as string).trim().length > 0
@@ -70,8 +96,11 @@ export function AuthStep() {
       }
       setMsg({ kind: 'ok', text: 'verified.' })
     } catch (e) {
-      setMsg({ kind: 'err', text: e instanceof Error ? e.message : 'verification failed' })
+      const text = e instanceof Error ? e.message : 'verification failed'
+      setMsg({ kind: 'err', text })
+      track('sign_in_failed', { method: 'email_code', reason: text })
     } finally { setBusy(false) }
+
   }
 
   return (
@@ -103,7 +132,7 @@ export function AuthStep() {
             <input
               type="text"
               autoComplete="name"
-              placeholder="your name"
+              placeholder="your name (optional)"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && doEmail()}
