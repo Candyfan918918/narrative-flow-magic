@@ -2,6 +2,8 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
 import { getHub, HUBS_BY_PILLAR, type SituationHub } from "@/lib/seo/hubs";
 import { SITE_URL } from "@/lib/site";
+import { breadcrumbScript, PILLAR_LABELS, type Crumb } from "@/lib/seo/breadcrumbs";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 export const Route = createFileRoute("/is-it-normal/$slug")({
   loader: ({ params }) => {
@@ -57,6 +59,7 @@ export const Route = createFileRoute("/is-it-normal/$slug")({
             articleSection: loaderData.pillar,
           }),
         },
+        breadcrumbScript(hubTrail(loaderData)),
       ],
     };
   },
@@ -87,6 +90,13 @@ function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+function hubTrail(hub: SituationHub): Crumb[] {
+  return [
+    { name: PILLAR_LABELS[hub.pillar] ?? hub.pillar, path: `/${hub.pillar}` },
+    { name: hub.question, path: `/is-it-normal/${hub.slug}` },
+  ];
+}
+
 function SituationHubPage() {
   const hub = Route.useLoaderData() as SituationHub;
   const siblings = HUBS_BY_PILLAR[hub.pillar].filter((h: SituationHub) => h.slug !== hub.slug);
@@ -95,11 +105,7 @@ function SituationHubPage() {
     <SeoPage>
       <article className="space-y-10">
         <header className="space-y-3">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            <Link to={`/${hub.pillar}` as "/relationships"} className="hover:text-foreground">
-              {hub.pillar}
-            </Link>
-          </p>
+          <Breadcrumbs trail={hubTrail(hub)} />
           <h1 className="text-3xl font-semibold tracking-tight">{hub.question}</h1>
           <p className="text-lg leading-relaxed">{hub.answer}</p>
         </header>
