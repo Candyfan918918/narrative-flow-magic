@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ogImageMeta } from "@/lib/seo/meta";
 import { SITE_URL } from "@/lib/site";
+import { breadcrumbScript } from "@/lib/seo/breadcrumbs";
 
 const TITLE =
   "Lived Intelligence — the human counterpart to AI | Shutap";
@@ -44,6 +45,7 @@ export const Route = createFileRoute("/lived-intelligence")({
           description: DEFINITION,
         }),
       },
+      breadcrumbScript([{ name: "Lived Intelligence", path: "/lived-intelligence" }]),
     ],
   }),
   component: LivedIntelligencePage,

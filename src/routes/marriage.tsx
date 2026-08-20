@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ogImageMeta } from "@/lib/seo/meta";
 import { PillarPage } from "@/components/seo/PillarPage";
 import { SITE_URL } from "@/lib/site";
+import { breadcrumbScript } from "@/lib/seo/breadcrumbs";
 
 const PATH = "/marriage";
 const TITLE = "Marriage — real stories about married life | Shutap";
@@ -64,17 +65,7 @@ export const Route = createFileRoute("/marriage")({
           url: `${SITE_URL}${PATH}`,
         }),
       },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: "/" },
-            { "@type": "ListItem", position: 2, name: PILLAR, item: PATH },
-          ],
-        }),
-      },
+      breadcrumbScript([{ name: PILLAR, path: PATH }]),
       {
         type: "application/ld+json",
         children: JSON.stringify({
@@ -91,6 +82,7 @@ export const Route = createFileRoute("/marriage")({
   }),
   component: () => (
     <PillarPage
+      breadcrumbs={[{ name: PILLAR, path: PATH }]}
       h1={H1}
       capsule={CAPSULE}
       what={WHAT}

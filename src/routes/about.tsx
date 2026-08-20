@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ogImageMeta } from "@/lib/seo/meta";
 import { ContentPage } from "@/components/seo/ContentPage";
 import { SITE_URL } from "@/lib/site";
+import { breadcrumbScript } from "@/lib/seo/breadcrumbs";
 
 const PATH = "/about";
 const TITLE = "About Shutap — pseudonymous venting with AI support";
@@ -57,10 +58,12 @@ export const Route = createFileRoute("/about")({
           url: `${SITE_URL}${PATH}`,
         }),
       },
+      breadcrumbScript([{ name: "About", path: PATH }]),
     ],
   }),
   component: () => (
     <ContentPage
+      breadcrumbs={[{ name: "About", path: PATH }]}
       h1="about Shutap"
       capsule={CAPSULE}
       sections={SECTIONS}

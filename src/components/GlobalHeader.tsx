@@ -210,6 +210,18 @@ export function GlobalHeader() {
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Wide-screen nav: exposes the four pillars + how-it-works so the
+              site hierarchy is crawlable from every page (helps Google build
+              a sitelinks-worthy structure). Collapsed under 1000px so the
+              mobile bar keeps its two primary links. */}
+          <style>{`@media (max-width: 1000px){[data-gh-nav-wide]{display:none !important}}`}</style>
+          <span data-gh-nav-wide="" style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {navLink('/relationships', 'relationships')}
+            {navLink('/marriage', 'marriage')}
+            {navLink('/family', 'family')}
+            {navLink('/career', 'career')}
+            {navLink('/how-it-works', 'how it works')}
+          </span>
           {navLink('/stream', 'rooms')}
           {navLink('/halls', 'halls')}
 

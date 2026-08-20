@@ -1,7 +1,11 @@
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import type { Crumb } from "@/lib/seo/breadcrumbs";
+
 type Faq = { q: string; a: string };
 type Other = { href: string; label: string };
 
 export function PillarPage({
+  breadcrumbs,
   h1,
   capsule,
   what,
@@ -9,6 +13,7 @@ export function PillarPage({
   faq,
   others,
 }: {
+  breadcrumbs?: Crumb[];
   h1: string;
   capsule: string;
   what: string;
@@ -33,6 +38,8 @@ export function PillarPage({
           lineHeight: 1.65,
         }}
       >
+        {breadcrumbs ? <Breadcrumbs trail={breadcrumbs} /> : null}
+
         <h1
           style={{
             fontFamily: "'Sora', system-ui, sans-serif",

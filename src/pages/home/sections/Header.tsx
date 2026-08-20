@@ -133,6 +133,31 @@ export function HomeHeader() {
                 {' '}
                 <nav style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {' '}
+                  {/* Primary hierarchy links, crawlable from the homepage so the
+                      pillars sit one hop from the root. Hidden under 1080px so
+                      the immersive mobile header keeps its original shape. */}
+                  <style>{`@media (max-width: 1080px){[data-home-nav-wide]{display:none !important}}`}</style>
+                  <span data-home-nav-wide="" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                    {[
+                      { href: '/relationships', label: 'relationships' },
+                      { href: '/marriage', label: 'marriage' },
+                      { href: '/family', label: 'family' },
+                      { href: '/career', label: 'career' },
+                      { href: '/how-it-works', label: 'how it works' },
+                    ].map((l) => (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        data-link={l.href}
+                        data-hover=""
+                        data-navlink=""
+                        style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '15px', color: '#6b4a5c', padding: '8px 10px', transition: 'color .4s' }}
+                      >
+                        {l.label}
+                      </a>
+                    ))}
+                  </span>
+                  {' '}
                   <a href="/stream" data-link="/stream" data-hover="" data-navlink="" style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '15px', color: '#6b4a5c', padding: '8px 14px', transition: 'color .4s' }}>
                     rooms
                   </a>
