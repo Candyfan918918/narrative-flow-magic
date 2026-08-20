@@ -134,7 +134,7 @@ function StoryPage() {
     <SeoPage>
       <article className="space-y-8">
         <header className="space-y-2">
-          <Breadcrumbs trail={storyTrail(row.pillar, row.slug, storyQueryTitle(row))} />
+          <Breadcrumbs trail={storyTrail(row.pillar, row.slug ?? "", storyQueryTitle(row))} />
           <p className="text-sm uppercase tracking-wider text-muted-foreground">
             {row.pillar} · someone lived this
           </p>
