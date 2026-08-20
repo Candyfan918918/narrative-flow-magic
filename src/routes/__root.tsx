@@ -124,6 +124,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
+          "@id": "https://shutap.com/#organization",
           name: "Shutap",
           alternateName: "Shutap. Speak Up.",
           description:
