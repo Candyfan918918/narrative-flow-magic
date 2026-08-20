@@ -2,7 +2,7 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { SeoPage } from "@/components/seo/SeoPage";
 import { getHub, HUBS_BY_PILLAR, type SituationHub } from "@/lib/seo/hubs";
 import { SITE_URL } from "@/lib/site";
-import { breadcrumbScript, PILLAR_LABELS, type Crumb } from "@/lib/seo/breadcrumbs";
+import { breadcrumbScript, hubTrail } from "@/lib/seo/breadcrumbs";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 export const Route = createFileRoute("/is-it-normal/$slug")({
@@ -88,13 +88,6 @@ export const Route = createFileRoute("/is-it-normal/$slug")({
 
 function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function hubTrail(hub: SituationHub): Crumb[] {
-  return [
-    { name: PILLAR_LABELS[hub.pillar] ?? hub.pillar, path: `/${hub.pillar}` },
-    { name: hub.question, path: `/is-it-normal/${hub.slug}` },
-  ];
 }
 
 function SituationHubPage() {

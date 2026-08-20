@@ -41,3 +41,11 @@ export const PILLAR_LABELS: Record<string, string> = {
   family: "Family",
   career: "Career",
 };
+
+/** Trail for a situation hub page: Pillar > question. */
+export function hubTrail(hub: { pillar: string; slug: string; question: string }): Crumb[] {
+  return [
+    { name: PILLAR_LABELS[hub.pillar] ?? hub.pillar, path: `/${hub.pillar}` },
+    { name: hub.question, path: `/is-it-normal/${hub.slug}` },
+  ];
+}
