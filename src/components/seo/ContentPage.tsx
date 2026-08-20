@@ -1,15 +1,19 @@
 import { Words } from '@/components/motion'
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs'
+import type { Crumb } from '@/lib/seo/breadcrumbs'
 
 type Section = { heading: string; body: string };
 type Other = { href: string; label: string };
 
 export function ContentPage({
+  breadcrumbs,
   h1,
   capsule,
   sections,
   others,
   nosnippetCapsule,
 }: {
+  breadcrumbs?: Crumb[];
   h1: string;
   capsule: string;
   sections: Section[];
@@ -29,6 +33,8 @@ export function ContentPage({
       <article
         style={{ maxWidth: 720, margin: "0 auto", lineHeight: 1.65 }}
       >
+        {breadcrumbs ? <Breadcrumbs trail={breadcrumbs} /> : null}
+
         <Words
           as="h1"
           key={h1}
