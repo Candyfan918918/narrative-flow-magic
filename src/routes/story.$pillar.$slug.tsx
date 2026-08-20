@@ -11,6 +11,8 @@ import {
   type PillarSlug,
   type StoryRow,
 } from "@/lib/seo/story";
+import { breadcrumbScript, storyTrail } from "@/lib/seo/breadcrumbs";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 type StoryLite = Pick<StoryRow, "id" | "slug" | "pillar" | "title" | "clean_text" | "initial_scan">;
 type LoaderData = {
@@ -82,7 +84,10 @@ export const Route = createFileRoute("/story/$pillar/$slug")({
         ]
       : [];
 
-    return { meta, links: [{ rel: "canonical", href: url }], scripts };
+    const allScripts = indexable
+      ? [...scripts, breadcrumbScript(storyTrail(pillar, params.slug, title))]
+      : scripts;
+    return { meta, links: [{ rel: "canonical", href: url }], scripts: allScripts };
   },
   component: StoryPage,
   notFoundComponent: () => (
@@ -129,6 +134,7 @@ function StoryPage() {
     <SeoPage>
       <article className="space-y-8">
         <header className="space-y-2">
+          <Breadcrumbs trail={storyTrail(row.pillar, row.slug, storyQueryTitle(row))} />
           <p className="text-sm uppercase tracking-wider text-muted-foreground">
             {row.pillar} · someone lived this
           </p>

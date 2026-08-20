@@ -2,6 +2,8 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { ogImageMeta } from "@/lib/seo/meta";
 import { SeoPage } from "@/components/seo/SeoPage";
 import { SITE_URL } from "@/lib/site";
+import { breadcrumbScript } from "@/lib/seo/breadcrumbs";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import {
   HALLS,
   MIN_HALL_ENTRIES,
@@ -81,7 +83,18 @@ export const Route = createFileRoute("/halls/$hall/$region/$window")({
     return {
       meta: metaTags,
       links: [{ rel: "canonical", href: url }],
-      scripts,
+      scripts: indexable
+        ? [
+            ...scripts,
+            breadcrumbScript([
+              { name: "Halls", path: "/halls" },
+              {
+                name: title,
+                path: `/halls/${params.hall}/${params.region}/${params.window}`,
+              },
+            ]),
+          ]
+        : scripts,
     };
   },
   component: HallPage,
@@ -132,6 +145,12 @@ function HallPage() {
     <SeoPage>
       <article style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
         <header style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <Breadcrumbs
+            trail={[
+              { name: 'halls', path: '/halls' },
+              { name: `${display} · ${region} · ${window}`, path: `/halls/${hall}/${region}/${window}` },
+            ]}
+          />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#e7548a' }} />
             <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a' }}>

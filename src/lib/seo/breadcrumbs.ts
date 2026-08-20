@@ -49,3 +49,11 @@ export function hubTrail(hub: { pillar: string; slug: string; question: string }
     { name: hub.question, path: `/is-it-normal/${hub.slug}` },
   ];
 }
+
+/** Trail for a public story page: Pillar > story title. */
+export function storyTrail(pillar: string, slug: string, title: string): Crumb[] {
+  return [
+    { name: PILLAR_LABELS[pillar] ?? pillar, path: `/${pillar}` },
+    { name: title, path: `/story/${pillar}/${slug}` },
+  ];
+}

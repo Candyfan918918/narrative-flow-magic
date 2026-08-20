@@ -6,9 +6,11 @@ import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { SHUTAP_SEED } from '@/data/seed'
 import type { Room } from '@/data/types'
 import { SITE_URL } from '@/lib/site'
+import { breadcrumbScript } from '@/lib/seo/breadcrumbs'
 import { findVentTopic, VENT_TOPICS, type VentTopic } from '@/lib/seo/venting-topics'
 import { HomeFooter } from '@/pages/home/HomePage'
 import { Words, Reveal } from '@/components/motion'
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs'
 
 const SORA = "'Sora',system-ui,sans-serif"
 const NEWS = "'Newsreader',Georgia,serif"
@@ -96,6 +98,7 @@ export const Route = createFileRoute('/vent/$topic')({
               }),
             }]
           : []),
+        breadcrumbScript([{ name: `Vent about ${t.label}`, path: `/vent/${t.slug}` }]),
       ],
     }
   },
@@ -130,13 +133,7 @@ function VentTopicPage() {
   return (
     <div style={{ background: '#fdf0f5', color: '#0b080f', minHeight: '100vh', fontFamily: "'Inter',system-ui,sans-serif" }}>
       <main style={{ maxWidth: 900, margin: '0 auto', padding: '46px 22px 60px' }}>
-        <nav style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', marginBottom: 14 }}>
-          <Link to="/" style={{ color: '#9e7a8c', textDecoration: 'none' }}>shutap</Link>
-          {' › '}
-          <span>venting topics</span>
-          {' › '}
-          <span style={{ color: '#4a3040' }}>{topic.label}</span>
-        </nav>
+        <Breadcrumbs trail={[{ name: `vent about ${topic.label}`, path: `/vent/${topic.slug}` }]} />
 
         <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.22em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 10 }}>
           public rooms · {topic.label}
