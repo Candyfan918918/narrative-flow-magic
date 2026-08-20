@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ogImageMeta } from "@/lib/seo/meta";
 import { ContentPage } from "@/components/seo/ContentPage";
 import { SITE_URL } from "@/lib/site";
+import { breadcrumbScript } from "@/lib/seo/breadcrumbs";
 
 const PATH = "/faq";
 const URL = `${SITE_URL}/faq`;
@@ -65,10 +66,12 @@ export const Route = createFileRoute("/faq")({
           })),
         }),
       },
+      breadcrumbScript([{ name: "FAQ", path: "/faq" }]),
     ],
   }),
   component: () => (
     <ContentPage
+      breadcrumbs={[{ name: "FAQ", path: "/faq" }]}
       h1="frequently asked questions"
       capsule={CAPSULE}
       sections={QA}
