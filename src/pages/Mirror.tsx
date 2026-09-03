@@ -1095,12 +1095,6 @@ export function MirrorPage() {
       @keyframes mirror-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
       @keyframes mirror-fade { from { opacity: 0 } to { opacity: 1 } }
       @keyframes mirror-pulse-dot { 0%,100% { transform: scale(1); opacity:.9 } 50% { transform: scale(1.4); opacity:.5 } }
-      @keyframes mirror-holo { 0% { background-position: 0% 0 } 100% { background-position: 200% 0 } }
-      @keyframes mirror-scan { 0% { transform: translateY(-100%); opacity: 0 } 12% { opacity: 1 } 88% { opacity: 1 } 100% { transform: translateY(420%); opacity: 0 } }
-      @keyframes mirror-bg-a { 0%,100% { transform: translate(0,0) } 50% { transform: translate(40px,-30px) } }
-      @keyframes mirror-bg-b { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-50px,30px) } }
-      @keyframes mirror-bg-c { 0%,100% { transform: translate(0,0) } 50% { transform: translate(20px,40px) } }
-      @keyframes mirror-tile-sweep { 0% { transform: translateX(-120%) skewX(-18deg); opacity: 0 } 30% { opacity: .7 } 100% { transform: translateX(220%) skewX(-18deg); opacity: 0 } }
       .mirror-shell { color-scheme: light }
       .mirror-tile { position: relative; overflow: hidden; }
       .mirror-tile:active { transform: scale(.97) !important; transition: transform .1s ease; }
@@ -1235,24 +1229,6 @@ export function MirrorPage() {
       background: BG,
       color: INK,
     }}>
-      {/* fixed bg layer — drifting blurred tints */}
-      <div aria-hidden style={{
-        position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none', overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', top: '-10%', left: '8%', width: 420, height: 420, borderRadius: '50%',
-          background: '#e7548a33', filter: 'blur(64px)', animation: 'mirror-bg-a 22s ease-in-out infinite',
-        }} />
-        <div style={{
-          position: 'absolute', top: '30%', right: '4%', width: 460, height: 460, borderRadius: '50%',
-          background: '#7F77DD33', filter: 'blur(64px)', animation: 'mirror-bg-b 27s ease-in-out infinite',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-8%', left: '32%', width: 380, height: 380, borderRadius: '50%',
-          background: '#c1216b2b', filter: 'blur(64px)', animation: 'mirror-bg-c 20s ease-in-out infinite',
-        }} />
-      </div>
-      
       <main style={{ maxWidth: 1080, margin: '0 auto', padding: '36px 22px 80px' }}>
         {/* hero zone */}
         <div style={{ textAlign: 'center', marginBottom: 22 }}>
