@@ -225,7 +225,7 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
 
       {/* name */}
       <h3 style={{
-        fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontWeight: 500,
+        fontFamily: "'Newsreader', serif", fontStyle: 'italic', fontWeight: 500,
         fontSize: 26, lineHeight: 1.15, margin: '14px 0 4px', color: '#fff', position: 'relative',
       }}>
         {p.name}

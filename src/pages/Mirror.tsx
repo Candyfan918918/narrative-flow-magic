@@ -199,7 +199,7 @@ function MirrorHeader() {
         position: 'sticky', top: 0, zIndex: 40,
         background: 'rgba(16,8,16,.82)',
         backdropFilter: 'blur(18px)',
-        borderBottom: '.5px solid rgba(255,255,255,.08)',
+        borderBottom: '.5px solid rgba(11,8,15,.08)',
       }}
     >
       <div style={{
@@ -227,8 +227,8 @@ function MirrorHeader() {
                   onClick={(e) => { e.stopPropagation(); setOpen((v) => !v) }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 7,
-                    background: 'rgba(255,255,255,.04)',
-                    border: '.5px solid rgba(255,255,255,.10)',
+                    background: 'rgba(11,8,15,.04)',
+                    border: '.5px solid rgba(11,8,15,.10)',
                     borderRadius: 999, padding: '5px 12px 5px 5px', cursor: 'pointer',
                   }}
                 >
@@ -247,7 +247,7 @@ function MirrorHeader() {
                     position: 'absolute', top: 'calc(100% + 9px)', right: 0,
                     width: 220,
                     background: '#1a0d18',
-                    border: '.5px solid rgba(255,255,255,.10)',
+                    border: '.5px solid rgba(11,8,15,.10)',
                     borderRadius: 16, padding: 7, zIndex: 70,
                     boxShadow: '0 24px 50px -16px rgba(0,0,0,.6)',
                   }}>
@@ -256,7 +256,7 @@ function MirrorHeader() {
                     <div role="button" style={{ ...item, color: '#e7548a' }} onClick={() => { setOpen(false); navigate('/#spill') }}>spill it →</div>
                     <Link to="/mirror" style={{ ...item, color: GOLD }} onClick={() => setOpen(false)}>the mirror ✦</Link>
                     {admin && <Link to="/admin" style={item} onClick={() => setOpen(false)}>admin</Link>}
-                    <div style={{ height: '.5px', background: 'rgba(255,255,255,.08)', margin: '6px 0' }} />
+                    <div style={{ height: '.5px', background: 'rgba(11,8,15,.08)', margin: '6px 0' }} />
                     <div role="button" style={{ ...item, color: MUTED_2 }} onClick={out}>sign out</div>
                   </div>
                 )}
@@ -302,7 +302,7 @@ function DepthWheel({
   return (
     <div style={{ position: 'relative', width: size, height: size }} aria-hidden>
       <svg viewBox="0 0 120 120" width={size} height={size}>
-        <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(255,255,255,.08)" strokeWidth="8" />
+        <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(11,8,15,.08)" strokeWidth="8" />
         <circle
           cx="60" cy="60" r={r}
           fill="none" stroke={color} strokeWidth="8" strokeLinecap="round"
@@ -390,7 +390,7 @@ function SignalBar({ sources, animate, totalOverride }: { sources: Record<string
     <div>
       <div style={{
         display: 'flex', width: '100%', height: 10, borderRadius: 999, overflow: 'hidden',
-        background: 'rgba(255,255,255,.05)', border: '.5px solid rgba(255,255,255,.06)',
+        background: 'rgba(11,8,15,.05)', border: '.5px solid rgba(11,8,15,.06)',
       }}>
         {order.map((k, i) => {
           const v = Number(sources?.[k] ?? 0)
@@ -486,13 +486,13 @@ function TarotCard({
       {/* GLASS — top gloss (full width, no diagonal streak) */}
       <div aria-hidden style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 22,
-        background: 'linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 18%, transparent 38%)',
+        background: 'linear-gradient(180deg, rgba(11,8,15,.13), rgba(11,8,15,.03) 18%, transparent 38%)',
       }} />
       {/* GLASS — top-LEFT corner sheen, confined */}
       <div aria-hidden style={{
         position: 'absolute', top: 0, left: 0, width: '64%', height: '34%',
         pointerEvents: 'none',
-        background: 'radial-gradient(120% 130% at 12% 0%, rgba(255,255,255,.17), rgba(255,255,255,.04) 42%, transparent 66%)',
+        background: 'radial-gradient(120% 130% at 12% 0%, rgba(11,8,15,.17), rgba(11,8,15,.04) 42%, transparent 66%)',
       }} />
       {/* SCI-FI — holographic top rim line */}
       <div aria-hidden style={{
@@ -518,7 +518,7 @@ function TarotCard({
       <div aria-hidden style={{
         position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none',
         mixBlendMode: 'screen',
-        background: 'radial-gradient(circle at var(--glare-x,50%) var(--glare-y,50%), rgba(255,255,255,.30), rgba(255,255,255,0) 45%)',
+        background: 'radial-gradient(circle at var(--glare-x,50%) var(--glare-y,50%), rgba(11,8,15,.30), rgba(11,8,15,0) 45%)',
         opacity: 'var(--glare-o,0)' as unknown as number,
         transition: 'opacity .25s ease',
       } as React.CSSProperties} />
@@ -537,7 +537,7 @@ function TarotCard({
           {DISTRICT_LABEL[p.district]}
         </span>
         <span style={{
-          fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+          fontFamily: "'Newsreader',serif", fontStyle: 'italic',
           fontSize: 22, letterSpacing: '.08em',
           color: isLegendary ? GOLD : MUTED,
         }}>{RARITY_NUMERAL[p.rarity]}</span>
@@ -546,7 +546,7 @@ function TarotCard({
       {/* name */}
       <h3 style={{
         position: 'relative', margin: '10px 0 4px', textAlign: 'center',
-        fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontWeight: 500,
+        fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 500,
         fontSize: 'clamp(22px, 4.4vw, 26px)', lineHeight: 1.1, color: INK,
       }}>{p.name}</h3>
 
@@ -572,7 +572,7 @@ function TarotCard({
       <div style={{
         position: 'relative', display: 'flex', justifyContent: 'space-between',
         alignItems: 'flex-end', padding: '12px 0 10px',
-        borderTop: '.5px solid rgba(255,255,255,.08)',
+        borderTop: '.5px solid rgba(11,8,15,.08)',
       }}>
         <div>
           <div style={{
@@ -591,7 +591,7 @@ function TarotCard({
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             padding: '4px 10px', borderRadius: 999,
-            background: 'rgba(255,255,255,.05)',
+            background: 'rgba(11,8,15,.05)',
             border: `.5px solid ${trendColor(p.trend_dir)}55`,
             fontFamily: "'Sora',sans-serif", fontSize: 10, letterSpacing: '.14em',
             color: trendColor(p.trend_dir), textTransform: 'uppercase',
@@ -606,7 +606,7 @@ function TarotCard({
       {/* punch line */}
       <p style={{
         position: 'relative', margin: '8px 0 6px', textAlign: 'center',
-        fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+        fontFamily: "'Newsreader',serif", fontStyle: 'italic',
         fontSize: 18, lineHeight: 1.3, color: INK,
       }}>
         &ldquo;{p.punch || p.insight || 'still forming.'}&rdquo;
@@ -672,7 +672,7 @@ function DeckBack({ onDone }: { onDone: () => void }) {
           </svg>
         </div>
         <div style={{
-          marginTop: 18, fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+          marginTop: 18, fontFamily: "'Newsreader',serif", fontStyle: 'italic',
           fontSize: 19, color: GOLD, letterSpacing: '.04em',
         }}>a reading is forming…</div>
       </div>
@@ -694,7 +694,7 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
         background: isRuin
           ? 'linear-gradient(160deg, #2a2e22, #1a1c16 70%)'
           : `linear-gradient(160deg, ${color}22, #1a0c15 70%)`,
-        border: `1px solid ${isLegendary ? `${GOLD}c4` : isRuin ? 'rgba(160,170,130,.34)' : 'rgba(255,255,255,.09)'}`,
+        border: `1px solid ${isLegendary ? `${GOLD}c4` : isRuin ? 'rgba(160,170,130,.34)' : 'rgba(11,8,15,.09)'}`,
         color: INK, position: 'relative',
         boxShadow: isLegendary ? `0 0 26px ${GOLD}33` : `0 14px 30px -10px rgba(0,0,0,.5)`,
         transition: 'transform .25s ease, box-shadow .25s ease',
@@ -714,7 +714,7 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
           {DISTRICT_LABEL[p.district]}
         </span>
         <span style={{
-          fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+          fontFamily: "'Newsreader',serif", fontStyle: 'italic',
           fontSize: 16, color: isLegendary ? GOLD : MUTED,
         }}>{RARITY_NUMERAL[p.rarity]}</span>
       </div>
@@ -724,24 +724,24 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
       }}>{p.emoji || '✨'}</div>
       <div style={{
         marginTop: 6, textAlign: 'center',
-        fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+        fontFamily: "'Newsreader',serif", fontStyle: 'italic',
         fontSize: 19, color: INK,
       }}>{p.name}</div>
       <p style={{
-        marginTop: 8, fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+        marginTop: 8, fontFamily: "'Newsreader',serif", fontStyle: 'italic',
         fontSize: 14, lineHeight: 1.35, color: MUTED,
         textAlign: 'center',
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
       }}>{p.punch || p.insight || '—'}</p>
       <div style={{
         marginTop: 10, display: 'flex', justifyContent: 'space-between',
-        alignItems: 'center', borderTop: '.5px solid rgba(255,255,255,.08)', paddingTop: 8,
+        alignItems: 'center', borderTop: '.5px solid rgba(11,8,15,.08)', paddingTop: 8,
       }}>
         <div style={{ display: 'flex', gap: 3 }}>
           {[1, 2, 3, 4, 5].map((d) => (
             <span key={d} style={{
               width: 7, height: 7, borderRadius: '50%',
-              background: d <= p.depth ? color : 'rgba(255,255,255,.10)',
+              background: d <= p.depth ? color : 'rgba(11,8,15,.10)',
               boxShadow: d <= p.depth ? `0 0 6px ${color}cc` : undefined,
             }} />
           ))}
@@ -824,7 +824,7 @@ function WorldBand({
               <span style={{ color }}>{DISTRICT_SIGIL[d]}</span> {DISTRICT_LABEL[d].toUpperCase()}
             </div>
             <div style={{
-              fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+              fontFamily: "'Newsreader',serif", fontStyle: 'italic',
               fontSize: 13, color: MUTED_2,
             }}>{total} signals · {ruins} ruin</div>
           </button>
@@ -901,7 +901,7 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
               <div style={{ height: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
                 <div className="mirror-cross-bar" style={{
                   width: 14, height: h, borderRadius: 3,
-                  background: v > 0 ? `linear-gradient(180deg, ${color}, ${color}55)` : 'rgba(255,255,255,.06)',
+                  background: v > 0 ? `linear-gradient(180deg, ${color}, ${color}55)` : 'rgba(11,8,15,.06)',
                   boxShadow: v > 0 ? `0 0 10px ${color}88` : 'none',
                   ['--bar-color' as string]: color,
                 } as React.CSSProperties} />
@@ -914,7 +914,7 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
         })}
       </div>
       <p style={{
-        margin: '18px 0 8px', fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+        margin: '18px 0 8px', fontFamily: "'Newsreader',serif", fontStyle: 'italic',
         fontSize: 24, lineHeight: 1.3, color: INK,
       }}>{data?.sees || fallbackSees}</p>
       <p style={{
@@ -924,7 +924,7 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
       {data?.record && (
         <div style={{
           marginTop: 14, paddingTop: 10,
-          borderTop: '.5px solid rgba(255,255,255,.10)',
+          borderTop: '.5px solid rgba(11,8,15,.10)',
           fontFamily: "'Sora',sans-serif", fontSize: 10, letterSpacing: '.24em',
           color: MUTED_3, textTransform: 'uppercase',
         }}>{data.record}</div>
@@ -1013,7 +1013,7 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing, onBackfill, 
         letterSpacing: '.28em', color: GOLD, marginBottom: 10,
       }}>STILL FORMING</div>
       <p style={{
-        margin: '0 0 16px', fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+        margin: '0 0 16px', fontFamily: "'Newsreader',serif", fontStyle: 'italic',
         fontSize: 26, lineHeight: 1.2,
       }}>the mirror begins the moment you spill or scan.<br />nothing here yet — and nothing fabricated.</p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -1133,9 +1133,9 @@ export function MirrorPage() {
       .mirror-tarot:hover .mirror-scanbeam { animation: mirror-scan 1.6s cubic-bezier(.2,.7,.2,1) 1; }
       .mirror-tile { position: relative; overflow: hidden; }
       .mirror-tile::before, .mirror-tile::after { content: ''; position: absolute; pointer-events: none; }
-      .mirror-tile::before { inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 18%, transparent 38%); }
-      .mirror-tile::after { top: 0; left: 0; width: 64%; height: 34%; background: radial-gradient(120% 130% at 12% 0%, rgba(255,255,255,.17), rgba(255,255,255,.04) 42%, transparent 66%); }
-      .mirror-tile .mirror-tile-sheen { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent); opacity: 0; pointer-events: none; }
+      .mirror-tile::before { inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(11,8,15,.13), rgba(11,8,15,.03) 18%, transparent 38%); }
+      .mirror-tile::after { top: 0; left: 0; width: 64%; height: 34%; background: radial-gradient(120% 130% at 12% 0%, rgba(11,8,15,.17), rgba(11,8,15,.04) 42%, transparent 66%); }
+      .mirror-tile .mirror-tile-sheen { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(11,8,15,.22), transparent); opacity: 0; pointer-events: none; }
       .mirror-tile:hover .mirror-tile-sheen { animation: mirror-tile-sweep .9s ease-out 1; }
       .mirror-tile:active { transform: scale(.97) !important; transition: transform .1s ease; }
       .mirror-world-tile { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
@@ -1305,7 +1305,7 @@ export function MirrorPage() {
           </div>
           <Words as="h1" style={{
             margin: '8px auto 0', maxWidth: 760,
-            fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontWeight: 500,
+            fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 500,
             fontSize: 'clamp(28px, 4.4vw, 40px)', lineHeight: 1.15, color: INK,
           }}>the mirror remembers you better than you do.</Words>
         </div>
@@ -1451,7 +1451,7 @@ export function MirrorPage() {
                 }}>THE REST OF YOU</div>
                 <p style={{
                   margin: '0 0 18px', maxWidth: 480,
-                  fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+                  fontFamily: "'Newsreader',serif", fontStyle: 'italic',
                   fontSize: 22, lineHeight: 1.25, color: INK,
                 }}>your world, cross-reads, movement markers, reflective questions and the speak channel unlock with the mirror.</p>
                 <button
@@ -1481,7 +1481,7 @@ export function MirrorPage() {
           <>
             <h2 style={{
               marginTop: 36, marginBottom: 0,
-              fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontWeight: 500,
+              fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 500,
               fontSize: 22, color: INK, textAlign: 'center',
             }}>your world</h2>
             <WorldBand patterns={list} onJump={jumpDistrict} />
@@ -1496,7 +1496,7 @@ export function MirrorPage() {
           <section style={{ marginTop: 40 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, flexWrap: 'wrap' }}>
               <h2 style={{
-                margin: 0, fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+                margin: 0, fontFamily: "'Newsreader',serif", fontStyle: 'italic',
                 fontWeight: 500, fontSize: 24, color: INK,
               }}>the cast</h2>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginLeft: 'auto' }}>
@@ -1510,7 +1510,7 @@ export function MirrorPage() {
                       cursor: 'pointer', borderRadius: 999,
                       padding: '6px 12px',
                       background: active ? `${c}33` : 'transparent',
-                      border: `.5px solid ${active ? `${c}aa` : 'rgba(255,255,255,.12)'}`,
+                      border: `.5px solid ${active ? `${c}aa` : 'rgba(11,8,15,.12)'}`,
                       fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 10.5,
                       letterSpacing: '.18em', textTransform: 'uppercase',
                       color: active ? INK : MUTED,
@@ -1570,9 +1570,9 @@ export function MirrorPage() {
         )}
 
         {/* footer */}
-        <footer style={{ marginTop: 56, textAlign: 'center', paddingTop: 28, borderTop: '.5px solid rgba(255,255,255,.08)' }}>
+        <footer style={{ marginTop: 56, textAlign: 'center', paddingTop: 28, borderTop: '.5px solid rgba(11,8,15,.08)' }}>
           <p style={{
-            margin: 0, fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic',
+            margin: 0, fontFamily: "'Newsreader',serif", fontStyle: 'italic',
             fontSize: 15, color: MUTED, maxWidth: 540, marginLeft: 'auto', marginRight: 'auto',
           }}>the mirror reflects, asks, and encourages. it never judges, advises, or decides.</p>
           <div style={{
