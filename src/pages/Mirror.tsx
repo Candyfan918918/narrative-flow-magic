@@ -466,71 +466,42 @@ function TarotCard({
   const color = p.state === 'ruin' ? RUIN_HEX : DISTRICT_COLOR[p.district]
   const isLegendary = p.rarity === 'legendary' && p.state !== 'ruin'
   const isRuin = p.state === 'ruin'
-  const bg = isRuin
-    ? 'radial-gradient(125% 80% at 50% 0%, #2a2e22, #1a1c16 58%, #15140f)'
-    : `radial-gradient(125% 80% at 50% 0%, ${color}2e, #1c0d16 58%, #140810)`
-  const border = isLegendary ? GOLD : `${color}66`
+  const border = isLegendary ? GOLD_HEX : `${color}33`
   return (
     <article
       ref={innerRef}
       className={`mirror-tarot ${animate ? 'mirror-tarot--open' : ''}`}
       style={{
         position: 'relative', borderRadius: 22, overflow: 'hidden',
-        background: bg,
-        border: `1px solid ${border}`,
+        background: SURFACE,
+        border: `.5px solid ${border}`,
         boxShadow: isLegendary
-          ? `0 0 0 1px ${GOLD_HEX}55, 0 0 38px -6px ${GOLD_HEX}55, 0 40px 90px -34px rgba(0,0,0,.85)`
-          : `0 40px 90px -34px rgba(0,0,0,.85), 0 0 40px ${color}1f`,
+          ? `0 0 0 1px ${GOLD_HEX}44, ${CARD_SHADOW}`
+          : CARD_SHADOW,
         color: INK,
         padding: '16px 18px 14px',
-        filter: isRuin ? 'saturate(.55) grayscale(.25)' : undefined,
+        filter: isRuin ? 'saturate(.55)' : undefined,
         ['--district' as never]: color,
       } as React.CSSProperties}
     >
       {/* inner ornamental frame */}
       <div aria-hidden style={{
         position: 'absolute', inset: 6, borderRadius: 18, pointerEvents: 'none',
-        border: `.5px solid ${isLegendary ? `${GOLD_HEX}66` : 'rgba(160,140,150,.18)'}`,
+        border: `.5px solid ${isLegendary ? `${GOLD_HEX}44` : BORDER}`,
       }} />
-      {/* GLASS — top gloss (full width, no diagonal streak) */}
+      {/* district wash at the crown */}
       <div aria-hidden style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 22,
-        background: 'linear-gradient(180deg, rgba(11,8,15,.13), rgba(11,8,15,.03) 18%, transparent 38%)',
-      }} />
-      {/* GLASS — top-LEFT corner sheen, confined */}
-      <div aria-hidden style={{
-        position: 'absolute', top: 0, left: 0, width: '64%', height: '34%',
-        pointerEvents: 'none',
-        background: 'radial-gradient(120% 130% at 12% 0%, rgba(11,8,15,.17), rgba(11,8,15,.04) 42%, transparent 66%)',
-      }} />
-      {/* SCI-FI — holographic top rim line */}
-      <div aria-hidden style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: 1.5,
-        background: 'linear-gradient(90deg, transparent, #7F77DD, #e7548a, #5B8A5E, transparent)',
-        backgroundSize: '200% 100%',
-        opacity: .4,
-        animation: 'mirror-holo 9s linear infinite',
-        pointerEvents: 'none',
-      }} />
-      {/* SCI-FI — scan beam (idle:0, sweeps on open/hover) */}
-      <div aria-hidden className="mirror-scanbeam" style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '24%',
-        background: `linear-gradient(180deg, ${color}00, ${color}28, ${color}00)`,
-        opacity: 0, pointerEvents: 'none',
-      }} />
-      {/* aura */}
-      <div aria-hidden style={{
-        position: 'absolute', inset: -20, pointerEvents: 'none',
-        background: `radial-gradient(50% 40% at 50% 0%, ${color}26, transparent 65%)`,
+        position: 'absolute', top: 0, left: 0, right: 0, height: '32%', pointerEvents: 'none',
+        background: `radial-gradient(90% 100% at 50% 0%, ${color}14, transparent 70%)`,
       }} />
       {/* cursor-follow glare (reacts to --glare-x/y/o set on the tilt wrapper) */}
       <div aria-hidden style={{
         position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none',
-        mixBlendMode: 'screen',
-        background: 'radial-gradient(circle at var(--glare-x,50%) var(--glare-y,50%), rgba(11,8,15,.30), rgba(11,8,15,0) 45%)',
+        background: `radial-gradient(circle at var(--glare-x,50%) var(--glare-y,50%), ${color}1f, ${color}00 45%)`,
         opacity: 'var(--glare-o,0)' as unknown as number,
         transition: 'opacity .25s ease',
       } as React.CSSProperties} />
+
 
 
       {/* chrome row */}
