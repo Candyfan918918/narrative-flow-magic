@@ -71,7 +71,7 @@ export function MirrorShareSheet({
     const node = previewRef.current?.querySelector('article') as HTMLElement | null
     if (!node) return null
     try {
-      return await toPng(node, { pixelRatio: 2, cacheBust: true, backgroundColor: '#100810' })
+      return await toPng(node, { pixelRatio: 2, cacheBust: true, backgroundColor: '#fdf0f5' })
     } catch { return null }
   }
 
@@ -135,7 +135,7 @@ export function MirrorShareSheet({
       aria-modal="true"
       style={{
         position: 'fixed', inset: 0, zIndex: 220,
-        background: 'rgba(8,4,10,.82)', backdropFilter: 'blur(12px)',
+        background: 'rgba(253,240,245,.86)', backdropFilter: 'blur(12px)',
         display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
         padding: 0, animation: 'mss-fade .2s ease',
       }}
@@ -150,11 +150,11 @@ export function MirrorShareSheet({
           overflowY: 'auto',
           overscrollBehavior: 'contain',
           WebkitOverflowScrolling: 'touch',
-          background: 'linear-gradient(180deg,#1a0e1c 0%, #120815 100%)',
-          border: '.5px solid rgba(255,255,255,.12)',
+          background: 'var(--surface)',
+          border: '.5px solid var(--border)',
           borderRadius: '22px 22px 0 0',
           padding: '14px 16px calc(18px + env(safe-area-inset-bottom,0px))',
-          boxShadow: '0 -20px 60px rgba(0,0,0,.6)',
+          boxShadow: '0 -20px 60px -30px rgba(60,10,30,.35)',
           display: 'flex', flexDirection: 'column', gap: 14,
           animation: 'mss-rise .26s cubic-bezier(.2,.9,.25,1)',
         }}
@@ -162,7 +162,7 @@ export function MirrorShareSheet({
         {/* drag handle */}
         <div aria-hidden style={{
           width: 38, height: 4, borderRadius: 4,
-          background: 'rgba(255,255,255,.22)',
+          background: 'var(--border-2)',
           alignSelf: 'center', marginBottom: 2,
         }} />
 
@@ -170,7 +170,7 @@ export function MirrorShareSheet({
         <div style={{
           display: 'flex', alignItems: 'flex-start', gap: 8,
           fontFamily: "'Newsreader',serif", fontStyle: 'italic',
-          fontSize: 13, lineHeight: 1.45, color: '#b89bac',
+          fontSize: 13, lineHeight: 1.45, color: 'var(--text-2)',
           padding: '0 4px',
         }}>
           <span aria-hidden style={{ color: '#e7548a', fontSize: 11, letterSpacing: '-.1em', flex: '0 0 auto', lineHeight: 1.6 }}>✦✦</span>
@@ -216,7 +216,7 @@ export function MirrorShareSheet({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <div style={{
             fontFamily: 'Sora,sans-serif', fontSize: 9.5, fontWeight: 700,
-            letterSpacing: '.28em', color: '#7d6a76', textTransform: 'uppercase',
+            letterSpacing: '.28em', color: 'var(--text-3)', textTransform: 'uppercase',
           }}>your caption · edit freely</div>
           <textarea
             value={caption}
@@ -225,11 +225,11 @@ export function MirrorShareSheet({
             spellCheck={false}
             style={{
               width: '100%',
-              background: 'rgba(255,255,255,.04)',
-              border: '.5px solid rgba(255,255,255,.12)',
+              background: 'var(--surface-2)',
+              border: '.5px solid var(--border)',
               borderRadius: 14,
               padding: '11px 13px',
-              color: '#f7e8f0',
+              color: 'var(--ink)',
               fontFamily: 'Newsreader,serif',
               fontStyle: 'italic',
               fontSize: 14.5,
@@ -247,15 +247,15 @@ export function MirrorShareSheet({
         />
         <div style={{
           textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic',
-          fontSize: 12.5, color: '#9b7d8c', marginTop: -4,
+          fontSize: 12.5, color: 'var(--text-3)', marginTop: -4,
         }}>only the card leaves — never your signals, story, or status.</div>
 
         {toastMsg && (
           <div style={{
             position: 'fixed', left: '50%', bottom: 28, transform: 'translateX(-50%)',
-            background: 'rgba(20,10,22,.96)', color: '#f7e8f0',
+            background: 'var(--ink)', color: '#fff',
             padding: '10px 16px', borderRadius: 999,
-            border: '.5px solid rgba(255,255,255,.16)',
+            border: '.5px solid var(--border-2)',
             fontFamily: 'Sora,sans-serif', fontSize: 12, zIndex: 240,
           }}>{toastMsg}</div>
         )}
