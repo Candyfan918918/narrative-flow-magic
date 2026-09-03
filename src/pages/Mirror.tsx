@@ -610,12 +610,12 @@ function TarotCard({
         <EyeMark w={24} />
         <ShutapWordmark size={13} ink={INK} accent="#e7548a" letterSpacing="-.02em" />
         <span style={{
-          width: 3, height: 3, borderRadius: '50%', background: '#7a5f6c',
+          width: 3, height: 3, borderRadius: '50%', background: MUTED_2,
           display: 'inline-block',
         }} />
         <span style={{
           fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 8.5,
-          letterSpacing: '.24em', textTransform: 'uppercase', color: '#8a6c7a',
+          letterSpacing: '.24em', textTransform: 'uppercase', color: MUTED,
         }}>THE MIRROR</span>
       </div>
     </article>
@@ -633,13 +633,13 @@ function DeckBack({ onDone }: { onDone: () => void }) {
   return (
     <div aria-hidden style={{
       position: 'absolute', inset: 0, borderRadius: 22, overflow: 'hidden',
-      background: 'radial-gradient(120% 80% at 50% 0%, #2a0d1c, #160810 60%, #100810)',
+      background: 'linear-gradient(160deg, #fff, var(--surface-2))',
       border: `.5px solid ${GOLD_HEX}55`,
       display: 'grid', placeItems: 'center', zIndex: 4,
       transition: 'transform 900ms cubic-bezier(.2,.7,.2,1), opacity 900ms ease',
       transform: lifting ? 'translateY(-10%) scale(1.06) rotate(-2deg)' : 'translateY(0) scale(1)',
       opacity: lifting ? 0 : 1,
-      boxShadow: `0 0 60px ${GOLD_HEX}22`,
+      boxShadow: CARD_SHADOW,
     }}>
       <div style={{ position: 'absolute', inset: 6, borderRadius: 18, border: `.5px solid ${GOLD_HEX}44` }} />
       <div style={{ textAlign: 'center' }}>
@@ -647,8 +647,8 @@ function DeckBack({ onDone }: { onDone: () => void }) {
           <svg viewBox="0 0 140 96" fill="none" style={{ width: '100%', height: '100%' }}>
             <rect x="16" y="6" width="56" height="84" rx="28" fill={GOLD} opacity=".85" />
             <rect x="84" y="6" width="56" height="84" rx="28" fill={GOLD} opacity=".85" />
-            <ellipse cx="44" cy="62" rx="19" ry="24" fill="#100810" />
-            <ellipse cx="112" cy="62" rx="19" ry="24" fill="#100810" />
+            <ellipse cx="44" cy="62" rx="19" ry="24" fill="#fff" />
+            <ellipse cx="112" cy="62" rx="19" ry="24" fill="#fff" />
           </svg>
         </div>
         <div style={{
@@ -671,19 +671,16 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
       className="mirror-tile"
       style={{
         textAlign: 'left', cursor: 'pointer', padding: 16, borderRadius: 16,
-        background: isRuin
-          ? 'linear-gradient(160deg, #2a2e22, #1a1c16 70%)'
-          : `linear-gradient(160deg, ${color}22, #1a0c15 70%)`,
-        border: `1px solid ${isLegendary ? `${GOLD_HEX}c4` : isRuin ? 'rgba(160,170,130,.34)' : 'rgba(11,8,15,.09)'}`,
+        background: SURFACE,
+        border: `.5px solid ${isLegendary ? `${GOLD_HEX}66` : BORDER}`,
         color: INK, position: 'relative',
-        boxShadow: isLegendary ? `0 0 26px ${GOLD_HEX}33` : `0 14px 30px -10px rgba(0,0,0,.5)`,
-        transition: 'transform .25s ease, box-shadow .25s ease',
-        filter: isRuin ? 'saturate(.5) grayscale(.3)' : undefined,
+        boxShadow: CARD_SHADOW,
+        transition: 'transform .18s ease, box-shadow .2s ease, border-color .18s ease',
+        filter: isRuin ? 'saturate(.55)' : undefined,
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 26px -8px ${color}88` }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = isLegendary ? `0 0 26px ${GOLD_HEX}33` : `0 14px 30px -10px rgba(0,0,0,.5)` }}
+      onMouseEnter={(e) => { const el = e.currentTarget as HTMLButtonElement; el.style.transform = 'translateY(-3px)'; el.style.boxShadow = CARD_SHADOW_HOVER; el.style.borderColor = color }}
+      onMouseLeave={(e) => { const el = e.currentTarget as HTMLButtonElement; el.style.transform = 'translateY(0)'; el.style.boxShadow = CARD_SHADOW; el.style.borderColor = isLegendary ? `${GOLD_HEX}66` : 'rgba(11,8,15,.08)' }}
     >
-      <span className="mirror-tile-sheen" />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 5,
@@ -700,7 +697,6 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
       </div>
       <div style={{
         marginTop: 10, fontSize: 30, lineHeight: 1, textAlign: 'center',
-        filter: `drop-shadow(0 0 12px ${color}99)`,
       }}>{p.emoji || '✨'}</div>
       <div style={{
         marginTop: 6, textAlign: 'center',
@@ -722,7 +718,6 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
             <span key={d} style={{
               width: 7, height: 7, borderRadius: '50%',
               background: d <= p.depth ? color : 'rgba(11,8,15,.10)',
-              boxShadow: d <= p.depth ? `0 0 6px ${color}cc` : undefined,
             }} />
           ))}
         </div>
@@ -763,21 +758,21 @@ function WorldBand({
             className="mirror-world-tile"
             style={{
               cursor: 'pointer', textAlign: 'center',
-              background: `radial-gradient(120% 80% at 50% 0%, ${color}1f, #150815 70%)`,
-              border: `.5px solid ${color}33`, borderRadius: 14,
-              padding: '12px 8px 10px', color: INK,
+              background: SURFACE,
+              border: `.5px solid ${BORDER}`, borderRadius: 14,
+              padding: '12px 8px 10px', color: INK, boxShadow: CARD_SHADOW,
             }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLButtonElement
               el.style.transform = 'translateY(-3px)'
-              el.style.boxShadow = `0 0 22px -6px ${color}`
+              el.style.boxShadow = CARD_SHADOW_HOVER
               el.style.borderColor = color
             }}
             onMouseLeave={(e) => {
               const el = e.currentTarget as HTMLButtonElement
               el.style.transform = 'translateY(0)'
-              el.style.boxShadow = 'none'
-              el.style.borderColor = `${color}33`
+              el.style.boxShadow = CARD_SHADOW
+              el.style.borderColor = 'rgba(11,8,15,.08)'
             }}
           >
             <div style={{
@@ -792,7 +787,6 @@ function WorldBand({
                   background: p.state === 'ruin'
                     ? `linear-gradient(180deg, ${RUIN_HEX}, ${RUIN_HEX}55)`
                     : `linear-gradient(180deg, ${color}, ${color}55)`,
-                  boxShadow: p.state === 'ruin' ? 'none' : `0 0 6px ${color}88`,
                   opacity: p.state === 'ruin' ? 0.5 : 1,
                 }} />
               ))}
@@ -846,9 +840,9 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
   return (
     <section style={{
       marginTop: 32, padding: 22, borderRadius: 20, color: INK,
-      background: 'radial-gradient(120% 80% at 50% 0%, #1f0d1a, #100810 70%)',
+      background: SURFACE,
       border: `.5px solid ${GOLD_HEX}55`,
-      boxShadow: `0 0 40px ${GOLD_HEX}1a`,
+      boxShadow: CARD_SHADOW,
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -856,8 +850,8 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
             <svg viewBox="0 0 140 96" fill="none" style={{ width: '100%', height: '100%' }}>
               <rect x="16" y="6" width="56" height="84" rx="28" fill={GOLD} opacity=".9" />
               <rect x="84" y="6" width="56" height="84" rx="28" fill={GOLD} opacity=".9" />
-              <ellipse cx="44" cy="62" rx="19" ry="24" fill="#100810" />
-              <ellipse cx="112" cy="62" rx="19" ry="24" fill="#100810" />
+              <ellipse cx="44" cy="62" rx="19" ry="24" fill="#fff" />
+              <ellipse cx="112" cy="62" rx="19" ry="24" fill="#fff" />
             </svg>
           </span>
           <span style={{
@@ -882,7 +876,6 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
                 <div className="mirror-cross-bar" style={{
                   width: 14, height: h, borderRadius: 3,
                   background: v > 0 ? `linear-gradient(180deg, ${color}, ${color}55)` : 'rgba(11,8,15,.06)',
-                  boxShadow: v > 0 ? `0 0 10px ${color}88` : 'none',
                   ['--bar-color' as string]: color,
                 } as React.CSSProperties} />
               </div>
@@ -926,7 +919,7 @@ function DetailOverlay({
   return (
     <div onClick={onClose} style={{
       position: 'fixed', inset: 0, zIndex: 80,
-      background: 'rgba(8,4,10,.78)', backdropFilter: 'blur(10px)',
+      background: 'rgba(253,240,245,.84)', backdropFilter: 'blur(10px)',
       overflowY: 'auto', WebkitOverflowScrolling: 'touch',
       padding: '24px 16px', boxSizing: 'border-box',
       animation: 'mirror-fade .2s ease',
@@ -985,8 +978,8 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing, onBackfill, 
   return (
     <section style={{
       marginTop: 28, padding: 28, borderRadius: 22, color: INK,
-      background: 'radial-gradient(125% 80% at 50% 0%, #260e1e, #100810 65%)',
-      border: `.5px solid ${GOLD_HEX}33`,
+      background: SURFACE, boxShadow: CARD_SHADOW,
+      border: `.5px solid ${BORDER}`,
     }}>
       <div style={{
         fontFamily: "'Sora',sans-serif", fontSize: 10.5, fontWeight: 700,
@@ -998,7 +991,7 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing, onBackfill, 
       }}>the mirror begins the moment you spill or scan.<br />nothing here yet — and nothing fabricated.</p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         <button onClick={onSpill} style={pill('#e7548a', '#fff')}>🫧 spill →</button>
-        <button onClick={onScan} style={pill('transparent', '#ffd479')}>
+        <button onClick={onScan} style={pill('transparent', GOLD)}>
           <span style={{ borderBottom: 'none' }}>✨ scan →</span>
         </button>
         {showBackfill && onBackfill && (
@@ -1108,23 +1101,14 @@ export function MirrorPage() {
       @keyframes mirror-bg-b { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-50px,30px) } }
       @keyframes mirror-bg-c { 0%,100% { transform: translate(0,0) } 50% { transform: translate(20px,40px) } }
       @keyframes mirror-tile-sweep { 0% { transform: translateX(-120%) skewX(-18deg); opacity: 0 } 30% { opacity: .7 } 100% { transform: translateX(220%) skewX(-18deg); opacity: 0 } }
-      .mirror-shell { color-scheme: dark }
-      .mirror-tarot--open .mirror-scanbeam { animation: mirror-scan 1.6s cubic-bezier(.2,.7,.2,1) 1; }
-      .mirror-tarot:hover .mirror-scanbeam { animation: mirror-scan 1.6s cubic-bezier(.2,.7,.2,1) 1; }
+      .mirror-shell { color-scheme: light }
       .mirror-tile { position: relative; overflow: hidden; }
-      .mirror-tile::before, .mirror-tile::after { content: ''; position: absolute; pointer-events: none; }
-      .mirror-tile::before { inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(11,8,15,.13), rgba(11,8,15,.03) 18%, transparent 38%); }
-      .mirror-tile::after { top: 0; left: 0; width: 64%; height: 34%; background: radial-gradient(120% 130% at 12% 0%, rgba(11,8,15,.17), rgba(11,8,15,.04) 42%, transparent 66%); }
-      .mirror-tile .mirror-tile-sheen { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(11,8,15,.22), transparent); opacity: 0; pointer-events: none; }
-      .mirror-tile:hover .mirror-tile-sheen { animation: mirror-tile-sweep .9s ease-out 1; }
       .mirror-tile:active { transform: scale(.97) !important; transition: transform .1s ease; }
       .mirror-world-tile { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
       .mirror-cross-bar { transition: transform .2s ease, box-shadow .2s ease, filter .2s ease; transform-origin: bottom center; }
       .mirror-cross-bar-wrap { cursor: pointer; }
       .mirror-cross-bar-wrap:hover .mirror-cross-bar { transform: scaleY(1.08); filter: brightness(1.2); }
       @media (prefers-reduced-motion: reduce) {
-        .mirror-tarot--open .mirror-scanbeam, .mirror-tarot:hover .mirror-scanbeam,
-        .mirror-tile:hover .mirror-tile-sheen { animation: none !important; }
       }
     `
     document.head.appendChild(s)
@@ -1248,7 +1232,7 @@ export function MirrorPage() {
     <div className="mirror-shell" style={{
       position: 'relative',
       minHeight: '100vh',
-      background: `radial-gradient(120% 80% at 50% -10%, #2a0d1c, #160810 55%, ${BG})`,
+      background: BG,
       color: INK,
     }}>
       {/* fixed bg layer — drifting blurred tints */}
@@ -1313,8 +1297,8 @@ export function MirrorPage() {
         {!isLoading && isExample && (
           <section style={{
             marginTop: 22, marginBottom: 6, padding: '14px 18px', borderRadius: 16,
-            background: 'radial-gradient(125% 80% at 50% 0%, #260e1e, #100810 65%)',
-            border: `.5px solid ${GOLD_HEX}44`, color: INK,
+            background: SURFACE, boxShadow: CARD_SHADOW,
+            border: `.5px solid ${BORDER}`, color: INK,
             display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, justifyContent: 'space-between',
           }}>
             <div style={{ minWidth: 0 }}>
@@ -1403,8 +1387,8 @@ export function MirrorPage() {
         {!isEntitled && !isExample && mostRecent ? (
           <section aria-label="Locked Mirror layers" style={{
             marginTop: 32, position: 'relative', borderRadius: 20, overflow: 'hidden',
-            border: `.5px solid ${GOLD_HEX}44`,
-            background: 'radial-gradient(120% 90% at 50% 0%, #1a0c1a, #0a0610 65%)',
+            border: `.5px solid ${BORDER}`,
+            background: SURFACE, boxShadow: CARD_SHADOW,
           }}>
             <div aria-hidden style={{
               filter: 'blur(14px) saturate(1.1)', opacity: .55,
@@ -1415,8 +1399,8 @@ export function MirrorPage() {
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} style={{
                   height: 140, borderRadius: 14,
-                  background: `linear-gradient(155deg, ${GOLD_HEX}22, #2a1424 60%, #150a1a)`,
-                  border: `.5px solid ${GOLD_HEX}22`,
+                  background: 'linear-gradient(155deg, var(--surface-2), #fff 70%)',
+                  border: `.5px solid ${BORDER}`,
                 }} />
               ))}
             </div>
@@ -1490,7 +1474,7 @@ export function MirrorPage() {
                       cursor: 'pointer', borderRadius: 999,
                       padding: '6px 12px',
                       background: active ? `${c}33` : 'transparent',
-                      border: `.5px solid ${active ? `${c}aa` : 'rgba(11,8,15,.12)'}`,
+                      border: `.5px solid ${active ? `${c}aa` : BORDER}`,
                       fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 10.5,
                       letterSpacing: '.18em', textTransform: 'uppercase',
                       color: active ? INK : MUTED,
@@ -1560,7 +1544,7 @@ export function MirrorPage() {
           }}>
             <EyeMark w={22} />
             <ShutapWordmark size={12} ink={INK} accent="#e7548a" letterSpacing="-.02em" />
-            <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#7a5f6c', display: 'inline-block' }} />
+            <span style={{ width: 3, height: 3, borderRadius: '50%', background: MUTED_2, display: 'inline-block' }} />
             <span style={{
               fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 9,
               letterSpacing: '.28em', textTransform: 'uppercase', color: MUTED_3,
