@@ -46,6 +46,7 @@ const MUTED_3 = 'var(--text-3)'   /* #9e7a8c */
 const GOLD = 'var(--r-brave)'     /* #c1a02b */
 const GOLD_HEX = '#c1a02b'        /* for alpha-suffixed borders/glows */
 const BORDER = 'var(--border)'
+const RUIN_HEX = '#9e7a8c'   /* --text-3: ruin reads faded, not recolored */
 const CARD_SHADOW = '0 10px 28px -22px rgba(60,10,30,.28)'
 const CARD_SHADOW_HOVER = '0 22px 44px -26px rgba(60,10,30,.42)'
 
@@ -460,7 +461,7 @@ function TarotCard({
   p, animate, innerRef, totalSignalsOverride,
 }: { p: MirrorPatternView; animate: boolean; innerRef?: React.Ref<HTMLDivElement>; totalSignalsOverride?: number }) {
 
-  const color = p.state === 'ruin' ? RUIN_MOSS : DISTRICT_COLOR[p.district]
+  const color = p.state === 'ruin' ? RUIN_HEX : DISTRICT_COLOR[p.district]
   const isLegendary = p.rarity === 'legendary' && p.state !== 'ruin'
   const isRuin = p.state === 'ruin'
   const bg = isRuin
@@ -476,7 +477,7 @@ function TarotCard({
         background: bg,
         border: `1px solid ${border}`,
         boxShadow: isLegendary
-          ? `0 0 0 1px ${GOLD}55, 0 0 38px -6px ${GOLD}55, 0 40px 90px -34px rgba(0,0,0,.85)`
+          ? `0 0 0 1px ${GOLD_HEX}55, 0 0 38px -6px ${GOLD_HEX}55, 0 40px 90px -34px rgba(0,0,0,.85)`
           : `0 40px 90px -34px rgba(0,0,0,.85), 0 0 40px ${color}1f`,
         color: INK,
         padding: '16px 18px 14px',
@@ -487,7 +488,7 @@ function TarotCard({
       {/* inner ornamental frame */}
       <div aria-hidden style={{
         position: 'absolute', inset: 6, borderRadius: 18, pointerEvents: 'none',
-        border: `.5px solid ${isLegendary ? `${GOLD}66` : 'rgba(160,140,150,.18)'}`,
+        border: `.5px solid ${isLegendary ? `${GOLD_HEX}66` : 'rgba(160,140,150,.18)'}`,
       }} />
       {/* GLASS — top gloss (full width, no diagonal streak) */}
       <div aria-hidden style={{
@@ -660,14 +661,14 @@ function DeckBack({ onDone }: { onDone: () => void }) {
     <div aria-hidden style={{
       position: 'absolute', inset: 0, borderRadius: 22, overflow: 'hidden',
       background: 'radial-gradient(120% 80% at 50% 0%, #2a0d1c, #160810 60%, #100810)',
-      border: `.5px solid ${GOLD}55`,
+      border: `.5px solid ${GOLD_HEX}55`,
       display: 'grid', placeItems: 'center', zIndex: 4,
       transition: 'transform 900ms cubic-bezier(.2,.7,.2,1), opacity 900ms ease',
       transform: lifting ? 'translateY(-10%) scale(1.06) rotate(-2deg)' : 'translateY(0) scale(1)',
       opacity: lifting ? 0 : 1,
-      boxShadow: `0 0 60px ${GOLD}22`,
+      boxShadow: `0 0 60px ${GOLD_HEX}22`,
     }}>
-      <div style={{ position: 'absolute', inset: 6, borderRadius: 18, border: `.5px solid ${GOLD}44` }} />
+      <div style={{ position: 'absolute', inset: 6, borderRadius: 18, border: `.5px solid ${GOLD_HEX}44` }} />
       <div style={{ textAlign: 'center' }}>
         <div style={{ width: 48, height: 34, margin: '0 auto', opacity: .9 }}>
           <svg viewBox="0 0 140 96" fill="none" style={{ width: '100%', height: '100%' }}>
@@ -688,7 +689,7 @@ function DeckBack({ onDone }: { onDone: () => void }) {
 
 /* ─────────────── mini card (the cast) ─────────────── */
 function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
-  const color = p.state === 'ruin' ? RUIN_MOSS : DISTRICT_COLOR[p.district]
+  const color = p.state === 'ruin' ? RUIN_HEX : DISTRICT_COLOR[p.district]
   const isLegendary = p.rarity === 'legendary' && p.state !== 'ruin'
   const isRuin = p.state === 'ruin'
   return (
@@ -700,14 +701,14 @@ function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
         background: isRuin
           ? 'linear-gradient(160deg, #2a2e22, #1a1c16 70%)'
           : `linear-gradient(160deg, ${color}22, #1a0c15 70%)`,
-        border: `1px solid ${isLegendary ? `${GOLD}c4` : isRuin ? 'rgba(160,170,130,.34)' : 'rgba(11,8,15,.09)'}`,
+        border: `1px solid ${isLegendary ? `${GOLD_HEX}c4` : isRuin ? 'rgba(160,170,130,.34)' : 'rgba(11,8,15,.09)'}`,
         color: INK, position: 'relative',
-        boxShadow: isLegendary ? `0 0 26px ${GOLD}33` : `0 14px 30px -10px rgba(0,0,0,.5)`,
+        boxShadow: isLegendary ? `0 0 26px ${GOLD_HEX}33` : `0 14px 30px -10px rgba(0,0,0,.5)`,
         transition: 'transform .25s ease, box-shadow .25s ease',
         filter: isRuin ? 'saturate(.5) grayscale(.3)' : undefined,
       }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 26px -8px ${color}88` }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = isLegendary ? `0 0 26px ${GOLD}33` : `0 14px 30px -10px rgba(0,0,0,.5)` }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = isLegendary ? `0 0 26px ${GOLD_HEX}33` : `0 14px 30px -10px rgba(0,0,0,.5)` }}
     >
       <span className="mirror-tile-sheen" />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -816,7 +817,7 @@ function WorldBand({
                   width: 6, height: 8 + (p.depth / 5) * 56,
                   borderRadius: 2,
                   background: p.state === 'ruin'
-                    ? `linear-gradient(180deg, ${RUIN_MOSS}, #3a3a2e)`
+                    ? `linear-gradient(180deg, ${RUIN_HEX}, ${RUIN_HEX}55)`
                     : `linear-gradient(180deg, ${color}, ${color}55)`,
                   boxShadow: p.state === 'ruin' ? 'none' : `0 0 6px ${color}88`,
                   opacity: p.state === 'ruin' ? 0.5 : 1,
@@ -873,8 +874,8 @@ function CrossReadPanel({ patterns }: { patterns: MirrorPatternView[] }) {
     <section style={{
       marginTop: 32, padding: 22, borderRadius: 20, color: INK,
       background: 'radial-gradient(120% 80% at 50% 0%, #1f0d1a, #100810 70%)',
-      border: `.5px solid ${GOLD}55`,
-      boxShadow: `0 0 40px ${GOLD}1a`,
+      border: `.5px solid ${GOLD_HEX}55`,
+      boxShadow: `0 0 40px ${GOLD_HEX}1a`,
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1012,7 +1013,7 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing, onBackfill, 
     <section style={{
       marginTop: 28, padding: 28, borderRadius: 22, color: INK,
       background: 'radial-gradient(125% 80% at 50% 0%, #260e1e, #100810 65%)',
-      border: `.5px solid ${GOLD}33`,
+      border: `.5px solid ${GOLD_HEX}33`,
     }}>
       <div style={{
         fontFamily: "'Sora',sans-serif", fontSize: 10.5, fontWeight: 700,
@@ -1033,7 +1034,7 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing, onBackfill, 
             disabled={backfillPending}
             style={{
               background: 'transparent', color: GOLD,
-              border: `.5px solid ${GOLD}66`, borderRadius: 999,
+              border: `.5px solid ${GOLD_HEX}66`, borderRadius: 999,
               padding: '11px 22px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
               fontSize: 13, cursor: backfillPending ? 'wait' : 'pointer',
               opacity: backfillPending ? 0.7 : 1,
@@ -1043,7 +1044,7 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing, onBackfill, 
         {hasDemo && (
           <button onClick={onPreview} style={{
             background: 'transparent', color: GOLD,
-            border: `.5px solid ${GOLD}66`, borderRadius: 999,
+            border: `.5px solid ${GOLD_HEX}66`, borderRadius: 999,
             padding: '11px 22px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
             fontSize: 13, cursor: 'pointer',
           }}>{previewing ? 'hide example mirror' : 'see what yours becomes ✦'}</button>
@@ -1340,7 +1341,7 @@ export function MirrorPage() {
           <section style={{
             marginTop: 22, marginBottom: 6, padding: '14px 18px', borderRadius: 16,
             background: 'radial-gradient(125% 80% at 50% 0%, #260e1e, #100810 65%)',
-            border: `.5px solid ${GOLD}44`, color: INK,
+            border: `.5px solid ${GOLD_HEX}44`, color: INK,
             display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, justifyContent: 'space-between',
           }}>
             <div style={{ minWidth: 0 }}>
@@ -1361,7 +1362,7 @@ export function MirrorPage() {
               }}>🫧 spill →</button>
               <button onClick={() => navigate('/#scan')} style={{
                 background: 'transparent', color: GOLD,
-                border: `.5px solid ${GOLD}66`, borderRadius: 999,
+                border: `.5px solid ${GOLD_HEX}66`, borderRadius: 999,
                 padding: '9px 16px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
                 fontSize: 12, cursor: 'pointer',
               }}>✨ scan →</button>
@@ -1376,8 +1377,8 @@ export function MirrorPage() {
             {isExample && (
               <div style={{
                 marginBottom: 10, padding: '4px 12px', borderRadius: 999,
-                border: `.5px solid ${GOLD}88`, color: GOLD,
-                background: `${GOLD}14`,
+                border: `.5px solid ${GOLD_HEX}88`, color: GOLD,
+                background: `${GOLD_HEX}14`,
                 fontFamily: "'Sora',sans-serif", fontSize: 10, fontWeight: 700,
                 letterSpacing: '.28em',
               }}>EXAMPLE</div>
@@ -1417,7 +1418,7 @@ export function MirrorPage() {
         {showDemo && (
           <div style={{
             marginTop: 18, padding: '8px 14px', borderRadius: 12, textAlign: 'center',
-            background: `${GOLD}1a`, color: GOLD, border: `.5px solid ${GOLD}55`,
+            background: `${GOLD_HEX}1a`, color: GOLD, border: `.5px solid ${GOLD_HEX}55`,
             fontFamily: "'Sora',sans-serif", fontSize: 10.5, letterSpacing: '.22em',
           }}>ILLUSTRATIVE — NOT YOUR DATA · <button onClick={() => setShowDemo(false)} style={{ background: 'transparent', border: 0, color: GOLD, cursor: 'pointer', textDecoration: 'underline' }}>hide</button></div>
         )}
@@ -1429,7 +1430,7 @@ export function MirrorPage() {
         {!isEntitled && !isExample && mostRecent ? (
           <section aria-label="Locked Mirror layers" style={{
             marginTop: 32, position: 'relative', borderRadius: 20, overflow: 'hidden',
-            border: `.5px solid ${GOLD}44`,
+            border: `.5px solid ${GOLD_HEX}44`,
             background: 'radial-gradient(120% 90% at 50% 0%, #1a0c1a, #0a0610 65%)',
           }}>
             <div aria-hidden style={{
@@ -1441,8 +1442,8 @@ export function MirrorPage() {
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} style={{
                   height: 140, borderRadius: 14,
-                  background: `linear-gradient(155deg, ${GOLD}22, #2a1424 60%, #150a1a)`,
-                  border: `.5px solid ${GOLD}22`,
+                  background: `linear-gradient(155deg, ${GOLD_HEX}22, #2a1424 60%, #150a1a)`,
+                  border: `.5px solid ${GOLD_HEX}22`,
                 }} />
               ))}
             </div>
@@ -1509,7 +1510,7 @@ export function MirrorPage() {
                 {(['all', ...DISTRICTS, 'ruins'] as const).map((k) => {
                   const active = castFilter === k
                   const isDistrict = (DISTRICTS as readonly string[]).includes(k as string)
-                  const c = isDistrict ? DISTRICT_COLOR[k as District] : k === 'ruins' ? RUIN_MOSS : '#e7548a'
+                  const c = isDistrict ? DISTRICT_COLOR[k as District] : k === 'ruins' ? RUIN_HEX : '#e7548a'
                   const label = k === 'all' ? 'all' : k === 'ruins' ? 'ruins' : DISTRICT_LABEL[k as District].toLowerCase()
                   return (
                     <button key={k} onClick={() => setCastFilter(k)} style={{
