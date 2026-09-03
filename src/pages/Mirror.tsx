@@ -254,10 +254,11 @@ function MirrorHeader() {
                   <div style={{
                     position: 'absolute', top: 'calc(100% + 9px)', right: 0,
                     width: 220,
-                    background: '#1a0d18',
-                    border: '.5px solid rgba(11,8,15,.10)',
+                    background: SURFACE,
+                    border: `.5px solid ${BORDER}`,
                     borderRadius: 16, padding: 7, zIndex: 70,
-                    boxShadow: '0 24px 50px -16px rgba(0,0,0,.6)',
+                    boxShadow: '0 24px 50px -16px rgba(60,10,30,.28)',
+
                   }}>
                     <Link to="/profile" style={item} onClick={() => setOpen(false)}>your profile</Link>
                     <Link to="/profile#settings" style={item} onClick={() => setOpen(false)}>settings</Link>
