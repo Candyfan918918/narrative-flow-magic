@@ -204,9 +204,10 @@ function MirrorHeader() {
     <header
       style={{
         position: 'sticky', top: 0, zIndex: 40,
-        background: 'rgba(16,8,16,.82)',
+        background: 'rgba(255,255,255,.88)',
         backdropFilter: 'blur(18px)',
-        borderBottom: '.5px solid rgba(11,8,15,.08)',
+        borderBottom: `.5px solid ${BORDER}`,
+
       }}
     >
       <div style={{
