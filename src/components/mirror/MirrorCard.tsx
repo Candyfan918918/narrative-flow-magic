@@ -11,13 +11,20 @@ import {
 } from '@/lib/agents/mirror-guards'
 import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
 
+// district hues come from tokens.css: --pink, --r-time, --wine, --r-same, --r-strong
 const DISTRICT_PALETTE: Record<District, { ink: string; glow: string }> = {
-  self: { ink: '#C8B6FF', glow: 'rgba(200,182,255,.22)' },
-  career: { ink: '#FFD479', glow: 'rgba(255,212,121,.22)' },
-  love: { ink: '#FF9AC5', glow: 'rgba(255,154,197,.22)' },
-  family: { ink: '#9FE6B5', glow: 'rgba(159,230,181,.22)' },
-  social: { ink: '#7FE0FF', glow: 'rgba(127,224,255,.22)' },
+  self: { ink: '#e7548a', glow: 'rgba(231,84,138,.10)' },
+  career: { ink: '#7F77DD', glow: 'rgba(127,119,221,.10)' },
+  love: { ink: '#c1216b', glow: 'rgba(193,33,107,.10)' },
+  family: { ink: '#c87c4a', glow: 'rgba(200,124,74,.10)' },
+  social: { ink: '#5B8A5E', glow: 'rgba(91,138,94,.10)' },
 }
+const GOLD = '#c1a02b'          /* --r-brave */
+const INK = 'var(--ink)'
+const MUTED = 'var(--text-2)'
+const MUTED_3 = 'var(--text-3)'
+const BORDER = 'var(--border)'
+const CARD_SHADOW = '0 10px 28px -22px rgba(60,10,30,.28)'
 
 const SOURCE_GLYPH: Record<string, string> = {
   spill: '🗯', scan: '📸', comments: '💬', likes: '♥', follows: '✦', browse: '👁',
@@ -51,7 +58,7 @@ function DepthWheel({ depth, emoji, dir }: { depth: number; emoji: string; dir: 
   return (
     <div style={{ position: 'relative', width: 112, height: 112 }} aria-hidden>
       <svg viewBox="0 0 100 100" width={112} height={112}>
-        <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,.08)" strokeWidth="6" />
+        <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(11,8,15,.08)" strokeWidth="6" />
         <circle
           cx="50" cy="50" r={r}
           fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round"
@@ -63,7 +70,7 @@ function DepthWheel({ depth, emoji, dir }: { depth: number; emoji: string; dir: 
       <div
         style={{
           position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
-          fontSize: 36, lineHeight: 1, filter: 'drop-shadow(0 2px 12px rgba(0,0,0,.4))',
+          fontSize: 36, lineHeight: 1, 
         }}
       >
         {emoji}
@@ -125,9 +132,9 @@ function SignalBar({ sources }: { sources: Record<string, number> }) {
             <span key={k} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '4px 10px', borderRadius: 999,
-              background: n > 0 ? 'rgba(255,255,255,.08)' : 'rgba(255,255,255,.03)',
-              border: '.5px solid rgba(255,255,255,.08)',
-              fontFamily: 'Sora, sans-serif', fontSize: 11, color: n > 0 ? '#fff' : 'rgba(255,255,255,.35)',
+              background: n > 0 ? 'var(--surface-2)' : 'rgba(11,8,15,.03)',
+              border: `.5px solid ${BORDER}`,
+              fontFamily: 'Sora, sans-serif', fontSize: 11, color: n > 0 ? INK : MUTED_3,
             }}>
               <span style={{ fontSize: 12 }}>{SOURCE_GLYPH[k]}</span>
               <span style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{n}</span>
@@ -137,7 +144,7 @@ function SignalBar({ sources }: { sources: Record<string, number> }) {
       </div>
       <div style={{
         marginTop: 8, fontFamily: 'Sora, sans-serif', fontSize: 10,
-        color: 'rgba(255,255,255,.5)', letterSpacing: '.14em',
+        color: MUTED_3, letterSpacing: '.14em',
       }}>
         SYNTHESIZED FROM {total} SIGNALS · 6 SURFACES
       </div>
@@ -176,8 +183,8 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
   const pal = DISTRICT_PALETTE[p.district] ?? DISTRICT_PALETTE.self
   const isLegendary = p.rarity === 'legendary'
   const isRuin = p.state === 'ruin'
-  const ink = isRuin ? 'rgba(180,200,190,.65)' : pal.ink
-  const frameColor = isLegendary ? '#FFD479' : 'rgba(255,255,255,.12)'
+  const ink = isRuin ? MUTED_3 : pal.ink
+  const frameColor = isLegendary ? GOLD : BORDER
   const trendLabel: Record<string, string> = {
     rising: 'rising', cooling: 'cooling', steady: 'steady', dormant: 'dormant',
   }
@@ -188,14 +195,12 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
         position: 'relative',
         borderRadius: 22,
         padding: 22,
-        background: isRuin
-          ? 'linear-gradient(160deg, #1a1f1d 0%, #0e1311 100%)'
-          : `linear-gradient(160deg, #1c0e18 0%, #0e0710 100%)`,
-        border: `1px solid ${frameColor}`,
+        background: 'var(--surface)',
+        border: `.5px solid ${frameColor}`,
         boxShadow: isLegendary
-          ? '0 0 0 1px rgba(255,212,121,.35), 0 20px 60px rgba(255,212,121,.12), inset 0 0 80px rgba(255,212,121,.06)'
-          : '0 12px 40px rgba(0,0,0,.5)',
-        color: '#fff',
+          ? `0 0 0 1px ${GOLD}44, ${CARD_SHADOW}`
+          : CARD_SHADOW,
+        color: INK,
         overflow: 'hidden',
         filter: isRuin ? 'saturate(.55)' : undefined,
       }}
@@ -210,7 +215,7 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
         <span style={{
           fontFamily: 'Sora, sans-serif', fontSize: 11, fontWeight: 800, letterSpacing: '.22em',
-          color: isLegendary ? '#FFD479' : 'rgba(255,255,255,.55)',
+          color: isLegendary ? GOLD : MUTED,
         }}>
           {RARITY_NUMERAL[p.rarity]} · {p.rarity.toUpperCase()}
         </span>
@@ -225,14 +230,14 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
 
       {/* name */}
       <h3 style={{
-        fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontWeight: 500,
-        fontSize: 26, lineHeight: 1.15, margin: '14px 0 4px', color: '#fff', position: 'relative',
+        fontFamily: "'Newsreader', serif", fontStyle: 'italic', fontWeight: 500,
+        fontSize: 26, lineHeight: 1.15, margin: '14px 0 4px', color: INK, position: 'relative',
       }}>
         {p.name}
       </h3>
       {p.insight && (
         <p style={{
-          margin: 0, fontFamily: 'Sora, sans-serif', fontSize: 12, color: 'rgba(255,255,255,.55)',
+          margin: 0, fontFamily: 'Sora, sans-serif', fontSize: 12, color: MUTED,
           letterSpacing: '.02em',
         }}>
           {p.insight}
@@ -249,7 +254,7 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
           <TrendChart trend={p.trend} color={ink} />
           <div style={{
             marginTop: 6, fontFamily: 'Sora, sans-serif', fontSize: 11,
-            color: 'rgba(255,255,255,.55)', letterSpacing: '.08em', display: 'flex', gap: 12,
+            color: MUTED, letterSpacing: '.08em', display: 'flex', gap: 12,
           }}>
             <span>DEPTH {p.depth}/5</span>
             <span>·</span>
@@ -267,24 +272,24 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
 
       {/* count + punch */}
       <div style={{
-        marginTop: 18, paddingTop: 16, borderTop: '.5px solid rgba(255,255,255,.08)', position: 'relative',
+        marginTop: 18, paddingTop: 16, borderTop: `.5px solid ${BORDER}`, position: 'relative',
       }}>
         <div style={{
           fontFamily: 'Sora, sans-serif', fontSize: 11, letterSpacing: '.14em',
-          color: 'rgba(255,255,255,.45)', marginBottom: 8,
+          color: MUTED_3, marginBottom: 8,
         }}>
           <CountTick value={p.count} /> OBSERVATIONS · FIRST SEEN {timeAgo(p.first_seen)}
         </div>
         <p style={{
           margin: 0, fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 19,
-          lineHeight: 1.35, color: '#fff',
+          lineHeight: 1.35, color: INK,
         }}>
           {p.punch || p.insight || 'still forming.'}
         </p>
         {p.record && (
           <div style={{
             marginTop: 14, fontFamily: 'Sora, sans-serif', fontSize: 10, letterSpacing: '.22em',
-            color: 'rgba(255,255,255,.4)', textTransform: 'uppercase',
+            color: MUTED_3, textTransform: 'uppercase',
           }}>
             {p.record}
           </div>
@@ -295,14 +300,14 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
           gap: 7, marginTop: 16,
         }}>
           <EyeMark w={24} />
-          <ShutapWordmark size={13} ink="#f7e8f0" accent="#e7548a" letterSpacing="-.02em" />
+          <ShutapWordmark size={13} ink={INK} accent="#e7548a" letterSpacing="-.02em" />
           <span style={{
-            width: 3, height: 3, borderRadius: '50%', background: '#7a5f6c',
+            width: 3, height: 3, borderRadius: '50%', background: MUTED_3,
             display: 'inline-block',
           }} />
           <span style={{
             fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: 8.5,
-            letterSpacing: '.24em', textTransform: 'uppercase', color: '#8a6c7a',
+            letterSpacing: '.24em', textTransform: 'uppercase', color: MUTED,
           }}>THE MIRROR</span>
         </div>
       </div>
