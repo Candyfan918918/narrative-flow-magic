@@ -36,15 +36,20 @@ import { ActionPill } from '@/components/ShareChannels'
 import type { Alias } from '@/data/types'
 import { useNoIndex } from '@/components/NoIndex'
 
-/* ─────────────── design tokens ─────────────── */
-const BG = '#160810'
-const INK = '#f7e8f0'
-const MUTED = '#c4a0b2'
-const MUTED_2 = '#9b7d8c'
-const MUTED_3 = '#7a5f6c'
-const GOLD = '#e9c06a'
-const RUIN_MOSS = '#6f7a5e'
+/* ─────────────── design tokens (src/styles/tokens.css) ─────────────── */
+const BG = 'var(--bg)'            /* #fdf0f5 */
+const SURFACE = 'var(--surface)'  /* #ffffff */
+const INK = 'var(--ink)'          /* #0b080f */
+const MUTED = 'var(--text-2)'     /* #6b4a5c */
+const MUTED_2 = 'var(--text-3)'   /* #9e7a8c */
+const MUTED_3 = 'var(--text-3)'   /* #9e7a8c */
+const GOLD = 'var(--r-brave)'     /* #c1a02b */
+const GOLD_HEX = '#c1a02b'        /* for alpha-suffixed borders/glows */
+const BORDER = 'var(--border)'
+const CARD_SHADOW = '0 10px 28px -22px rgba(60,10,30,.28)'
+const CARD_SHADOW_HOVER = '0 22px 44px -26px rgba(60,10,30,.42)'
 
+/* district hues are the tokens --pink / --r-time / --wine / --r-same / --r-strong */
 const DISTRICT_COLOR: Record<District, string> = {
   self: '#e7548a',
   career: '#7F77DD',
@@ -52,6 +57,7 @@ const DISTRICT_COLOR: Record<District, string> = {
   family: '#c87c4a',
   social: '#5B8A5E',
 }
+
 
 const SOURCE_GLYPH: Record<string, string> = {
   spill: '🗯',
