@@ -154,7 +154,7 @@ const RAW_EXAMPLE = [
   { id: 'peace', name: 'The Peacekeeper', emoji: '🕊', district: 'family', rarity: 'rare', state: 'ruin', dir: 'dormant', last: 'ruin · 6mo', insight: 'you swallowed the fight to keep the room calm — until you stopped.', punch: '62 fights swallowed whole, then you stopped. character development, fr.', sources: { spill: 15, scan: 7, comments: 9, likes: 11, follows: 4, browse: 16 } },
   { id: 'fine', name: 'Fine, Fine, Fine', emoji: '🪨', district: 'self', rarity: 'rare', state: 'ruin', dir: 'dormant', last: 'ruin · 4mo', insight: 'you said fine until you meant it — then left.', punch: 'fine 31 times, then you dipped. growth looks good on you, ngl.', sources: { spill: 11, scan: 5, comments: 4, likes: 5, follows: 1, browse: 5 } },
 ]
-const EXAMPLE_PATTERNS = RAW_EXAMPLE.map((p) => {
+export const EXAMPLE_PATTERNS = RAW_EXAMPLE.map((p) => {
   const count = Object.values(p.sources).reduce((a, b) => a + b, 0)
   return {
     id: p.id, name: p.name, emoji: p.emoji, district: p.district, rarity: p.rarity,
@@ -459,7 +459,7 @@ function CountTick({ value, animate, style }: { value: number; animate: boolean;
 }
 
 /* ─────────────── the big tarot card ─────────────── */
-function TarotCard({
+export function TarotCard({
   p, animate, innerRef, totalSignalsOverride,
 }: { p: MirrorPatternView; animate: boolean; innerRef?: React.Ref<HTMLDivElement>; totalSignalsOverride?: number }) {
 
@@ -661,7 +661,7 @@ function DeckBack({ onDone }: { onDone: () => void }) {
 }
 
 /* ─────────────── mini card (the cast) ─────────────── */
-function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
+export function MiniCard({ p, onOpen }: { p: MirrorPatternView; onOpen: () => void }) {
   const color = p.state === 'ruin' ? RUIN_HEX : DISTRICT_COLOR[p.district]
   const isLegendary = p.rarity === 'legendary' && p.state !== 'ruin'
   const isRuin = p.state === 'ruin'

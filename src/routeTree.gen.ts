@@ -39,6 +39,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StreamRouteImport } from './routes/stream'
 import { Route as SubscribeRouteImport } from './routes/subscribe'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as TmpmirrorcheckRouteImport } from './routes/tmpmirrorcheck'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as WelcomeRouteImport } from './routes/welcome'
@@ -222,6 +223,11 @@ const SubscribeRoute = SubscribeRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TmpmirrorcheckRoute = TmpmirrorcheckRouteImport.update({
+  id: '/tmpmirrorcheck',
+  path: '/tmpmirrorcheck',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrustRoute = TrustRouteImport.update({
@@ -443,6 +449,7 @@ export interface FileRoutesByFullPath {
   '/stream': typeof StreamRoute
   '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
+  '/tmpmirrorcheck': typeof TmpmirrorcheckRoute
   '/trust': typeof TrustRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/welcome': typeof WelcomeRoute
@@ -509,6 +516,7 @@ export interface FileRoutesByTo {
   '/stream': typeof StreamRoute
   '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
+  '/tmpmirrorcheck': typeof TmpmirrorcheckRoute
   '/trust': typeof TrustRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/welcome': typeof WelcomeRoute
@@ -577,6 +585,7 @@ export interface FileRoutesById {
   '/stream': typeof StreamRoute
   '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
+  '/tmpmirrorcheck': typeof TmpmirrorcheckRoute
   '/trust': typeof TrustRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/welcome': typeof WelcomeRoute
@@ -645,6 +654,7 @@ export interface FileRouteTypes {
     | '/stream'
     | '/subscribe'
     | '/terms'
+    | '/tmpmirrorcheck'
     | '/trust'
     | '/unsubscribe'
     | '/welcome'
@@ -711,6 +721,7 @@ export interface FileRouteTypes {
     | '/stream'
     | '/subscribe'
     | '/terms'
+    | '/tmpmirrorcheck'
     | '/trust'
     | '/unsubscribe'
     | '/welcome'
@@ -778,6 +789,7 @@ export interface FileRouteTypes {
     | '/stream'
     | '/subscribe'
     | '/terms'
+    | '/tmpmirrorcheck'
     | '/trust'
     | '/unsubscribe'
     | '/welcome'
@@ -846,6 +858,7 @@ export interface RootRouteChildren {
   StreamRoute: typeof StreamRoute
   SubscribeRoute: typeof SubscribeRouteWithChildren
   TermsRoute: typeof TermsRoute
+  TmpmirrorcheckRoute: typeof TmpmirrorcheckRoute
   TrustRoute: typeof TrustRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -1083,6 +1096,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tmpmirrorcheck': {
+      id: '/tmpmirrorcheck'
+      path: '/tmpmirrorcheck'
+      fullPath: '/tmpmirrorcheck'
+      preLoaderRoute: typeof TmpmirrorcheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trust': {
@@ -1411,6 +1431,7 @@ const rootRouteChildren: RootRouteChildren = {
   StreamRoute: StreamRoute,
   SubscribeRoute: SubscribeRouteWithChildren,
   TermsRoute: TermsRoute,
+  TmpmirrorcheckRoute: TmpmirrorcheckRoute,
   TrustRoute: TrustRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   WelcomeRoute: WelcomeRoute,
