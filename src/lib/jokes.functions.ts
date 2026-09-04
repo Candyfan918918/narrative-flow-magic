@@ -277,8 +277,20 @@ const HoldSchema = z
 
 export const claimJokeSession = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) =>
-    z.object({ hold: HoldSchema, terms_version: z.string().max(32).optional(), ...Ctx }).parse(d),
+    z
+      .object({
+        hold: HoldSchema,
+        terms_version: z.string().max(32).optional(),
+        // the flip that raised the sign-in sheet, if any — granted exactly once
+        resume_flip: z
+          .object({ set_id: z.string().uuid(), position: z.number().int().min(0).max(2) })
+          .nullable()
+          .optional(),
+        ...Ctx,
+      })
+      .parse(d),
   )
+
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const id = await resolveJokeIdentity(data.anon_session_id ?? null)
