@@ -130,19 +130,19 @@ export function GlobalHeader() {
     navigate({ to: '/' })
   }
 
-  const inkStrong = dark ? '#f7e8f0' : '#0b080f'
-  const inkMuted = dark ? '#c4a0b2' : '#6b4a5c'
-  const inkActive = dark ? '#f7e8f0' : '#0b080f'
+  const inkStrong = dark ? '#fdfbf9' : '#0b080f'
+  const inkMuted = dark ? '#c4a0b2' : '#443c42'
+  const inkActive = dark ? '#fdfbf9' : '#0b080f'
   // Opaque on purpose — a translucent bar + backdrop-filter re-samples the
   // animated gradient on /welcome every frame and produces visible banding.
-  const barBg = dark ? '#100810' : '#fdf0f5'
+  const barBg = dark ? '#100c14' : '#ffffff'
   const barBorder = dark ? '.5px solid rgba(255,255,255,.08)' : '.5px solid rgba(11,8,15,.07)'
   const pillBg = dark ? 'rgba(255,255,255,.04)' : '#fff'
   const pillBorder = dark ? '.5px solid rgba(255,255,255,.10)' : '.5px solid rgba(11,8,15,.12)'
   const menuBg = dark ? '#1a0d18' : '#fff'
   const menuBorder = dark ? '.5px solid rgba(255,255,255,.10)' : '.5px solid rgba(11,8,15,.10)'
   const menuDivider = dark ? 'rgba(255,255,255,.08)' : 'rgba(11,8,15,.08)'
-  const menuInk = dark ? '#f7e8f0' : '#4a3040'
+  const menuInk = dark ? '#fdfbf9' : '#383136'
 
   const navLink = (to: string, label: string) => {
     const active = to === '/' ? pathname === '/' : pathname.startsWith(to)
@@ -251,7 +251,7 @@ export function GlobalHeader() {
                       width: 26,
                       height: 26,
                       borderRadius: '50%',
-                      background: 'linear-gradient(135deg,#f060a0,#890041)',
+                      background: 'linear-gradient(135deg,#a52a5f,#890041)',
                       display: 'grid',
                       placeItems: 'center',
                       fontSize: 14,
@@ -300,7 +300,7 @@ export function GlobalHeader() {
                     <div style={{ height: '.5px', background: menuDivider, margin: '6px 0' }} />
                     <div
                       role="button"
-                      style={{ ...menuItem, color: dark ? '#c4a0b2' : '#9e7a8c' }}
+                      style={{ ...menuItem, color: dark ? '#c4a0b2' : '#6f666c' }}
                       onClick={signOut}
                     >
                       sign out
@@ -320,7 +320,7 @@ export function GlobalHeader() {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  background: '#e7548a',
+                  background: '#a52a5f',
                   color: '#fff',
                   border: 0,
                   borderRadius: 999,

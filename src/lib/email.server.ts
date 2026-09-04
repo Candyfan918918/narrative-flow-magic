@@ -47,7 +47,7 @@ export async function sendCheckinEmail({ to, type, situationId, appOrigin }: Sen
   const html = `<div style="font-family:system-ui,sans-serif;font-size:15px;line-height:1.6;color:#0b080f;max-width:520px;margin:0 auto;padding:24px">
     <p style="margin:0 0 14px">${escapeHtml(c.body)}</p>
     <p style="margin:18px 0 0"><a href="${link}" style="color:#c1216b;text-decoration:none;font-weight:600">open the check-in →</a></p>
-    <p style="margin:32px 0 0;font-size:12px;color:#9e7a8c">shutap · sit with it, no fixing</p>
+    <p style="margin:32px 0 0;font-size:12px;color:#6f666c">shutap · sit with it, no fixing</p>
   </div>`
   try {
     const r = await fetch(RESEND_URL, {

@@ -57,7 +57,7 @@ function RoomRow({ r }: { r: RoomListItem }) {
     >
       <div style={{ minWidth: 0 }}>
         <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 13.5, marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.title}</div>
-        <div style={{ fontSize: 11.5, color: '#9a8fa2' }}>
+        <div style={{ fontSize: 11.5, color: '#6f666c' }}>
           {r.pillar || '—'} · {fmtAge(r.age_hours)} ago
         </div>
       </div>
@@ -66,7 +66,7 @@ function RoomRow({ r }: { r: RoomListItem }) {
       </span>
       <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', fontSize: 13 }}>{r.human_relates}</span>
       <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', fontSize: 13 }}>{r.human_comments}</span>
-      <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', fontSize: 13, color: '#9a8fa2' }}>{r.companion_comments}</span>
+      <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', fontSize: 13, color: '#6f666c' }}>{r.companion_comments}</span>
     </a>
   )
 }
@@ -76,7 +76,7 @@ function RoomTable({ title, rows, empty }: { title: string; rows: RoomListItem[]
     <div style={{ ...CARD, padding: 0, overflow: 'hidden' }}>
       <div style={{ padding: '14px 18px', borderBottom: '.5px solid rgba(255,255,255,.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <b style={{ fontFamily: 'Sora,sans-serif', fontSize: 14 }}>{title}</b>
-        <span style={{ fontSize: 11.5, color: '#9a8fa2' }}>{rows?.length ?? 0} rooms</span>
+        <span style={{ fontSize: 11.5, color: '#6f666c' }}>{rows?.length ?? 0} rooms</span>
       </div>
       <div style={{
         display: 'grid',
@@ -87,7 +87,7 @@ function RoomTable({ title, rows, empty }: { title: string; rows: RoomListItem[]
         fontSize: 10.5,
         letterSpacing: '.06em',
         textTransform: 'uppercase',
-        color: '#9a8fa2',
+        color: '#6f666c',
         fontFamily: 'Sora,sans-serif',
         fontWeight: 700,
       }}>
@@ -98,7 +98,7 @@ function RoomTable({ title, rows, empty }: { title: string; rows: RoomListItem[]
         <span style={{ textAlign: 'right' }}>ai</span>
       </div>
       {(!rows || rows.length === 0) ? (
-        <div style={{ padding: '28px 20px', textAlign: 'center', color: '#9a8fa2', fontFamily: 'Newsreader,serif', fontStyle: 'italic' }}>{empty}</div>
+        <div style={{ padding: '28px 20px', textAlign: 'center', color: '#6f666c', fontFamily: 'Newsreader,serif', fontStyle: 'italic' }}>{empty}</div>
       ) : rows.map((r) => <RoomRow key={r.room_id} r={r} />)}
     </div>
   )
@@ -108,7 +108,7 @@ function Kpi({ label, value, sub, accent }: { label: string; value: string; sub?
   return (
     <div style={CARD}>
       <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 26, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.02em', color: accent ?? '#e8dfea' }}>{value}</div>
-      <div style={{ fontSize: 11, color: '#9a8fa2', marginTop: 6, letterSpacing: '.04em', textTransform: 'uppercase', fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>{label}</div>
+      <div style={{ fontSize: 11, color: '#6f666c', marginTop: 6, letterSpacing: '.04em', textTransform: 'uppercase', fontFamily: 'Sora,sans-serif', fontWeight: 700 }}>{label}</div>
       {sub && <div style={{ fontSize: 11, color: '#6fcf97', marginTop: 6 }}>{sub}</div>}
     </div>
   )
@@ -184,7 +184,7 @@ export function AdminPage() {
                 padding: '6px 14px',
                 borderRadius: 999,
                 border: 0,
-                background: tab === t ? '#e7548a' : 'transparent',
+                background: tab === t ? '#a52a5f' : 'transparent',
                 color: tab === t ? '#fff' : '#c9bcd0',
                 fontFamily: 'Sora,sans-serif',
                 fontWeight: 700,
@@ -220,7 +220,7 @@ export function AdminPage() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9a8fa2', marginBottom: 10 }}>
+    <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#6f666c', marginBottom: 10 }}>
       {children}
     </div>
   )

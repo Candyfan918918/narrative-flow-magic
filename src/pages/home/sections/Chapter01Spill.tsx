@@ -103,7 +103,7 @@ function SpillCard() {
       data-tilt=""
       style={{
         width: 'min(384px,100%)',
-        background: 'linear-gradient(160deg,#1c1024,#100b1c)',
+        background: 'linear-gradient(160deg,#1c1024,#100c14)',
         border: '1px solid rgba(255,255,255,.09)',
         borderRadius: '28px',
         padding: '22px 22px 20px',
@@ -121,13 +121,13 @@ function SpillCard() {
                 height: '3px',
                 flex: 1,
                 borderRadius: '2px',
-                background: i < s.dots ? '#e7548a' : 'rgba(255,255,255,.12)',
+                background: i < s.dots ? '#a52a5f' : 'rgba(255,255,255,.12)',
                 transition: 'background .07s',
               }}
             />
           ))}
         </div>
-        <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '12px', color: '#9e7a8c', flex: 'none' }}>
+        <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '12px', color: '#6f666c', flex: 'none' }}>
           the spill · sample
         </span>
       </div>
@@ -160,7 +160,7 @@ function SpillCard() {
                 fontSize: '10px',
                 letterSpacing: '.16em',
                 textTransform: 'uppercase',
-                color: '#e7548a',
+                color: '#a52a5f',
               }}
             >
               spill
@@ -210,13 +210,13 @@ function SpillCard() {
                 fontFamily: NEWS,
                 fontStyle: 'italic',
                 fontSize: '18px',
-                color: '#f7e8f0',
+                color: '#fdfbf9',
                 minHeight: '1.4em',
               }}
             >
               {typedText}
             </span>
-            <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '14px', color: '#e7548a', flex: 'none' }}>
+            <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '14px', color: '#a52a5f', flex: 'none' }}>
               send →
             </span>
           </div>
@@ -242,7 +242,7 @@ function SpillCard() {
               fontSize: '10px',
               letterSpacing: '.16em',
               textTransform: 'uppercase',
-              color: '#e7548a',
+              color: '#a52a5f',
             }}
           >
             preview · in your words
@@ -264,10 +264,10 @@ function SpillCard() {
               gap: '10px',
             }}
           >
-            <div style={{ fontFamily: "'Inter',sans-serif", fontWeight: 500, fontSize: '12.5px', color: '#9e7a8c' }}>
+            <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 500, fontSize: '12.5px', color: '#6f666c' }}>
               🦉 Quiet Indonesian Owl <span style={{ opacity: 0.6 }}>· family</span>
             </div>
-            <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '20px', color: '#f7e8f0', lineHeight: 1.3 }}>
+            <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '20px', color: '#fdfbf9', lineHeight: 1.3 }}>
               the sister i'd protect from anyone was scared of me.
             </div>
             <div style={{ fontFamily: NEWS, fontSize: '15px', color: '#e7dce4', lineHeight: 1.6 }}>
@@ -282,7 +282,7 @@ function SpillCard() {
                     fontFamily: SORA,
                     fontWeight: 600,
                     fontSize: '10.5px',
-                    color: '#e7548a',
+                    color: '#a52a5f',
                     background: 'rgba(231,84,138,.13)',
                     borderRadius: '999px',
                     padding: '3px 10px',
@@ -294,7 +294,7 @@ function SpillCard() {
             </div>
           </div>
 
-          <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '12.5px', color: '#9e7a8c' }}>
+          <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '12.5px', color: '#6f666c' }}>
             🔒 every edit gets re-checked by the privacy shield before it saves.
           </div>
 
@@ -312,7 +312,7 @@ function SpillCard() {
             <span style={{ flex: 1, fontFamily: NEWS, fontStyle: 'italic', fontSize: '13px', color: '#7e6675' }}>
               or tell me: "make it shorter", "add the part about the rent"…
             </span>
-            <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '13px', color: '#e7548a', flex: 'none' }}>
+            <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '13px', color: '#a52a5f', flex: 'none' }}>
               edit →
             </span>
           </div>
@@ -333,16 +333,16 @@ function SpillCard() {
                   fontSize: '11px',
                   letterSpacing: '.08em',
                   textTransform: 'uppercase',
-                  color: '#f7e8f0',
+                  color: '#fdfbf9',
                 }}
               >
                 keep as journal
               </div>
-              <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '12.5px', color: '#9e7a8c', marginTop: '4px' }}>
+              <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '12.5px', color: '#6f666c', marginTop: '4px' }}>
                 private draft. only you.
               </div>
             </div>
-            <div style={{ background: '#e7548a', borderRadius: '14px', padding: '14px' }}>
+            <div style={{ background: '#a52a5f', borderRadius: '14px', padding: '14px' }}>
               <div
                 style={{
                   fontFamily: SORA,
@@ -375,7 +375,7 @@ export function Chapter01Spill() {
         position: 'relative',
         minHeight: '96vh',
         scrollSnapAlign: 'start',
-        background: '#fdf0f5',
+        background: '#ffffff',
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
@@ -390,7 +390,7 @@ export function Chapter01Spill() {
               fontSize: '12px',
               letterSpacing: '.24em',
               textTransform: 'uppercase',
-              color: '#e7548a',
+              color: '#a52a5f',
               marginBottom: '22px',
             }}
           >
@@ -419,7 +419,7 @@ export function Chapter01Spill() {
               fontStyle: 'italic',
               fontSize: 'clamp(16px,1.4vw,20px)',
               lineHeight: 1.6,
-              color: '#4a3040',
+              color: '#383136',
               maxWidth: '44ch',
               margin: '0 0 32px',
             }}

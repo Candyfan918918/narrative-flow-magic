@@ -8,10 +8,10 @@ const SORA = "'Sora',sans-serif"
 const NEWS = "'Newsreader',serif"
 
 function bandColor(v: number) {
-  if (v < 200) return '#9e8f9c'
+  if (v < 200) return '#6f666c'
   if (v < 400) return '#7F77DD'
   if (v < 600) return '#c87c4a'
-  if (v < 800) return '#e7548a'
+  if (v < 800) return '#a52a5f'
   return '#c1216b'
 }
 
@@ -110,7 +110,7 @@ function ScanCard() {
       ref={ref}
       style={{
         width: 'min(420px,100%)',
-        background: 'linear-gradient(170deg,#1a1226,#100b1c 72%)',
+        background: 'linear-gradient(170deg,#1a1226,#100c14 72%)',
         border: '1px solid rgba(127,119,221,.28)',
         borderRadius: '26px',
         padding: '26px 26px 22px',
@@ -151,7 +151,7 @@ function ScanCard() {
             }}
           />
         </div>
-        <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '12px', color: '#9e7a8c', flex: 'none' }}>
+        <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '12px', color: '#6f666c', flex: 'none' }}>
           sample
         </span>
       </div>
@@ -217,8 +217,8 @@ function ScanCard() {
               />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '18px' }}>
-              <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '13px', color: '#9e7a8c' }}>a low hum</span>
-              <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '13px', color: '#e7548a' }}>deafening</span>
+              <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '13px', color: '#6f666c' }}>a low hum</span>
+              <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '13px', color: '#a52a5f' }}>deafening</span>
             </div>
           </div>
         </Phase>
@@ -325,7 +325,7 @@ function ScanCard() {
                   fontFamily: SORA,
                   fontWeight: 600,
                   fontSize: '10.5px',
-                  color: '#e7548a',
+                  color: '#a52a5f',
                   background: 'rgba(231,84,138,.13)',
                   border: '.5px solid rgba(231,84,138,.3)',
                   borderRadius: '999px',
@@ -371,7 +371,7 @@ function ScanCard() {
                 <ellipse cx="21" cy="29" rx="4" ry="5" fill="url(#pupG2)" />
                 <ellipse cx="35" cy="29" rx="4" ry="5" fill="url(#pupG2)" />
               </svg>
-              <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: '20px', color: '#f7e8f0' }}>
+              <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: '20px', color: '#fdfbf9' }}>
                 Carrying It Loud
               </div>
               <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '15px', color: '#c4a0b2', lineHeight: 1.5 }}>
@@ -384,7 +384,7 @@ function ScanCard() {
                 fontFamily: NEWS,
                 fontStyle: 'italic',
                 fontSize: '14px',
-                color: '#9e7a8c',
+                color: '#6f666c',
                 textAlign: 'center',
                 lineHeight: 1.5,
               }}
@@ -475,19 +475,19 @@ function ScanCard() {
                     fontSize: '10.5px',
                     letterSpacing: '.14em',
                     textTransform: 'uppercase',
-                    color: '#f7e8f0',
+                    color: '#fdfbf9',
                   }}
                 >
                   keep private
                 </div>
-                <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '11.5px', color: '#9e7a8c', marginTop: '3px' }}>
+                <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '11.5px', color: '#6f666c', marginTop: '3px' }}>
                   yours alone. saved to your journal.
                 </div>
               </div>
               <div
                 style={{
                   background: 'rgba(231,84,138,.10)',
-                  border: '1px solid #e7548a',
+                  border: '1px solid #a52a5f',
                   borderRadius: '12px',
                   padding: '11px 12px',
                   textAlign: 'center',
@@ -568,7 +568,7 @@ function PhaseHead({ reaction, prompt }: { reaction: string; prompt: string }) {
           fontSize: 'clamp(22px,5vw,30px)',
           lineHeight: 1.18,
           letterSpacing: '-.03em',
-          color: '#f7e8f0',
+          color: '#fdfbf9',
           marginTop: '14px',
         }}
       >

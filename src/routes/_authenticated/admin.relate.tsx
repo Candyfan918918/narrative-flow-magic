@@ -66,10 +66,10 @@ function AdminRelatePage() {
         ))}
       </div>
 
-      {loading && <div style={{ color: '#6b4a5c', fontSize: 14 }}>loading…</div>}
+      {loading && <div style={{ color: '#443c42', fontSize: 14 }}>loading…</div>}
       {error && <div style={{ color: '#c1216b', fontSize: 14 }}>error: {error}</div>}
       {!loading && !error && rows.length === 0 && (
-        <div style={{ background: '#fff', borderRadius: 16, padding: 24, color: '#6b4a5c', textAlign: 'center', border: '1px solid rgba(11,8,15,.08)' }}>
+        <div style={{ background: '#fff', borderRadius: 16, padding: 24, color: '#443c42', textAlign: 'center', border: '1px solid rgba(11,8,15,.08)' }}>
           no spills waiting. SLA is being met. 💚
         </div>
       )}
@@ -89,7 +89,7 @@ function QueueCard({ row }: { row: RelateQueueRow }) {
         <strong style={{ fontSize: 14 }}>{row.alias}</strong>
         <Badge color="#7f77dd">{row.pillar}</Badge>
         <Badge color={row.support === 'advice' ? '#c87c4a' : '#5b8a5e'}>{row.support === 'advice' ? 'wants advice' : 'wants to be heard'}</Badge>
-        <span style={{ marginLeft: 'auto', fontSize: 12, color: row.past_sla ? '#c1216b' : '#9e7a8c', fontWeight: row.past_sla ? 600 : 400 }}>
+        <span style={{ marginLeft: 'auto', fontSize: 12, color: row.past_sla ? '#c1216b' : '#6f666c', fontWeight: row.past_sla ? 600 : 400 }}>
           {row.past_sla ? `⚠ ${row.minutes_open} min · past SLA` : `${row.minutes_open} min ago`}
         </span>
       </div>
@@ -105,9 +105,9 @@ function QueueCard({ row }: { row: RelateQueueRow }) {
 function Stat({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: string }) {
   return (
     <div style={{ background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: 14, padding: '14px 16px' }}>
-      <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: '#9e7a8c' }}>{label}</div>
+      <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: '#6f666c' }}>{label}</div>
       <div style={{ fontSize: 26, fontWeight: 600, color: accent ?? '#0b080f', marginTop: 2 }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: '#6b4a5c', marginTop: 2 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 12, color: '#443c42', marginTop: 2 }}>{sub}</div>}
     </div>
   )
 }
@@ -156,7 +156,7 @@ function SchedulerHealthCard() {
   const overdueColor = h.scheduled_overdue > 10 ? '#c1216b' : undefined
   return (
     <div style={{ marginTop: 16, padding: 14, background: '#fff', borderRadius: 14, border: '1px solid rgba(11,8,15,.08)' }}>
-      <div style={{ fontSize: 11, letterSpacing: 1.2, textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 8 }}>
+      <div style={{ fontSize: 11, letterSpacing: 1.2, textTransform: 'uppercase', color: '#6f666c', marginBottom: 8 }}>
         retention scheduler · 24h
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 12 }}>
@@ -171,7 +171,7 @@ function SchedulerHealthCard() {
 
 const chipStyle = (active: boolean): React.CSSProperties => ({
   background: active ? '#0b080f' : '#fff',
-  color: active ? '#fff' : '#6b4a5c',
+  color: active ? '#fff' : '#443c42',
   border: `1px solid ${active ? '#0b080f' : 'rgba(11,8,15,.12)'}`,
   borderRadius: 999, padding: '6px 14px', fontSize: 13, cursor: 'pointer', textTransform: 'lowercase',
 })

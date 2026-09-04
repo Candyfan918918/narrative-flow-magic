@@ -9,14 +9,14 @@ export function EyeGradients() {
                 <radialGradient id="eyeG2" cx="40%" cy="18%" r="75%">
                   <stop offset="0%" stopColor="#fff" />
                   <stop offset="18%" stopColor="#ffd0e8" />
-                  <stop offset="48%" stopColor="#f060a0" />
-                  <stop offset="78%" stopColor="#c0206a" />
-                  <stop offset="100%" stopColor="#880040" />
+                  <stop offset="48%" stopColor="#a52a5f" />
+                  <stop offset="78%" stopColor="#c1216b" />
+                  <stop offset="100%" stopColor="#890041" />
                 </radialGradient>
                 {' '}
                 <radialGradient id="pupG2" cx="50%" cy="55%" r="58%">
-                  <stop offset="0%" stopColor="#3a1020" />
-                  <stop offset="100%" stopColor="#060106" />
+                  <stop offset="0%" stopColor="#100c14" />
+                  <stop offset="100%" stopColor="#100c14" />
                 </radialGradient>
               </defs>
             </svg>

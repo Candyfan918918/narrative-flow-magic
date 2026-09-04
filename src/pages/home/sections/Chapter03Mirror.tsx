@@ -15,22 +15,22 @@ export function Chapter03Mirror() {
                 {' '}
                 <div data-rv="swipe-l" style={{ textAlign: 'left', direction: 'ltr' }}>
                   {' '}
-                  <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '12px', letterSpacing: '.24em', textTransform: 'uppercase', color: '#e9c06a', marginBottom: '22px' }}>
+                  <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '12px', letterSpacing: '.24em', textTransform: 'uppercase', color: '#c1a02b', marginBottom: '22px' }}>
                     chapter 03 — the mirror ✦
                   </div>
                   {' '}
-                  <h2 data-words="" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: '1.08', letterSpacing: '-.04em', margin: '0 0 24px', color: '#f7e8f0' }}>
+                  <h2 data-words="" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: '1.08', letterSpacing: '-.04em', margin: '0 0 24px', color: '#fdfbf9' }}>
                     your patterns, 
                     <em style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '400', color: '#f7b8d4' }}>
                       read as cards.
                     </em>
                   </h2>
                   {' '}
-                  <p style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: 'clamp(16px,1.4vw,20px)', lineHeight: '1.6', color: '#caaebb', maxWidth: '44ch', margin: '0 0 32px' }}>
+                  <p style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: 'clamp(16px,1.4vw,20px)', lineHeight: '1.6', color: '#645b61', maxWidth: '44ch', margin: '0 0 32px' }}>
                     the mirror reads across your rooms and deals what keeps coming back — how deep it runs, which way it's moving, and how far you've already come.
                   </p>
                   {' '}
-                  <a href="/welcome" data-link="/welcome" data-hover="" data-mag="" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '15px', color: '#100c14', background: '#e9c06a', borderRadius: '999px', padding: '16px 30px', transition: 'background .3s' }}>
+                  <a href="/welcome" data-link="/welcome" data-hover="" data-mag="" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '15px', color: '#100c14', background: '#c1a02b', borderRadius: '999px', padding: '16px 30px', transition: 'background .3s' }}>
                     unlock the full mirror ✦
                   </a>
                   {' '}
@@ -40,12 +40,12 @@ export function Chapter03Mirror() {
                   {' '}
                   {/* the mirror's full read: cycling patterns with depth, trend + signal analytics */}
                   {' '}
-                  <div data-reactive="" data-glow="rgba(233,192,106,.6)" style={{ display: 'block', width: 'min(380px,92vw)', position: 'relative', borderRadius: '22px', overflow: 'hidden', background: 'radial-gradient(125% 80% at 50% 0%,#7F77DD2e,#1c0d16 58%,#140810)', border: '1px solid rgba(233,192,106,.85)', boxShadow: '0 40px 90px -34px rgba(0,0,0,.85),0 0 0 1px rgba(233,192,106,.33),0 0 38px -6px rgba(233,192,106,.4)', padding: '20px' }}>
+                  <div data-reactive="" data-glow="rgba(233,192,106,.6)" style={{ display: 'block', width: 'min(380px,92vw)', position: 'relative', borderRadius: '22px', overflow: 'hidden', background: 'radial-gradient(125% 80% at 50% 0%,#7F77DD2e,#100c14 58%,#100c14)', border: '1px solid rgba(233,192,106,.85)', boxShadow: '0 40px 90px -34px rgba(0,0,0,.85),0 0 0 1px rgba(233,192,106,.33),0 0 38px -6px rgba(233,192,106,.4)', padding: '20px' }}>
                     {' '}
                     <div style={{ position: 'absolute', inset: '0', borderRadius: '22px', background: 'linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.03) 18%,transparent 38%)', pointerEvents: 'none', zIndex: '2' }}>
                     </div>
                     {' '}
-                    <div style={{ position: 'absolute', top: '0', left: '12%', right: '12%', height: '1.5px', background: 'linear-gradient(90deg,transparent,#7F77DD,#e7548a,#5B8A5E,transparent)', opacity: '.4', pointerEvents: 'none', zIndex: '3' }}>
+                    <div style={{ position: 'absolute', top: '0', left: '12%', right: '12%', height: '1.5px', background: 'linear-gradient(90deg,transparent,#7F77DD,#a52a5f,#5B8A5E,transparent)', opacity: '.4', pointerEvents: 'none', zIndex: '3' }}>
                     </div>
                     {' '}
                     <div style={{ position: 'absolute', inset: '6px', border: '.5px solid rgba(233,192,106,.5)', borderRadius: '16px', pointerEvents: 'none' }}>
@@ -55,12 +55,12 @@ export function Chapter03Mirror() {
                       {' '}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                         {' '}
-                        <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '9.5px', letterSpacing: '.24em', color: '#e9c06a' }}>
+                        <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '9.5px', letterSpacing: '.24em', color: '#c1a02b' }}>
                           ✦ THE MIRROR — FULL READ
                         </span>
                         {' '}
                         <span style={{ display: 'inline-flex', gap: '5px', alignItems: 'center' }}>
-                          <span data-mdot="" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#e9c06a', transition: 'background .4s', display: 'block' }}>
+                          <span data-mdot="" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c1a02b', transition: 'background .4s', display: 'block' }}>
                           </span>
                           <span data-mdot="" style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(233,192,106,.28)', transition: 'background .4s', display: 'block' }}>
                           </span>
@@ -85,13 +85,13 @@ export function Chapter03Mirror() {
                               </span>
                             </span>
                             {' '}
-                            <span style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '700', fontSize: '22px', color: '#e9c06a', lineHeight: '1' }}>
+                            <span style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '700', fontSize: '22px', color: '#c1a02b', lineHeight: '1' }}>
                               V
                             </span>
                             {' '}
                           </div>
                           {' '}
-                          <div style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '22px', lineHeight: '1.08', margin: '2px 0 8px', color: '#fbe9f1', textAlign: 'center' }}>
+                          <div style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '22px', lineHeight: '1.08', margin: '2px 0 8px', color: '#fdfbf9', textAlign: 'center' }}>
                             Impostor at the Table
                           </div>
                           {' '}
@@ -120,7 +120,7 @@ export function Chapter03Mirror() {
                               <span data-mcount="" data-n="140" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '22px', lineHeight: '1', color: '#7F77DD', fontVariantNumeric: 'tabular-nums' }}>
                                 0
                               </span>
-                              <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: '#7a5f6c' }}>
+                              <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: '#6f666c' }}>
                                 all-time
                                 <br />
                                 signals
@@ -138,7 +138,7 @@ export function Chapter03Mirror() {
                             <circle cx="248" cy="16.9" r="4" fill="#7F77DD" />
                           </svg>
                           {' '}
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.08em', color: '#7a5f6c', marginTop: '2px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.08em', color: '#6f666c', marginTop: '2px' }}>
                             <span>
                               7 WEEKS AGO
                             </span>
@@ -147,13 +147,13 @@ export function Chapter03Mirror() {
                             </span>
                           </div>
                           {' '}
-                          <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.18em', color: '#7a5f6c', margin: '10px 0 5px' }}>
+                          <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.18em', color: '#6f666c', margin: '10px 0 5px' }}>
                             WHERE IT SHOWS UP
                           </div>
                           {' '}
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             {' '}
-                            <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '11px', color: '#e7548a' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '11px', color: '#a52a5f' }}>
                               <span>
                                 🗯
                               </span>
@@ -197,7 +197,7 @@ export function Chapter03Mirror() {
                             {' '}
                           </div>
                           {' '}
-                          <div style={{ marginTop: 'auto', fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '15px', lineHeight: '1.4', color: '#fbe9f1', textAlign: 'center' }}>
+                          <div style={{ marginTop: 'auto', fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '15px', lineHeight: '1.4', color: '#fdfbf9', textAlign: 'center' }}>
                             “140 rooms you earned and you still sit like the bouncer is en route.”
                           </div>
                           {' '}
@@ -208,21 +208,21 @@ export function Chapter03Mirror() {
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' }}>
                             {' '}
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '7px' }}>
-                              <span style={{ width: '24px', height: '24px', borderRadius: '7px', display: 'grid', placeItems: 'center', background: 'rgba(231,84,138,.14)', border: '.5px solid rgba(231,84,138,.33)', color: '#e7548a', fontSize: '13px' }}>
+                              <span style={{ width: '24px', height: '24px', borderRadius: '7px', display: 'grid', placeItems: 'center', background: 'rgba(231,84,138,.14)', border: '.5px solid rgba(231,84,138,.33)', color: '#a52a5f', fontSize: '13px' }}>
                                 ✸
                               </span>
-                              <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '9.5px', letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a' }}>
+                              <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '9.5px', letterSpacing: '.18em', textTransform: 'uppercase', color: '#a52a5f' }}>
                                 Personal
                               </span>
                             </span>
                             {' '}
-                            <span style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '700', fontSize: '22px', color: '#e9c06a', lineHeight: '1' }}>
+                            <span style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '700', fontSize: '22px', color: '#c1a02b', lineHeight: '1' }}>
                               IV
                             </span>
                             {' '}
                           </div>
                           {' '}
-                          <div style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '22px', lineHeight: '1.08', margin: '2px 0 8px', color: '#fbe9f1', textAlign: 'center' }}>
+                          <div style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '22px', lineHeight: '1.08', margin: '2px 0 8px', color: '#fdfbf9', textAlign: 'center' }}>
                             Avoidant Texter
                           </div>
                           {' '}
@@ -230,7 +230,7 @@ export function Chapter03Mirror() {
                             {' '}
                             <svg viewBox="0 0 120 120" style={{ position: 'absolute', left: '3px', top: '0', width: '110px', height: '110px', transform: 'rotate(-90deg)' }}>
                               <circle cx="60" cy="60" r="46" fill="none" stroke="rgba(255,255,255,.08)" strokeWidth="8" />
-                              <circle data-mring="" data-off="0" cx="60" cy="60" r="46" fill="none" stroke="#e7548a" strokeWidth="8" strokeLinecap="round" strokeDasharray="289" strokeDashoffset="289" style={{ filter: 'drop-shadow(0 0 6px rgba(231,84,138,.65))' }} />
+                              <circle data-mring="" data-off="0" cx="60" cy="60" r="46" fill="none" stroke="#a52a5f" strokeWidth="8" strokeLinecap="round" strokeDasharray="289" strokeDashoffset="289" style={{ filter: 'drop-shadow(0 0 6px rgba(231,84,138,.65))' }} />
                             </svg>
                             {' '}
                             <div style={{ position: 'absolute', left: '3px', top: '0', width: '110px', height: '110px', display: 'grid', placeItems: 'center' }}>
@@ -239,7 +239,7 @@ export function Chapter03Mirror() {
                               </span>
                             </div>
                             {' '}
-                            <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', textAlign: 'center', fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '10px', letterSpacing: '.14em', color: '#e7548a' }}>
+                            <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', textAlign: 'center', fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '10px', letterSpacing: '.14em', color: '#a52a5f' }}>
                               DEPTH 5/5
                             </div>
                             {' '}
@@ -248,10 +248,10 @@ export function Chapter03Mirror() {
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', margin: '8px 0 6px', paddingTop: '11px', borderTop: '.5px solid rgba(255,255,255,.08)' }}>
                             {' '}
                             <span style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                              <span data-mcount="" data-n="192" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '22px', lineHeight: '1', color: '#e7548a', fontVariantNumeric: 'tabular-nums' }}>
+                              <span data-mcount="" data-n="192" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '22px', lineHeight: '1', color: '#a52a5f', fontVariantNumeric: 'tabular-nums' }}>
                                 0
                               </span>
-                              <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: '#7a5f6c' }}>
+                              <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: '#6f666c' }}>
                                 all-time
                                 <br />
                                 signals
@@ -265,11 +265,11 @@ export function Chapter03Mirror() {
                           </div>
                           {' '}
                           <svg viewBox="0 0 248 66" preserveAspectRatio="none" style={{ width: '100%', height: '42px', display: 'block', overflow: 'visible' }}>
-                            <path data-mspark="" d="M0 53.2 L41.3 48.4 L82.7 48.4 L124 38.8 L165.3 34 L206.7 24.4 L248 10" fill="none" stroke="#e7548a" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="600" strokeDashoffset="600" style={{ filter: 'drop-shadow(0 0 4px rgba(231,84,138,.53))' }} />
-                            <circle cx="248" cy="10" r="4" fill="#e7548a" />
+                            <path data-mspark="" d="M0 53.2 L41.3 48.4 L82.7 48.4 L124 38.8 L165.3 34 L206.7 24.4 L248 10" fill="none" stroke="#a52a5f" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="600" strokeDashoffset="600" style={{ filter: 'drop-shadow(0 0 4px rgba(231,84,138,.53))' }} />
+                            <circle cx="248" cy="10" r="4" fill="#a52a5f" />
                           </svg>
                           {' '}
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.08em', color: '#7a5f6c', marginTop: '2px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.08em', color: '#6f666c', marginTop: '2px' }}>
                             <span>
                               7 WEEKS AGO
                             </span>
@@ -278,13 +278,13 @@ export function Chapter03Mirror() {
                             </span>
                           </div>
                           {' '}
-                          <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.18em', color: '#7a5f6c', margin: '10px 0 5px' }}>
+                          <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.18em', color: '#6f666c', margin: '10px 0 5px' }}>
                             WHERE IT SHOWS UP
                           </div>
                           {' '}
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             {' '}
-                            <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '11px', color: '#e7548a' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '11px', color: '#a52a5f' }}>
                               <span>
                                 🗯
                               </span>
@@ -328,7 +328,7 @@ export function Chapter03Mirror() {
                             {' '}
                           </div>
                           {' '}
-                          <div style={{ marginTop: 'auto', fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '15px', lineHeight: '1.4', color: '#fbe9f1', textAlign: 'center' }}>
+                          <div style={{ marginTop: 'auto', fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '15px', lineHeight: '1.4', color: '#fdfbf9', textAlign: 'center' }}>
                             “192 reads, zero replies. not mysterious bestie, just scared with great wifi.”
                           </div>
                           {' '}
@@ -347,13 +347,13 @@ export function Chapter03Mirror() {
                               </span>
                             </span>
                             {' '}
-                            <span style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '700', fontSize: '22px', color: '#e9c06a', lineHeight: '1' }}>
+                            <span style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '700', fontSize: '22px', color: '#c1a02b', lineHeight: '1' }}>
                               III
                             </span>
                             {' '}
                           </div>
                           {' '}
-                          <div style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '22px', lineHeight: '1.08', margin: '2px 0 8px', color: '#fbe9f1', textAlign: 'center' }}>
+                          <div style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '22px', lineHeight: '1.08', margin: '2px 0 8px', color: '#fdfbf9', textAlign: 'center' }}>
                             Heart on Read
                           </div>
                           {' '}
@@ -382,7 +382,7 @@ export function Chapter03Mirror() {
                               <span data-mcount="" data-n="54" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '22px', lineHeight: '1', color: '#c1216b', fontVariantNumeric: 'tabular-nums' }}>
                                 0
                               </span>
-                              <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: '#7a5f6c' }}>
+                              <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: '#6f666c' }}>
                                 all-time
                                 <br />
                                 signals
@@ -400,7 +400,7 @@ export function Chapter03Mirror() {
                             <circle cx="248" cy="10" r="4" fill="#c1216b" />
                           </svg>
                           {' '}
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.08em', color: '#7a5f6c', marginTop: '2px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.08em', color: '#6f666c', marginTop: '2px' }}>
                             <span>
                               7 WEEKS AGO
                             </span>
@@ -409,13 +409,13 @@ export function Chapter03Mirror() {
                             </span>
                           </div>
                           {' '}
-                          <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.18em', color: '#7a5f6c', margin: '10px 0 5px' }}>
+                          <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.18em', color: '#6f666c', margin: '10px 0 5px' }}>
                             WHERE IT SHOWS UP
                           </div>
                           {' '}
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             {' '}
-                            <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '11px', color: '#e7548a' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px', fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '11px', color: '#a52a5f' }}>
                               <span>
                                 🗯
                               </span>
@@ -459,7 +459,7 @@ export function Chapter03Mirror() {
                             {' '}
                           </div>
                           {' '}
-                          <div style={{ marginTop: 'auto', fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '15px', lineHeight: '1.4', color: '#fbe9f1', textAlign: 'center' }}>
+                          <div style={{ marginTop: 'auto', fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontWeight: '500', fontSize: '15px', lineHeight: '1.4', color: '#fdfbf9', textAlign: 'center' }}>
                             “54 hearts dropped, zero texts back. you flirt like a hit-and-run.”
                           </div>
                           {' '}
@@ -469,7 +469,7 @@ export function Chapter03Mirror() {
                       {' '}
                       <div style={{ marginTop: '14px', paddingTop: '13px', borderTop: '.5px solid rgba(255,255,255,.08)' }}>
                         {' '}
-                        <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.18em', color: '#7a5f6c', marginBottom: '8px' }}>
+                        <div style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '8.5px', letterSpacing: '.18em', color: '#6f666c', marginBottom: '8px' }}>
                           THE MIRROR WORLD · 5 DISTRICTS
                         </div>
                         {' '}
@@ -478,23 +478,23 @@ export function Chapter03Mirror() {
                           <span style={{ flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,.03)', border: '.5px solid rgba(255,255,255,.07)', borderRadius: '12px', padding: '10px 4px 8px' }}>
                             {' '}
                             <span style={{ display: 'flex', alignItems: 'flex-end', gap: '3px', height: '32px' }}>
-                              <span style={{ width: '5px', height: '31px', borderRadius: '2px 2px 0 0', background: '#e7548a', display: 'block' }}>
+                              <span style={{ width: '5px', height: '31px', borderRadius: '2px 2px 0 0', background: '#a52a5f', display: 'block' }}>
                               </span>
-                              <span style={{ width: '5px', height: '21px', borderRadius: '2px 2px 0 0', background: '#e7548a', opacity: '.75', display: 'block' }}>
+                              <span style={{ width: '5px', height: '21px', borderRadius: '2px 2px 0 0', background: '#a52a5f', opacity: '.75', display: 'block' }}>
                               </span>
-                              <span style={{ width: '5px', height: '21px', borderRadius: '2px 2px 0 0', background: '#e7548a', opacity: '.6', display: 'block' }}>
+                              <span style={{ width: '5px', height: '21px', borderRadius: '2px 2px 0 0', background: '#a52a5f', opacity: '.6', display: 'block' }}>
                               </span>
-                              <span style={{ width: '5px', height: '16px', borderRadius: '2px 2px 0 0', background: '#e7548a', opacity: '.45', display: 'block' }}>
+                              <span style={{ width: '5px', height: '16px', borderRadius: '2px 2px 0 0', background: '#a52a5f', opacity: '.45', display: 'block' }}>
                               </span>
                               <span style={{ width: '5px', height: '21px', borderRadius: '2px 2px 0 0', background: '#6f7a5e', display: 'block' }}>
                               </span>
                             </span>
                             {' '}
-                            <span style={{ color: '#e7548a', fontSize: '11px', lineHeight: '1' }}>
+                            <span style={{ color: '#a52a5f', fontSize: '11px', lineHeight: '1' }}>
                               ✸
                             </span>
                             {' '}
-                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#7a5f6c' }}>
+                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#6f666c' }}>
                               personal
                             </span>
                             {' '}
@@ -515,7 +515,7 @@ export function Chapter03Mirror() {
                               ▲
                             </span>
                             {' '}
-                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#7a5f6c' }}>
+                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#6f666c' }}>
                               career
                             </span>
                             {' '}
@@ -536,7 +536,7 @@ export function Chapter03Mirror() {
                               ♥
                             </span>
                             {' '}
-                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#7a5f6c' }}>
+                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#6f666c' }}>
                               relationship
                             </span>
                             {' '}
@@ -555,7 +555,7 @@ export function Chapter03Mirror() {
                               ⌂
                             </span>
                             {' '}
-                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#7a5f6c' }}>
+                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#6f666c' }}>
                               family
                             </span>
                             {' '}
@@ -574,7 +574,7 @@ export function Chapter03Mirror() {
                               ✦
                             </span>
                             {' '}
-                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#7a5f6c' }}>
+                            <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '7.5px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#6f666c' }}>
                               social
                             </span>
                             {' '}
@@ -590,11 +590,11 @@ export function Chapter03Mirror() {
                           🔒
                         </span>
                         {' '}
-                        <span style={{ flex: '1', fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '13px', color: '#e9c06a', lineHeight: '1.4' }}>
+                        <span style={{ flex: '1', fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '13px', color: '#c1a02b', lineHeight: '1.4' }}>
                           subscription required for full mirror access
                         </span>
                         {' '}
-                        <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '11px', color: '#100c14', background: '#e9c06a', borderRadius: '999px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '700', fontSize: '11px', color: '#100c14', background: '#c1a02b', borderRadius: '999px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
                           unlock →
                         </span>
                         {' '}

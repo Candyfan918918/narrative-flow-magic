@@ -1,38 +1,67 @@
-/* Shutap v2 design tokens — sourced from the supportive-room redesign
-   (Stream.dc.html). The prototype uses literal hex inline; these custom
-   properties capture the same values for reuse across the React app. */
+/* Shutap design system v5 — "editorial white".
+   White canvas, hairline cards, pink only as an outline or a headline.
+   Two typefaces (Sora for structure, Newsreader italic for prose),
+   nine type steps, four button heights. Nothing else gets invented. */
 :root {
-  /* surfaces */
-  --bg: #fdf0f5;          /* page background — warm blush, never pure white */
-  --ink: #0b080f;         /* primary text */
+  /* canvas & ink */
+  --bg: #ffffff;          /* page canvas */
+  --bg-card: #fdfbf9;     /* card fields */
   --surface: #ffffff;     /* cards */
-  --surface-2: #f7e8f0;   /* hover fills, avatars, tints */
+  --surface-2: #fdfbf9;   /* hover fills, tints */
+  --ink: #17131a;         /* default text + ink buttons */
+  --ink-strong: #0b080f;  /* section headlines */
+  --dark-bg: #100c14;     /* footer, overlays */
 
   /* text hierarchy */
-  --text-2: #6b4a5c;      /* secondary */
-  --text-3: #9e7a8c;      /* tertiary / timestamps */
-  --ink-soft: #4a3040;    /* react labels */
+  --text-lead: #443c42;
+  --text-prose: #383136;
+  --text-muted: #645b61;
+  --text-meta: #6f666c;
+  /* legacy aliases (still resolve so older pages render) */
+  --text-2: #443c42;
+  --text-3: #6f666c;
+  --ink-soft: #383136;
 
-  /* brand pinks */
-  --pink: #e7548a;        /* primary accent */
-  --wine: #c1216b;        /* prose links, emphasis numerals */
-  --wine-dark: #890041;   /* prose-link hover */
+  /* the pink ladder — each rung has exactly one job */
+  --pink: #e7548a;            /* wordmark "ap" only */
+  --pink-mid: #a52a5f;        /* CTA gradient start, accent dot */
+  --pink-cta-end: #7b1740;    /* CTA gradient end */
+  --pink-link: #8e1c4c;       /* links, plum headlines */
+  --pink-link-hover: #6d1239; /* link hover */
+  --pink-spill: #c1216b;      /* spill headline + edge */
+  --pink-crisis: #890041;     /* crisis headline + edge */
+  --wine: #c1216b;
+  --wine-dark: #890041;
+  --cta: linear-gradient(160deg, #a52a5f, #7b1740);
 
-  /* warm aubergine (companion / dark surfaces) */
-  --dark-1: #2e0d1a;
-  --dark-2: #1a0a12;
-
-  /* live / supportive signals */
-  --live: #5dcaa5;        /* breathing presence dot */
+  /* accents */
+  --indigo: #7f77dd;      /* scan + card wash */
+  --live: #5dcaa5;
+  --dark-1: #100c14;
+  --dark-2: #100c14;
 
   /* reaction palette */
-  --r-heard: #e7548a;
+  --r-heard: #a52a5f;
   --r-same: #c87c4a;
   --r-strong: #5b8a5e;
   --r-time: #7f77dd;
   --r-brave: #c1a02b;
 
-  /* borders */
+  /* box outlines — every info box carries its own edge shade */
+  --edge-composer: 1.5px solid rgba(231, 84, 138, 0.35);
+  --edge-saved: 1px solid rgba(231, 84, 138, 0.3);
+  --edge-item: 1px solid rgba(231, 84, 138, 0.22);
+  --edge-limit: 1px dashed rgba(142, 28, 76, 0.32);
+  --edge-spill: 1px solid rgba(193, 33, 107, 0.28);
+  --edge-crisis: 1px solid rgba(137, 0, 65, 0.35);
+  --edge-scan: 1px solid rgba(127, 119, 221, 0.28);
   --border: rgba(11, 8, 15, 0.08);
   --border-2: rgba(11, 8, 15, 0.16);
+
+  /* card anatomy */
+  --radius-card: 22px;
+  --radius-inner: 16px;
+  --radius-item: 14px;
+  --shadow-card: 0 12px 30px -24px rgba(80, 10, 45, 0.3);
+  --shadow-cta: 0 12px 24px -14px rgba(45, 14, 28, 0.42);
 }

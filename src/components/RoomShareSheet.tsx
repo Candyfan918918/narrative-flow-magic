@@ -102,7 +102,7 @@ export function RoomShareSheet({
           overflowY: 'auto',
           overscrollBehavior: 'contain',
           WebkitOverflowScrolling: 'touch',
-          background: 'linear-gradient(180deg,#1a0e1c 0%, #120815 100%)',
+          background: 'linear-gradient(180deg,#100c14 0%, #100c14 100%)',
           border: '.5px solid rgba(255,255,255,.12)',
           borderRadius: '22px 22px 0 0',
           padding: '14px 16px calc(18px + env(safe-area-inset-bottom,0px))',
@@ -125,7 +125,7 @@ export function RoomShareSheet({
           fontSize: 13, lineHeight: 1.45, color: '#b89bac',
           padding: '0 4px',
         }}>
-          <span aria-hidden style={{ color: '#e7548a', fontSize: 11, letterSpacing: '-.1em', flex: '0 0 auto', lineHeight: 1.6 }}>✦✦</span>
+          <span aria-hidden style={{ color: '#a52a5f', fontSize: 11, letterSpacing: '-.1em', flex: '0 0 auto', lineHeight: 1.6 }}>✦✦</span>
           <span>sharing this room — de-identified. only the headline and a link travel, never the full story.</span>
         </div>
 
@@ -134,24 +134,24 @@ export function RoomShareSheet({
           position: 'relative',
           borderRadius: 18,
           padding: '22px 20px',
-          background: 'radial-gradient(120% 90% at 50% 0%, #2a0d18, #160810)',
+          background: 'radial-gradient(120% 90% at 50% 0%, #2a0d18, #100c14)',
           border: '.5px solid rgba(255,255,255,.12)',
           display: 'flex', alignItems: 'center', gap: 14,
         }}>
           <div style={{
             width: 48, height: 48, borderRadius: '50%',
-            background: 'linear-gradient(135deg,#f060a0,#890041)',
+            background: 'linear-gradient(135deg,#a52a5f,#890041)',
             display: 'grid', placeItems: 'center', fontSize: 24, flex: 'none',
           }}>{room.emoji || '🩷'}</div>
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{
               fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 10.5,
-              letterSpacing: '.22em', textTransform: 'uppercase', color: '#e7548a',
+              letterSpacing: '.22em', textTransform: 'uppercase', color: '#a52a5f',
               marginBottom: 4,
             }}>a room on shutap</div>
             <div style={{
-              fontFamily: "'Cormorant Garamond',Newsreader,serif", fontStyle: 'italic',
-              fontSize: 20, lineHeight: 1.25, color: '#f7e8f0',
+              fontFamily: "'Newsreader',Newsreader,serif", fontStyle: 'italic',
+              fontSize: 20, lineHeight: 1.25, color: '#fdfbf9',
               display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
             }}>{room.title}</div>
@@ -175,7 +175,7 @@ export function RoomShareSheet({
               border: '.5px solid rgba(255,255,255,.12)',
               borderRadius: 14,
               padding: '11px 13px',
-              color: '#f7e8f0',
+              color: '#fdfbf9',
               fontFamily: 'Newsreader,serif',
               fontStyle: 'italic',
               fontSize: 14.5,
@@ -216,7 +216,7 @@ export function RoomShareSheet({
             style={{
               background: 'transparent', border: 'none', cursor: 'pointer',
               fontFamily: "'Newsreader',serif", fontStyle: 'italic',
-              fontSize: 13.5, color: '#9b8090', flex: 'none', padding: 4,
+              fontSize: 13.5, color: '#6f666c', flex: 'none', padding: 4,
             }}
           >close</button>
         </div>
@@ -224,7 +224,7 @@ export function RoomShareSheet({
         {toastMsg && (
           <div style={{
             position: 'fixed', left: '50%', bottom: 28, transform: 'translateX(-50%)',
-            background: 'rgba(20,10,22,.96)', color: '#f7e8f0',
+            background: 'rgba(20,10,22,.96)', color: '#fdfbf9',
             padding: '10px 16px', borderRadius: 999,
             border: '.5px solid rgba(255,255,255,.16)',
             fontFamily: 'Sora,sans-serif', fontSize: 12, zIndex: 240,

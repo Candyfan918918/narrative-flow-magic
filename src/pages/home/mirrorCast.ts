@@ -43,7 +43,7 @@ export const DEMO_MIRROR_CAST: DemoPattern[] = [
     district: 'personal',
     districtLabel: 'Personal',
     districtSymbol: '✸',
-    districtColor: '#e7548a',
+    districtColor: '#a52a5f',
     rarity: 'IV',
     depth: 5,
     signals: 192,
@@ -81,7 +81,7 @@ export const DEMO_DISTRICTS: Array<{
   color: string
   patterns: Array<{ depth: number; ruined?: boolean }>
 }> = [
-  { key: 'personal', label: 'personal', symbol: '✸', color: '#e7548a', patterns: [{ depth: 5 }, { depth: 3 }, { depth: 2 }, { depth: 4, ruined: true }] },
+  { key: 'personal', label: 'personal', symbol: '✸', color: '#a52a5f', patterns: [{ depth: 5 }, { depth: 3 }, { depth: 2 }, { depth: 4, ruined: true }] },
   { key: 'career', label: 'career', symbol: '▲', color: '#7F77DD', patterns: [{ depth: 5 }, { depth: 4 }, { depth: 2 }, { depth: 1 }] },
   { key: 'relationship', label: 'relationship', symbol: '♥', color: '#c1216b', patterns: [{ depth: 3 }, { depth: 4 }, { depth: 2, ruined: true }] },
   { key: 'family', label: 'family', symbol: '⌂', color: '#c87c4a', patterns: [{ depth: 3 }, { depth: 2 }, { depth: 4 }] },

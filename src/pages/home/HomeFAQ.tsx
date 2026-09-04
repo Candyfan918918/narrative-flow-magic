@@ -24,18 +24,18 @@ export const HOME_FAQ: Array<{ q: string; a: string }> = [
 
 export function HomeFAQ({ onOpenSpill, onOpenScan }: { onOpenSpill: () => void; onOpenScan: () => void }) {
   return (
-    <section style={{ position: 'relative', background: '#fdf0f5', padding: 'clamp(46px,7vh,80px) 22px clamp(36px,5vh,60px)' }}>
+    <section style={{ position: 'relative', background: '#ffffff', padding: 'clamp(46px,7vh,80px) 22px clamp(36px,5vh,60px)' }}>
       <div style={{ maxWidth: 740, margin: '0 auto' }}>
-        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 14 }}>
+        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#a52a5f', marginBottom: 14 }}>
           what is shutap
         </div>
         <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(26px,3.4vw,44px)', letterSpacing: '-.03em', lineHeight: 1.08, margin: '0 0 16px', color: '#0b080f' }}>
           questions, <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', fontWeight: 400 }}>answered.</em>
         </h2>
-        <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, color: '#2e1a26', lineHeight: 1.65, margin: '0 0 10px', maxWidth: '52ch' }}>
+        <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, color: '#100c14', lineHeight: 1.65, margin: '0 0 10px', maxWidth: '52ch' }}>
           a pseudonymous place to vent about relationships, marriage, family, and work — and see what actually happened next for people who lived your exact thing.
         </p>
-        <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15.5, color: '#6b4a5c', lineHeight: 1.65, margin: '0 0 24px', maxWidth: '52ch' }}>
+        <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15.5, color: '#443c42', lineHeight: 1.65, margin: '0 0 24px', maxWidth: '52ch' }}>
           <span onClick={onOpenSpill} style={{ color: '#c1216b', cursor: 'pointer' }}>spill it</span> — one question at a time, the companion helps you find the words. or{' '}
           <span onClick={onOpenScan} style={{ color: '#c1216b', cursor: 'pointer' }}>scan it</span> — sixty seconds of questions, a private read saved just for you.
         </p>
@@ -52,9 +52,9 @@ export function HomeFAQ({ onOpenSpill, onOpenScan }: { onOpenSpill: () => void; 
             >
               <summary style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', listStyle: 'none', fontFamily: SORA, fontWeight: 600, fontSize: 14, color: '#0b080f' }}>
                 <span>{f.q}</span>
-                <span aria-hidden style={{ color: '#e7548a', fontSize: 20, fontWeight: 300 }}>+</span>
+                <span aria-hidden style={{ color: '#a52a5f', fontSize: 20, fontWeight: 300 }}>+</span>
               </summary>
-              <p style={{ marginTop: 10, fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, color: '#6b4a5c', lineHeight: 1.6, maxWidth: '52ch' }}>
+              <p style={{ marginTop: 10, fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, color: '#443c42', lineHeight: 1.6, maxWidth: '52ch' }}>
                 {f.a}
               </p>
             </details>

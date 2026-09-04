@@ -313,10 +313,10 @@ function eyeSVG(size = 32) {
 
 function Thinking({ text = 'ok hang on…' }: { text?: string }) {
   return (
-    <div style={{ display: 'flex', gap: 5, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#9e7a8c' }}>
-      <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', display: 'block', animation: 'blinkdot 1.2s infinite' }} />
-      <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', display: 'block', animation: 'blinkdot 1.2s .2s infinite' }} />
-      <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', display: 'block', animation: 'blinkdot 1.2s .4s infinite' }} />
+    <div style={{ display: 'flex', gap: 5, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6f666c' }}>
+      <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', display: 'block', animation: 'blinkdot 1.2s infinite' }} />
+      <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', display: 'block', animation: 'blinkdot 1.2s .2s infinite' }} />
+      <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', display: 'block', animation: 'blinkdot 1.2s .4s infinite' }} />
       &nbsp;{text}
     </div>
   )
@@ -327,10 +327,10 @@ function ChromeBar({ step, total, onClose }: { step: number; total: number; onCl
     <div style={{ flex: 'none', padding: '18px 22px 14px', display: 'flex', alignItems: 'center', gap: 16, borderBottom: '.5px solid rgba(255,255,255,.06)' }}>
       <div style={{ display: 'flex', gap: 4, flex: 1 }}>
         {Array.from({ length: total }, (_, i) => (
-          <span key={i} style={{ height: 3, flex: 1, borderRadius: 2, background: i < step ? '#e7548a' : 'rgba(255,255,255,.12)', transition: 'background .3s' }} />
+          <span key={i} style={{ height: 3, flex: 1, borderRadius: 2, background: i < step ? '#a52a5f' : 'rgba(255,255,255,.12)', transition: 'background .3s' }} />
         ))}
       </div>
-      <div role="button" onClick={onClose} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', cursor: 'pointer', flex: 'none' }}>close</div>
+      <div role="button" onClick={onClose} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#6f666c', cursor: 'pointer', flex: 'none' }}>close</div>
     </div>
   )
 }
@@ -691,15 +691,15 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
   const hasQ = !!lastCompanion?.hasQ
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#100b1c' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#100c14' }}>
       {/* shared eye gradients (matches parent Landing defs). */}
       <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
         <defs>
           <linearGradient id="eyeG" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#e7548a" /><stop offset="100%" stopColor="#a01a55" />
+            <stop offset="0%" stopColor="#a52a5f" /><stop offset="100%" stopColor="#6d1239" />
           </linearGradient>
           <linearGradient id="pupG" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#2e0d1a" /><stop offset="100%" stopColor="#100608" />
+            <stop offset="0%" stopColor="#100c14" /><stop offset="100%" stopColor="#100608" />
           </linearGradient>
         </defs>
       </svg>
@@ -711,7 +711,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
           <div ref={bodyRef} style={{ flex: 1, overflowY: 'auto', padding: '34px 22px 32px', maxWidth: 560, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 26 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               {eyeSVG(30)}
-              <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#e7548a' }}>spill</div>
+              <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#a52a5f' }}>spill</div>
             </div>
 
             {bubbles.length > 0 && (() => {
@@ -727,7 +727,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
                     style={{
                       fontFamily: NEWSREADER, fontStyle: 'italic', fontWeight: 500,
                       fontSize: 'clamp(24px,5.4vw,36px)', lineHeight: 1.22,
-                      color: hasQ ? '#f7b8d4' : '#f7e8f0',
+                      color: hasQ ? '#f7b8d4' : '#fdfbf9',
                       animation: 'fadeUp .45s ease-out both',
                     }}
                   >{star}</div>
@@ -736,17 +736,17 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
             })()}
 
             {thinking && phase === 'chat' && (
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#9e7a8c' }}>
-                <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'blinkdot 1.2s infinite' }} />
-                <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'blinkdot 1.2s .2s infinite' }} />
-                <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'blinkdot 1.2s .4s infinite' }} />
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#6f666c' }}>
+                <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', animation: 'blinkdot 1.2s infinite' }} />
+                <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', animation: 'blinkdot 1.2s .2s infinite' }} />
+                <i style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', animation: 'blinkdot 1.2s .4s infinite' }} />
                 &nbsp;ok hang on…
               </div>
             )}
 
             {phase === 'chat' && !thinking && (
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 16, padding: '13px 15px', transition: 'border-color .18s' }}
-                onFocusCapture={e => (e.currentTarget.style.borderColor = '#e7548a')}
+                onFocusCapture={e => (e.currentTarget.style.borderColor = '#a52a5f')}
                 onBlurCapture={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,.14)')}
               >
                 <textarea
@@ -756,15 +756,15 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const v = input.trim(); if (v) { setInput(''); void runTurn(v) } } }}
                   placeholder={hasQ ? 'answer however it comes…' : 'keep going… i\u2019m listening'}
                   autoFocus
-                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#f7e8f0', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 19, resize: 'none', maxHeight: 160, lineHeight: 1.5 }}
+                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#fdfbf9', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 19, resize: 'none', maxHeight: 160, lineHeight: 1.5 }}
                 />
-                <div role="button" onClick={() => { const v = input.trim(); if (v) { setInput(''); void runTurn(v) } }} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#e7548a', cursor: 'pointer', flex: 'none', paddingBottom: 2 }}>send →</div>
+                <div role="button" onClick={() => { const v = input.trim(); if (v) { setInput(''); void runTurn(v) } }} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#a52a5f', cursor: 'pointer', flex: 'none', paddingBottom: 2 }}>send →</div>
               </div>
             )}
 
             {phase === 'reflect' && thinking && <Thinking />}
             {reflectSummary && (
-              <div style={{ background: 'rgba(255,255,255,.04)', borderLeft: '2px solid rgba(231,84,138,.4)', padding: '14px 16px', borderRadius: '0 12px 12px 0', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.55, color: '#f7e8f0' }}>{reflectSummary}</div>
+              <div style={{ background: 'rgba(255,255,255,.04)', borderLeft: '2px solid rgba(231,84,138,.4)', padding: '14px 16px', borderRadius: '0 12px 12px 0', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.55, color: '#fdfbf9' }}>{reflectSummary}</div>
             )}
 
             {phase === 'support' && (
@@ -773,11 +773,11 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div role="button" onClick={() => void runCompose('heard')} style={{ cursor: 'pointer', padding: 16, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 14, textAlign: 'center', transition: '.15s' }}>
                     <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', color: '#f7b8d4', marginBottom: 6 }}>just to be heard</div>
-                    <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0' }}>sit with me. you don’t have to fix anything.</div>
+                    <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#fdfbf9' }}>sit with me. you don’t have to fix anything.</div>
                   </div>
                   <div role="button" onClick={() => void runCompose('advice')} style={{ cursor: 'pointer', padding: 16, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 14, textAlign: 'center', transition: '.15s' }}>
                     <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', color: '#a8d4a9', marginBottom: 6 }}>open to advice</div>
-                    <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#f7e8f0' }}>the room can share what it’d do.</div>
+                    <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#fdfbf9' }}>the room can share what it’d do.</div>
                   </div>
                 </div>
               </div>
@@ -796,10 +796,10 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
 
         {phase === 'preview' && composed && (
           <div ref={bodyRef} style={{ flex: 1, overflowY: 'auto', padding: '26px 22px 24px', maxWidth: 580, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#e7548a' }}>preview · in your words</div>
+            <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.16em', textTransform: 'uppercase', color: '#a52a5f' }}>preview · in your words</div>
             <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#c4a0b2' }}>here’s your story — cleaned up a little, but still yours; did i keep it true? type right over anything to fix it, or tell me what to change below — then pick where it lives.</div>
             {composed.edit_summary && (
-              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c' }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#6f666c' }}>
                 {eyeSVG(16)}<span>{composed.edit_summary}</span>
               </div>
             )}
@@ -809,7 +809,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
               </div>
             )}
             <div style={{ background: 'rgba(255,255,255,.035)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 18, padding: '20px 20px 18px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'Inter', fontWeight: 500, fontSize: 12.5, color: '#9e7a8c', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'Sora', fontWeight: 500, fontSize: 12.5, color: '#6f666c', marginBottom: 12 }}>
                 {(() => {
                   let alias = 'you', emoji = '🩷'
                   try { const raw = typeof window !== 'undefined' ? localStorage.getItem('shutap_alias') : null
@@ -824,7 +824,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
                 suppressContentEditableWarning
                 spellCheck={false}
                 onBlur={syncPreviewDOM}
-                style={{ outline: 'none', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 23, lineHeight: 1.3, color: '#f7e8f0', borderRadius: 6, transition: 'background .15s' }}
+                style={{ outline: 'none', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 23, lineHeight: 1.3, color: '#fdfbf9', borderRadius: 6, transition: 'background .15s' }}
               >{composed.title || 'untitled'}</div>
               <div
                 ref={bodyElRef}
@@ -837,12 +837,12 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
               {composed.tags.length > 0 && (
                 <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {composed.tags.map((t, i) => (
-                    <span key={i} style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.02em', color: '#e7548a', background: 'rgba(231,84,138,.13)', borderRadius: 999, padding: '3px 10px' }}>#{t}</span>
+                    <span key={i} style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.02em', color: '#a52a5f', background: 'rgba(231,84,138,.13)', borderRadius: 999, padding: '3px 10px' }}>#{t}</span>
                   ))}
                 </div>
               )}
             </div>
-            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c' }}>🔒 every edit gets re-checked by the privacy shield before it saves.</div>
+            <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#6f666c' }}>🔒 every edit gets re-checked by the privacy shield before it saves.</div>
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 16, padding: '11px 14px', marginTop: 2 }}>
               <textarea
                 rows={1}
@@ -850,16 +850,16 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
                 onChange={e => setEditInstruction(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void runAIEdit() } }}
                 placeholder='or tell me: “make it shorter”, “add the part about the rent”…'
-                style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#f7e8f0', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, resize: 'none', maxHeight: 120, lineHeight: 1.5 }}
+                style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#fdfbf9', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, resize: 'none', maxHeight: 120, lineHeight: 1.5 }}
               />
-              <div role="button" onClick={() => void runAIEdit()} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#e7548a', cursor: aiEditing ? 'wait' : 'pointer', flex: 'none', paddingBottom: 2 }}>{aiEditing ? '…' : 'edit →'}</div>
+              <div role="button" onClick={() => void runAIEdit()} style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14, color: '#a52a5f', cursor: aiEditing ? 'wait' : 'pointer', flex: 'none', paddingBottom: 2 }}>{aiEditing ? '…' : 'edit →'}</div>
             </div>
             <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 11 }}>
               <div role="button" onClick={() => void publishOrSave(false)} style={{ cursor: 'pointer', padding: '15px 14px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.14)', borderRadius: 15 }}>
                 <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: '#f7b8d4' }}>keep as journal</div>
                 <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2', marginTop: 5 }}>private draft. only you. edit &amp; post whenever.</div>
               </div>
-              <div role="button" onClick={() => void publishOrSave(true)} style={{ cursor: 'pointer', padding: '15px 14px', background: '#e7548a', border: '1px solid #e7548a', borderRadius: 15 }}>
+              <div role="button" onClick={() => void publishOrSave(true)} style={{ cursor: 'pointer', padding: '15px 14px', background: '#a52a5f', border: '1px solid #a52a5f', borderRadius: 15 }}>
                 <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: '#fff' }}>post to a room →</div>
                 <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#ffe0ee', marginTop: 5 }}>open it up {supportMode === 'advice' ? 'for what the room would do.' : 'so others who lived it can sit with you.'}</div>
               </div>
@@ -871,7 +871,7 @@ export function SpillModal({ open, onClose }: { open: boolean; onClose: () => vo
           <div style={{ flex: 1, display: 'grid', placeItems: 'center', padding: '34px 22px', textAlign: 'center' }}>
             <div>
               {eyeSVG(50)}
-              <div style={{ marginTop: 20, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 26, lineHeight: 1.35, color: '#f7e8f0' }}>
+              <div style={{ marginTop: 20, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 26, lineHeight: 1.35, color: '#fdfbf9' }}>
                 {phase === 'publishing' ? 'your room is open.' : 'saved to your journal.'}
               </div>
               <div style={{ marginTop: 12 }}><Thinking text={phase === 'publishing' ? 'taking you in' : 'opening your journal'} /></div>

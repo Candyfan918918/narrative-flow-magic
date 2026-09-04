@@ -39,7 +39,7 @@ function hashKey(input: { pillar?: string | null; title?: string | null; body?: 
 
 // Ordered identically to the iframe's REACTIONS (getter in Landing.dc.html line 427).
 const REACTIONS: Array<{ k: keyof LandingRoom['reactions']; color: string }> = [
-  { k: 'heard',  color: '#e7548a' },
+  { k: 'heard',  color: '#a52a5f' },
   { k: 'same',   color: '#c87c4a' },
   { k: 'strong', color: '#5B8A5E' },
   { k: 'time',   color: '#7F77DD' },
@@ -247,16 +247,16 @@ export function LandingNativePage() {
   const frame = useMemo(() => ONBOARDING_FRAMES[onbIdx], [onbIdx])
 
   return (
-    <div style={{ background: '#fdf0f5', color: '#0b080f', minHeight: '100vh', fontFamily: "'Inter',system-ui,sans-serif" }}>
+    <div style={{ background: '#ffffff', color: '#0b080f', minHeight: '100vh', fontFamily: "'Sora',system-ui,sans-serif" }}>
       {/* shared eye gradients — same defs the iframe used */}
       <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
         <defs>
           <linearGradient id="eyeG" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#e7548a" />
-            <stop offset="100%" stopColor="#a01a55" />
+            <stop offset="0%" stopColor="#a52a5f" />
+            <stop offset="100%" stopColor="#6d1239" />
           </linearGradient>
           <linearGradient id="pupG" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#2e0d1a" />
+            <stop offset="0%" stopColor="#100c14" />
             <stop offset="100%" stopColor="#100608" />
           </linearGradient>
         </defs>
@@ -271,34 +271,34 @@ export function LandingNativePage() {
         <section style={{ position: 'relative', overflow: 'hidden', padding: '64px 0 36px' }}>
           <div style={{ position: 'absolute', inset: '-20% 0 auto 10%', height: '70vh', background: 'radial-gradient(ellipse at center,rgba(231,84,138,.13),transparent 62%)', pointerEvents: 'none', animation: 'drift 22s ease-in-out infinite' }} />
           <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px', position: 'relative' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 600, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 22 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'shimmer 3s ease-in-out infinite', display: 'block' }} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 600, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#a52a5f', marginBottom: 22 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', animation: 'shimmer 3s ease-in-out infinite', display: 'block' }} />
               <span>rooms open now</span>
             </div>
             <Words as="h1" style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(30px,6vw,50px)', lineHeight: 1.15, letterSpacing: '-.015em', margin: '0 0 20px', color: '#0b080f', maxWidth: '14ch' }}>
-              finally, somewhere to <em style={{ fontStyle: 'normal', background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>not shut up.</em>
+              finally, somewhere to <em style={{ fontStyle: 'normal', background: 'linear-gradient(92deg,#a52a5f,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>not shut up.</em>
             </Words>
-            <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 18, lineHeight: 1.6, color: '#4a3040', maxWidth: '46ch', margin: '0 0 30px' }}>
+            <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 18, lineHeight: 1.6, color: '#383136', maxWidth: '46ch', margin: '0 0 30px' }}>
               let it all out — and you're not the only one who's been through this. spill it; someone in here has lived your exact thing.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, maxWidth: 480 }}>
-                <button type="button" onClick={openSpill} onPointerEnter={preloadWelcome} onFocus={preloadWelcome} disabled={pendingCta === 'spill'} aria-busy={pendingCta === 'spill'} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8, background: 'linear-gradient(155deg,#ff7eb3,#e7548a 55%,#c1216b)', color: '#fff', padding: '18px 18px 16px', borderRadius: 18, cursor: pendingCta === 'spill' ? 'progress' : 'pointer', transition: '.18s', border: 'none', boxShadow: '0 12px 28px -12px rgba(193,33,107,.55)', opacity: pendingCta === 'spill' ? 0.75 : 1 }}>
+                <button type="button" onClick={openSpill} onPointerEnter={preloadWelcome} onFocus={preloadWelcome} disabled={pendingCta === 'spill'} aria-busy={pendingCta === 'spill'} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8, background: 'linear-gradient(155deg,#ff7eb3,#a52a5f 55%,#c1216b)', color: '#fff', padding: '18px 18px 16px', borderRadius: 18, cursor: pendingCta === 'spill' ? 'progress' : 'pointer', transition: '.18s', border: 'none', boxShadow: '0 12px 28px -12px rgba(193,33,107,.55)', opacity: pendingCta === 'spill' ? 0.75 : 1 }}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
                   <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 16, letterSpacing: '-.01em' }}>{pendingCta === 'spill' ? 'opening…' : 'spill it'}</div>
                   <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: 'rgba(255,255,255,.85)', lineHeight: 1.4 }}>tell your story — opens a room the world can sit in.</div>
                 </button>
                 <button type="button" onClick={openScan} onPointerEnter={preloadWelcome} onFocus={preloadWelcome} disabled={pendingCta === 'scan'} aria-busy={pendingCta === 'scan'} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8, background: '#fff', color: '#0b080f', padding: '18px 18px 16px', borderRadius: 18, cursor: pendingCta === 'scan' ? 'progress' : 'pointer', transition: '.18s', border: '1.5px solid rgba(231,84,138,.28)', opacity: pendingCta === 'scan' ? 0.75 : 1 }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#e7548a" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M12 3a9 9 0 1 0 9 9" /><path d="M12 12l5-5" /><circle cx={12} cy={12} r={1.6} fill="#e7548a" stroke="none" /></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#a52a5f" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M12 3a9 9 0 1 0 9 9" /><path d="M12 12l5-5" /><circle cx={12} cy={12} r={1.6} fill="#a52a5f" stroke="none" /></svg>
                   <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 16, letterSpacing: '-.01em', color: '#c1216b' }}>{pendingCta === 'scan' ? 'opening…' : 'scan it'}</div>
-                  <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#6b4a5c', lineHeight: 1.4 }}>60-second read — get a private intensity score.</div>
+                  <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#443c42', lineHeight: 1.4 }}>60-second read — get a private intensity score.</div>
                 </button>
               </div>
               <MirrorTeaser onOpen={openMirror} />
 
             </div>
             {/* Pseudonym / trust paragraph — pixel-parity port of Landing.dc.html heroAlias (line 206 + buildHeroAlias signed-out branch lines 592–597). */}
-            <div style={{ marginTop: 18, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c' }}>
+            <div style={{ marginTop: 18, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#6f666c' }}>
               everyone here — teller and room alike — sits under a pseudonym. your real name, email, and identity stay permanently outside. that protection is what makes it possible to be frank.{' '}
               <span
                 role="button"
@@ -316,8 +316,8 @@ export function LandingNativePage() {
         <section style={{ padding: '12px 0 32px' }}>
           <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#e7548a' }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', animation: 'pulse 3s infinite', display: 'block' }} />
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#a52a5f' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', animation: 'pulse 3s infinite', display: 'block' }} />
                 a room right now
               </div>
               <a href="/stream" className="prose-link" style={{ fontSize: 13 }}>see all rooms →</a>
@@ -332,13 +332,13 @@ export function LandingNativePage() {
                   tabIndex={0}
                   onClick={() => navigate(`/stream#room-${featured.id}`)}
                   className="featured-tile"
-                  style={{ background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 22, overflow: 'hidden', cursor: 'pointer', transition: 'transform .18s, box-shadow .2s' }}
+                  style={{ background: 'linear-gradient(160deg,#100c14,#100c14)', border: '1px solid rgba(255,255,255,.10)', borderRadius: 22, overflow: 'hidden', cursor: 'pointer', transition: 'transform .18s, box-shadow .2s' }}
                 >
                   <div style={{ padding: '24px 26px 20px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(231,84,138,.18)', color: '#f7b8d4', border: '.5px solid rgba(231,84,138,.28)', borderRadius: 999, padding: '4px 11px', fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.06em' }}>{label}</span>
-                      <span style={{ fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>{featured.hours} ago</span>
-                      <span style={{ marginLeft: 'auto', fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ fontSize: 12, color: '#6f666c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>{featured.hours} ago</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 12, color: '#6f666c', fontFamily: NEWSREADER, fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                         <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }} />
                         {featured.sitting} sitting in
                       </span>
@@ -351,23 +351,23 @@ export function LandingNativePage() {
                       <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>{featured.alias}</span>
                     </div>
                     <div style={{ marginBottom: 14 }}>
-                      <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 7 }}>how the room is holding this</div>
+                      <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#6f666c', marginBottom: 7 }}>how the room is holding this</div>
                       <div style={{ height: 8, borderRadius: 4, overflow: 'hidden', display: 'flex', gap: 1 }}>
                         {REACTIONS.map((rx, i) => (
                           <span key={rx.k} style={{ flex: featured.reactions[rx.k], background: rx.color, borderRadius: i === 0 ? '3px 0 0 3px' : i === REACTIONS.length - 1 ? '0 3px 3px 0' : undefined }} />
                         ))}
                       </div>
-                      <div style={{ display: 'flex', gap: 14, marginTop: 7, fontSize: 11.5, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', flexWrap: 'wrap' }}>
-                        <span>🤍 i hear you <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>{pct(featured.reactions.heard)}%</b></span>
-                        <span>🫂 omg same <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>{pct(featured.reactions.same)}%</b></span>
-                        <span>💪 you've got this <b style={{ color: '#f7e8f0', fontStyle: 'normal' }}>{pct(featured.reactions.strong)}%</b></span>
+                      <div style={{ display: 'flex', gap: 14, marginTop: 7, fontSize: 11.5, color: '#6f666c', fontFamily: NEWSREADER, fontStyle: 'italic', flexWrap: 'wrap' }}>
+                        <span>🤍 i hear you <b style={{ color: '#fdfbf9', fontStyle: 'normal' }}>{pct(featured.reactions.heard)}%</b></span>
+                        <span>🫂 omg same <b style={{ color: '#fdfbf9', fontStyle: 'normal' }}>{pct(featured.reactions.same)}%</b></span>
+                        <span>💪 you've got this <b style={{ color: '#fdfbf9', fontStyle: 'normal' }}>{pct(featured.reactions.strong)}%</b></span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
                       <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2' }}>
                         <b style={{ color: '#f7b8d4', fontStyle: 'normal' }}>{featured.relates}</b> said 'omg same'
                       </span>
-                      <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#e7548a' }}>enter the room →</span>
+                      <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#a52a5f' }}>enter the room →</span>
                     </div>
                   </div>
                 </div>
@@ -380,8 +380,8 @@ export function LandingNativePage() {
         <section style={{ padding: '8px 0 32px' }}>
           <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#e7548a' }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', boxShadow: '0 0 0 3px rgba(231,84,138,.18)', display: 'block' }} />
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#a52a5f' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', boxShadow: '0 0 0 3px rgba(231,84,138,.18)', display: 'block' }} />
                 rooms open
               </div>
               <a href="/stream" className="prose-link" style={{ fontSize: 13 }}>all rooms →</a>
@@ -401,8 +401,8 @@ export function LandingNativePage() {
         <section style={{ padding: '8px 0 36px' }}>
           <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#e7548a' }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', boxShadow: '0 0 0 3px rgba(231,84,138,.18)', display: 'block' }} />
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', color: '#a52a5f' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', boxShadow: '0 0 0 3px rgba(231,84,138,.18)', display: 'block' }} />
                 hall of fame
               </div>
               <a href="/halls" className="prose-link" style={{ fontSize: 13 }}>all halls →</a>
@@ -410,9 +410,9 @@ export function LandingNativePage() {
             <div style={{ display: 'flex', gap: 11, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
               {HOF_CARDS.map(c => (
                 <a key={c.href} href={c.href} className="hof-card" style={{ display: 'block', textDecoration: 'none', flex: 'none', width: 230, background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 16, padding: 16, transition: 'transform .18s, border-color .18s' }}>
-                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 10 }}>{c.label}</div>
+                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#a52a5f', marginBottom: 10 }}>{c.label}</div>
                   <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.4, color: '#0b080f', margin: '0 0 10px' }}>{c.quote}</p>
-                  <div style={{ fontSize: 11.5, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>{c.credit}</div>
+                  <div style={{ fontSize: 11.5, color: '#6f666c', fontFamily: NEWSREADER, fontStyle: 'italic' }}>{c.credit}</div>
                 </a>
               ))}
             </div>
@@ -424,11 +424,11 @@ export function LandingNativePage() {
         <section style={{ padding: '32px 0 24px' }}>
 
           <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px' }}>
-            <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 14 }}>what is shutap</div>
-            <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.65, color: '#2e1a26', margin: '0 0 10px', maxWidth: '52ch' }}>
+            <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#a52a5f', marginBottom: 14 }}>what is shutap</div>
+            <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 17, lineHeight: 1.65, color: '#100c14', margin: '0 0 10px', maxWidth: '52ch' }}>
               a pseudonymous place to vent about relationships, marriage, family, and work — and see what actually happened next for people who lived your exact thing.
             </p>
-            <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.65, color: '#6b4a5c', margin: '0 0 24px', maxWidth: '52ch' }}>
+            <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.65, color: '#443c42', margin: '0 0 24px', maxWidth: '52ch' }}>
               <span onClick={openSpill} onPointerEnter={preloadWelcome} className="prose-link">spill it</span> — one question at a time, the companion helps you find the words. or{' '}
               <span onClick={openScan} onPointerEnter={preloadWelcome} className="prose-link">scan it</span> — sixty seconds of questions, a private read saved just for you.
             </p>
@@ -440,27 +440,27 @@ export function LandingNativePage() {
         </section>
 
         {/* FOOTER */}
-        <footer style={{ padding: '28px 22px 90px', color: '#9e7a8c', fontSize: 12, textAlign: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', lineHeight: 1.6 }}>
+        <footer style={{ padding: '28px 22px 90px', color: '#6f666c', fontSize: 12, textAlign: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', lineHeight: 1.6 }}>
           <div>shutap — a room for what you're carrying</div>
           <div style={{ marginTop: 3 }}>18+ · pseudonymous · your real name never shows · your story, your rules 🤍</div>
           <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: '7px 16px', justifyContent: 'center', fontStyle: 'normal' }}>
-            <a href="/relationships" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>relationships</a>
-            <a href="/marriage" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>marriage</a>
-            <a href="/family" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>family</a>
-            <a href="/career" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>career</a>
-            <a href="/lived-intelligence" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>lived intelligence</a>
-            <a href="/faq" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>faq</a>
-            <a href="/terms" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>terms</a>
-            <a href="/privacy" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>privacy</a>
-            <a href="/guidelines" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>guidelines</a>
-            <a href="/safety" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>safety</a>
-            <a href="mailto:hello@shutap.com" style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, color: '#6b4a5c', textDecoration: 'none' }}>contact</a>
+            <a href="/relationships" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>relationships</a>
+            <a href="/marriage" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>marriage</a>
+            <a href="/family" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>family</a>
+            <a href="/career" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>career</a>
+            <a href="/lived-intelligence" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>lived intelligence</a>
+            <a href="/faq" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>faq</a>
+            <a href="/terms" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>terms</a>
+            <a href="/privacy" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>privacy</a>
+            <a href="/guidelines" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>guidelines</a>
+            <a href="/safety" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>safety</a>
+            <a href="mailto:hello@shutap.com" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>contact</a>
           </div>
 
           <div style={{ marginTop: 9, fontSize: 11.5, color: '#b09aa6', maxWidth: '42ch', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.5 }}>
             shutap is a supportive community, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
           </div>
-          <div style={{ marginTop: 12, fontFamily: SORA, fontStyle: 'normal', fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#6b4a5c' }}>you don't have to shut up here</div>
+          <div style={{ marginTop: 12, fontFamily: SORA, fontStyle: 'normal', fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#443c42' }}>you don't have to shut up here</div>
         </footer>
       </main>
 
@@ -477,8 +477,8 @@ export function LandingNativePage() {
       {hydrated && onbOpen && frame && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 95, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div onClick={dismissOnb} style={{ position: 'absolute', inset: 0, background: 'rgba(10,5,14,.72)', backdropFilter: 'blur(8px)' }} />
-          <div role="dialog" style={{ position: 'relative', width: '100%', maxWidth: 420, background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', border: '.5px solid rgba(255,255,255,.14)', borderRadius: 24, padding: '26px 28px 28px', textAlign: 'center', animation: 'pop .35s ease' }}>
-            <div onClick={dismissOnb} role="button" style={{ position: 'absolute', top: 16, right: 18, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#9e7a8c', cursor: 'pointer' }}>skip</div>
+          <div role="dialog" style={{ position: 'relative', width: '100%', maxWidth: 420, background: 'linear-gradient(160deg,#100c14,#100c14)', border: '.5px solid rgba(255,255,255,.14)', borderRadius: 24, padding: '26px 28px 28px', textAlign: 'center', animation: 'pop .35s ease' }}>
+            <div onClick={dismissOnb} role="button" style={{ position: 'absolute', top: 16, right: 18, fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13.5, color: '#6f666c', cursor: 'pointer' }}>skip</div>
             <div style={{ marginBottom: 16 }}>
               {frame.eye ? (
                 <span style={{ display: 'inline-block' }}>
@@ -499,10 +499,10 @@ export function LandingNativePage() {
             </div>
             <div style={{ display: 'flex', gap: 7, justifyContent: 'center', margin: '4px 0 18px' }}>
               {ONBOARDING_FRAMES.map((_, i) => (
-                <span key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: i === onbIdx ? '#e7548a' : 'rgba(255,255,255,.18)' }} />
+                <span key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: i === onbIdx ? '#a52a5f' : 'rgba(255,255,255,.18)' }} />
               ))}
             </div>
-            <div onClick={advanceOnb} role="button" style={{ background: '#e7548a', color: '#fff', borderRadius: 14, padding: 14, fontFamily: SORA, fontWeight: 700, fontSize: 14.5, cursor: 'pointer' }}>
+            <div onClick={advanceOnb} role="button" style={{ background: '#a52a5f', color: '#fff', borderRadius: 14, padding: 14, fontFamily: SORA, fontWeight: 700, fontSize: 14.5, cursor: 'pointer' }}>
               {onbIdx >= ONBOARDING_FRAMES.length - 1 ? "let's go →" : 'next →'}
             </div>
           </div>
@@ -519,9 +519,9 @@ function FaqRow({ q, a, last }: { q: string; a: string; last?: boolean }) {
   return (
     <details style={{ borderTop: '.5px solid rgba(11,8,15,.08)', borderBottom: last ? '.5px solid rgba(11,8,15,.08)' : undefined, padding: '15px 0' }}>
       <summary style={{ fontFamily: SORA, fontWeight: 600, fontSize: 14, cursor: 'pointer', color: '#0b080f', display: 'flex', justifyContent: 'space-between', alignItems: 'center', listStyle: 'none' }}>
-        {q}<span style={{ color: '#e7548a', fontSize: 20, fontWeight: 300 }}>+</span>
+        {q}<span style={{ color: '#a52a5f', fontSize: 20, fontWeight: 300 }}>+</span>
       </summary>
-      <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#6b4a5c', lineHeight: 1.6, margin: '10px 0 0', maxWidth: '52ch' }}>{a}</p>
+      <p style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 15, color: '#443c42', lineHeight: 1.6, margin: '10px 0 0', maxWidth: '52ch' }}>{a}</p>
     </details>
   )
 }
@@ -539,12 +539,12 @@ function RoomTile({ room: r, navigate }: { room: LandingRoom; navigate: (to: str
       <div style={{ padding: '15px 16px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: heardTint.bg, color: heardTint.fg, border: `.5px solid ${heardTint.br}`, borderRadius: 999, padding: '4px 10px', fontFamily: SORA, fontWeight: 600, fontSize: 10, letterSpacing: '.06em' }}>{label}</span>
-          <span style={{ fontSize: 12, color: '#9e7a8c', fontFamily: NEWSREADER, fontStyle: 'italic', marginLeft: 'auto' }}>{r.hours}</span>
+          <span style={{ fontSize: 12, color: '#6f666c', fontFamily: NEWSREADER, fontStyle: 'italic', marginLeft: 'auto' }}>{r.hours}</span>
         </div>
         <h4 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 15, lineHeight: 1.28, margin: '0 0 10px', color: '#0b080f' }}>{r.title}</h4>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
-          <span style={{ width: 20, height: 20, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 12, flex: 'none', animation: 'bob 2.8s ease-in-out infinite' }}>{r.emoji}</span>
-          <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#6b4a5c', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.alias}</span>
+          <span style={{ width: 20, height: 20, borderRadius: '50%', background: '#fdfbf9', display: 'grid', placeItems: 'center', fontSize: 12, flex: 'none', animation: 'bob 2.8s ease-in-out infinite' }}>{r.emoji}</span>
+          <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#443c42', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.alias}</span>
         </div>
         <div style={{ marginBottom: 9 }}>
           <div style={{ height: 6, borderRadius: 3, overflow: 'hidden', display: 'flex', gap: 1 }}>
@@ -553,7 +553,7 @@ function RoomTile({ room: r, navigate }: { room: LandingRoom; navigate: (to: str
             ))}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#6f666c' }}>
           <span><b style={{ color: '#c1216b', fontStyle: 'normal' }}>{r.relates}</b> said 'omg same'</span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }} />

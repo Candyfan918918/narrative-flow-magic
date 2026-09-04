@@ -14,9 +14,9 @@ function fmt(d: string | null | undefined): string {
 function Card({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
     <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: 16, minWidth: 160 }}>
-      <div style={{ fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9e7a8c' }}>{label}</div>
+      <div style={{ fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: '#6f666c' }}>{label}</div>
       <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 28, fontWeight: 800, color: '#0b080f', marginTop: 4 }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: '#6b4a5c', marginTop: 2 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 12, color: '#443c42', marginTop: 2 }}>{sub}</div>}
     </div>
   )
 }
@@ -24,7 +24,7 @@ function Card({ label, value, sub }: { label: string; value: string | number; su
 function Bar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? Math.max(2, Math.round((value / max) * 100)) : 0
   return (
-    <div style={{ background: '#f4e6ee', borderRadius: 999, height: 8, width: 140, overflow: 'hidden' }}>
+    <div style={{ background: '#fdfbf9', borderRadius: 999, height: 8, width: 140, overflow: 'hidden' }}>
       <div style={{ background: '#c1216b', height: '100%', width: `${pct}%` }} />
     </div>
   )
@@ -76,7 +76,7 @@ export function AdminAnalyticsPage() {
     >
       {err && <div style={{ color: '#c1216b', marginBottom: 12 }}>{err}</div>}
       {!data || !visits ? (
-        <div style={{ color: '#6b4a5c' }}>loading…</div>
+        <div style={{ color: '#443c42' }}>loading…</div>
       ) : (
         <>
           {/* Growth — first */}
@@ -97,7 +97,7 @@ export function AdminAnalyticsPage() {
             <section style={{ marginBottom: 24 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
                 <h2 style={{ ...sectionH2, margin: 0 }}>acquisition · 30d, humans</h2>
-                <span style={{ fontSize: 11, color: '#9e7a8c' }}>
+                <span style={{ fontSize: 11, color: '#6f666c' }}>
                   {acq.total_visits} visits · {acq.captured_utm_count} with UTM
                 </span>
               </div>
@@ -151,7 +151,7 @@ export function AdminAnalyticsPage() {
                     style={{
                       padding: '6px 14px', borderRadius: 999, border: 0,
                       background: audience === k ? '#c1216b' : 'transparent',
-                      color: audience === k ? '#fff' : '#6b4a5c',
+                      color: audience === k ? '#fff' : '#443c42',
                       fontFamily: "'Sora',sans-serif", fontSize: 11, fontWeight: 700,
                       letterSpacing: '.08em', textTransform: 'uppercase', cursor: 'pointer',
                     }}
@@ -171,7 +171,7 @@ export function AdminAnalyticsPage() {
               {unique && <Card label="unique · 7d" value={unique.d7} />}
               {unique && <Card label="unique · 30d" value={unique.d30} />}
             </div>
-            <div style={{ marginTop: 8, fontSize: 11, color: '#9e7a8c' }}>
+            <div style={{ marginTop: 8, fontSize: 11, color: '#6f666c' }}>
               visits = sessions; unique visitors = distinct people (per auth user). bots detected by user-agent heuristics; signed-in sessions always count as human.
             </div>
 
@@ -225,27 +225,27 @@ function GrowthBlockCard({ title, block }: { title: string; block: GrowthBlock }
             <div
               key={p.date}
               title={`${p.date}: ${p.n}`}
-              style={{ flex: 1, background: p.n > 0 ? '#c1216b' : '#f4e6ee', height: h, borderRadius: 2, minWidth: 2 }}
+              style={{ flex: 1, background: p.n > 0 ? '#c1216b' : '#fdfbf9', height: h, borderRadius: 2, minWidth: 2 }}
             />
           )
         })}
       </div>
-      <div style={{ fontSize: 10, color: '#9e7a8c', marginTop: 4, textAlign: 'right' }}>last 30 days</div>
+      <div style={{ fontSize: 10, color: '#6f666c', marginTop: 4, textAlign: 'right' }}>last 30 days</div>
     </div>
   )
 }
 
 function DeltaChip({ label, d }: { label: string; d: { curr: number; prev: number; delta_pct: number | null } }) {
   const positive = d.delta_pct != null && d.delta_pct >= 0
-  const color = d.delta_pct == null ? '#9e7a8c' : positive ? '#5b8a5e' : '#c1216b'
+  const color = d.delta_pct == null ? '#6f666c' : positive ? '#5b8a5e' : '#c1216b'
   const arrow = d.delta_pct == null ? '—' : positive ? '▲' : '▼'
   return (
-    <div style={{ background: '#faf3f6', borderRadius: 10, padding: '10px 12px' }}>
-      <div style={{ fontSize: 10, letterSpacing: '.06em', textTransform: 'uppercase', color: '#9e7a8c' }}>{label}</div>
+    <div style={{ background: '#ffffff', borderRadius: 10, padding: '10px 12px' }}>
+      <div style={{ fontSize: 10, letterSpacing: '.06em', textTransform: 'uppercase', color: '#6f666c' }}>{label}</div>
       <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 20, fontWeight: 800, color: '#0b080f', marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{d.curr}</div>
       <div style={{ fontSize: 11, color, marginTop: 2 }}>
         {arrow} {d.delta_pct == null ? '—' : `${Math.abs(d.delta_pct)}%`}
-        <span style={{ color: '#9e7a8c', marginLeft: 6 }}>prev {d.prev}</span>
+        <span style={{ color: '#6f666c', marginLeft: 6 }}>prev {d.prev}</span>
       </div>
     </div>
   )
@@ -267,7 +267,7 @@ function ChannelBar({ channels }: { channels: Record<string, number> }) {
       </div>
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 10 }}>
         {entries.map(([k, v]) => (
-          <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#6b4a5c' }}>
+          <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#443c42' }}>
             <span style={{ width: 10, height: 10, borderRadius: 2, background: colors[k] ?? '#999' }} />
             <b style={{ color: '#0b080f', fontFamily: "'Sora',sans-serif" }}>{k}</b>
             <span style={{ fontVariantNumeric: 'tabular-nums' }}>{v}</span>
@@ -338,7 +338,7 @@ function EventsTable({ rows }: { rows: Array<{ name: string; d7: number; d30: nu
   return (
     <table style={table}>
       <thead>
-        <tr style={{ background: '#faf3f6', textAlign: 'left', color: '#6b4a5c' }}>
+        <tr style={{ background: '#ffffff', textAlign: 'left', color: '#443c42' }}>
           <th style={th}>event</th>
           <th style={{ ...th, textAlign: 'right' }}>7d</th>
           <th style={{ ...th, textAlign: 'right' }}>30d</th>
@@ -362,7 +362,7 @@ function RecentTable({ rows }: { rows: Analytics['recent_signins'] }) {
   return (
     <table style={table}>
       <thead>
-        <tr style={{ background: '#faf3f6', textAlign: 'left', color: '#6b4a5c' }}>
+        <tr style={{ background: '#ffffff', textAlign: 'left', color: '#443c42' }}>
           <th style={th}>user</th>
           <th style={th}>email</th>
           <th style={th}>provider</th>
@@ -388,6 +388,6 @@ const panelH3: React.CSSProperties = { fontFamily: "'Sora',sans-serif", fontSize
 const panel: React.CSSProperties = { background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: 16, overflow: 'auto' }
 const table: React.CSSProperties = { width: '100%', borderCollapse: 'collapse', fontSize: 13 }
 const th: React.CSSProperties = { padding: '10px 12px', fontWeight: 600, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase' }
-const td: React.CSSProperties = { padding: '10px 12px', color: '#1b0f16' }
+const td: React.CSSProperties = { padding: '10px 12px', color: '#100c14' }
 const tr: React.CSSProperties = { borderTop: '.5px solid rgba(11,8,15,.05)' }
-const empty: React.CSSProperties = { color: '#9e7a8c', fontStyle: 'italic', padding: '8px 4px', fontSize: 13 }
+const empty: React.CSSProperties = { color: '#6f666c', fontStyle: 'italic', padding: '8px 4px', fontSize: 13 }

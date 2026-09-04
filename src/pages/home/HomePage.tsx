@@ -26,34 +26,34 @@ const NEWS = "'Newsreader',Georgia,serif"
 
 export function HomeFooter() {
   return (
-    <footer style={{ background: '#fdf0f5', borderTop: '.5px solid rgba(11,8,15,.06)', padding: '54px 22px 46px', color: '#6b4a5c', fontFamily: "'Inter',system-ui,sans-serif" }}>
+    <footer style={{ background: '#ffffff', borderTop: '.5px solid rgba(11,8,15,.06)', padding: '54px 22px 46px', color: '#443c42', fontFamily: "'Sora',system-ui,sans-serif" }}>
       <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, textAlign: 'center' }}>
-        <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 16, color: '#4a3040' }}>shutap — a room for what you're carrying.</div>
+        <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 16, color: '#383136' }}>shutap — a room for what you're carrying.</div>
         <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: SORA, fontWeight: 600, fontSize: 12, letterSpacing: '.16em', textTransform: 'uppercase' }}>
-          <Link to="/stream" style={{ color: '#6b4a5c', textDecoration: 'none' }}>rooms</Link>
-          <Link to="/halls" style={{ color: '#6b4a5c', textDecoration: 'none' }}>halls</Link>
-          <Link to="/vent/$topic" params={{ topic: 'family' }} style={{ color: '#6b4a5c', textDecoration: 'none' }}>topics</Link>
+          <Link to="/stream" style={{ color: '#443c42', textDecoration: 'none' }}>rooms</Link>
+          <Link to="/halls" style={{ color: '#443c42', textDecoration: 'none' }}>halls</Link>
+          <Link to="/vent/$topic" params={{ topic: 'family' }} style={{ color: '#443c42', textDecoration: 'none' }}>topics</Link>
         </div>
-        <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: 'Inter', fontSize: 12, color: '#9e7a8c' }}>
-          <Link to="/relationships" style={{ color: '#9e7a8c', textDecoration: 'none' }}>relationships</Link>
-          <Link to="/marriage" style={{ color: '#9e7a8c', textDecoration: 'none' }}>marriage</Link>
-          <Link to="/family" style={{ color: '#9e7a8c', textDecoration: 'none' }}>family</Link>
-          <Link to="/career" style={{ color: '#9e7a8c', textDecoration: 'none' }}>career & work</Link>
-          <Link to="/lived-intelligence" style={{ color: '#9e7a8c', textDecoration: 'none' }}>what is lived intelligence?</Link>
-          <Link to="/about" style={{ color: '#9e7a8c', textDecoration: 'none' }}>about</Link>
-          <Link to="/how-it-works" style={{ color: '#9e7a8c', textDecoration: 'none' }}>how it works</Link>
-          <Link to="/faq" style={{ color: '#9e7a8c', textDecoration: 'none' }}>faq</Link>
+        <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: 'Sora', fontSize: 12, color: '#6f666c' }}>
+          <Link to="/relationships" style={{ color: '#6f666c', textDecoration: 'none' }}>relationships</Link>
+          <Link to="/marriage" style={{ color: '#6f666c', textDecoration: 'none' }}>marriage</Link>
+          <Link to="/family" style={{ color: '#6f666c', textDecoration: 'none' }}>family</Link>
+          <Link to="/career" style={{ color: '#6f666c', textDecoration: 'none' }}>career & work</Link>
+          <Link to="/lived-intelligence" style={{ color: '#6f666c', textDecoration: 'none' }}>what is lived intelligence?</Link>
+          <Link to="/about" style={{ color: '#6f666c', textDecoration: 'none' }}>about</Link>
+          <Link to="/how-it-works" style={{ color: '#6f666c', textDecoration: 'none' }}>how it works</Link>
+          <Link to="/faq" style={{ color: '#6f666c', textDecoration: 'none' }}>faq</Link>
         </div>
-        <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: 'Inter', fontSize: 12, color: '#9e7a8c' }}>
-          <Link to="/terms" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Terms</Link>
-          <Link to="/privacy" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Privacy</Link>
-          <Link to="/guidelines" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Guidelines</Link>
-          <Link to="/safety" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Safety</Link>
-          <Link to="/ai-disclosure" style={{ color: '#9e7a8c', textDecoration: 'none' }}>AI Disclosure</Link>
-          <Link to="/legal" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Disclaimer</Link>
-          <a href="mailto:hello@shutap.com" style={{ color: '#9e7a8c', textDecoration: 'none' }}>Contact</a>
+        <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', fontFamily: 'Sora', fontSize: 12, color: '#6f666c' }}>
+          <Link to="/terms" style={{ color: '#6f666c', textDecoration: 'none' }}>Terms</Link>
+          <Link to="/privacy" style={{ color: '#6f666c', textDecoration: 'none' }}>Privacy</Link>
+          <Link to="/guidelines" style={{ color: '#6f666c', textDecoration: 'none' }}>Guidelines</Link>
+          <Link to="/safety" style={{ color: '#6f666c', textDecoration: 'none' }}>Safety</Link>
+          <Link to="/ai-disclosure" style={{ color: '#6f666c', textDecoration: 'none' }}>AI Disclosure</Link>
+          <Link to="/legal" style={{ color: '#6f666c', textDecoration: 'none' }}>Disclaimer</Link>
+          <a href="mailto:hello@shutap.com" style={{ color: '#6f666c', textDecoration: 'none' }}>Contact</a>
         </div>
-        <div data-nosnippet style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#9e7a8c', maxWidth: 620, lineHeight: 1.6 }}>
+        <div data-nosnippet style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13, color: '#6f666c', maxWidth: 620, lineHeight: 1.6 }}>
           18+ · pseudonymous · your real name never shows · your story, your rules 🤍
           <br />
           shutap is a supportive community, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
@@ -192,7 +192,7 @@ export function HomePage({ openRoomsCount = 0, newestRooms = [] }: { openRoomsCo
   }, [navigate, save])
 
   return (
-    <div ref={rootRef} className="home-immersive" style={{ background: '#fdf0f5', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
+    <div ref={rootRef} className="home-immersive" style={{ background: '#ffffff', color: '#0b080f', fontFamily: "'Sora',system-ui,sans-serif" }}>
       <CursorTrail />
       <HomeImmersive openRoomsCount={openRoomsCount} newestRooms={newestRooms} />
       <SpillModal open={spillOpen} onClose={() => setSpillOpen(false)} />

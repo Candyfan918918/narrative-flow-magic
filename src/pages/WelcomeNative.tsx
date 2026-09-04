@@ -186,7 +186,7 @@ export function WelcomeNativePage() {
   }, [looksLikeAuthCallback])
 
   return (
-    <div style={{ background: BG, color: TEXT, minHeight: '100vh', fontFamily: "'Inter',system-ui,sans-serif", WebkitFontSmoothing: 'antialiased' }}>
+    <div style={{ background: BG, color: TEXT, minHeight: '100vh', fontFamily: "'Sora',system-ui,sans-serif", WebkitFontSmoothing: 'antialiased' }}>
       <style>{`
         @keyframes weblink {0%,34%,40%,78%,84%,100%{transform:scaleY(1)}37%,81%{transform:scaleY(.1)}}
         @keyframes wfadeUp {from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}

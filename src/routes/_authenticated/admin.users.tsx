@@ -85,21 +85,21 @@ function AdminUsersPage() {
           placeholder="search email or name…"
           style={{ flex: 1, padding: '10px 14px', border: '1px solid rgba(11,8,15,.12)', borderRadius: 10 }}
         />
-        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#6b4a5c', whiteSpace: 'nowrap' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#443c42', whiteSpace: 'nowrap' }}>
           <input type="checkbox" checked={includeAnon} onChange={(e) => setIncludeAnon(e.target.checked)} />
           show guests
         </label>
       </div>
       {err && <div style={{ color: '#c1216b', marginBottom: 12 }}>{err}</div>}
       {!rows ? (
-        <div style={{ color: '#6b4a5c' }}>loading…</div>
+        <div style={{ color: '#443c42' }}>loading…</div>
       ) : rows.length === 0 ? (
-        <div style={{ color: '#6b4a5c', fontStyle: 'italic' }}>no users yet</div>
+        <div style={{ color: '#443c42', fontStyle: 'italic' }}>no users yet</div>
       ) : (
         <div style={{ background: '#fff', borderRadius: 14, border: '.5px solid rgba(11,8,15,.08)', overflow: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ background: '#faf3f6', textAlign: 'left', color: '#6b4a5c' }}>
+              <tr style={{ background: '#ffffff', textAlign: 'left', color: '#443c42' }}>
                 <Th col="email" label="email" />
                 <Th col="first_name" label="first" />
                 <Th col="last_name" label="last" />
@@ -119,7 +119,7 @@ function AdminUsersPage() {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.user_id} style={{ borderTop: '.5px solid rgba(11,8,15,.05)' }}>
-                  <td style={td}>{r.email || (r.is_anonymous ? <span style={{ color: '#9e7a8c' }}>guest</span> : '—')}</td>
+                  <td style={td}>{r.email || (r.is_anonymous ? <span style={{ color: '#6f666c' }}>guest</span> : '—')}</td>
                   <td style={td}>{r.first_name || '—'}</td>
                   <td style={td}>{r.last_name || '—'}</td>
                   <td style={td}>{r.provider || (r.is_anonymous ? 'anon' : '—')}</td>
@@ -144,4 +144,4 @@ function AdminUsersPage() {
 }
 
 const th: React.CSSProperties = { padding: '10px 12px', fontWeight: 600, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase' }
-const td: React.CSSProperties = { padding: '10px 12px', color: '#1b0f16', whiteSpace: 'nowrap' }
+const td: React.CSSProperties = { padding: '10px 12px', color: '#100c14', whiteSpace: 'nowrap' }

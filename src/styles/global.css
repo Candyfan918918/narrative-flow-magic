@@ -1,7 +1,3 @@
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
-@import '@fontsource/inter/700.css';
 @import '@fontsource/sora/400.css';
 @import '@fontsource/sora/600.css';
 @import '@fontsource/sora/700.css';
@@ -20,7 +16,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Sora', system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -100,23 +96,23 @@ body {
 /* ── shared component classes ────────────────────────────────────────── */
 .rtile {
   background: #fff;
-  border: 0.5px solid rgba(11, 8, 15, 0.08);
-  border-radius: 18px;
+  border: 1px solid rgba(11, 8, 15, 0.08);
+  border-radius: 22px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.18s, box-shadow 0.2s, border-color 0.18s;
-  box-shadow: 0 10px 28px -22px rgba(60, 10, 30, 0.28);
+  box-shadow: 0 12px 30px -24px rgba(80, 10, 45, 0.3);
 }
 .rtile:hover {
   transform: translateY(-3px);
-  box-shadow: 0 22px 44px -26px rgba(60, 10, 30, 0.42);
-  border-color: #e7548a;
+  box-shadow: 0 20px 40px -26px rgba(80, 10, 45, 0.4);
+  border-color: #a52a5f;
 }
 .rtile.rested {
   opacity: 0.72;
 }
 .menu-item:hover {
-  background: #f7e8f0;
+  background: #fdfbf9;
 }
 .react-btn {
   display: inline-flex;
@@ -130,27 +126,27 @@ body {
   font-family: 'Newsreader', serif;
   font-style: italic;
   font-size: 14px;
-  color: #4a3040;
+  color: #383136;
   transition: 0.18s;
   white-space: nowrap;
 }
 .react-btn:hover {
-  border-color: #e7548a;
-  background: #fdf0f5;
+  border-color: #a52a5f;
+  background: #ffffff;
   transform: translateY(-1px);
 }
 .react-btn.active {
-  background: #f7e8f0;
+  background: #fdfbf9;
 }
 .prose-link {
-  color: #c1216b;
-  border-bottom: 1px solid rgba(193, 33, 107, 0.3);
+  color: #8e1c4c;
+  border-bottom: 1px solid rgba(142, 28, 76, 0.28);
   text-decoration: none;
   cursor: pointer;
   transition: 0.18s;
 }
 .prose-link:hover {
-  color: #890041;
+  color: #6d1239;
 }
 details > summary::-webkit-details-marker,
 details > summary::marker {
@@ -173,7 +169,7 @@ details > summary::marker {
   .hall-row { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
 .hall-row:hover { transform: translateY(-2px); }
-.hall-tab:hover { border-color: #e7548a !important; }
+.hall-tab:hover { border-color: #a52a5f !important; }
 
 
 @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }

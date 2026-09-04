@@ -34,7 +34,7 @@ function bg(k: ChannelKey): string {
   if (k === 'whatsapp') return '#25D366'
   if (k === 'sms') return 'linear-gradient(160deg,#5BC8FF,#34C759)'
   if (k === 'copy') return 'linear-gradient(135deg,#b88cff,#7A7AE5)'
-  return 'linear-gradient(135deg,#ffb1d8,#e7548a)'
+  return 'linear-gradient(135deg,#ffb1d8,#a52a5f)'
 }
 
 export type ShareChannelKey = ChannelKey | 'share'
@@ -53,7 +53,7 @@ const PILL_LABELS: Record<ShareChannelKey, string> = {
 const SHARE_GLYPH = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>'
 
 function pillBg(k: ShareChannelKey): string {
-  if (k === 'share') return 'linear-gradient(135deg,#ff7ab0,#e7548a)'
+  if (k === 'share') return 'linear-gradient(135deg,#ff7ab0,#a52a5f)'
   if (k === 'sms') return '#25D366'
   if (k === 'whatsapp') return '#25D366'
   if (k === 'x') return '#0b080f'
@@ -153,15 +153,15 @@ export function ActionPill({
   const isAccent = tone === 'accent'
   const isLight = surface === 'light'
   const bg = isPrimary
-    ? 'linear-gradient(135deg,#ffb1d8,#e7548a)'
+    ? 'linear-gradient(135deg,#ffb1d8,#a52a5f)'
     : isLight
-      ? (isAccent ? '#fdf0f5' : '#fff')
+      ? (isAccent ? '#ffffff' : '#fff')
       : 'rgba(255,255,255,.06)'
   const color = isPrimary
     ? '#1a0814'
     : isAccent
       ? '#c1216b'
-      : isLight ? '#4a3040' : '#f7e8f0'
+      : isLight ? '#383136' : '#fdfbf9'
   const border = isPrimary
     ? 'none'
     : isLight

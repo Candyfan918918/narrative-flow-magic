@@ -76,7 +76,7 @@ function SafetyPage() {
             >
               {c.name}
             </div>
-            <div style={{ fontSize: 13, color: '#6b4a5c', marginTop: 2 }}>{c.action}</div>
+            <div style={{ fontSize: 13, color: '#443c42', marginTop: 2 }}>{c.action}</div>
           </a>
         ))}
       </div>

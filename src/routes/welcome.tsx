@@ -6,7 +6,7 @@ export const Route = createFileRoute('/welcome')({
   head: () => ({
     meta: [{ title: 'Welcome — Shutap' }, { name: 'robots', content: 'noindex' }],
     styles: [
-      { children: 'html,body{background:#1a0a12}' },
+      { children: 'html,body{background:#100c14}' },
     ],
   }),
   headers: () => ({

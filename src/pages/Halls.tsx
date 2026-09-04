@@ -93,15 +93,15 @@ const STATS = [
 ]
 
 const BAND_STYLE: Record<Band, { bg: string; color: string; label: string }> = {
-  held:    { bg: 'rgba(11,8,15,.06)',                                                   color: '#6b4a5c', label: 'Held' },
+  held:    { bg: 'rgba(11,8,15,.06)',                                                   color: '#443c42', label: 'Held' },
   honored: { bg: 'rgba(231,84,138,.10)',                                                color: '#c1216b', label: 'Honored' },
   legend:  { bg: 'linear-gradient(92deg,rgba(231,84,138,.2),rgba(193,33,107,.15))',     color: '#890041', label: 'Legend' },
 }
 
 function resonanceColor(band: Band): string {
-  if (band === 'legend') return '#e7548a'
+  if (band === 'legend') return '#a52a5f'
   if (band === 'honored') return '#c1216b'
-  return '#9e7a8c'
+  return '#6f666c'
 }
 
 export function HallOfFamePageNative() {
@@ -122,18 +122,18 @@ export function HallOfFamePageNative() {
   }
 
   return (
-    <div style={{ background: '#fdf0f5', minHeight: '100vh', color: '#0b080f', fontFamily: "'Inter',system-ui,sans-serif" }}>
+    <div style={{ background: '#ffffff', minHeight: '100vh', color: '#0b080f', fontFamily: "'Sora',system-ui,sans-serif" }}>
       <main style={{ maxWidth: 740, margin: '0 auto', padding: '32px 22px 80px' }}>
         {/* eyebrow */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 14 }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e7548a', display: 'block' }} />
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#a52a5f', marginBottom: 14 }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#a52a5f', display: 'block' }} />
           Hall of Fame
         </div>
 
         <Words as="h1" style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(26px,5vw,36px)', lineHeight: 1.2, margin: '0 0 10px', color: '#0b080f' }}>
           rooms the world remembered.
         </Words>
-        <p style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 16, color: '#6b4a5c', margin: '0 0 28px', maxWidth: '46ch' }}>
+        <p style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 16, color: '#443c42', margin: '0 0 28px', maxWidth: '46ch' }}>
           rooms that rested with enough resonance to be inducted. six halls. real stories. real people.
         </p>
 
@@ -142,7 +142,7 @@ export function HallOfFamePageNative() {
           {STATS.map((s) => (
             <div key={s.label}>
               <b style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 24, color: s.accent ? '#c1216b' : '#0b080f', display: 'block', letterSpacing: '-.02em' }}>{s.n}</b>
-              <span style={{ fontSize: 12, color: '#9e7a8c' }}>{s.label}</span>
+              <span style={{ fontSize: 12, color: '#6f666c' }}>{s.label}</span>
             </div>
           ))}
         </div>
@@ -160,7 +160,7 @@ export function HallOfFamePageNative() {
                   padding: '9px 16px', borderRadius: 999,
                   border: `1.5px solid ${isActive ? '#0b080f' : 'rgba(11,8,15,.10)'}`,
                   background: isActive ? '#0b080f' : '#fff',
-                  color: isActive ? '#f7e8f0' : '#6b4a5c',
+                  color: isActive ? '#fdfbf9' : '#443c42',
                   fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14,
                   cursor: 'pointer', transition: '.18s', whiteSpace: 'nowrap',
                 }}
@@ -184,7 +184,7 @@ export function HallOfFamePageNative() {
                   padding: '7px 14px', borderRadius: 999,
                   border: `1px solid ${on ? '#0b080f' : 'rgba(11,8,15,.10)'}`,
                   background: on ? '#0b080f' : '#fff',
-                  color: on ? '#f7e8f0' : '#6b4a5c',
+                  color: on ? '#fdfbf9' : '#443c42',
                   fontFamily: "'Sora',sans-serif", fontWeight: 600, fontSize: 11, letterSpacing: '.06em',
                   cursor: 'pointer', transition: '.18s',
                 }}
@@ -214,7 +214,7 @@ export function HallOfFamePageNative() {
             const rowBg = isLegend
               ? 'linear-gradient(180deg,#ffeef5,#fff)'
               : top
-                ? 'linear-gradient(180deg,#fff5f9,#fff)'
+                ? 'linear-gradient(180deg,#ffffff,#fff)'
                 : '#fff'
             const rowBorder = isLegend
               ? '.5px solid rgba(193,33,107,.4)'
@@ -233,18 +233,18 @@ export function HallOfFamePageNative() {
                   animation: `hall-fadeup .35s ease ${i * 0.06}s both`,
                 }}
               >
-                <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 14, color: top ? '#e7548a' : '#9e7a8c', width: 28, flex: 'none' }}>#{r.rank}</div>
-                <span style={{ width: 32, height: 32, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 18, flex: 'none' }}>{r.emoji}</span>
+                <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 14, color: top ? '#a52a5f' : '#6f666c', width: 28, flex: 'none' }}>#{r.rank}</div>
+                <span style={{ width: 32, height: 32, borderRadius: '50%', background: '#fdfbf9', display: 'grid', placeItems: 'center', fontSize: 18, flex: 'none' }}>{r.emoji}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.3, color: '#0b080f', margin: '0 0 6px' }}>{r.title}</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap' }}>
-                    <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 12, color: '#9e7a8c' }}>{r.alias}</span>
-                    <span style={{ fontSize: 11, color: '#9e7a8c' }}>·</span>
-                    <span style={{ fontSize: 12, color: '#9e7a8c', fontFamily: "'Newsreader',serif", fontStyle: 'italic' }}>
+                    <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 12, color: '#6f666c' }}>{r.alias}</span>
+                    <span style={{ fontSize: 11, color: '#6f666c' }}>·</span>
+                    <span style={{ fontSize: 12, color: '#6f666c', fontFamily: "'Newsreader',serif", fontStyle: 'italic' }}>
                       <b style={{ color: '#c1216b', fontStyle: 'normal' }}>{r.same.toLocaleString()}</b> said 'omg same'
                     </span>
-                    <span style={{ fontSize: 11, color: '#9e7a8c' }}>·</span>
-                    <span style={{ fontSize: 11.5, color: '#9e7a8c', fontFamily: "'Newsreader',serif", fontStyle: 'italic' }}>rested {r.restedDaysAgo}d ago</span>
+                    <span style={{ fontSize: 11, color: '#6f666c' }}>·</span>
+                    <span style={{ fontSize: 11.5, color: '#6f666c', fontFamily: "'Newsreader',serif", fontStyle: 'italic' }}>rested {r.restedDaysAgo}d ago</span>
                   </div>
                 </div>
                 <div style={{ flex: 'none', textAlign: 'right' }}>

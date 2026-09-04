@@ -16,7 +16,7 @@ export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
       style={{
         fontFamily: "Inter,system-ui,sans-serif",
         fontSize: 12,
-        color: "#9e7a8c",
+        color: "#6f666c",
         margin: "0 0 14px",
       }}
     >
@@ -36,13 +36,13 @@ export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
           return (
             <li key={c.path} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
               {last ? (
-                <span aria-current="page" style={{ color: "#6b4a5c" }}>
+                <span aria-current="page" style={{ color: "#443c42" }}>
                   {c.name}
                 </span>
               ) : (
                 <Link
                   to={c.path as unknown as "/"}
-                  style={{ color: "#9e7a8c", textDecoration: "none", borderBottom: "1px solid rgba(158,122,140,.35)" }}
+                  style={{ color: "#6f666c", textDecoration: "none", borderBottom: "1px solid rgba(158,122,140,.35)" }}
                 >
                   {c.name}
                 </Link>

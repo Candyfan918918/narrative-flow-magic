@@ -37,22 +37,22 @@ import type { Alias } from '@/data/types'
 import { useNoIndex } from '@/components/NoIndex'
 
 /* ─────────────── design tokens (src/styles/tokens.css) ─────────────── */
-const BG = 'var(--bg)'            /* #fdf0f5 */
+const BG = 'var(--bg)'            /* #ffffff */
 const SURFACE = 'var(--surface)'  /* #ffffff */
 const INK = 'var(--ink)'          /* #0b080f */
-const MUTED = 'var(--text-2)'     /* #6b4a5c */
-const MUTED_2 = 'var(--text-3)'   /* #9e7a8c */
-const MUTED_3 = 'var(--text-3)'   /* #9e7a8c */
+const MUTED = 'var(--text-2)'     /* #443c42 */
+const MUTED_2 = 'var(--text-3)'   /* #6f666c */
+const MUTED_3 = 'var(--text-3)'   /* #6f666c */
 const GOLD = 'var(--r-brave)'     /* #c1a02b */
 const GOLD_HEX = '#c1a02b'        /* for alpha-suffixed borders/glows */
 const BORDER = 'var(--border)'
-const RUIN_HEX = '#9e7a8c'   /* --text-3: ruin reads faded, not recolored */
+const RUIN_HEX = '#6f666c'   /* --text-3: ruin reads faded, not recolored */
 const CARD_SHADOW = '0 10px 28px -22px rgba(60,10,30,.28)'
 const CARD_SHADOW_HOVER = '0 22px 44px -26px rgba(60,10,30,.42)'
 
 /* district hues are the tokens --pink / --r-time / --wine / --r-same / --r-strong */
 const DISTRICT_COLOR: Record<District, string> = {
-  self: '#e7548a',
+  self: '#a52a5f',
   career: '#7F77DD',
   love: '#c1216b',
   family: '#c87c4a',
@@ -69,7 +69,7 @@ const SOURCE_GLYPH: Record<string, string> = {
   browse: '👁',
 }
 const SOURCE_COLOR: Record<string, string> = {
-  spill: '#e7548a',
+  spill: '#a52a5f',
   scan: '#7F77DD',
   comments: '#c87c4a',
   likes: '#c1216b',
@@ -118,7 +118,7 @@ function trendArrow(dir: string) {
   return '😐'
 }
 function trendColor(dir: string) {
-  if (dir === 'rising') return '#e7548a'
+  if (dir === 'rising') return '#a52a5f'
   if (dir === 'cooling') return '#7F77DD'
   if (dir === 'dormant') return MUTED_3
   return '#c4a0b2'
@@ -242,7 +242,7 @@ function MirrorHeader() {
                 >
                   <span style={{
                     width: 26, height: 26, borderRadius: '50%',
-                    background: 'linear-gradient(135deg,#f060a0,#890041)',
+                    background: 'linear-gradient(135deg,#a52a5f,#890041)',
                     display: 'grid', placeItems: 'center', fontSize: 14, flex: 'none',
                   }}>{alias.emoji || '🐣'}</span>
                   <span style={{
@@ -262,7 +262,7 @@ function MirrorHeader() {
                   }}>
                     <Link to="/profile" style={item} onClick={() => setOpen(false)}>your profile</Link>
                     <Link to="/profile#settings" style={item} onClick={() => setOpen(false)}>settings</Link>
-                    <div role="button" style={{ ...item, color: '#e7548a' }} onClick={() => { setOpen(false); navigate('/#spill') }}>spill it →</div>
+                    <div role="button" style={{ ...item, color: '#a52a5f' }} onClick={() => { setOpen(false); navigate('/#spill') }}>spill it →</div>
                     <Link to="/mirror" style={{ ...item, color: GOLD }} onClick={() => setOpen(false)}>the mirror ✦</Link>
                     {admin && <Link to="/admin" style={item} onClick={() => setOpen(false)}>admin</Link>}
                     <div style={{ height: '.5px', background: 'rgba(11,8,15,.08)', margin: '6px 0' }} />
@@ -273,7 +273,7 @@ function MirrorHeader() {
             ) : (
               <div role="button" onClick={join} style={{
                 display: 'inline-flex', alignItems: 'center',
-                background: '#e7548a', color: '#fff', borderRadius: 999,
+                background: '#a52a5f', color: '#fff', borderRadius: 999,
                 padding: '9px 18px', fontFamily: "'Sora',sans-serif",
                 fontWeight: 700, fontSize: 13, cursor: 'pointer',
               }}>join →</div>
@@ -608,7 +608,7 @@ function TarotCard({
         justifyContent: 'center', alignItems: 'center', gap: 7,
       }}>
         <EyeMark w={24} />
-        <ShutapWordmark size={13} ink={INK} accent="#e7548a" letterSpacing="-.02em" />
+        <ShutapWordmark size={13} ink={INK} accent="#a52a5f" letterSpacing="-.02em" />
         <span style={{
           width: 3, height: 3, borderRadius: '50%', background: MUTED_2,
           display: 'inline-block',
@@ -990,7 +990,7 @@ function Forming({ onSpill, onScan, onPreview, hasDemo, previewing, onBackfill, 
         fontSize: 26, lineHeight: 1.2,
       }}>the mirror begins the moment you spill or scan.<br />nothing here yet — and nothing fabricated.</p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <button onClick={onSpill} style={pill('#e7548a', '#fff')}>🫧 spill →</button>
+        <button onClick={onSpill} style={pill('#a52a5f', '#fff')}>🫧 spill →</button>
         <button onClick={onScan} style={pill('transparent', GOLD)}>
           <span style={{ borderBottom: 'none' }}>✨ scan →</span>
         </button>
@@ -1238,8 +1238,8 @@ export function MirrorPage() {
             color: MUTED, letterSpacing: '.02em',
           }}>
             <span style={{
-              width: 7, height: 7, borderRadius: '50%', background: '#e7548a',
-              boxShadow: '0 0 10px #e7548a', animation: 'mirror-pulse-dot 1.8s ease-in-out infinite',
+              width: 7, height: 7, borderRadius: '50%', background: '#a52a5f',
+              boxShadow: '0 0 10px #a52a5f', animation: 'mirror-pulse-dot 1.8s ease-in-out infinite',
             }} />
             your most recent reading
           </div>
@@ -1289,7 +1289,7 @@ export function MirrorPage() {
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <button onClick={() => navigate('/#spill')} style={{
-                background: '#e7548a', color: '#fff', border: 0, borderRadius: 999,
+                background: '#a52a5f', color: '#fff', border: 0, borderRadius: 999,
                 padding: '9px 16px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
                 fontSize: 12, cursor: 'pointer',
               }}>🫧 spill →</button>
@@ -1401,7 +1401,7 @@ export function MirrorPage() {
                     navigate('/subscribe')
                   }}
                   style={{
-                    background: '#e7548a', color: '#fff', border: 0, borderRadius: 999,
+                    background: '#a52a5f', color: '#fff', border: 0, borderRadius: 999,
                     padding: '12px 22px', fontFamily: "'Sora',sans-serif", fontWeight: 700,
                     fontSize: 13, cursor: 'pointer', letterSpacing: '.05em',
                     boxShadow: '0 12px 28px -12px rgba(231,84,138,.6)',
@@ -1443,7 +1443,7 @@ export function MirrorPage() {
                 {(['all', ...DISTRICTS, 'ruins'] as const).map((k) => {
                   const active = castFilter === k
                   const isDistrict = (DISTRICTS as readonly string[]).includes(k as string)
-                  const c = isDistrict ? DISTRICT_COLOR[k as District] : k === 'ruins' ? RUIN_HEX : '#e7548a'
+                  const c = isDistrict ? DISTRICT_COLOR[k as District] : k === 'ruins' ? RUIN_HEX : '#a52a5f'
                   const label = k === 'all' ? 'all' : k === 'ruins' ? 'ruins' : DISTRICT_LABEL[k as District].toLowerCase()
                   return (
                     <button key={k} onClick={() => setCastFilter(k)} style={{
@@ -1519,7 +1519,7 @@ export function MirrorPage() {
             marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
           }}>
             <EyeMark w={22} />
-            <ShutapWordmark size={12} ink={INK} accent="#e7548a" letterSpacing="-.02em" />
+            <ShutapWordmark size={12} ink={INK} accent="#a52a5f" letterSpacing="-.02em" />
             <span style={{ width: 3, height: 3, borderRadius: '50%', background: MUTED_2, display: 'inline-block' }} />
             <span style={{
               fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 9,

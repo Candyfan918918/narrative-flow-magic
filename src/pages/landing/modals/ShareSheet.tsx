@@ -119,7 +119,7 @@ export function ShareChannels({ caption, url, onToast }: { caption: string; url:
           >
             <svg viewBox="0 0 24 24" style={{ width: 23, height: 23 }}>{c.svg}</svg>
           </span>
-          <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 11.5, color: '#caaebb' }}>{c.label}</span>
+          <span style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 11.5, color: '#645b61' }}>{c.label}</span>
         </div>
       ))}
     </div>
@@ -153,7 +153,7 @@ export function ShareSheet({
           maxWidth: 460,
           margin: 16,
           padding: 22,
-          background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)',
+          background: 'linear-gradient(160deg,#100c14,#100c14)',
           border: '.5px solid rgba(255,255,255,.14)',
           borderRadius: 22,
           display: 'flex',
@@ -166,7 +166,7 @@ export function ShareSheet({
         <div
           role="button"
           onClick={onClose}
-          style={{ textAlign: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#9b8090', cursor: 'pointer' }}
+          style={{ textAlign: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 13, color: '#6f666c', cursor: 'pointer' }}
         >
           close
         </div>

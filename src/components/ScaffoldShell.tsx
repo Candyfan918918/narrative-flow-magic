@@ -28,7 +28,7 @@ export function Eyebrow({ children }: { children: React.ReactNode }) {
         fontFamily: 'Newsreader,serif',
         fontStyle: 'italic',
         fontSize: 14,
-        color: '#6b4a5c',
+        color: '#443c42',
         marginBottom: 10,
       }}
     >
@@ -58,7 +58,7 @@ export function Title({ children }: { children: React.ReactNode }) {
 
 export function Lead({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, color: '#6b4a5c', margin: '0 0 24px', maxWidth: '52ch' }}>
+    <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, color: '#443c42', margin: '0 0 24px', maxWidth: '52ch' }}>
       {children}
     </p>
   )

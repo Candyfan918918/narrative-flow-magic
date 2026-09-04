@@ -1,10 +1,10 @@
 import { EyeMark as BrandEyeMark } from '@/components/brand/EyeMark'
 
-export const BG = '#1a0a12'
-export const TEXT = '#f7e8f0'
+export const BG = '#100c14'
+export const TEXT = '#fdfbf9'
 export const SOFT = '#c4a0b2'
-export const MUTED = '#9e7a8c'
-export const ACCENT = '#e7548a'
+export const MUTED = '#6f666c'
+export const ACCENT = '#a52a5f'
 
 export const CREATURES = [
   { n: 'Owl', e: '🦉' }, { n: 'Fox', e: '🦊' }, { n: 'Bear', e: '🐻' }, { n: 'Lion', e: '🦁' },
@@ -26,7 +26,7 @@ export const oauthBtn: React.CSSProperties = {
   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
   width: '100%', padding: '15px 20px', borderRadius: 14,
   border: '1px solid rgba(255,255,255,.14)', background: 'rgba(255,255,255,.05)',
-  cursor: 'pointer', fontFamily: "'Inter',sans-serif", fontWeight: 600, fontSize: 15,
+  cursor: 'pointer', fontFamily: "'Sora',sans-serif", fontWeight: 600, fontSize: 15,
   color: TEXT, transition: '.18s',
 }
 export const primaryBtn: React.CSSProperties = {

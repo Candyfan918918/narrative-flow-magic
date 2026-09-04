@@ -81,8 +81,8 @@ function PreferencesRoute() {
     <main
       style={{
         minHeight: '100vh',
-        background: '#fdf0f5',
-        color: '#1b0f16',
+        background: '#ffffff',
+        color: '#100c14',
         fontFamily: 'Inter, system-ui, sans-serif',
         display: 'flex',
         alignItems: 'flex-start',
@@ -104,7 +104,7 @@ function PreferencesRoute() {
             alignItems: 'center',
             gap: 8,
             textDecoration: 'none',
-            color: '#1b0f16',
+            color: '#100c14',
             marginBottom: 28,
           }}
         >
@@ -128,7 +128,7 @@ function PreferencesRoute() {
             fontSize: 10,
             letterSpacing: '.16em',
             textTransform: 'uppercase',
-            color: '#9e7a8c',
+            color: '#6f666c',
             marginBottom: 8,
           }}
         >
@@ -152,7 +152,7 @@ function PreferencesRoute() {
             style={{
               fontFamily: 'Newsreader, serif',
               fontStyle: 'italic',
-              color: '#6b4a5c',
+              color: '#443c42',
               fontSize: 15,
               margin: '0 0 28px',
             }}
@@ -164,7 +164,7 @@ function PreferencesRoute() {
             style={{
               fontFamily: 'Newsreader, serif',
               fontStyle: 'italic',
-              color: '#6b4a5c',
+              color: '#443c42',
               fontSize: 15,
               margin: '0 0 28px',
             }}
@@ -183,7 +183,7 @@ function PreferencesRoute() {
           }}
         >
           {state === 'pending' ? (
-            <p style={{ color: '#6b4a5c', margin: 0, fontSize: 14 }}>loading…</p>
+            <p style={{ color: '#443c42', margin: 0, fontSize: 14 }}>loading…</p>
           ) : !state.ok || !state.prefs ? (
             <div>
               <p
@@ -201,7 +201,7 @@ function PreferencesRoute() {
                 href="/auth?next=/email/preferences"
                 style={{
                   display: 'inline-block',
-                  background: '#e7548a',
+                  background: '#a52a5f',
                   color: '#ffffff',
                   padding: '12px 24px',
                   borderRadius: 999,
@@ -220,14 +220,14 @@ function PreferencesRoute() {
               {state.prefs.notif_all_opt_out ? (
                 <div
                   style={{
-                    background: '#fdf0f5',
+                    background: '#ffffff',
                     border: '1px solid rgba(231,84,138,.28)',
                     borderRadius: 14,
                     padding: '12px 14px',
                     fontFamily: 'Newsreader, serif',
                     fontStyle: 'italic',
                     fontSize: 13.5,
-                    color: '#a01a55',
+                    color: '#6d1239',
                     marginBottom: 18,
                     lineHeight: 1.55,
                   }}
@@ -249,7 +249,7 @@ function PreferencesRoute() {
                         gap: 14,
                         alignItems: 'flex-start',
                         padding: '14px 16px',
-                        background: '#fdf0f5',
+                        background: '#ffffff',
                         border: '1px solid rgba(11,8,15,.06)',
                         borderRadius: 16,
                         cursor: 'pointer',
@@ -263,7 +263,7 @@ function PreferencesRoute() {
                         disabled={saving}
                         style={{
                           marginTop: 3,
-                          accentColor: '#e7548a',
+                          accentColor: '#a52a5f',
                           width: 16,
                           height: 16,
                         }}
@@ -282,7 +282,7 @@ function PreferencesRoute() {
                         </div>
                         <div
                           style={{
-                            color: '#6b4a5c',
+                            color: '#443c42',
                             fontSize: 13,
                             lineHeight: 1.55,
                             marginTop: 3,
@@ -303,7 +303,7 @@ function PreferencesRoute() {
                   fontSize: 12.5,
                   fontFamily: 'Newsreader, serif',
                   fontStyle: 'italic',
-                  color: saved ? '#c1216b' : '#9e7a8c',
+                  color: saved ? '#c1216b' : '#6f666c',
                   transition: 'color .2s',
                 }}
               >
@@ -317,7 +317,7 @@ function PreferencesRoute() {
           style={{
             marginTop: 22,
             fontSize: 12,
-            color: '#9e7a8c',
+            color: '#6f666c',
             lineHeight: 1.6,
             textAlign: 'center',
           }}

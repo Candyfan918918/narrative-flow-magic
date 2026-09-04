@@ -242,16 +242,16 @@ export function ProfilePage() {
   const maskedEmail = maskEmail(email)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
+    <div style={{ minHeight: '100vh', background: '#ffffff' }}>
       <main style={{ maxWidth: 680, margin: '0 auto', padding: '26px 22px 90px' }}>
         {/* identity hero */}
         {alias && (
-          <div style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)', borderRadius: 22, padding: '22px 22px 18px', marginBottom: 18 }}>
+          <div style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(160deg,#100c14,#100c14)', borderRadius: 22, padding: '22px 22px 18px', marginBottom: 18 }}>
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 18% 0%, rgba(255,126,179,.22), transparent 60%)', pointerEvents: 'none' }} />
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
               <span style={{ width: 68, height: 68, borderRadius: '50%', background: 'linear-gradient(135deg,#ff7eb3,#890041)', display: 'grid', placeItems: 'center', fontSize: 30, color: '#fff', boxShadow: '0 8px 22px -8px rgba(0,0,0,.5)' }}>{alias.emoji}</span>
               <div style={{ flex: 1, minWidth: 180 }}>
-                <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 22, letterSpacing: '-.02em', color: '#f7e8f0' }}>{alias.display_name}</div>
+                <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 22, letterSpacing: '-.02em', color: '#fdfbf9' }}>{alias.display_name}</div>
                 <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13.5, color: '#c4a0b2', marginTop: 2 }}>{maskedEmail || 'anonymous'}</div>
               </div>
               <button disabled={aliasBusy} onClick={() => setEditAlias((v) => !v)} style={btn('#ff7eb3')}>{editAlias ? 'close' : 'edit alias'}</button>
@@ -269,7 +269,7 @@ export function ProfilePage() {
                         const v = e.target.value.trim()
                         if (v && v !== alias[k]) onSaveAlias({ [k]: v })
                       }}
-                      style={{ border: '.5px solid rgba(255,255,255,.14)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, background: 'rgba(255,255,255,.06)', color: '#f7e8f0' }}
+                      style={{ border: '.5px solid rgba(255,255,255,.14)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 14, background: 'rgba(255,255,255,.06)', color: '#fdfbf9' }}
                     />
                   </label>
                 ))}
@@ -282,7 +282,7 @@ export function ProfilePage() {
                       if (v && v !== alias.emoji) onSaveAlias({ emoji: v })
                     }}
                     maxLength={4}
-                    style={{ border: '.5px solid rgba(255,255,255,.14)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Inter,sans-serif', fontSize: 16, background: 'rgba(255,255,255,.06)', color: '#f7e8f0' }}
+                    style={{ border: '.5px solid rgba(255,255,255,.14)', borderRadius: 10, padding: '8px 10px', fontFamily: 'Sora,sans-serif', fontSize: 16, background: 'rgba(255,255,255,.06)', color: '#fdfbf9' }}
                   />
                 </label>
               </div>
@@ -316,7 +316,7 @@ export function ProfilePage() {
                   padding: '10px 2px',
                   border: 'none',
                   background: 'transparent',
-                  color: active ? '#c1216b' : '#9e7a8c',
+                  color: active ? '#c1216b' : '#6f666c',
                   fontFamily: 'Sora,sans-serif',
                   fontWeight: 600,
                   fontSize: 13.5,
@@ -333,9 +333,9 @@ export function ProfilePage() {
 
         {/* list */}
         {rows === null ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#9e7a8c' }}>loading…</div>
+          <div style={{ textAlign: 'center', padding: '40px 0', fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#6f666c' }}>loading…</div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '50px 0', fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#9e7a8c' }}>
+          <div style={{ textAlign: 'center', padding: '50px 0', fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#6f666c' }}>
             nothing here yet.{' '}
             <span style={{ color: '#c1216b', cursor: 'pointer' }} onClick={() => navigate('/')}>start a spill →</span>
           </div>
@@ -378,7 +378,7 @@ export function ProfilePage() {
 
         {/* billing card */}
         <div style={{ marginTop: 36, paddingTop: 22, borderTop: '.5px solid rgba(11,8,15,.08)' }}>
-          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 10 }}>
+          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#6f666c', marginBottom: 10 }}>
             billing
           </div>
           <BillingCard billing={billing} onOpenPortal={openPortal} portalBusy={portalBusy} navigate={navigate} />
@@ -400,14 +400,14 @@ export function ProfilePage() {
               <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15, color: '#0b080f', lineHeight: 1.5 }}>
                 this permanently deletes your account, alias, stories, scans, and cancels any active subscription. it cannot be undone.
               </div>
-              <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 11, color: '#6b4a5c' }}>
+              <div style={{ fontFamily: 'Sora,sans-serif', fontSize: 11, color: '#443c42' }}>
                 type <strong>delete my account</strong> to confirm.
               </div>
               <input
                 value={deleteConfirm}
                 onChange={(e) => setDeleteConfirm(e.target.value)}
                 placeholder="delete my account"
-                style={{ border: '.5px solid rgba(179,38,30,.32)', borderRadius: 10, padding: '9px 12px', fontFamily: 'Inter,sans-serif', fontSize: 14, background: '#fff' }}
+                style={{ border: '.5px solid rgba(179,38,30,.32)', borderRadius: 10, padding: '9px 12px', fontFamily: 'Sora,sans-serif', fontSize: 14, background: '#fff' }}
               />
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button
@@ -452,7 +452,7 @@ function ListItem({ emoji, title, subline, scan, actions }: {
       onMouseLeave={() => setHover(false)}
       style={{
         background: '#fff',
-        border: '.5px solid ' + (hover ? '#e7548a' : 'rgba(11,8,15,.08)'),
+        border: '.5px solid ' + (hover ? '#a52a5f' : 'rgba(11,8,15,.08)'),
         borderRadius: 16,
         padding: '14px 16px',
         display: 'flex',
@@ -462,18 +462,18 @@ function ListItem({ emoji, title, subline, scan, actions }: {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ width: 42, height: 42, borderRadius: 12, background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 20, flexShrink: 0 }}>{emoji}</span>
+        <span style={{ width: 42, height: 42, borderRadius: 12, background: '#fdfbf9', display: 'grid', placeItems: 'center', fontSize: 20, flexShrink: 0 }}>{emoji}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 14, color: '#0b080f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</div>
-          <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 11.5, color: '#9e7a8c', marginTop: 2 }}>{subline}</div>
+          <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 11.5, color: '#6f666c', marginTop: 2 }}>{subline}</div>
         </div>
         {scan && (
           <div style={{ textAlign: 'right', marginRight: 6 }}>
-            <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9e7a8c' }}>intensity</div>
+            <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: '#6f666c' }}>intensity</div>
             <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 18, color: '#c1216b', letterSpacing: '-.02em', fontVariantNumeric: 'tabular-nums' }}>{scan.n}</div>
           </div>
         )}
-        <span style={{ fontFamily: 'Sora,sans-serif', fontSize: 20, color: '#9e7a8c' }} aria-hidden>›</span>
+        <span style={{ fontFamily: 'Sora,sans-serif', fontSize: 20, color: '#6f666c' }} aria-hidden>›</span>
       </div>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{actions}</div>
     </article>
@@ -525,7 +525,7 @@ function BillingCard({
   navigate: (path: string) => void
 }) {
   if (billing === undefined) {
-    return <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#9e7a8c' }}>loading…</div>
+    return <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', color: '#6f666c' }}>loading…</div>
   }
   if (billing === null) {
     return (
@@ -550,7 +550,7 @@ function BillingCard({
     : billing.status
   const statusColor =
     billing.status === 'past_due' ? '#b3261e'
-    : billing.cancelAtPeriodEnd || billing.status === 'canceled' ? '#9e7a8c'
+    : billing.cancelAtPeriodEnd || billing.status === 'canceled' ? '#6f666c'
     : '#c1216b'
   return (
     <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -563,7 +563,7 @@ function BillingCard({
         </span>
       </div>
       {endStr && (
-        <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13.5, color: '#6b4a5c' }}>
+        <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13.5, color: '#443c42' }}>
           {billing.status === 'trialing' ? `trial ends ${endStr}`
             : billing.cancelAtPeriodEnd || billing.status === 'canceled' ? `access ends ${endStr}`
             : billing.status === 'past_due' ? `payment retrying · access until ${endStr}`

@@ -28,16 +28,16 @@ export function AdminShell({ variant = 'light', title, subtitle, right, children
   const pathname = useRouterState({ select: (r) => r.location.pathname })
   const dark = variant === 'dark'
 
-  const bg = dark ? '#0f0916' : '#fdf0f5'
+  const bg = dark ? '#0f0916' : '#ffffff'
   const ink = dark ? '#e8dfea' : '#0b080f'
-  const dim = dark ? '#9a8fa2' : '#6b4a5c'
+  const dim = dark ? '#6f666c' : '#443c42'
   const chipBg = dark ? 'rgba(255,255,255,.06)' : '#fff'
   const chipBorder = dark ? 'rgba(255,255,255,.10)' : 'rgba(11,8,15,.12)'
-  const activeBg = dark ? '#e7548a' : '#0b080f'
+  const activeBg = dark ? '#a52a5f' : '#0b080f'
   const activeInk = '#fff'
 
   return (
-    <div style={{ minHeight: '100vh', background: bg, color: ink, fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: bg, color: ink, fontFamily: "'Sora',sans-serif" }}>
       <div style={{ maxWidth: 1400, margin: '0 auto', padding: '28px 24px 80px' }}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
           {NAV.map((n) => {

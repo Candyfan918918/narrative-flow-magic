@@ -57,7 +57,7 @@ function HomeHeaderCta() {
             width: 26,
             height: 26,
             borderRadius: '50%',
-            background: 'linear-gradient(135deg,#f060a0,#890041)',
+            background: 'linear-gradient(135deg,#a52a5f,#890041)',
             display: 'grid',
             placeItems: 'center',
             fontSize: 14,
@@ -124,7 +124,7 @@ export function HomeHeader() {
                   {' '}
                   <span data-brandword="" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '20px', letterSpacing: '-.04em', color: '#0b080f', transition: 'color .4s' }}>
                     shut
-                    <span style={{ color: '#e7548a' }}>
+                    <span style={{ color: '#a52a5f' }}>
                       ap
                     </span>
                   </span>
@@ -151,18 +151,18 @@ export function HomeHeader() {
                         data-link={l.href}
                         data-hover=""
                         data-navlink=""
-                        style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '15px', color: '#6b4a5c', padding: '8px 10px', transition: 'color .4s' }}
+                        style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '15px', color: '#443c42', padding: '8px 10px', transition: 'color .4s' }}
                       >
                         {l.label}
                       </a>
                     ))}
                   </span>
                   {' '}
-                  <a href="/stream" data-link="/stream" data-hover="" data-navlink="" style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '15px', color: '#6b4a5c', padding: '8px 14px', transition: 'color .4s' }}>
+                  <a href="/stream" data-link="/stream" data-hover="" data-navlink="" style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '15px', color: '#443c42', padding: '8px 14px', transition: 'color .4s' }}>
                     rooms
                   </a>
                   {' '}
-                  <a href="/halls" data-link="/halls" data-hover="" data-navlink="" style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '15px', color: '#6b4a5c', padding: '8px 14px', transition: 'color .4s' }}>
+                  <a href="/halls" data-link="/halls" data-hover="" data-navlink="" style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: '15px', color: '#443c42', padding: '8px 14px', transition: 'color .4s' }}>
                     halls
                   </a>
                   {' '}

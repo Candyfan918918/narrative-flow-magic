@@ -33,10 +33,10 @@ html.home-scroll-snap {
 
 /* Homepage link color (design system pink). */
 .home-immersive a { color: #c1216b; }
-.home-immersive a:hover { color: #a01a55; }
+.home-immersive a:hover { color: #6d1239; }
 
 /* Selection color. */
-.home-immersive ::selection { background: #e7548a; color: #fff; }
+.home-immersive ::selection { background: #a52a5f; color: #fff; }
 
 
 /* ── Restored hover states (design's style-hover attrs were never compiled) ── */
@@ -46,7 +46,7 @@ html.home-scroll-snap {
 }
 /* hero secondary "spill it" outline button (scoped to Hero only) */
 .home-immersive [data-screen-label="Hero"] a[data-cta="spill"]:hover {
-  border-color: #e7548a !important;
+  border-color: #a52a5f !important;
 }
 /* chapter 01 "open a room →" (dark pill inside .chsec) */
 .home-immersive .chsec a[data-cta="spill"]:hover {
