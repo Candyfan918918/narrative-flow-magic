@@ -44,7 +44,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
     fontFamily: 'Newsreader,serif',
     fontStyle: 'italic',
     fontSize: 14,
-    color: '#4a3040',
+    color: '#383136',
     textDecoration: 'none',
   }
 
@@ -81,13 +81,13 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Link
             to="/stream"
-            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: pathname.startsWith('/stream') || pathname.startsWith('/room') ? '#0b080f' : '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}
+            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: pathname.startsWith('/stream') || pathname.startsWith('/room') ? '#0b080f' : '#443c42', textDecoration: 'none', padding: '6px 12px' }}
           >
             rooms
           </Link>
           <Link
             to="/halls"
-            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: pathname.startsWith('/halls') ? '#0b080f' : '#6b4a5c', textDecoration: 'none', padding: '6px 12px' }}
+            style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 14, color: pathname.startsWith('/halls') ? '#0b080f' : '#443c42', textDecoration: 'none', padding: '6px 12px' }}
           >
             halls
           </Link>
@@ -118,7 +118,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                       width: 26,
                       height: 26,
                       borderRadius: '50%',
-                      background: 'linear-gradient(135deg,#f060a0,#890041)',
+                      background: 'linear-gradient(135deg,#a52a5f,#890041)',
                       display: 'grid',
                       placeItems: 'center',
                       fontSize: 14,
@@ -127,7 +127,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                   >
                     {alias.emoji || '🐣'}
                   </span>
-                  <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13, color: '#4a3040' }}>
+                  <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13, color: '#383136' }}>
                     {alias.name || ''}
                   </span>
                 </div>
@@ -176,7 +176,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                     <div
                       className="menu-item"
                       role="button"
-                      style={{ ...menuItem, color: '#9e7a8c', cursor: 'pointer' }}
+                      style={{ ...menuItem, color: '#6f666c', cursor: 'pointer' }}
                       onClick={signOut}
                     >
                       sign out
@@ -202,7 +202,7 @@ export function Header({ onToast }: { onToast?: (m: string) => void }) {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  background: '#e7548a',
+                  background: '#a52a5f',
                   color: '#fff',
                   textDecoration: 'none',
                   borderRadius: 999,

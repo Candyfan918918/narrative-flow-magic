@@ -98,7 +98,7 @@ function ContactPage() {
               </div>
               <div
                 style={{
-                  fontFamily: 'Inter,sans-serif',
+                  fontFamily: 'Sora,sans-serif',
                   fontSize: 13,
                   color: '#c1216b',
                   flex: 'none',
@@ -108,7 +108,7 @@ function ContactPage() {
                 {c.email}
               </div>
             </div>
-            <div style={{ fontSize: 13, lineHeight: 1.55, color: '#6b4a5c', marginTop: 4 }}>
+            <div style={{ fontSize: 13, lineHeight: 1.55, color: '#443c42', marginTop: 4 }}>
               {c.sub}
             </div>
           </a>
@@ -118,7 +118,7 @@ function ContactPage() {
         in an emergency, don&rsquo;t email us — we can&rsquo;t respond in real time. use the{' '}
         <a
           href="/safety"
-          style={{ color: '#a01a55', textDecoration: 'none', fontWeight: 600 }}
+          style={{ color: '#6d1239', textDecoration: 'none', fontWeight: 600 }}
         >
           crisis lines →
         </a>
@@ -128,7 +128,7 @@ function ContactPage() {
           marginTop: 16,
           fontFamily: 'Newsreader,serif',
           fontStyle: 'italic',
-          color: '#6b4a5c',
+          color: '#443c42',
         }}
       >
         shutap is 18+, pseudonymous, and not a medical or legal service. please don&rsquo;t send us

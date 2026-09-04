@@ -30,7 +30,7 @@ export function RoomsStrip({ newestRooms = [] }: { newestRooms?: NewestRoom[] } 
   const combined = [...live, ...seed]
   const list = combined.concat(combined)
   return (
-    <section data-screen-label="Rooms strip" style={{ position: 'relative', background: '#fdf0f5', padding: 'clamp(80px,11vh,130px) 0 clamp(56px,8vh,90px)', overflow: 'hidden' }}>
+    <section data-screen-label="Rooms strip" style={{ position: 'relative', background: '#ffffff', padding: 'clamp(80px,11vh,130px) 0 clamp(56px,8vh,90px)', overflow: 'hidden' }}>
       <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '0 30px 26px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
         <h2 data-rv="swipe-l" data-words="" style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 'clamp(28px,3.6vw,54px)', letterSpacing: '-.04em', margin: 0, color: '#0b080f' }}>
           rooms open <em style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#c1216b' }}>right now.</em>
@@ -49,12 +49,12 @@ export function RoomsStrip({ newestRooms = [] }: { newestRooms?: NewestRoom[] } 
             style={{ flex: 'none', width: '340px', background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: '22px', padding: '24px', color: 'inherit', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '14px', transition: 'transform .25s,box-shadow .25s', boxShadow: '0 6px 18px -12px rgba(60,10,30,.25)' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
-              <span style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: '16px', flex: 'none' }}>{r.emoji}</span>
-              <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '13.5px', color: '#9e7a8c' }}>{r.alias}</span>
-              <span style={{ marginLeft: 'auto', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '12px', color: '#9e7a8c' }}>{r.hours}</span>
+              <span style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#fdfbf9', display: 'grid', placeItems: 'center', fontSize: '16px', flex: 'none' }}>{r.emoji}</span>
+              <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '13.5px', color: '#6f666c' }}>{r.alias}</span>
+              <span style={{ marginLeft: 'auto', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '12px', color: '#6f666c' }}>{r.hours}</span>
             </div>
             <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: '17px', lineHeight: 1.3, letterSpacing: '-.01em', color: '#0b080f', flex: 1 }}>{r.title}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '13px', color: '#6b4a5c' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '13px', color: '#443c42' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite', display: 'block' }} />
                 {r.sitting} sitting in

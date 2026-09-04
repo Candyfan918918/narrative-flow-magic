@@ -26,12 +26,12 @@ const ANNUAL_PER_MONTH = PLAN_TO_PRICE.annual.amount / 12
 const ANNUAL_SAVINGS_PCT = Math.round((1 - PLAN_TO_PRICE.annual.amount / MONTHLY_TIMES_TWELVE) * 100)
 
 // Light homepage theme tokens.
-const INK = '#1b0f16'
+const INK = '#100c14'
 const MUTED = '#8a6577'
 const SOFT_MUTED = '#a98a99'
-const ACCENT = '#e7548a'
+const ACCENT = '#a52a5f'
 const DEEP_ACCENT = '#c1216b'
-const PAGE_BG = '#fdf0f5'
+const PAGE_BG = '#ffffff'
 const HAIRLINE = 'rgba(27,15,22,.12)'
 
 const fadeUpKeyframes = `
@@ -296,7 +296,7 @@ export function SubscribePage() {
                 </span>
                 <span style={{ height: 1, flex: 1, background: 'rgba(27,15,22,.10)' }} />
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 10.5, color: SOFT_MUTED }}>powered by</span>
+                  <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 10.5, color: SOFT_MUTED }}>powered by</span>
                   <img src={stripeWordmark} alt="Stripe" style={{ height: 15, display: 'block' }} />
                 </span>
               </div>
@@ -315,7 +315,7 @@ export function SubscribePage() {
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, marginTop: 12 }}>
                 <LockGlyph color={SOFT_MUTED} size={11} />
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: SOFT_MUTED }}>
+                <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 11, color: SOFT_MUTED }}>
                   encrypted — your card details go to stripe, never to shutap's servers
                 </span>
               </div>

@@ -101,7 +101,7 @@ export const Route = createFileRoute("/halls/$hall/$region/$window")({
   notFoundComponent: () => (
     <SeoPage>
       <h1 style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 30, margin: '0 0 12px', color: '#0b080f' }}>no hall at that path.</h1>
-      <p style={{ fontFamily: "'Newsreader',serif", color: '#6b4a5c' }}>
+      <p style={{ fontFamily: "'Newsreader',serif", color: '#443c42' }}>
         try{" "}
         <Link
           to="/halls/$hall/$region/$window"
@@ -152,21 +152,21 @@ function HallPage() {
             ]}
           />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#e7548a' }} />
-            <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e7548a' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#a52a5f' }} />
+            <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: '#a52a5f' }}>
               hall · {region} · {window}
             </span>
           </div>
           <h1 style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 'clamp(26px,5vw,36px)', margin: 0, color: '#0b080f', letterSpacing: '-.01em', lineHeight: 1.15 }}>
             {display}.
           </h1>
-          <p style={{ fontFamily: "'Newsreader',serif", fontSize: 16, lineHeight: 1.55, color: '#6b4a5c', margin: 0, maxWidth: '46ch' }}>
+          <p style={{ fontFamily: "'Newsreader',serif", fontSize: 16, lineHeight: 1.55, color: '#443c42', margin: 0, maxWidth: '46ch' }}>
             {meta.blurb}
           </p>
         </header>
 
         {!view || view.entries.length === 0 ? (
-          <p style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15.5, color: '#9e7a8c', margin: 0 }}>
+          <p style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15.5, color: '#6f666c', margin: 0 }}>
             we haven't gathered enough signal here yet. halls publish once at least{" "}
             {MIN_HALL_ENTRIES} rooms qualify for a (region, window) cell.
           </p>
@@ -180,20 +180,20 @@ function HallPage() {
                   display: 'grid', gridTemplateColumns: 'auto 1fr auto',
                   alignItems: 'center', gap: 14,
                   padding: '14px 16px', borderRadius: 16,
-                  background: i === 0 ? '#fff5f9' : '#fff',
+                  background: i === 0 ? '#ffffff' : '#fff',
                   border: '.5px solid rgba(11,8,15,.08)',
                   transition: 'transform .18s, border-color .18s',
                   animation: `hall-fadeup .5s ease ${i * 60}ms both`,
                 }}
               >
-                <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 14, color: i === 0 ? '#c1216b' : '#9e7a8c', fontVariantNumeric: 'tabular-nums', minWidth: 26 }}>#{i + 1}</span>
+                <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 800, fontSize: 14, color: i === 0 ? '#c1216b' : '#6f666c', fontVariantNumeric: 'tabular-nums', minWidth: 26 }}>#{i + 1}</span>
                 <a
                   href={e.href}
                   style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15.5, color: '#0b080f', textDecoration: 'none', lineHeight: 1.35 }}
                 >
                   {e.title}
                 </a>
-                <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 11, color: '#9e7a8c', letterSpacing: '.06em', whiteSpace: 'nowrap' }}>{e.metric}</span>
+                <span style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 11, color: '#6f666c', letterSpacing: '.06em', whiteSpace: 'nowrap' }}>{e.metric}</span>
               </li>
             ))}
           </ol>

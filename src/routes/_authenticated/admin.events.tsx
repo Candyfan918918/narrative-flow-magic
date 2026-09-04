@@ -46,14 +46,14 @@ function AdminEventsPage() {
       </div>
       {err && <div style={{ color: '#c1216b', marginBottom: 12 }}>{err}</div>}
       {!rows ? (
-        <div style={{ color: '#6b4a5c' }}>loading…</div>
+        <div style={{ color: '#443c42' }}>loading…</div>
       ) : rows.length === 0 ? (
-        <div style={{ color: '#6b4a5c', fontStyle: 'italic' }}>no events</div>
+        <div style={{ color: '#443c42', fontStyle: 'italic' }}>no events</div>
       ) : (
         <div style={{ background: '#fff', borderRadius: 14, border: '.5px solid rgba(11,8,15,.08)', overflow: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
-              <tr style={{ background: '#faf3f6', textAlign: 'left', color: '#6b4a5c' }}>
+              <tr style={{ background: '#ffffff', textAlign: 'left', color: '#443c42' }}>
                 <th style={th}>time</th>
                 <th style={th}>event</th>
                 <th style={th}>user</th>
@@ -78,5 +78,5 @@ function AdminEventsPage() {
 }
 
 const th: React.CSSProperties = { padding: '10px 12px', fontWeight: 600, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase' }
-const td: React.CSSProperties = { padding: '10px 12px', color: '#1b0f16' }
+const td: React.CSSProperties = { padding: '10px 12px', color: '#100c14' }
 const inp: React.CSSProperties = { flex: 1, padding: '10px 14px', border: '1px solid rgba(11,8,15,.12)', borderRadius: 10 }

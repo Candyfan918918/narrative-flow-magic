@@ -88,7 +88,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
     <section
       ref={ref}
       className="home-chapter"
-      style={{ position: 'relative', background: '#fdf0f5', minHeight: '96vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}
+      style={{ position: 'relative', background: '#ffffff', minHeight: '96vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}
     >
       <div
         style={{
@@ -104,13 +104,13 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
         className="home-grid-2"
       >
         <div>
-          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 22 }}>
+          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#a52a5f', marginBottom: 22 }}>
             chapter 01 — spill it
           </div>
           <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: 1.08, letterSpacing: '-.04em', margin: '0 0 24px', color: '#0b080f' }}>
             say the thing you can't say <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', fontWeight: 400 }}>anywhere else.</em>
           </h2>
-          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(16px,1.4vw,20px)', lineHeight: 1.6, color: '#4a3040', maxWidth: '44ch', margin: '0 0 32px' }}>
+          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(16px,1.4vw,20px)', lineHeight: 1.6, color: '#383136', maxWidth: '44ch', margin: '0 0 32px' }}>
             tell your story — it opens a room the world can sit in. people who've lived your exact thing show up, relate, and tell you what actually happened next.
           </p>
           <button
@@ -141,10 +141,10 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
             ref={card.ref}
             style={{
               width: 'min(380px, 100%)',
-              background: 'linear-gradient(160deg, #2e0d1a, #1a0a12)',
+              background: 'linear-gradient(160deg, #100c14, #100c14)',
               borderRadius: 24,
               padding: 24,
-              color: '#f7e8f0',
+              color: '#fdfbf9',
               boxShadow: '0 40px 90px -40px rgba(60,10,30,.65)',
               border: '1px solid rgba(255,255,255,.1)',
               position: 'relative',
@@ -157,7 +157,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
               <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 13, color: '#fff' }}>
                 spilling it
               </span>
-              <span style={{ marginLeft: 'auto', fontFamily: NEWS, fontStyle: 'italic', fontSize: 12, color: '#9e7a8c' }}>
+              <span style={{ marginLeft: 'auto', fontFamily: NEWS, fontStyle: 'italic', fontSize: 12, color: '#6f666c' }}>
                 the interview · sample
               </span>
             </div>
@@ -180,7 +180,7 @@ export function Chapter01Interview({ onCtaSpill }: { onCtaSpill: () => void }) {
                   )
                 }
                 return (
-                  <div key={i} className="home-bubble-in" style={{ alignSelf: 'flex-end', maxWidth: '88%', background: '#e7548a', color: '#fff', borderRadius: '16px 16px 5px 16px', padding: '10px 14px', fontFamily: NEWS, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.5 }}>
+                  <div key={i} className="home-bubble-in" style={{ alignSelf: 'flex-end', maxWidth: '88%', background: '#a52a5f', color: '#fff', borderRadius: '16px 16px 5px 16px', padding: '10px 14px', fontFamily: NEWS, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.5 }}>
                     {s.text}
                   </div>
                 )

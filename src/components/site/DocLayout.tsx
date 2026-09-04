@@ -35,7 +35,7 @@ export function DocLayout({
   }, [pathname])
 
   return (
-    <div style={{ background: '#fdf0f5', minHeight: '100vh', color: '#1b0f16' }}>
+    <div style={{ background: '#ffffff', minHeight: '100vh', color: '#100c14' }}>
       
       <div
         style={{
@@ -64,7 +64,7 @@ export function DocLayout({
               fontSize: 10,
               letterSpacing: '.16em',
               textTransform: 'uppercase',
-              color: '#9e7a8c',
+              color: '#6f666c',
               padding: '0 12px 12px',
               marginBottom: 8,
               borderBottom: '1px solid rgba(11,8,15,.06)',
@@ -84,10 +84,10 @@ export function DocLayout({
                     display: 'block',
                     padding: '8px 12px',
                     borderRadius: 999,
-                    fontFamily: 'Inter,sans-serif',
+                    fontFamily: 'Sora,sans-serif',
                     fontSize: 13.5,
                     fontWeight: isActive ? 600 : 500,
-                    color: isActive ? '#a01a55' : '#6b4a5c',
+                    color: isActive ? '#6d1239' : '#443c42',
                     background: isActive ? '#fff' : 'transparent',
                     boxShadow: isActive ? '0 1px 2px rgba(11,8,15,.05)' : 'none',
                     textDecoration: 'none',
@@ -133,7 +133,7 @@ export function DocLayout({
                   fontFamily: 'Newsreader,serif',
                   fontStyle: 'italic',
                   fontSize: 15,
-                  color: '#6b4a5c',
+                  color: '#443c42',
                   margin: 0,
                   lineHeight: 1.55,
                 }}
@@ -160,22 +160,22 @@ export function DocLayout({
           letter-spacing: -.005em;
         }
         .shutap-doc-body p, .shutap-doc-body li {
-          font-family: 'Inter', sans-serif;
+          font-family: 'Sora', sans-serif;
           font-size: 14.5px;
           line-height: 1.7;
           color: #3a2630;
           margin: 0 0 10px;
         }
-        .shutap-doc-body b { color: #1b0f16; }
+        .shutap-doc-body b { color: #100c14; }
         .shutap-doc-body ul { padding-left: 20px; margin: 0 0 10px; }
         .shutap-doc-body a { color: #c1216b; text-decoration: none; border-bottom: 1px solid rgba(193,33,107,.25); }
-        .shutap-doc-body a:hover { color: #a01a55; }
+        .shutap-doc-body a:hover { color: #6d1239; }
         .shutap-doc-link:hover:not(.is-active) {
           background: rgba(231,84,138,.06);
-          color: #a01a55;
+          color: #6d1239;
         }
         .shutap-doc-link:focus-visible {
-          outline: 2px solid #e7548a;
+          outline: 2px solid #a52a5f;
           outline-offset: 2px;
           border-radius: 999px;
         }

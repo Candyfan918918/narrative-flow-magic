@@ -41,7 +41,7 @@ export function SiteHeader() {
           fontFamily: 'Newsreader,serif',
           fontStyle: 'italic',
           fontSize: 14,
-          color: active ? '#a01a55' : '#6b4a5c',
+          color: active ? '#6d1239' : '#443c42',
           textDecoration: 'none',
           padding: '6px 12px',
           borderRadius: 999,
@@ -83,7 +83,7 @@ export function SiteHeader() {
     fontFamily: 'Newsreader,serif',
     fontStyle: 'italic',
     fontSize: 14,
-    color: '#4a3040',
+    color: '#383136',
     textDecoration: 'none',
     cursor: 'pointer',
   }
@@ -116,7 +116,7 @@ export function SiteHeader() {
           style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}
         >
           <EyeMark w={30} />
-          <ShutapWordmark size={17} ink="#0b080f" accent="#e7548a" letterSpacing="-.04em" />
+          <ShutapWordmark size={17} ink="#0b080f" accent="#a52a5f" letterSpacing="-.04em" />
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }} ref={areaRef}>
           {navLink('/stream', 'rooms')}
@@ -143,7 +143,7 @@ export function SiteHeader() {
                   fontFamily: 'Newsreader,serif',
                   fontStyle: 'italic',
                   fontSize: 13,
-                  color: '#1b0f16',
+                  color: '#100c14',
                 }}
               >
                 <span
@@ -152,7 +152,7 @@ export function SiteHeader() {
                     width: 22,
                     height: 22,
                     borderRadius: '50%',
-                    background: '#fdf0f5',
+                    background: '#ffffff',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -190,7 +190,7 @@ export function SiteHeader() {
                     role="menuitem"
                     onClick={signOut}
                     className="shutap-menu-item"
-                    style={{ ...menuItem, color: '#9e7a8c', width: '100%', textAlign: 'left', background: 'transparent', border: 0, font: 'inherit' }}
+                    style={{ ...menuItem, color: '#6f666c', width: '100%', textAlign: 'left', background: 'transparent', border: 0, font: 'inherit' }}
                   >
                     sign out
                   </button>
@@ -205,7 +205,7 @@ export function SiteHeader() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                background: '#e7548a',
+                background: '#a52a5f',
                 color: '#fff',
                 borderRadius: 999,
                 padding: '9px 18px',
@@ -224,16 +224,16 @@ export function SiteHeader() {
       <style>{`
         .shutap-nav-link:hover:not(.is-active) {
           background: rgba(231,84,138,.08);
-          color: #a01a55;
+          color: #6d1239;
         }
         .shutap-nav-link:focus-visible,
         .shutap-auth-pill:focus-visible {
-          outline: 2px solid #e7548a;
+          outline: 2px solid #a52a5f;
           outline-offset: 2px;
           border-radius: 999px;
         }
         .shutap-menu-item:focus-visible {
-          outline: 2px solid #e7548a;
+          outline: 2px solid #a52a5f;
           outline-offset: 2px;
           border-radius: 10px;
         }

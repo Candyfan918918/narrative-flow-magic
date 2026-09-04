@@ -151,28 +151,28 @@ function esc(s: string | undefined | null): string {
 function artifact(opts: ShareOpts): string {
   const kind = opts.kind || 'generic'
   // Only allow hex color for accent to prevent CSS injection.
-  const rawAccent = opts.accent || '#e7548a'
-  const accent = /^#[0-9a-fA-F]{3,8}$/.test(rawAccent) ? rawAccent : '#e7548a'
+  const rawAccent = opts.accent || '#a52a5f'
+  const accent = /^#[0-9a-fA-F]{3,8}$/.test(rawAccent) ? rawAccent : '#a52a5f'
   const headline = esc(opts.headline)
   const sub = esc(opts.sub)
   const big = esc(opts.big)
   const badge = esc(opts.badge) || '🏛'
   const loopLabel = esc(opts.loopLabel)
-  let bg = 'linear-gradient(165deg,#2a0d18,#160810)'
+  let bg = 'linear-gradient(165deg,#2a0d18,#100c14)'
   let inner = ''
   if (kind === 'scan') {
-    bg = 'radial-gradient(120% 90% at 50% 0%, #3a1020, #160810)'
+    bg = 'radial-gradient(120% 90% at 50% 0%, #100c14, #100c14)'
     inner =
       '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:64px;line-height:1;letter-spacing:-.04em;color:' +
       accent +
       '">' +
       big +
-      '</div><div style="margin-top:10px;font-family:Sora,sans-serif;font-weight:700;font-size:16px;color:#f7e8f0">' +
+      '</div><div style="margin-top:10px;font-family:Sora,sans-serif;font-weight:700;font-size:16px;color:#fdfbf9">' +
       headline +
       '</div>'
   } else if (kind === 'signature') {
     inner =
-      "<div style=\"font-family:'Cormorant Garamond',Newsreader,serif;font-style:italic;font-size:38px;line-height:1.1;color:#f7e8f0\">" +
+      "<div style=\"font-family:'Newsreader',Newsreader,serif;font-style:italic;font-size:38px;line-height:1.1;color:#fdfbf9\">" +
       headline +
       '</div>' +
       (sub
@@ -186,7 +186,7 @@ function artifact(opts: ShareOpts): string {
       accent +
       '">' +
       big +
-      '</div><div style="margin-top:12px;font-family:Newsreader,serif;font-style:italic;font-size:18px;line-height:1.4;color:#f7e8f0">' +
+      '</div><div style="margin-top:12px;font-family:Newsreader,serif;font-style:italic;font-size:18px;line-height:1.4;color:#fdfbf9">' +
       headline +
       '</div>'
   } else if (kind === 'hall') {
@@ -205,7 +205,7 @@ function artifact(opts: ShareOpts): string {
         : '')
   } else if (kind === 'arc' || kind === 'growth' || kind === 'outcome') {
     inner =
-      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:22px;line-height:1.35;color:#f7e8f0">' +
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:22px;line-height:1.35;color:#fdfbf9">' +
       headline +
       '</div>' +
       (sub
@@ -217,7 +217,7 @@ function artifact(opts: ShareOpts): string {
         : '')
   } else {
     inner =
-      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:20px;line-height:1.4;color:#f7e8f0">' +
+      '<div style="font-family:Newsreader,serif;font-style:italic;font-size:20px;line-height:1.4;color:#fdfbf9">' +
       headline +
       '</div>'
   }
@@ -236,7 +236,7 @@ function artifact(opts: ShareOpts): string {
     loop +
     '<div style="position:absolute;top:12px;left:14px;display:flex;align-items:center;gap:6px;opacity:.7">' +
     EYE +
-    '<span style="font-family:Sora,sans-serif;font-weight:800;font-size:11px;letter-spacing:-.02em;color:#f7e8f0">shut<span style="color:' +
+    '<span style="font-family:Sora,sans-serif;font-weight:800;font-size:11px;letter-spacing:-.02em;color:#fdfbf9">shut<span style="color:' +
     accent +
     '">ap</span></span></div></div>'
   )
@@ -254,7 +254,7 @@ const LOGOS: Record<string, string> = {
   tiktok:
     '<svg viewBox="0 0 24 24" fill="#fff" style="width:16px;height:16px"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.04-.1z"/></svg>',
   copy:
-    '<svg viewBox="0 0 24 24" fill="none" stroke="#f7e8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#fdfbf9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg>',
 }
 
 function copy(t: string) {
@@ -294,7 +294,7 @@ function doPlatform(p: string, caption: string, url: string) {
 function platRow(cap: HTMLTextAreaElement, getUrl: () => string, onPosted: (p: string) => void) {
   const has = !!navigator.share
   const btns: [string, string, string][] = []
-  if (has) btns.push(['native', 'share', '#e7548a'])
+  if (has) btns.push(['native', 'share', '#a52a5f'])
   btns.push(
     ['sms', 'Messages', '#34C759'],
     ['x', 'X', '#0b080f'],
@@ -351,7 +351,7 @@ function showSheet(id: string, opts: ShareOpts) {
   const head =
     '<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:15px">' +
     EYE +
-    '<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.5;color:#f7e8f0">' +
+    '<div style="flex:1;font-family:Newsreader,serif;font-style:italic;font-size:15.5px;line-height:1.5;color:#fdfbf9">' +
     (opts.companion || 'want to share this?') +
     '</div></div>'
   sheet.innerHTML = head + artifact(opts)
@@ -359,12 +359,12 @@ function showSheet(id: string, opts: ShareOpts) {
   const capWrap = document.createElement('div')
   capWrap.style.cssText = 'margin-top:14px'
   capWrap.innerHTML =
-    '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#9b8090;margin-bottom:6px">your caption · edit freely</div>'
+    '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#6f666c;margin-bottom:6px">your caption · edit freely</div>'
   const cap = document.createElement('textarea')
   cap.rows = 2
   cap.value = opts.caption || ''
   cap.style.cssText =
-    'width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:13px;padding:12px 14px;color:#f7e8f0;font-family:Newsreader,serif;font-style:italic;font-size:15px;resize:none;outline:none;line-height:1.45;box-sizing:border-box'
+    'width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:13px;padding:12px 14px;color:#fdfbf9;font-family:Newsreader,serif;font-style:italic;font-size:15px;resize:none;outline:none;line-height:1.45;box-sizing:border-box'
   let edited = false
   cap.addEventListener('input', () => {
     if (!edited) {
@@ -390,12 +390,12 @@ function showSheet(id: string, opts: ShareOpts) {
   const foot = document.createElement('div')
   foot.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px'
   foot.innerHTML =
-    '<span style="font-family:Newsreader,serif;font-style:italic;font-size:12px;color:#9b8090">' +
+    '<span style="font-family:Newsreader,serif;font-style:italic;font-size:12px;color:#6f666c">' +
     (opts.privacy || 'only this card leaves — never your words or name.') +
     '</span>'
   const no = document.createElement('span')
   no.textContent = 'not now'
-  no.style.cssText = 'font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#9b8090;cursor:pointer;flex:none'
+  no.style.cssText = 'font-family:Newsreader,serif;font-style:italic;font-size:13.5px;color:#6f666c;cursor:pointer;flex:none'
   const close = () => {
     back.style.opacity = '0'
     sheet.style.transform = 'translateY(100%)'

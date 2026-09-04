@@ -193,7 +193,7 @@ export function CompanionBubble({
             width: 10,
             height: 10,
             borderRadius: '50%',
-            background: '#e7548a',
+            background: '#a52a5f',
             boxShadow: '0 0 0 2px rgba(46,13,26,.9)',
             animation: 'pulse 2.4s infinite',
             pointerEvents: 'none',

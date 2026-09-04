@@ -123,7 +123,7 @@ function LegalHub() {
               </div>
               <div
                 style={{
-                  fontFamily: "Inter,sans-serif",
+                  fontFamily: "Sora,sans-serif",
                   fontSize: 13,
                   color: "#c1216b",
                   whiteSpace: "nowrap",
@@ -136,7 +136,7 @@ function LegalHub() {
               style={{
                 fontSize: 13,
                 lineHeight: 1.55,
-                color: "#6b4a5c",
+                color: "#443c42",
                 marginTop: 4,
               }}
             >

@@ -56,9 +56,9 @@ function LivedIntelligencePage() {
     <main
       style={{
         minHeight: "100vh",
-        background: "#fdf3f6",
-        color: "#1b0f16",
-        fontFamily: "'Inter', system-ui, sans-serif",
+        background: "#ffffff",
+        color: "#100c14",
+        fontFamily: "'Sora', system-ui, sans-serif",
         padding: "clamp(48px, 8vw, 96px) clamp(20px, 5vw, 40px)",
       }}
     >
@@ -77,7 +77,7 @@ function LivedIntelligencePage() {
             letterSpacing: "-0.03em",
             lineHeight: 1.1,
             margin: "0 0 28px",
-            color: "#1b0f16",
+            color: "#100c14",
           }}
         >
           what is lived intelligence?
@@ -88,7 +88,7 @@ function LivedIntelligencePage() {
             fontFamily: "'Newsreader', Georgia, serif",
             fontSize: "clamp(19px, 2.4vw, 23px)",
             lineHeight: 1.55,
-            color: "#1b0f16",
+            color: "#100c14",
             background: "#ffffff",
             border: "1px solid rgba(26,12,20,.10)",
             borderRadius: 18,
@@ -173,7 +173,7 @@ function Section({
           fontWeight: 600,
           letterSpacing: "-0.02em",
           margin: "0 0 12px",
-          color: "#1b0f16",
+          color: "#100c14",
         }}
       >
         {title}
@@ -182,7 +182,7 @@ function Section({
         style={{
           fontSize: 17,
           margin: 0,
-          color: "#1b0f16",
+          color: "#100c14",
         }}
       >
         {children}

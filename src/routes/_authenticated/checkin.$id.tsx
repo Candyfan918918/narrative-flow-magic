@@ -58,7 +58,7 @@ function CheckinCard() {
           <button
             key={c.value}
             onClick={() => submit(c.value)}
-            className="px-4 py-2 rounded-full bg-[#c1216b]/10 hover:bg-[#c1216b]/20 text-[#a01a55] text-sm transition"
+            className="px-4 py-2 rounded-full bg-[#c1216b]/10 hover:bg-[#c1216b]/20 text-[#6d1239] text-sm transition"
           >
             {c.label}
           </button>
@@ -69,7 +69,7 @@ function CheckinCard() {
         onChange={(e) => setNote(e.target.value)}
         placeholder="anything else? (optional)"
         rows={2}
-        className="w-full p-2 text-sm rounded-lg border border-[#e7548a]/30 bg-white/60"
+        className="w-full p-2 text-sm rounded-lg border border-[#a52a5f]/30 bg-white/60"
       />
       <button onClick={() => snooze({ data: { id: ck.id } }).then(() => navigate({ to: '/' }))}
         className="mt-4 text-xs opacity-60 hover:opacity-100">
@@ -81,7 +81,7 @@ function CheckinCard() {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="min-h-screen bg-[#fdf0f5] text-[#0b080f] flex items-center justify-center p-6">
+    <main className="min-h-screen bg-[#ffffff] text-[#0b080f] flex items-center justify-center p-6">
       <section className="max-w-md w-full bg-white/70 backdrop-blur rounded-3xl p-8 shadow-sm">
         {children}
       </section>

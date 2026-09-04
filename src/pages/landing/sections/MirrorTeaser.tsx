@@ -19,7 +19,7 @@ export function MirrorTeaser({ onOpen }: { onOpen: () => void }) {
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        background: 'linear-gradient(160deg,#2e0d1a,#1a0a12)',
+        background: 'linear-gradient(160deg,#100c14,#100c14)',
         border: '.5px solid rgba(231,84,138,.32)',
         borderRadius: 16,
         padding: '13px 15px',
@@ -30,10 +30,10 @@ export function MirrorTeaser({ onOpen }: { onOpen: () => void }) {
         <EyeMark size={30} />
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 14, color: '#f7e8f0' }}>
-          the mirror <span style={{ color: '#e9c06a' }}>✦</span>
+        <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 14, color: '#fdfbf9' }}>
+          the mirror <span style={{ color: '#c1a02b' }}>✦</span>
         </div>
-        <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#caaebb', marginTop: 2, lineHeight: 1.4 }}>
+        <div style={{ fontFamily: NEWSREADER, fontStyle: 'italic', fontSize: 12.5, color: '#645b61', marginTop: 2, lineHeight: 1.4 }}>
           your patterns &amp; your arc — drawn from everything you&rsquo;ve poured in.
         </div>
       </div>

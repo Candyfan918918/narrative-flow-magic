@@ -42,7 +42,7 @@ function AdminFeedbackPage() {
               style={{
                 padding: '6px 14px', borderRadius: 999, border: 0,
                 background: days === d ? '#c1216b' : 'transparent',
-                color: days === d ? '#fff' : '#6b4a5c',
+                color: days === d ? '#fff' : '#443c42',
                 fontFamily: "'Sora',sans-serif", fontSize: 11, fontWeight: 700,
                 letterSpacing: '.08em', textTransform: 'uppercase', cursor: 'pointer',
               }}
@@ -53,7 +53,7 @@ function AdminFeedbackPage() {
     >
       {err && <div style={{ color: '#c1216b', marginBottom: 12 }}>{err}</div>}
       {!data ? (
-        <div style={{ color: '#6b4a5c' }}>loading…</div>
+        <div style={{ color: '#443c42' }}>loading…</div>
       ) : (
         <>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 22 }}>
@@ -83,8 +83,8 @@ function AdminFeedbackPage() {
               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 10 }}>
                 {data.questions.map((q, i) => (
                   <li key={i} style={{ borderTop: i === 0 ? 'none' : '.5px solid rgba(11,8,15,.06)', paddingTop: 10 }}>
-                    <div style={{ fontSize: 13, color: '#1b0f16' }}>{q.text}</div>
-                    <div style={{ fontSize: 11, color: '#9e7a8c', marginTop: 2 }}>{q.page || '—'} · {new Date(q.t).toLocaleString()}</div>
+                    <div style={{ fontSize: 13, color: '#100c14' }}>{q.text}</div>
+                    <div style={{ fontSize: 11, color: '#6f666c', marginTop: 2 }}>{q.page || '—'} · {new Date(q.t).toLocaleString()}</div>
                   </li>
                 ))}
               </ul>
@@ -100,8 +100,8 @@ function Card({ label, value, sub }: { label: string; value: string; sub?: strin
   return (
     <div style={{ background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 14, padding: 16 }}>
       <div style={{ fontFamily: "'Sora',sans-serif", fontSize: 26, fontWeight: 800, color: '#0b080f' }}>{value}</div>
-      <div style={{ fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9e7a8c', marginTop: 4 }}>{label}</div>
-      {sub && <div style={{ fontSize: 11, color: '#6b4a5c', marginTop: 2 }}>{sub}</div>}
+      <div style={{ fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: '#6f666c', marginTop: 4 }}>{label}</div>
+      {sub && <div style={{ fontSize: 11, color: '#443c42', marginTop: 2 }}>{sub}</div>}
     </div>
   )
 }
@@ -125,9 +125,9 @@ function RankTable({ rows, accent }: { rows: Array<{ key: string; n: number }>; 
           const pct = max > 0 ? Math.max(2, Math.round((r.n / max) * 100)) : 0
           return (
             <tr key={r.key} style={{ borderTop: '.5px solid rgba(11,8,15,.05)' }}>
-              <td style={{ padding: '8px 10px', color: '#1b0f16', width: '55%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 200 }}>{r.key}</td>
+              <td style={{ padding: '8px 10px', color: '#100c14', width: '55%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 200 }}>{r.key}</td>
               <td style={{ padding: '8px 10px' }}>
-                <div style={{ background: '#f4e6ee', borderRadius: 999, height: 8, overflow: 'hidden' }}>
+                <div style={{ background: '#fdfbf9', borderRadius: 999, height: 8, overflow: 'hidden' }}>
                   <div style={{ background: accent ?? '#c1216b', height: '100%', width: `${pct}%` }} />
                 </div>
               </td>
@@ -140,4 +140,4 @@ function RankTable({ rows, accent }: { rows: Array<{ key: string; n: number }>; 
   )
 }
 
-const empty: React.CSSProperties = { color: '#9e7a8c', fontStyle: 'italic', padding: '8px 4px', fontSize: 13 }
+const empty: React.CSSProperties = { color: '#6f666c', fontStyle: 'italic', padding: '8px 4px', fontSize: 13 }

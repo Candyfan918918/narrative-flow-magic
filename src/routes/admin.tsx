@@ -15,10 +15,10 @@ export const Route = createFileRoute('/admin')({
   },
   component: AdminAnalyticsPage,
   notFoundComponent: () => (
-    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#fdf0f5', color: '#0b080f', fontFamily: 'Sora,sans-serif' }}>
+    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#ffffff', color: '#0b080f', fontFamily: 'Sora,sans-serif' }}>
       <div style={{ textAlign: 'center' }}>
         <h1 style={{ fontSize: 42, margin: 0 }}>404</h1>
-        <p style={{ color: '#6b4a5c', fontFamily: 'Newsreader,serif', fontStyle: 'italic' }}>nothing here.</p>
+        <p style={{ color: '#443c42', fontFamily: 'Newsreader,serif', fontStyle: 'italic' }}>nothing here.</p>
         <a href="/" style={{ color: '#c1216b' }}>← home</a>
       </div>
     </div>

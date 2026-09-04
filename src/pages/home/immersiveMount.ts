@@ -266,7 +266,7 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
           requestAnimationFrame(tick)
         }
       })
-      mdots.forEach((d, j) => { d.style.background = j === i ? '#e9c06a' : 'rgba(233,192,106,.28)' })
+      mdots.forEach((d, j) => { d.style.background = j === i ? '#c1a02b' : 'rgba(233,192,106,.28)' })
     }
     activate(0)
     const mVis = vis(mcs[0].closest('section'))
@@ -309,8 +309,8 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
   }
   const onScroll = () => {
     const dark = isDarkBehind()
-    if (brand) brand.style.color = dark ? '#f7e8f0' : '#0b080f'
-    navlinks.forEach((a) => { a.style.color = dark ? '#f7b8d4' : '#6b4a5c' })
+    if (brand) brand.style.color = dark ? '#fdfbf9' : '#0b080f'
+    navlinks.forEach((a) => { a.style.color = dark ? '#f7b8d4' : '#443c42' })
     if (hdr) {
       if (window.scrollY > 24) {
         hdr.style.background = dark ? 'rgba(16,12,20,.72)' : 'rgba(253,240,245,.78)'
@@ -377,7 +377,7 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
   const compBubble = (text: string, mine: boolean) => {
     if (!cLog) return null
     const d = document.createElement('div')
-    d.style.cssText = 'max-width:86%;padding:10px 14px;border-radius:16px;font-family:Newsreader,serif;font-style:italic;font-size:15px;line-height:1.55;' + (mine ? 'align-self:flex-end;background:#e7548a;color:#fff;border-bottom-right-radius:5px' : 'align-self:flex-start;background:rgba(255,255,255,.07);color:#e9e4f6;border-bottom-left-radius:5px')
+    d.style.cssText = 'max-width:86%;padding:10px 14px;border-radius:16px;font-family:Newsreader,serif;font-style:italic;font-size:15px;line-height:1.55;' + (mine ? 'align-self:flex-end;background:#a52a5f;color:#fff;border-bottom-right-radius:5px' : 'align-self:flex-start;background:rgba(255,255,255,.07);color:#e9e4f6;border-bottom-left-radius:5px')
     d.textContent = text; cLog.appendChild(d); cLog.scrollTop = cLog.scrollHeight; return d
   }
   const openComp = () => {

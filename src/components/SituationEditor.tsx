@@ -140,7 +140,7 @@ const overlay: React.CSSProperties = {
   display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000,
 }
 const sheet: React.CSSProperties = {
-  width: '100%', maxWidth: 640, background: '#fdf0f5', borderRadius: '18px 18px 0 0',
+  width: '100%', maxWidth: 640, background: '#ffffff', borderRadius: '18px 18px 0 0',
   padding: '20px 22px 28px', maxHeight: '92vh', overflow: 'auto',
   fontFamily: '-apple-system, "Sora", system-ui, sans-serif',
   boxShadow: '0 -8px 30px rgba(11,8,15,0.18)',
@@ -160,7 +160,7 @@ const aiRow: React.CSSProperties = { display: 'flex', gap: 8, marginTop: 14, ali
 const notice: React.CSSProperties = { marginTop: 10, padding: '8px 12px', background: '#fff', borderRadius: 8, fontSize: 13, color: '#0b080f' }
 const actions: React.CSSProperties = { display: 'flex', gap: 8, marginTop: 18, flexWrap: 'wrap' }
 const primary: React.CSSProperties = {
-  flex: '1 1 auto', padding: '12px 16px', borderRadius: 999, background: '#e7548a', color: '#fff',
+  flex: '1 1 auto', padding: '12px 16px', borderRadius: 999, background: '#a52a5f', color: '#fff',
   border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: 14,
 }
 const ghost: React.CSSProperties = {

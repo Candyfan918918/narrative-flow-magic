@@ -22,9 +22,9 @@ export function Preloader() {
                 {' '}
               </span>
               {' '}
-              <div style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: 'clamp(18px,2.4vw,24px)', color: '#f7e8f0' }}>
+              <div style={{ fontFamily: '\'Newsreader\',serif', fontStyle: 'italic', fontSize: 'clamp(18px,2.4vw,24px)', color: '#fdfbf9' }}>
                 shutap. 
-                <em style={{ color: '#e7548a' }}>
+                <em style={{ color: '#a52a5f' }}>
                   speak up.
                 </em>
               </div>

@@ -40,10 +40,10 @@ export function RoomTile({ room, onOpen }: { room: RoomTileData; onOpen: (r: Roo
       <div style={{ padding: '18px 18px 14px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
         {/* header row: alias + time + kind badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap' }}>
-          <span style={{ width: 26, height: 26, borderRadius: '50%', background: '#f7e8f0', display: 'grid', placeItems: 'center', fontSize: 14, flex: 'none' }}>
+          <span style={{ width: 26, height: 26, borderRadius: '50%', background: '#fdfbf9', display: 'grid', placeItems: 'center', fontSize: 14, flex: 'none' }}>
             {room.emoji}
           </span>
-          <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13, color: '#6b4a5c', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13, color: '#443c42', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {room.alias}
           </span>
           {isScan ? (
@@ -55,7 +55,7 @@ export function RoomTile({ room, onOpen }: { room: RoomTileData; onOpen: (r: Roo
               {room.support === 'heard' ? 'heard' : 'advice'}
             </span>
           )}
-          <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 11.5, color: '#9e7a8c' }}>{room.hours}</span>
+          <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 11.5, color: '#6f666c' }}>{room.hours}</span>
         </div>
 
         {isScan ? (
@@ -68,11 +68,11 @@ export function RoomTile({ room, onOpen }: { room: RoomTileData; onOpen: (r: Roo
               <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: accent, marginBottom: 4 }}>
                 {BAND_LABEL[band]}
               </div>
-              <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.35, color: '#2e1a26' }}>
+              <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.35, color: '#100c14' }}>
                 {room.scan_signature || room.title}
               </div>
               {room.pillar && (
-                <div style={{ marginTop: 6, display: 'inline-block', fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 9.5, letterSpacing: '.12em', textTransform: 'uppercase', color: '#6b4a5c', background: '#f7e8f0', padding: '2px 8px', borderRadius: 999 }}>
+                <div style={{ marginTop: 6, display: 'inline-block', fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 9.5, letterSpacing: '.12em', textTransform: 'uppercase', color: '#443c42', background: '#fdfbf9', padding: '2px 8px', borderRadius: 999 }}>
                   {room.pillar}
                 </div>
               )}
@@ -84,7 +84,7 @@ export function RoomTile({ room, onOpen }: { room: RoomTileData; onOpen: (r: Roo
             <h3 style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 15.5, lineHeight: 1.3, margin: 0, color: '#0b080f', letterSpacing: '-.01em' }}>
               {room.title}
             </h3>
-            <p style={{ fontFamily: 'Newsreader,serif', fontSize: 14, lineHeight: 1.5, color: '#4a3040', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <p style={{ fontFamily: 'Newsreader,serif', fontSize: 14, lineHeight: 1.5, color: '#383136', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {room.body || room.clean_text}
             </p>
           </>
@@ -93,18 +93,18 @@ export function RoomTile({ room, onOpen }: { room: RoomTileData; onOpen: (r: Roo
 
       {/* footer */}
       <div style={{ padding: '11px 18px', borderTop: '.5px solid rgba(11,8,15,.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-        <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 12.5, color: '#6b4a5c' }}>
+        <span style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 12.5, color: '#443c42' }}>
           {isScan ? (
             <>
-              <b style={{ fontFamily: 'Inter', fontStyle: 'normal', fontWeight: 600, color: accent }}>{room.relates}</b> same number
+              <b style={{ fontFamily: 'Sora', fontStyle: 'normal', fontWeight: 600, color: accent }}>{room.relates}</b> same number
             </>
           ) : (
             <>
-              🫂 <b style={{ fontFamily: 'Inter', fontStyle: 'normal', fontWeight: 600, color: '#c1216b' }}>{room.relates}</b> relate
+              🫂 <b style={{ fontFamily: 'Sora', fontStyle: 'normal', fontWeight: 600, color: '#c1216b' }}>{room.relates}</b> relate
             </>
           )}
         </span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.06em', color: '#6b4a5c' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.06em', color: '#443c42' }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 2.8s ease-in-out infinite' }} />
           {room.sitting} sitting
         </span>

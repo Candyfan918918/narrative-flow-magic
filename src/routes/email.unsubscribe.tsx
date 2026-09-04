@@ -39,8 +39,8 @@ function UnsubscribeRoute() {
     <main
       style={{
         minHeight: '100vh',
-        background: '#fdf0f5',
-        color: '#1b0f16',
+        background: '#ffffff',
+        color: '#100c14',
         fontFamily: 'Inter, system-ui, sans-serif',
         display: 'flex',
         alignItems: 'center',
@@ -68,7 +68,7 @@ function UnsubscribeRoute() {
             alignItems: 'center',
             gap: 8,
             textDecoration: 'none',
-            color: '#1b0f16',
+            color: '#100c14',
             marginBottom: 22,
           }}
         >
@@ -86,7 +86,7 @@ function UnsubscribeRoute() {
         </a>
 
         {state === 'pending' ? (
-          <p style={{ color: '#6b4a5c', margin: 0, fontSize: 14 }}>
+          <p style={{ color: '#443c42', margin: 0, fontSize: 14 }}>
             updating your preferences…
           </p>
         ) : ok ? (
@@ -108,7 +108,7 @@ function UnsubscribeRoute() {
               style={{
                 fontFamily: 'Newsreader, serif',
                 fontStyle: 'italic',
-                color: '#6b4a5c',
+                color: '#443c42',
                 lineHeight: 1.6,
                 margin: '0 0 22px',
                 fontSize: 16,
@@ -117,7 +117,7 @@ function UnsubscribeRoute() {
               transactional and security emails may still arrive — everything else is off.
             </p>
             {state.email ? (
-              <p style={{ color: '#9e7a8c', fontSize: 12.5, margin: '0 0 26px' }}>
+              <p style={{ color: '#6f666c', fontSize: 12.5, margin: '0 0 26px' }}>
                 for {state.email}
               </p>
             ) : null}
@@ -126,7 +126,7 @@ function UnsubscribeRoute() {
               search={{ token }}
               style={{
                 display: 'inline-block',
-                background: '#e7548a',
+                background: '#a52a5f',
                 color: '#ffffff',
                 padding: '13px 26px',
                 borderRadius: 999,
@@ -160,7 +160,7 @@ function UnsubscribeRoute() {
               style={{
                 fontFamily: 'Newsreader, serif',
                 fontStyle: 'italic',
-                color: '#6b4a5c',
+                color: '#443c42',
                 lineHeight: 1.6,
                 margin: 0,
                 fontSize: 15.5,

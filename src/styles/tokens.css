@@ -3,30 +3,30 @@
    properties capture the same values for reuse across the React app. */
 :root {
   /* surfaces */
-  --bg: #fdf0f5;          /* page background — warm blush, never pure white */
+  --bg: #ffffff;          /* page background — warm blush, never pure white */
   --ink: #0b080f;         /* primary text */
   --surface: #ffffff;     /* cards */
-  --surface-2: #f7e8f0;   /* hover fills, avatars, tints */
+  --surface-2: #fdfbf9;   /* hover fills, avatars, tints */
 
   /* text hierarchy */
-  --text-2: #6b4a5c;      /* secondary */
-  --text-3: #9e7a8c;      /* tertiary / timestamps */
-  --ink-soft: #4a3040;    /* react labels */
+  --text-2: #443c42;      /* secondary */
+  --text-3: #6f666c;      /* tertiary / timestamps */
+  --ink-soft: #383136;    /* react labels */
 
   /* brand pinks */
-  --pink: #e7548a;        /* primary accent */
+  --pink: #a52a5f;        /* primary accent */
   --wine: #c1216b;        /* prose links, emphasis numerals */
   --wine-dark: #890041;   /* prose-link hover */
 
   /* warm aubergine (companion / dark surfaces) */
-  --dark-1: #2e0d1a;
-  --dark-2: #1a0a12;
+  --dark-1: #100c14;
+  --dark-2: #100c14;
 
   /* live / supportive signals */
   --live: #5dcaa5;        /* breathing presence dot */
 
   /* reaction palette */
-  --r-heard: #e7548a;
+  --r-heard: #a52a5f;
   --r-same: #c87c4a;
   --r-strong: #5b8a5e;
   --r-time: #7f77dd;

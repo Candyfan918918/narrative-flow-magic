@@ -59,7 +59,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
-        color: '#f7e8f0',
+        color: '#fdfbf9',
       }}
     >
       <div className="home-grid-2" style={{ maxWidth: 1280, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 'clamp(34px,6vw,90px)', padding: 'clamp(90px,12vh,150px) clamp(20px,4vw,32px)', alignItems: 'center' }}>
@@ -113,7 +113,7 @@ export function Chapter02Scan({ onCtaScan }: { onCtaScan: () => void }) {
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(231,84,138,.16)', color: '#f7b8d4', border: '.5px solid rgba(231,84,138,.3)', borderRadius: 999, padding: '4px 12px', fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase' }}>
                 relationships
               </span>
-              <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 12.5, color: '#9e7a8c' }}>
+              <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 12.5, color: '#6f666c' }}>
                 the scan · sample
               </span>
             </div>
@@ -170,7 +170,7 @@ function ScanQuestion({ n, question, options, highlight }: { n: number; question
       <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.22em', textTransform: 'uppercase', color: '#8d86c9', marginBottom: 10 }}>
         question {n} of 6
       </div>
-      <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 20, lineHeight: 1.45, color: '#f7e8f0', marginBottom: 18 }}>
+      <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 20, lineHeight: 1.45, color: '#fdfbf9', marginBottom: 18 }}>
         {question}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
@@ -217,7 +217,7 @@ function ScanDial({ value, progress }: { value: number; progress: number }) {
             cy={100}
             r={r}
             fill="none"
-            stroke="#e7548a"
+            stroke="#a52a5f"
             strokeWidth={10}
             strokeLinecap="round"
             strokeDasharray={`${dash} ${c - dash}`}
@@ -225,22 +225,22 @@ function ScanDial({ value, progress }: { value: number; progress: number }) {
           />
         </svg>
         <div style={{ position: 'absolute', textAlign: 'center' }}>
-          <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 52, letterSpacing: '-.04em', color: '#e7548a', lineHeight: .9, fontVariantNumeric: 'tabular-nums' }}>
+          <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 52, letterSpacing: '-.04em', color: '#a52a5f', lineHeight: .9, fontVariantNumeric: 'tabular-nums' }}>
             {value}
           </div>
-          <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9, letterSpacing: '.18em', textTransform: 'uppercase', color: '#9e7a8c', marginTop: 5 }}>
+          <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 9, letterSpacing: '.18em', textTransform: 'uppercase', color: '#6f666c', marginTop: 5 }}>
             of 999 · heavy &amp; loud
           </div>
         </div>
       </div>
       <div style={{ textAlign: 'center', marginBottom: 14 }}>
-        <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 20, color: '#f7e8f0', lineHeight: 1.15 }}>Carrying It Loud</div>
+        <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 20, color: '#fdfbf9', lineHeight: 1.15 }}>Carrying It Loud</div>
         <div style={{ marginTop: 6, fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, lineHeight: 1.5, color: '#c4a0b2' }}>
           the part that hurts is how unseen it makes you feel — and you keep showing up anyway.
         </div>
       </div>
-      <div style={{ height: 5, borderRadius: 3, background: 'linear-gradient(90deg,#9e8f9c,#7F77DD,#c87c4a,#e7548a,#c1216b)', position: 'relative' }}>
-        <span style={{ position: 'absolute', left: `${100 * progress}%`, top: '50%', width: 13, height: 13, borderRadius: '50%', background: '#fff', border: '3px solid #e7548a', transform: 'translate(-50%,-50%)' }} />
+      <div style={{ height: 5, borderRadius: 3, background: 'linear-gradient(90deg,#6f666c,#7F77DD,#c87c4a,#a52a5f,#c1216b)', position: 'relative' }}>
+        <span style={{ position: 'absolute', left: `${100 * progress}%`, top: '50%', width: 13, height: 13, borderRadius: '50%', background: '#fff', border: '3px solid #a52a5f', transform: 'translate(-50%,-50%)' }} />
       </div>
     </div>
   )

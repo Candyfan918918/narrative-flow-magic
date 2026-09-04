@@ -24,9 +24,9 @@ export function ContentPage({
     <main
       style={{
         minHeight: "100vh",
-        background: "#fdf0f5",
+        background: "#ffffff",
         color: "#0b080f",
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: "'Sora', system-ui, sans-serif",
         padding: "clamp(48px, 8vw, 96px) clamp(20px, 5vw, 40px)",
       }}
     >

@@ -43,7 +43,7 @@ function NudgeTile({ text }: { text: string }) {
       style={{
         display: 'block',
         borderRadius: 20,
-        border: '1.5px dashed ' + (hover ? '#e7548a' : 'rgba(11,8,15,.16)'),
+        border: '1.5px dashed ' + (hover ? '#a52a5f' : 'rgba(11,8,15,.16)'),
         background: 'transparent',
         padding: '20px 22px',
         textDecoration: 'none',
@@ -52,7 +52,7 @@ function NudgeTile({ text }: { text: string }) {
       }}
     >
       <div style={{ fontSize: 22, marginBottom: 10 }} aria-hidden>👁</div>
-      <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.5, color: '#2e1a26', marginBottom: 14 }}>
+      <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, lineHeight: 1.5, color: '#100c14', marginBottom: 14 }}>
         {text}
       </div>
       <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 12.5, color: '#c1216b', letterSpacing: '.02em' }}>
@@ -240,21 +240,21 @@ export function StreamPage() {
   }, [hash, rooms])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fdf0f5', overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: '#ffffff', overflowX: 'hidden' }}>
       <main>
         {/* HERO */}
         <section style={{ position: 'relative', padding: '44px 0 8px', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', inset: '-40% -10% auto', height: '80vh', background: 'radial-gradient(ellipse at 50% 30%, rgba(231,84,138,.12), transparent 60%)', pointerEvents: 'none', animation: 'drift 24s ease-in-out infinite' }} />
           <div aria-hidden style={{ position: 'absolute', right: '-4%', top: '-18%', fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 'clamp(160px,26vw,340px)', lineHeight: 1, color: 'rgba(231,84,138,.06)', letterSpacing: '-.06em', pointerEvents: 'none', userSelect: 'none' }}>rooms</div>
           <div style={{ maxWidth: 740, margin: '0 auto', padding: '0 22px', position: 'relative' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: '.24em', textTransform: 'uppercase', color: '#e7548a', marginBottom: 14 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: '.24em', textTransform: 'uppercase', color: '#a52a5f', marginBottom: 14 }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5DCAA5', animation: 'breathe 3s ease-in-out infinite', display: 'block' }} />
               rooms open right now
             </div>
             <Words as="h1" style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 'clamp(38px,7vw,64px)', lineHeight: 1, letterSpacing: '-.045em', margin: '0 0 12px', color: '#0b080f' }}>
-              sit in <em style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#e7548a,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>someone's&nbsp;thing.</em>
+              sit in <em style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(92deg,#a52a5f,#890041 70%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>someone's&nbsp;thing.</em>
             </Words>
-            <p style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 'clamp(15.5px,1.4vw,18px)', color: '#4a3040', margin: 0, maxWidth: '46ch' }}>
+            <p style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 'clamp(15.5px,1.4vw,18px)', color: '#383136', margin: 0, maxWidth: '46ch' }}>
               no algorithm. no upvotes. the room reshapes only when you ask it to.
             </p>
           </div>
@@ -264,11 +264,11 @@ export function StreamPage() {
         <section aria-hidden style={{ background: '#100c14', padding: '18px 0', overflow: 'hidden', margin: '26px 0 6px', borderTop: '1px solid rgba(231,84,138,.25)', borderBottom: '1px solid rgba(231,84,138,.25)' }}>
           <div style={{ display: 'flex', width: 'max-content', animation: 'mq 32s linear infinite' }}>
             {[0, 1].map((k) => (
-              <div key={k} style={{ display: 'flex', gap: 38, paddingRight: 38, alignItems: 'center', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 19, letterSpacing: '-.02em', color: '#f7e8f0', whiteSpace: 'nowrap' }}>
-                <span>omg same 🫂</span><span style={{ color: '#e7548a' }}>✦</span>
-                <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#f7b8d4' }}>i hear you</span><span style={{ color: '#e7548a' }}>✦</span>
-                <span>you've got this 💪</span><span style={{ color: '#e7548a' }}>✦</span>
-                <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#f7b8d4' }}>pseudonymous. a safe space.</span><span style={{ color: '#e7548a' }}>✦</span>
+              <div key={k} style={{ display: 'flex', gap: 38, paddingRight: 38, alignItems: 'center', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: 19, letterSpacing: '-.02em', color: '#fdfbf9', whiteSpace: 'nowrap' }}>
+                <span>omg same 🫂</span><span style={{ color: '#a52a5f' }}>✦</span>
+                <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#f7b8d4' }}>i hear you</span><span style={{ color: '#a52a5f' }}>✦</span>
+                <span>you've got this 💪</span><span style={{ color: '#a52a5f' }}>✦</span>
+                <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#f7b8d4' }}>pseudonymous. a safe space.</span><span style={{ color: '#a52a5f' }}>✦</span>
               </div>
             ))}
           </div>
@@ -288,9 +288,9 @@ export function StreamPage() {
                     style={{
                       padding: '7px 14px',
                       borderRadius: 999,
-                      border: '.5px solid ' + (active ? '#e7548a' : 'rgba(11,8,15,.12)'),
+                      border: '.5px solid ' + (active ? '#a52a5f' : 'rgba(11,8,15,.12)'),
                       background: active ? '#fff' : 'transparent',
-                      color: active ? '#c1216b' : '#6b4a5c',
+                      color: active ? '#c1216b' : '#443c42',
                       fontFamily: "'Sora',sans-serif",
                       fontWeight: 600,
                       fontSize: 11.5,
@@ -309,7 +309,7 @@ export function StreamPage() {
             <WaterfallFeed filtered={filtered} onOpen={(room) => setOpen(room)} />
 
             {filtered.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '50px 0', fontFamily: "'Newsreader',serif", fontStyle: 'italic', color: '#9e7a8c' }}>
+              <div style={{ textAlign: 'center', padding: '50px 0', fontFamily: "'Newsreader',serif", fontStyle: 'italic', color: '#6f666c' }}>
                 no rooms here yet.{' '}
                 <span style={{ color: '#c1216b', cursor: 'pointer' }} onClick={() => navigate('/')}>
                   open one →
@@ -317,7 +317,7 @@ export function StreamPage() {
               </div>
             )}
 
-            <div style={{ marginTop: 32, paddingTop: 20, borderTop: '.5px solid rgba(11,8,15,.08)', textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15, color: '#6b4a5c' }}>
+            <div style={{ marginTop: 32, paddingTop: 20, borderTop: '.5px solid rgba(11,8,15,.08)', textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 15, color: '#443c42' }}>
               something happened to you too.{' '}
               <span
                 onClick={() => navigate('/#spill')}

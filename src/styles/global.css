@@ -20,7 +20,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Sora', system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -110,13 +110,13 @@ body {
 .rtile:hover {
   transform: translateY(-3px);
   box-shadow: 0 22px 44px -26px rgba(60, 10, 30, 0.42);
-  border-color: #e7548a;
+  border-color: #a52a5f;
 }
 .rtile.rested {
   opacity: 0.72;
 }
 .menu-item:hover {
-  background: #f7e8f0;
+  background: #fdfbf9;
 }
 .react-btn {
   display: inline-flex;
@@ -130,17 +130,17 @@ body {
   font-family: 'Newsreader', serif;
   font-style: italic;
   font-size: 14px;
-  color: #4a3040;
+  color: #383136;
   transition: 0.18s;
   white-space: nowrap;
 }
 .react-btn:hover {
-  border-color: #e7548a;
-  background: #fdf0f5;
+  border-color: #a52a5f;
+  background: #ffffff;
   transform: translateY(-1px);
 }
 .react-btn.active {
-  background: #f7e8f0;
+  background: #fdfbf9;
 }
 .prose-link {
   color: #c1216b;
@@ -173,7 +173,7 @@ details > summary::marker {
   .hall-row { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
 .hall-row:hover { transform: translateY(-2px); }
-.hall-tab:hover { border-color: #e7548a !important; }
+.hall-tab:hover { border-color: #a52a5f !important; }
 
 
 @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }

@@ -14,7 +14,7 @@ export function SiteFooter() {
     <footer
       style={{
         borderTop: '.5px solid rgba(11,8,15,.08)',
-        background: '#fdf3f6',
+        background: '#ffffff',
       }}
     >
       <div
@@ -35,9 +35,9 @@ export function SiteFooter() {
               href={l.href}
               className="shutap-footer-link"
               style={{
-                fontFamily: 'Inter,sans-serif',
+                fontFamily: 'Sora,sans-serif',
                 fontSize: 12.5,
-                color: '#6b4a5c',
+                color: '#443c42',
                 textDecoration: 'none',
                 padding: '2px 4px',
                 borderRadius: 6,
@@ -53,16 +53,16 @@ export function SiteFooter() {
             fontFamily: 'Newsreader,serif',
             fontStyle: 'italic',
             fontSize: 12,
-            color: '#6b4a5c',
+            color: '#443c42',
           }}
         >
           18+ · pseudonymous · not a medical or legal service
         </div>
       </div>
       <style>{`
-        .shutap-footer-link:hover { color: #a01a55; }
+        .shutap-footer-link:hover { color: #6d1239; }
         .shutap-footer-link:focus-visible {
-          outline: 2px solid #e7548a;
+          outline: 2px solid #a52a5f;
           outline-offset: 2px;
           border-radius: 6px;
         }

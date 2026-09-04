@@ -31,18 +31,18 @@ export function Chapter03Mirror() {
     <section
       ref={ref}
       className="home-chapter"
-      style={{ position: 'relative', background: '#100c14', minHeight: '96vh', display: 'flex', alignItems: 'center', overflow: 'hidden', color: '#f7e8f0' }}
+      style={{ position: 'relative', background: '#100c14', minHeight: '96vh', display: 'flex', alignItems: 'center', overflow: 'hidden', color: '#fdfbf9' }}
     >
       <div aria-hidden style={{ position: 'absolute', inset: 'auto 0 -20% 0', height: '60vh', background: 'radial-gradient(ellipse at 50% 100%, rgba(231,84,138,.12), transparent 65%)', pointerEvents: 'none' }} />
       <div className="home-grid-2" style={{ maxWidth: 1280, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 'clamp(34px,6vw,90px)', padding: 'clamp(90px,12vh,150px) clamp(20px,4vw,32px)', alignItems: 'center' }}>
         <div>
-          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#e9c06a', marginBottom: 22 }}>
+          <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '.24em', textTransform: 'uppercase', color: '#c1a02b', marginBottom: 22 }}>
             chapter 03 — the mirror ✦
           </div>
-          <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: 1.08, letterSpacing: '-.04em', margin: '0 0 24px', color: '#f7e8f0' }}>
+          <h2 style={{ fontFamily: SORA, fontWeight: 800, fontSize: 'clamp(30px,3.8vw,54px)', lineHeight: 1.08, letterSpacing: '-.04em', margin: '0 0 24px', color: '#fdfbf9' }}>
             your patterns, <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#f7b8d4', fontWeight: 400 }}>read as cards.</em>
           </h2>
-          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(16px,1.4vw,20px)', lineHeight: 1.6, color: '#caaebb', maxWidth: '44ch', margin: '0 0 32px' }}>
+          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(16px,1.4vw,20px)', lineHeight: 1.6, color: '#645b61', maxWidth: '44ch', margin: '0 0 32px' }}>
             the mirror reads across your rooms and deals what keeps coming back — how deep it runs, which way it's moving, and how far you've already come.
           </p>
           <button
@@ -53,7 +53,7 @@ export function Chapter03Mirror() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 10,
-              background: '#e9c06a',
+              background: '#c1a02b',
               color: '#100c14',
               border: 0,
               padding: '16px 30px',
@@ -125,7 +125,7 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
       style={{
         display: 'block',
         width: 'min(380px,92vw)',
-        background: 'radial-gradient(125% 80% at 50% 0%, rgba(127,119,221,.18), #1c0d16 58%, #140810)',
+        background: 'radial-gradient(125% 80% at 50% 0%, rgba(127,119,221,.18), #100c14 58%, #100c14)',
         border: '1px solid rgba(233,192,106,.85)',
         borderRadius: 22,
         padding: 20,
@@ -137,18 +137,18 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
       {/* top glass sheen */}
       <div style={{ position: 'absolute', inset: 0, borderRadius: 22, background: 'linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 18%, transparent 38%)', pointerEvents: 'none', zIndex: 2 }} />
       {/* thin multicolor top line */}
-      <div style={{ position: 'absolute', top: 0, left: '12%', right: '12%', height: 1.5, background: 'linear-gradient(90deg, transparent, #7F77DD, #e7548a, #5B8A5E, transparent)', opacity: .4, pointerEvents: 'none', zIndex: 3 }} />
+      <div style={{ position: 'absolute', top: 0, left: '12%', right: '12%', height: 1.5, background: 'linear-gradient(90deg, transparent, #7F77DD, #a52a5f, #5B8A5E, transparent)', opacity: .4, pointerEvents: 'none', zIndex: 3 }} />
       {/* inner hairline inset border */}
       <div style={{ position: 'absolute', inset: 6, border: '.5px solid rgba(233,192,106,.5)', borderRadius: 16, pointerEvents: 'none', zIndex: 1 }} />
       <div style={{ position: 'relative', zIndex: 3 }}>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-        <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#e9c06a' }}>
+        <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#c1a02b' }}>
           ✦ THE MIRROR — FULL READ
         </span>
         <div style={{ display: 'inline-flex', gap: 4 }}>
           {DEMO_MIRROR_CAST.map((_, i) => (
-            <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: i === idx % DEMO_MIRROR_CAST.length ? '#e9c06a' : 'rgba(255,255,255,.15)' }} />
+            <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: i === idx % DEMO_MIRROR_CAST.length ? '#c1a02b' : 'rgba(255,255,255,.15)' }} />
           ))}
         </div>
       </div>
@@ -156,7 +156,7 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
         <span style={{ fontSize: 34 }}>{pattern.emoji}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 17, letterSpacing: '-.01em', color: '#f7e8f0' }}>{pattern.name}</div>
+          <div style={{ fontFamily: SORA, fontWeight: 800, fontSize: 17, letterSpacing: '-.01em', color: '#fdfbf9' }}>{pattern.name}</div>
           <div style={{ fontFamily: SORA, fontWeight: 600, fontSize: 10.5, letterSpacing: '.14em', textTransform: 'uppercase', color: pattern.districtColor, marginTop: 2 }}>
             {pattern.districtLabel} {pattern.districtSymbol} · rarity {pattern.rarity}
           </div>
@@ -169,14 +169,14 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
             strokeDasharray={`${dash} ${c - dash}`}
             transform={`rotate(-90 ${size / 2} ${size / 2})`}
           />
-          <text x="50%" y="55%" textAnchor="middle" fontFamily="Sora" fontWeight={700} fontSize={11} fill="#f7e8f0">
+          <text x="50%" y="55%" textAnchor="middle" fontFamily="Sora" fontWeight={700} fontSize={11} fill="#fdfbf9">
             {pattern.depth}/5
           </text>
         </svg>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, color: '#f7e8f0' }}>{signalCount}</span>
+        <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, color: '#fdfbf9' }}>{signalCount}</span>
         <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 12, color: '#c4a0b2' }}>signals</span>
         <span style={{
           marginLeft: 'auto',
@@ -190,7 +190,7 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
         </span>
       </div>
 
-      <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: '#f7e8f0', lineHeight: 1.5, marginBottom: 16 }}>
+      <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: '#fdfbf9', lineHeight: 1.5, marginBottom: 16 }}>
         {pattern.punch}
       </div>
 
@@ -220,8 +220,8 @@ function MirrorDemoCard({ pattern, idx }: { pattern: DemoPattern; idx: number })
         <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 9, letterSpacing: '.22em', color: 'rgba(255,255,255,.5)', marginBottom: 8 }}>
           WHERE IT SHOWS UP
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6, fontFamily: SORA, fontWeight: 600, fontSize: 11, color: '#f7e8f0' }}>
-          <SrcCell icon="🗯" color="#e7548a" n={pattern.sources.spill} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6, fontFamily: SORA, fontWeight: 600, fontSize: 11, color: '#fdfbf9' }}>
+          <SrcCell icon="🗯" color="#a52a5f" n={pattern.sources.spill} />
           <SrcCell icon="📸" color="#7F77DD" n={pattern.sources.scan} />
           <SrcCell icon="💬" color="#c87c4a" n={pattern.sources.comments} />
           <SrcCell icon="♥" color="#c1216b" n={pattern.sources.likes} />
@@ -273,7 +273,7 @@ function SrcCell({ icon, color, n }: { icon: string; color: string; n: number })
   return (
     <div style={{ background: 'rgba(255,255,255,.03)', border: '.5px solid rgba(255,255,255,.06)', borderRadius: 8, padding: '6px 4px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
       <span style={{ color, fontSize: 13, lineHeight: 1 }}>{icon}</span>
-      <span style={{ fontFamily: 'Sora', fontWeight: 700, fontSize: 10.5, color: '#f7e8f0' }}>{n}</span>
+      <span style={{ fontFamily: 'Sora', fontWeight: 700, fontSize: 10.5, color: '#fdfbf9' }}>{n}</span>
     </div>
   )
 }
@@ -293,14 +293,14 @@ function LockBanner({ onUnlock }: { onUnlock: () => void }) {
       }}
     >
       <span style={{ fontSize: 18 }}>🔒</span>
-      <span style={{ flex: 1, fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, color: '#e9c06a' }}>
+      <span style={{ flex: 1, fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: 13, color: '#c1a02b' }}>
         subscription required for full mirror access
       </span>
       <button
         type="button"
         onClick={onUnlock}
         style={{
-          background: 'linear-gradient(135deg,#e9c06a,#c69a3d)',
+          background: 'linear-gradient(135deg,#c1a02b,#c69a3d)',
           color: '#1a0d16',
           border: 0,
           borderRadius: 999,

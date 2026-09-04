@@ -68,7 +68,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
           fontWeight: 700,
           fontSize: 11,
           letterSpacing: '.14em',
-          color: '#9e7a8c',
+          color: '#6f666c',
           marginBottom: 12,
         }}
       >
@@ -85,7 +85,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
             background: '#fff0f3',
             border: '.5px solid rgba(193,33,107,.35)',
             color: '#c1216b',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'Sora, sans-serif',
             fontSize: 13,
           }}
         >
@@ -97,7 +97,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {comments.length === 0 && (
-          <p style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: '#6b4a5c' }}>
+          <p style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: '#443c42' }}>
             nobody yet. you can be the first.
           </p>
         )}
@@ -111,7 +111,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
             <div
               key={c.id}
               style={{
-                background: isCompanion ? '#fff5f9' : '#fff',
+                background: isCompanion ? '#ffffff' : '#fff',
                 border: isCompanion ? '.5px solid rgba(231,84,138,.35)' : '.5px solid rgba(11,8,15,.08)',
                 borderRadius: 14,
                 padding: '12px 14px',
@@ -125,7 +125,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
                   marginBottom: 6,
                   fontFamily: 'Sora, sans-serif',
                   fontSize: 11,
-                  color: '#9e7a8c',
+                  color: '#6f666c',
                 }}
               >
                 <span>
@@ -162,7 +162,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
                     </button>
                     <button
                       onClick={() => del.mutate(c.id)}
-                      style={{ background: 'none', border: 0, color: '#9e7a8c', cursor: 'pointer', fontSize: 12 }}
+                      style={{ background: 'none', border: 0, color: '#6f666c', cursor: 'pointer', fontSize: 12 }}
                     >
                       delete
                     </button>
@@ -180,7 +180,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
                       border: '.5px solid rgba(11,8,15,.18)',
                       borderRadius: 10,
                       padding: 10,
-                      fontFamily: 'Inter, sans-serif',
+                      fontFamily: 'Sora, sans-serif',
                       fontSize: 14,
                       resize: 'vertical',
                     }}
@@ -189,13 +189,13 @@ export function CommentsThread({ roomId }: { roomId: string }) {
                     <button
                       disabled={save.isPending || editDraft.trim().length < 1}
                       onClick={() => save.mutate({ id: c.id, text: editDraft.trim() })}
-                      style={{ background: '#e7548a', color: '#fff', border: 0, borderRadius: 999, padding: '6px 14px', fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+                      style={{ background: '#a52a5f', color: '#fff', border: 0, borderRadius: 999, padding: '6px 14px', fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
                     >
                       save
                     </button>
                     <button
                       onClick={() => { setEditingId(null); setEditDraft('') }}
-                      style={{ background: 'none', border: 0, color: '#6b4a5c', cursor: 'pointer', fontSize: 12 }}
+                      style={{ background: 'none', border: 0, color: '#443c42', cursor: 'pointer', fontSize: 12 }}
                     >
                       cancel
                     </button>
@@ -205,7 +205,7 @@ export function CommentsThread({ roomId }: { roomId: string }) {
                 <p
                   style={{
                     margin: 0,
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'Sora, sans-serif',
                     fontSize: 14,
                     color: '#0b080f',
                     whiteSpace: 'pre-wrap',

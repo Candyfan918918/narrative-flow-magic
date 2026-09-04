@@ -88,17 +88,17 @@ export function RelateNudge({ currentRoomId, currentIsCrisis }: { currentRoomId:
         animation: 'slideUp .35s ease-out',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, fontFamily: 'Sora,sans-serif', fontSize: 11, letterSpacing: '.12em', textTransform: 'uppercase', color: '#9e7a8c' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, fontFamily: 'Sora,sans-serif', fontSize: 11, letterSpacing: '.12em', textTransform: 'uppercase', color: '#6f666c' }}>
         <span>someone else is waiting</span>
         <button
           onClick={() => setDismissed(true)}
           aria-label="dismiss"
-          style={{ background: 'none', border: 0, cursor: 'pointer', color: '#9e7a8c', fontSize: 18, lineHeight: 1, padding: 0 }}
+          style={{ background: 'none', border: 0, cursor: 'pointer', color: '#6f666c', fontSize: 18, lineHeight: 1, padding: 0 }}
         >×</button>
       </div>
       <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 15, color: '#0b080f', marginBottom: 4 }}>{cold.title}</div>
       {cold.first_line && (
-        <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13.5, color: '#6b4a5c', marginBottom: 10 }}>{cold.first_line}</div>
+        <div style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 13.5, color: '#443c42', marginBottom: 10 }}>{cold.first_line}</div>
       )}
       <div style={{ display: 'flex', gap: 8 }}>
         <button
@@ -109,7 +109,7 @@ export function RelateNudge({ currentRoomId, currentIsCrisis }: { currentRoomId:
             padding: '10px 14px',
             borderRadius: 999,
             border: 0,
-            background: related ? '#f7c9dc' : '#e7548a',
+            background: related ? '#f7c9dc' : '#a52a5f',
             color: '#fff',
             fontFamily: 'Sora,sans-serif',
             fontWeight: 700,

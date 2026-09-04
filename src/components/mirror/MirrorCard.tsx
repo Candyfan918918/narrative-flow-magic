@@ -13,7 +13,7 @@ import { EyeMark, ShutapWordmark } from '@/components/EyeMark'
 
 // district hues come from tokens.css: --pink, --r-time, --wine, --r-same, --r-strong
 const DISTRICT_PALETTE: Record<District, { ink: string; glow: string }> = {
-  self: { ink: '#e7548a', glow: 'rgba(231,84,138,.10)' },
+  self: { ink: '#a52a5f', glow: 'rgba(231,84,138,.10)' },
   career: { ink: '#7F77DD', glow: 'rgba(127,119,221,.10)' },
   love: { ink: '#c1216b', glow: 'rgba(193,33,107,.10)' },
   family: { ink: '#c87c4a', glow: 'rgba(200,124,74,.10)' },
@@ -300,7 +300,7 @@ export function MirrorCard({ p }: { p: MirrorPatternView }) {
           gap: 7, marginTop: 16,
         }}>
           <EyeMark w={24} />
-          <ShutapWordmark size={13} ink={INK} accent="#e7548a" letterSpacing="-.02em" />
+          <ShutapWordmark size={13} ink={INK} accent="#a52a5f" letterSpacing="-.02em" />
           <span style={{
             width: 3, height: 3, borderRadius: '50%', background: MUTED_3,
             display: 'inline-block',

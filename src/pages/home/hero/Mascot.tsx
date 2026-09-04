@@ -82,8 +82,8 @@ export function HeroMascot({ size }: { size: number }) {
             aria-hidden
           >
             <g style={{ transform: `translate(${tilt.px}px, ${tilt.py}px)`, transition: 'transform .06s linear' }}>
-              <circle cx="44" cy="62" r="4" fill="#060106" />
-              <circle cx="112" cy="62" r="4" fill="#060106" />
+              <circle cx="44" cy="62" r="4" fill="#100c14" />
+              <circle cx="112" cy="62" r="4" fill="#100c14" />
             </g>
           </svg>
         )}

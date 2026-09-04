@@ -71,7 +71,7 @@ export function MirrorShareSheet({
     const node = previewRef.current?.querySelector('article') as HTMLElement | null
     if (!node) return null
     try {
-      return await toPng(node, { pixelRatio: 2, cacheBust: true, backgroundColor: '#fdf0f5' })
+      return await toPng(node, { pixelRatio: 2, cacheBust: true, backgroundColor: '#ffffff' })
     } catch { return null }
   }
 
@@ -173,7 +173,7 @@ export function MirrorShareSheet({
           fontSize: 13, lineHeight: 1.45, color: 'var(--text-2)',
           padding: '0 4px',
         }}>
-          <span aria-hidden style={{ color: '#e7548a', fontSize: 11, letterSpacing: '-.1em', flex: '0 0 auto', lineHeight: 1.6 }}>✦✦</span>
+          <span aria-hidden style={{ color: '#a52a5f', fontSize: 11, letterSpacing: '-.1em', flex: '0 0 auto', lineHeight: 1.6 }}>✦✦</span>
           <span>your mirror named this one. share the whole card — never the signals behind it.</span>
         </div>
 

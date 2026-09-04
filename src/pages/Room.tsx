@@ -71,16 +71,16 @@ export function RoomPage() {
 
   if (!id || !room) {
     return (
-      <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
+      <div style={{ minHeight: '100vh', background: '#ffffff' }}>
         <main style={{ maxWidth: 640, margin: '0 auto', padding: '60px 22px', textAlign: 'center' }}>
 
-          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9e7a8c', marginBottom: 10 }}>
+          <div style={{ fontFamily: 'Sora,sans-serif', fontWeight: 600, fontSize: 10.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#6f666c', marginBottom: 10 }}>
             this room
           </div>
           <h1 style={{ fontFamily: 'Sora,sans-serif', fontWeight: 700, fontSize: 24, margin: '0 0 10px', color: '#0b080f' }}>
             quiet here.
           </h1>
-          <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, color: '#6b4a5c', margin: '0 0 24px' }}>
+          <p style={{ fontFamily: 'Newsreader,serif', fontStyle: 'italic', fontSize: 15.5, color: '#443c42', margin: '0 0 24px' }}>
             this room may have rested, or the link is broken.
           </p>
           <button
@@ -108,7 +108,7 @@ export function RoomPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fdf0f5' }}>
+    <div style={{ minHeight: '100vh', background: '#ffffff' }}>
 
       <RoomDetail room={room} onBack={() => navigate('/stream')} toast={toastMsg} />
       {ToastHost}
