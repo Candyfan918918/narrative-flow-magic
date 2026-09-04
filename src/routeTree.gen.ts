@@ -67,6 +67,7 @@ import { Route as AuthenticatedAdminRelateRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedCheckinIdRouteImport } from './routes/_authenticated/checkin.$id'
 import { Route as ApiFeedbackEventsRouteImport } from './routes/api/feedback/events'
+import { Route as ApiPublicJokeCardRouteImport } from './routes/api/public/joke-card'
 import { Route as StoryPillarSlugRouteImport } from './routes/story.$pillar.$slug'
 import { Route as ApiPublicHooksDispatchCheckinsRouteImport } from './routes/api/public/hooks/dispatch-checkins'
 import { Route as ApiPublicHooksMirrorEvolutionRouteImport } from './routes/api/public/hooks/mirror-evolution'
@@ -372,6 +373,11 @@ const ApiFeedbackEventsRoute = ApiFeedbackEventsRouteImport.update({
   path: '/api/feedback/events',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicJokeCardRoute = ApiPublicJokeCardRouteImport.update({
+  id: '/api/public/joke-card',
+  path: '/api/public/joke-card',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StoryPillarSlugRoute = StoryPillarSlugRouteImport.update({
   id: '/story/$pillar/$slug',
   path: '/story/$pillar/$slug',
@@ -471,6 +477,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/api/public/joke-card': typeof ApiPublicJokeCardRoute
   '/story/$pillar/$slug': typeof StoryPillarSlugRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
@@ -537,6 +544,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/api/public/joke-card': typeof ApiPublicJokeCardRoute
   '/story/$pillar/$slug': typeof StoryPillarSlugRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
@@ -605,6 +613,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/checkin/$id': typeof AuthenticatedCheckinIdRoute
   '/api/feedback/events': typeof ApiFeedbackEventsRoute
+  '/api/public/joke-card': typeof ApiPublicJokeCardRoute
   '/story/$pillar/$slug': typeof StoryPillarSlugRoute
   '/api/public/hooks/dispatch-checkins': typeof ApiPublicHooksDispatchCheckinsRoute
   '/api/public/hooks/mirror-evolution': typeof ApiPublicHooksMirrorEvolutionRoute
@@ -673,6 +682,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/checkin/$id'
     | '/api/feedback/events'
+    | '/api/public/joke-card'
     | '/story/$pillar/$slug'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
@@ -739,6 +749,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/checkin/$id'
     | '/api/feedback/events'
+    | '/api/public/joke-card'
     | '/story/$pillar/$slug'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
@@ -806,6 +817,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/checkin/$id'
     | '/api/feedback/events'
+    | '/api/public/joke-card'
     | '/story/$pillar/$slug'
     | '/api/public/hooks/dispatch-checkins'
     | '/api/public/hooks/mirror-evolution'
@@ -865,6 +877,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiFeedbackEventsRoute: typeof ApiFeedbackEventsRoute
+  ApiPublicJokeCardRoute: typeof ApiPublicJokeCardRoute
   StoryPillarSlugRoute: typeof StoryPillarSlugRoute
   ApiPublicHooksDispatchCheckinsRoute: typeof ApiPublicHooksDispatchCheckinsRoute
   ApiPublicHooksMirrorEvolutionRoute: typeof ApiPublicHooksMirrorEvolutionRoute
@@ -1281,6 +1294,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFeedbackEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/joke-card': {
+      id: '/api/public/joke-card'
+      path: '/api/public/joke-card'
+      fullPath: '/api/public/joke-card'
+      preLoaderRoute: typeof ApiPublicJokeCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/story/$pillar/$slug': {
       id: '/story/$pillar/$slug'
       path: '/story/$pillar/$slug'
@@ -1431,6 +1451,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiFeedbackEventsRoute: ApiFeedbackEventsRoute,
+  ApiPublicJokeCardRoute: ApiPublicJokeCardRoute,
   StoryPillarSlugRoute: StoryPillarSlugRoute,
   ApiPublicHooksDispatchCheckinsRoute: ApiPublicHooksDispatchCheckinsRoute,
   ApiPublicHooksMirrorEvolutionRoute: ApiPublicHooksMirrorEvolutionRoute,

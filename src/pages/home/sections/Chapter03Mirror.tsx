@@ -118,7 +118,7 @@ export function Chapter03Mirror() {
                             {' '}
                             <span style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                               <span data-mcount="" data-n="140" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '22px', lineHeight: '1', color: '#7F77DD', fontVariantNumeric: 'tabular-nums' }}>
-                                0
+                                140
                               </span>
                               <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: '#6f666c' }}>
                                 all-time
@@ -249,7 +249,7 @@ export function Chapter03Mirror() {
                             {' '}
                             <span style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                               <span data-mcount="" data-n="192" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '22px', lineHeight: '1', color: '#a52a5f', fontVariantNumeric: 'tabular-nums' }}>
-                                0
+                                192
                               </span>
                               <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: '#6f666c' }}>
                                 all-time
@@ -380,7 +380,7 @@ export function Chapter03Mirror() {
                             {' '}
                             <span style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                               <span data-mcount="" data-n="54" style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '800', fontSize: '22px', lineHeight: '1', color: '#c1216b', fontVariantNumeric: 'tabular-nums' }}>
-                                0
+                                54
                               </span>
                               <span style={{ fontFamily: '\'Sora\',sans-serif', fontWeight: '600', fontSize: '9px', letterSpacing: '.1em', textTransform: 'uppercase', color: '#6f666c' }}>
                                 all-time
