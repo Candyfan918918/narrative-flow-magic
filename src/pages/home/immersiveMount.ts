@@ -174,11 +174,25 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
   rvs.forEach((el) => io.observe(el)); cleanup.push(() => io.disconnect())
 
   /* ── demos: on-screen visibility helper ── */
+  // Defaults to RUNNING and falls back to geometry: an unmeasurable viewport
+  // counts as visible, so a demo never stalls off-screen forever.
   const vis = (el: Element | null) => {
-    const s: { v: boolean } = { v: !el }
-    if (el) { const iov = new IntersectionObserver((en) => { s.v = en[0].isIntersecting }, { threshold: 0.15 }); iov.observe(el); cleanup.push(() => iov.disconnect()) }
+    const s: { v: boolean } = { v: true }
+    if (el) {
+      try {
+        const iov = new IntersectionObserver((en) => {
+          const e = en[0]
+          const r = e.boundingClientRect
+          const unmeasurable = !r || (r.width === 0 && r.height === 0)
+          s.v = unmeasurable ? true : e.isIntersecting
+        }, { threshold: 0.15 })
+        iov.observe(el)
+        cleanup.push(() => iov.disconnect())
+      } catch { s.v = true }
+    }
     return s
   }
+
 
   /* ── 01 spill interview loop ── */
   const spSteps = qa('[data-sp]')
