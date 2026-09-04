@@ -451,7 +451,7 @@ export function Chapter01Spill({ alias, pillar }: { alias?: string; pillar?: str
         </div>
 
         <div data-rv="pop" style={{ display: 'flex', justifyContent: 'center' }}>
-          <SpillCard />
+          <SpillCard alias={alias} pillar={pillar} />
         </div>
       </div>
     </section>
