@@ -469,6 +469,138 @@ export type Database = {
         }
         Relationships: []
       }
+      joke_cards: {
+        Row: {
+          angle: string
+          card_text: string
+          corpus_eligible: boolean
+          created_at: string
+          id: string
+          is_seed: boolean
+          judge_score: number | null
+          position: number
+          room_id: string | null
+          set_id: string
+          updated_at: string
+          used_fallback: boolean
+          user_id: string | null
+        }
+        Insert: {
+          angle: string
+          card_text: string
+          corpus_eligible?: boolean
+          created_at?: string
+          id?: string
+          is_seed?: boolean
+          judge_score?: number | null
+          position?: number
+          room_id?: string | null
+          set_id: string
+          updated_at?: string
+          used_fallback?: boolean
+          user_id?: string | null
+        }
+        Update: {
+          angle?: string
+          card_text?: string
+          corpus_eligible?: boolean
+          created_at?: string
+          id?: string
+          is_seed?: boolean
+          judge_score?: number | null
+          position?: number
+          room_id?: string | null
+          set_id?: string
+          updated_at?: string
+          used_fallback?: boolean
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "joke_cards_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "joke_cards_set_id_fkey"
+            columns: ["set_id"]
+            isOneToOne: false
+            referencedRelation: "joke_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      joke_flips: {
+        Row: {
+          created_at: string
+          day: string
+          flips_used: number
+          set_ids: string[]
+          sets_flipped: number
+          subject_key: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          flips_used?: number
+          set_ids?: string[]
+          sets_flipped?: number
+          subject_key: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          flips_used?: number
+          set_ids?: string[]
+          sets_flipped?: number
+          subject_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      joke_sets: {
+        Row: {
+          angles: string[]
+          anon_session_id: string | null
+          archetype: string
+          clean_text: string
+          corpus_eligible: boolean
+          created_at: string
+          id: string
+          is_seed: boolean
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          angles?: string[]
+          anon_session_id?: string | null
+          archetype?: string
+          clean_text: string
+          corpus_eligible?: boolean
+          created_at?: string
+          id?: string
+          is_seed?: boolean
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          angles?: string[]
+          anon_session_id?: string | null
+          archetype?: string
+          clean_text?: string
+          corpus_eligible?: boolean
+          created_at?: string
+          id?: string
+          is_seed?: boolean
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       mirror_onboarding: {
         Row: {
           created_at: string
@@ -927,6 +1059,7 @@ export type Database = {
           hall: string
           id: string
           reflection: string | null
+          source: string
           support: string
           title: string
           updated_at: string
@@ -940,6 +1073,7 @@ export type Database = {
           hall: string
           id?: string
           reflection?: string | null
+          source?: string
           support: string
           title: string
           updated_at?: string
@@ -953,6 +1087,7 @@ export type Database = {
           hall?: string
           id?: string
           reflection?: string | null
+          source?: string
           support?: string
           title?: string
           updated_at?: string
