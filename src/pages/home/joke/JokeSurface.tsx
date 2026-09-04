@@ -13,7 +13,7 @@ import {
   postJokeCardToRoom,
 } from '@/lib/jokes.functions'
 import { ANGLE_LABEL, ARCHETYPE_LABEL, ROMAN, fitSize, type JokeCard, type JokeTier } from '@/lib/jokes/deck'
-import { anonSessionId, browserTimezone, clearAnonSessionId, jokeTrack, downloadCardPng, cardImageUrl } from './jokeClient'
+import { anonSessionId, clearAnonSessionId, jokeTrack, downloadCardPng, cardImageUrl } from './jokeClient'
 import { SignInSheet } from './SignInSheet'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -64,7 +64,8 @@ export function JokeSurface() {
 
   const signedIn = tier !== 'guest'
   const ctx = useCallback(
-    () => ({ anon_session_id: anonSessionId(), timezone: browserTimezone() }),
+    // No timezone is sent: the server derives the day from stored state only.
+    () => ({ anon_session_id: anonSessionId() }),
     [],
   )
 
