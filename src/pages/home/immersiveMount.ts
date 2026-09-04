@@ -252,19 +252,39 @@ export function mountImmersive(root: HTMLElement, hooks: ImmersiveHooks): () => 
         const ring = c.querySelector('[data-mring]') as any
         const cnt = c.querySelector('[data-mcount]') as HTMLElement | null
         const spark = c.querySelector('[data-mspark]') as any
+        // Never reset a displayed count to 0 — a background tab or a
+        // non-compositing container must not leave a figure reading 0.
+        if (cnt) cnt.textContent = cnt.getAttribute('data-n') || cnt.textContent || ''
         if (!on2) {
           if (ring) { ring.style.transition = 'none'; ring.style.strokeDashoffset = '289' }
           if (spark) { spark.style.transition = 'none'; spark.style.strokeDashoffset = '600' }
-          if (cnt) cnt.textContent = '0'
           return
         }
-        if (ring) requestAnimationFrame(() => { ring.style.transition = 'stroke-dashoffset 1.3s cubic-bezier(.16,1,.3,1)'; ring.style.strokeDashoffset = ring.getAttribute('data-off') })
-        if (spark) requestAnimationFrame(() => { spark.style.transition = 'stroke-dashoffset 1.5s ease'; spark.style.strokeDashoffset = '0' })
-        if (cnt) {
-          const target = +(cnt.getAttribute('data-n') || '0'), t0 = performance.now()
-          const tick = (t: number) => { const p = Math.min(1, (t - t0) / 1200); cnt!.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3)))); if (p < 1) requestAnimationFrame(tick) }
-          requestAnimationFrame(tick)
+        // Commit the reset with a forced reflow rather than waiting on rAF,
+        // so the transition still runs when rAF is paused.
+        if (ring) {
+          void ring.getBoundingClientRect()
+          ring.style.transition = 'stroke-dashoffset 1.3s cubic-bezier(.16,1,.3,1)'
+          ring.style.strokeDashoffset = ring.getAttribute('data-off')
         }
+        if (spark) {
+          void spark.getBoundingClientRect()
+          spark.style.transition = 'stroke-dashoffset 1.5s ease'
+          spark.style.strokeDashoffset = '0'
+        }
+        if (cnt) {
+          const target = +(cnt.getAttribute('data-n') || '0')
+          if (target > 0) {
+            const t0 = performance.now()
+            const tick = (t: number) => {
+              const p = Math.min(1, (t - t0) / 1200)
+              cnt!.textContent = String(Math.max(1, Math.round(target * (1 - Math.pow(1 - p, 3)))))
+              if (p < 1) requestAnimationFrame(tick)
+            }
+            requestAnimationFrame(tick)
+          }
+        }
+
       })
       mdots.forEach((d, j) => { d.style.background = j === i ? '#c1a02b' : 'rgba(233,192,106,.28)' })
     }
