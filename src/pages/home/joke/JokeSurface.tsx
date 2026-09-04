@@ -96,7 +96,14 @@ export function JokeSurface() {
         }
       : null
     try {
-      const res = await claim({ data: { ...ctx(), hold: held } })
+      const p0 = pending.current
+      const res = await claim({
+        data: {
+          ...ctx(),
+          hold: held,
+          resume_flip: p0?.type === 'flip' && set ? { set_id: set.id, position: p0.position } : null,
+        },
+      })
       setTier(res.tier)
       clearAnonSessionId()
       if (res.claimed) {
@@ -174,6 +181,10 @@ export function JokeSurface() {
       if (!res.ok) {
         setSet({ ...cur, loading: [false, false, false] })
         jokeTrack('flip_refused', res.tier, { reason: res.reason, scope: res.scope, position })
+        if (res.reason === 'rate_limited') {
+          setRefusal('too many flips from this connection today. give it a bit.')
+          return
+        }
         if (res.tier === 'guest') { raiseSheet('second_flip', { type: 'flip', position }); return }
         setRefusal(
           res.scope === 'set'
