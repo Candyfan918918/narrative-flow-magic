@@ -6,11 +6,12 @@ import { SITE_URL } from '@/lib/site'
 import { countOpenRooms } from '@/lib/rooms-count.functions'
 import { listNewestRooms } from '@/lib/newest-rooms.functions'
 
-const HOME_TITLE = "Shutap — vent about relationships, marriage, family, work"
+const HOME_TITLE = "Shutap — joke about it. vent about family, marriage, work"
 const HOME_DESCRIPTION =
-  "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows."
+  "life's a bitch, so make fun of it. type what happened, draw three angles, flip one and see what it does with it. pseudonymous — your real name never shows."
 const HOME_OG_DESCRIPTION =
-  "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows."
+  "life's a bitch, so make fun of it. type what happened, draw three angles, flip one. pseudonymous — your real name never shows."
+
 const HOME_URL = `${SITE_URL}/`
 
 export const Route = createFileRoute('/')({
