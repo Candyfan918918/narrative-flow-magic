@@ -537,6 +537,9 @@ export type Database = {
           created_at: string
           day: string
           flips_used: number
+          grant_consumed: boolean
+          grant_position: number | null
+          grant_set_id: string | null
           set_ids: string[]
           sets_flipped: number
           subject_key: string
@@ -546,6 +549,9 @@ export type Database = {
           created_at?: string
           day: string
           flips_used?: number
+          grant_consumed?: boolean
+          grant_position?: number | null
+          grant_set_id?: string | null
           set_ids?: string[]
           sets_flipped?: number
           subject_key: string
@@ -555,6 +561,9 @@ export type Database = {
           created_at?: string
           day?: string
           flips_used?: number
+          grant_consumed?: boolean
+          grant_position?: number | null
+          grant_set_id?: string | null
           set_ids?: string[]
           sets_flipped?: number
           subject_key?: string
