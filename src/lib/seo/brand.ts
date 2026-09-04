@@ -7,10 +7,10 @@ export const BRAND = {
   tagline: "Shutap. Speak up.",
   // The entity sentence (locked) — goes in every machine-read surface.
   entitySentence:
-    "Vent like it's your smartest friend. The easiest way to get it off your chest — type it, spill it, someone always replies. Your real name never shows.",
+    "life's a bitch, so make fun of it. type what happened, draw three angles, flip one and see what it does with it. pseudonymous — your real name never shows.",
   // Short variant for title tags.
   entitySentenceShort:
-    "Shutap — vent like it's your smartest friend. Type it, spill it, someone always replies.",
+    "Shutap — joke about it. type what happened, draw three angles, flip one.",
 } as const;
 
 export const PILLARS = [
