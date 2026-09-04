@@ -50,7 +50,7 @@ function useInView<T extends HTMLElement>(threshold = 0.15) {
   return { ref, inView }
 }
 
-function SpillCard() {
+function SpillCard({ alias, pillar }: { alias?: string; pillar?: string }) {
   const reduced = usePrefersReducedMotion()
   const { ref, inView } = useInView<HTMLDivElement>(0.15)
   const [s, setS] = useState<S>({ phase: 'A', turn: 0, typed: 0, dots: 0 })
@@ -265,7 +265,7 @@ function SpillCard() {
             }}
           >
             <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 500, fontSize: '12.5px', color: '#6f666c' }}>
-              🦉 Quiet Indonesian Owl <span style={{ opacity: 0.6 }}>· family</span>
+              {alias ?? '🦉 Quiet Indonesian Owl'} <span style={{ opacity: 0.6 }}>· {pillar ?? 'family'}</span>
             </div>
             <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: '20px', color: '#fdfbf9', lineHeight: 1.3 }}>
               the sister i'd protect from anyone was scared of me.
@@ -366,7 +366,7 @@ function SpillCard() {
   )
 }
 
-export function Chapter01Spill() {
+export function Chapter01Spill({ alias, pillar }: { alias?: string; pillar?: string } = {}) {
   return (
     <section
       data-screen-label="01 Spill"
