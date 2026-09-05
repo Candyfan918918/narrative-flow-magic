@@ -338,7 +338,19 @@ export const claimJokeSession = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const id = await resolveJokeIdentity(data.anon_session_id ?? null)
-    if (!id.userId) throw new Error('sign in first')
+    // The app bootstraps a Supabase anonymous session for analytics. That
+    // session emits SIGNED_IN too, but it is not a real account and must not
+    // turn a harmless background claim into an uncaught server-function
+    // error. Keep the endpoint closed and return a typed refusal instead.
+    if (!id.userId) {
+      return {
+        ok: false as const,
+        reason: 'sign_in_required' as const,
+        tier: 'guest' as const,
+        alias: null,
+        claimed: null,
+      }
+    }
     const userId = id.userId
     const day = await resolveDay(supabaseAdmin, userId)
     const anonKey = 'anon:' + (data.anon_session_id ?? 'unknown')
@@ -471,6 +483,7 @@ export const claimJokeSession = createServerFn({ method: 'POST' })
     }
 
     return {
+      ok: true as const,
       tier: id.tier,
       alias: alias ? { display_name: alias.display_name, emoji: alias.emoji } : null,
       claimed,
