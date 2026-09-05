@@ -436,19 +436,23 @@ export const claimJokeSession = createServerFn({ method: 'POST' })
       if (!dupe) {
         const { data: card } = await supabaseAdmin
           .from('joke_cards')
-          .insert({
-            set_id: hold.set_id,
-            user_id: userId,
-            angle: hold.angle,
-            card_text: hold.text,
-            position: hold.position,
-            used_fallback: hold.used_fallback ?? false,
-            judge_score: hold.judge_score ?? null,
-            is_seed: false,
-            corpus_eligible: false,
-          } as never)
+          .upsert(
+            {
+              set_id: hold.set_id,
+              user_id: userId,
+              angle: hold.angle,
+              card_text: hold.text,
+              position: hold.position,
+              used_fallback: hold.used_fallback ?? false,
+              judge_score: hold.judge_score ?? null,
+              is_seed: false,
+              corpus_eligible: false,
+            } as never,
+            { onConflict: 'set_id,position', ignoreDuplicates: true },
+          )
           .select('id')
-          .single()
+          .maybeSingle()
+
         if (card) {
           claimed = {
             id: card.id as string,
