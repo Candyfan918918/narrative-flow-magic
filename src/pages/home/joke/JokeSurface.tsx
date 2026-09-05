@@ -143,26 +143,34 @@ export function JokeSurface() {
 
   /** Sign-in lands back on this page. Claim the guest session, then resume. */
   const claimAndResume = useCallback(async () => {
-    const held = cards
-      .filter((c) => !c.id)
-      .map((c) => ({
-        set_id: set!.id,
-        position: c.position,
-        angle: c.angle,
-        text: c.text,
-        used_fallback: c.used_fallback,
-        judge_score: c.judge_score,
-      }))
+    // Whatever they were reading as a guest rides along, so the gate costs
+    // them none of it.
+    const held = set
+      ? cards
+          .filter((c) => !c.id)
+          .map((c) => ({
+            set_id: set.id,
+            position: c.position,
+            angle: c.angle,
+            text: c.text,
+            used_fallback: c.used_fallback,
+            judge_score: c.judge_score,
+          }))
+      : []
     try {
-      // SIGNED_IN can fire a beat before the token is readable for the
-      // outgoing call; without it the server sees a guest and refuses.
-      let token: string | null = null
-      for (let i = 0; i < 12 && !token; i++) {
-        token = (await supabase.auth.getSession()).data.session?.access_token ?? null
-        if (!token) await new Promise((r) => setTimeout(r, 250))
+      // The app also has a background anonymous auth session. Wait for an
+      // actual email-authenticated user, not merely any access token.
+      let realSession = false
+      for (let i = 0; i < 12 && !realSession; i++) {
+        const session = (await supabase.auth.getSession()).data.session
+        realSession = !!session?.access_token && session.user.is_anonymous !== true
+        if (!realSession) await new Promise((r) => setTimeout(r, 250))
       }
-      if (!token) return
-      const res = await claim({ data: { ...ctx(), hold: set ? held : [] } })
+      if (!realSession) return
+      const res = await claim({ data: { ...ctx(), hold: held } })
+      // The anonymous bootstrap session can still reach here; the server
+      // refuses it in kind rather than throwing, and there is nothing to claim.
+      if (!res.ok) return
       setTier(res.tier)
       clearAnonSessionId()
       if (res.alias) setAlias(res.alias)
@@ -183,8 +191,12 @@ export function JokeSurface() {
   }, [claim, ctx, cards, set, refresh])
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') void claimAndResume()
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      // Anonymous bootstrap also emits SIGNED_IN. Only a real account may
+      // claim guest sets/cards or resume a blocked action.
+      if (event === 'SIGNED_IN' && session?.user.is_anonymous !== true) {
+        void claimAndResume()
+      }
     })
     return () => sub.subscription.unsubscribe()
   }, [claimAndResume])
