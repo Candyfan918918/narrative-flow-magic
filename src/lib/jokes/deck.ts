@@ -1,6 +1,40 @@
 // Client-safe joke-card vocabulary. No authored content, no prompts here —
 // those live in deck.server.ts so the fallback pools never ship to a browser.
 
+/* ─────────────────────────── the three slots ───────────────────────────
+   Three cards, always, in this order: the take, the clapback, the roast.
+   Everybody gets the same three — what changes between tiers is what you
+   are allowed to DO with them, never how many you may read. */
+
+export type SlotKey = 'the_take' | 'the_clapback' | 'the_roast'
+
+export const SLOTS: { key: SlotKey; label: string; brief: string; accent: string }[] = [
+  {
+    key: 'the_take',
+    label: 'the take',
+    brief: 'name what actually happened, drily, the way a friend would say it back to her',
+    accent: '#e7548a',
+  },
+  {
+    key: 'the_clapback',
+    label: 'the clapback',
+    brief: 'the line she wishes she had said in the moment — one sentence, in quotes',
+    accent: '#c1216b',
+  },
+  {
+    key: 'the_roast',
+    label: 'the roast',
+    brief: 'roast the object or the move itself — the chart, the sigh, the rule — never the person',
+    accent: '#7F77DD',
+  },
+]
+
+export const SLOT_KEYS: SlotKey[] = SLOTS.map((s) => s.key)
+
+/* ── legacy vocabulary ──
+   Cards written before the deck settled on three slots carry one of these
+   seven angles. Nothing generates them any more, but stored rows still read
+   back through the label/accent lookups below. */
 export const ANGLES: [slug: string, label: string, brief: string][] = [
   ['target_the_behavior', 'the behaviour', 'roast the specific thing they did'],
   ['target_the_guilt_trip', 'the guilt trip', 'roast the manipulation move'],
@@ -11,9 +45,29 @@ export const ANGLES: [slug: string, label: string, brief: string][] = [
   ['the_comeback', 'the comeback', 'the line she wishes she had said in the moment'],
 ]
 
-export const ANGLE_LABEL: Record<string, string> = Object.fromEntries(
-  ANGLES.map((a) => [a[0], a[1]]),
-)
+export const ANGLE_LABEL: Record<string, string> = {
+  ...Object.fromEntries(ANGLES.map((a) => [a[0], a[1]])),
+  ...Object.fromEntries(SLOTS.map((s) => [s.key, s.label])),
+}
+
+const ACCENTS: Record<string, string> = {
+  ...Object.fromEntries(SLOTS.map((s) => [s.key, s.accent])),
+  target_the_behavior: '#e7548a',
+  target_the_guilt_trip: '#c87c4a',
+  target_the_double_standard: '#c1216b',
+  target_the_timing: '#c87c4a',
+  absurdist_escalation: '#7F77DD',
+  deadpan_understatement: '#7F77DD',
+  the_comeback: '#c1216b',
+}
+
+export function angleLabel(angle: string): string {
+  return ANGLE_LABEL[angle] ?? angle
+}
+
+export function angleAccent(angle: string): string {
+  return ACCENTS[angle] ?? '#e7548a'
+}
 
 export const ARCHETYPE_LABEL: Record<string, string> = {
   uninvited_visitor: 'Uninvited Visitor',
@@ -23,12 +77,6 @@ export const ARCHETYPE_LABEL: Record<string, string> = {
   grandbaby_countdown_clock: 'Grandbaby Countdown Clock',
   silent_treatment_strategist: 'Silent Treatment Strategist',
   general: 'general',
-}
-
-export const ROMAN = ['I', 'II', 'III']
-
-export function fitSize(n: number): string {
-  return n <= 52 ? '19px' : n <= 80 ? '17px' : n <= 110 ? '15px' : '13px'
 }
 
 export type JokeCard = {
@@ -44,12 +92,40 @@ export type JokeCard = {
   day?: string
 }
 
-export type JokeSet = {
-  id: string
-  clean_text: string
-  archetype: string
-  angles: string[]
-  cards: (JokeCard | null)[]
+export type JokeTier = 'guest' | 'free' | 'paying'
+
+/* ─────────────────────────── what money buys ───────────────────────────
+   Pixels, and only pixels. Reading the cards is free at every tier; the
+   paid difference is the absent mark and the print-size export. Guests may
+   read but not export at all — that is the alias gate, not the paywall. */
+
+export type ExportSpec = {
+  width: number
+  height: number
+  mark: boolean
+  /** "1080×1920 · includes the shutap mark" — shown under the save button. */
+  note: string
+  /** paying members save the whole set in one tap */
+  set: boolean
 }
 
-export type JokeTier = 'guest' | 'free' | 'paying'
+export const EXPORT: Record<Exclude<JokeTier, 'guest'>, ExportSpec> = {
+  free: {
+    width: 1080,
+    height: 1920,
+    mark: true,
+    note: '1080×1920 · includes the shutap mark',
+    set: false,
+  },
+  paying: {
+    width: 2160,
+    height: 3840,
+    mark: false,
+    note: 'clean · 2160×3840 · no mark on any of them',
+    set: true,
+  },
+}
+
+export function exportSpec(tier: JokeTier): ExportSpec {
+  return tier === 'paying' ? EXPORT.paying : EXPORT.free
+}

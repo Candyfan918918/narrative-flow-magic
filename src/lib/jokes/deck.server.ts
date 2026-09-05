@@ -1,14 +1,16 @@
 // Server-only joke-card engine: authored fallback pools, hall-of-fame
-// few-shots, the archetype matcher, the angle draw, the guardrails and the
-// generate → judge → one retry → authored fallback ladder.
+// few-shots, the archetype matcher, the three-slot deal, the guardrails and
+// the generate → judge → one retry → authored fallback ladder.
 //
-// The never-blank law: a flip can never resolve empty. If the model is down,
-// off-voice, or over the length cap twice, the authored pool for that angle
-// carries the card.
+// The never-blank law: a card can never resolve empty. If the model is down,
+// off-voice, or over the length cap twice, the authored pool for that slot
+// carries the card — so the three cards a person is offered are three cards
+// they actually get.
 import { callAgent } from '@/lib/agents/gateway'
-import { ANGLES } from './deck'
+import { ANGLES, SLOTS, SLOT_KEYS, type SlotKey } from './deck'
 
-/* authored fallback pools — one per angle, archetype-agnostic. */
+/* authored fallback pools — one per slot (plus the legacy angles),
+   archetype-agnostic. */
 export const FALLBACKS: Record<string, string[]> = {
   target_the_behavior: [
     'she did the thing. on purpose. with her whole chest.',
@@ -46,6 +48,24 @@ export const FALLBACKS: Record<string, string[]> = {
     'a small thing. by weight only.',
     'bold of her, structurally.',
   ],
+  the_take: [
+    'that is not a chore chart. that is an org chart, and you are the whole org.',
+    'she did the thing, on purpose, with her whole chest, and then filed it as normal.',
+    'the arrangement is fifty-fifty the way a seesaw with one person on it is balanced.',
+    'so the system is fair, and you are the only one inside it. neat.',
+  ],
+  the_clapback: [
+    '"weird thing to laminate."',
+    '"say the second half out loud too."',
+    '"i have added a column. it is called you."',
+    '"that was a choice, and you made it."',
+  ],
+  the_roast: [
+    'somewhere a laminator is being used for evil and nobody is stopping it.',
+    'the chart has the confidence of a document nobody asked for.',
+    'that rule was written by a committee of one and ratified by nobody.',
+    'imagine printing that out. imagine sealing it in plastic. imagine.',
+  ],
   the_comeback: [
     '"weird thing to say out loud."',
     '"you can go home now."',
@@ -65,6 +85,15 @@ export const HOF: { angle: string; archetype: string | null; text: string }[] = 
   { angle: 'deadpan_understatement', archetype: 'backhanded_grandma', text: 'a compliment, technically, in the way a paper cut is technically a touch.' },
   { angle: 'the_comeback', archetype: 'backhanded_grandma', text: '"say the second half out loud too."' },
   { angle: 'the_comeback', archetype: 'uninvited_visitor', text: '"a call first. that is the whole sentence."' },
+  { angle: 'the_take', archetype: null, text: 'he did not make a chore chart. he made an org chart. and babe — you are the whole org.' },
+  { angle: 'the_take', archetype: 'boundary_bulldozer', text: 'you drew a line and she read it as a starting pistol.' },
+  { angle: 'the_take', archetype: 'silent_treatment_strategist', text: 'nine days of silence, and somehow you are the one who went too far.' },
+  { angle: 'the_clapback', archetype: null, text: '"i have added a column. it is called him."' },
+  { angle: 'the_clapback', archetype: 'backhanded_grandma', text: '"say the second half out loud too."' },
+  { angle: 'the_clapback', archetype: 'uninvited_visitor', text: '"a call first. that is the whole sentence."' },
+  { angle: 'the_roast', archetype: null, text: 'that chart has the quiet confidence of a document nobody asked for.' },
+  { angle: 'the_roast', archetype: 'grandbaby_countdown_clock', text: 'the family calendar is one dessert away from having a due date in pen.' },
+  { angle: 'the_roast', archetype: 'favoritism_broadcaster', text: 'the golden child gets grace. you get a performance review, quarterly.' },
 ]
 
 /* guardrails — advice, prescription and clinical language never ship on a card */
@@ -92,14 +121,24 @@ export function classifyArchetype(clean: string): string {
   return 'general'
 }
 
-export function drawAngles(): string[] {
-  const pool = ANGLES.map((a) => a[0])
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    const a = pool[i]!, b = pool[j]!
-    pool[i] = b; pool[j] = a
-  }
-  return pool.slice(0, 3)
+/** The deck deals the same three slots, in the same order, to everyone.
+ *  There is no draw and no shuffle: three cards, always — the take, the
+ *  clapback, the roast. */
+export function dealSlots(): SlotKey[] {
+  return [...SLOT_KEYS]
+}
+
+/** The brief the model writes to, for a current slot or a legacy angle. */
+export function briefFor(angle: string): string {
+  const slot = SLOTS.find((s) => s.key === angle)
+  if (slot) return slot.brief
+  return ANGLES.find((a) => a[0] === angle)?.[2] ?? 'roast the behaviour'
+}
+
+/** Only the clapback and the legacy comeback are spoken lines, so only they
+ *  keep their quotation marks through the cleanup below. */
+function isSpokenLine(angle: string): boolean {
+  return angle === 'the_clapback' || angle === 'the_comeback'
 }
 
 function pick<T>(arr: T[]): T {
@@ -121,7 +160,9 @@ Hard rules:
 - maximum 16 words and under 110 characters.
 - NEVER use: "you should", "you could", "try to", "consider", "i'd recommend".
 - NEVER use clinical or diagnostic words (therapy, healing, trauma, toxic, narcissist, gaslight, boundaries, disorder).
-- no hashtags, no emoji, no quotation marks unless the angle is the comeback.
+- no hashtags, no emoji, no quotation marks unless the card is the clapback.
+- the bite lands on the SITUATION and the other person's move — the chart, the
+  sigh, the rule — never on the writer, and never on who the other person is.
 Return ONLY the line. No preamble, no explanation.`
 
 export type GeneratedLine = { text: string; used_fallback: boolean; judge_score: number | null }
@@ -131,13 +172,12 @@ export async function generateLine(args: {
   archetype: string
   situation: string
 }): Promise<GeneratedLine> {
-  const angleRow = ANGLES.find((a) => a[0] === args.angle)
-  const brief = angleRow?.[2] ?? 'roast the behaviour'
+  const brief = briefFor(args.angle)
   const shots = fewShot(args.angle, args.archetype)
   const user = [
-    `ANGLE: ${args.angle} — ${brief}`,
+    `CARD: ${args.angle} — ${brief}`,
     `FLAVOUR: ${args.archetype}`,
-    shots.length ? `LINES THAT LANDED ON THIS ANGLE:\n${shots.map((s) => '- ' + s).join('\n')}` : '',
+    shots.length ? `LINES THAT LANDED ON THIS CARD:\n${shots.map((s) => '- ' + s).join('\n')}` : '',
     `SITUATION (already de-identified):\n${args.situation.slice(0, 1200)}`,
     'Write the line.',
   ].filter(Boolean).join('\n\n')
@@ -150,7 +190,7 @@ export async function generateLine(args: {
       maxTokens: 120,
     })
     const line = String(res.text ?? '')
-      .replace(/^\s*["'`]+|["'`]+\s*$/g, (m) => (args.angle === 'the_comeback' ? m : ''))
+      .replace(/^\s*["'`]+|["'`]+\s*$/g, (m) => (isSpokenLine(args.angle) ? m : ''))
       .split('\n')[0]!
       .trim()
       .toLowerCase()
