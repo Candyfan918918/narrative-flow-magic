@@ -13,7 +13,7 @@ import {
   postJokeCardToRoom,
 } from '@/lib/jokes.functions'
 import { ANGLE_LABEL, ARCHETYPE_LABEL, ROMAN, fitSize, type JokeCard, type JokeTier } from '@/lib/jokes/deck'
-import { anonSessionId, browserTimezone, clearAnonSessionId, jokeTrack, downloadCardPng, cardImageUrl } from './jokeClient'
+import { anonSessionId, clearAnonSessionId, jokeTrack, downloadCardPng, cardImageUrl } from './jokeClient'
 import { SignInSheet } from './SignInSheet'
 
 const SORA = "'Sora',system-ui,sans-serif"
@@ -64,7 +64,8 @@ export function JokeSurface() {
 
   const signedIn = tier !== 'guest'
   const ctx = useCallback(
-    () => ({ anon_session_id: anonSessionId(), timezone: browserTimezone() }),
+    // No timezone is sent: the server derives the day from stored state only.
+    () => ({ anon_session_id: anonSessionId() }),
     [],
   )
 
@@ -96,7 +97,14 @@ export function JokeSurface() {
         }
       : null
     try {
-      const res = await claim({ data: { ...ctx(), hold: held } })
+      const p0 = pending.current
+      const res = await claim({
+        data: {
+          ...ctx(),
+          hold: held,
+          resume_flip: p0?.type === 'flip' && set ? { set_id: set.id, position: p0.position } : null,
+        },
+      })
       setTier(res.tier)
       clearAnonSessionId()
       if (res.claimed) {
@@ -174,6 +182,10 @@ export function JokeSurface() {
       if (!res.ok) {
         setSet({ ...cur, loading: [false, false, false] })
         jokeTrack('flip_refused', res.tier, { reason: res.reason, scope: res.scope, position })
+        if (res.reason === 'rate_limited') {
+          setRefusal('too many flips from this connection today. give it a bit.')
+          return
+        }
         if (res.tier === 'guest') { raiseSheet('second_flip', { type: 'flip', position }); return }
         setRefusal(
           res.scope === 'set'

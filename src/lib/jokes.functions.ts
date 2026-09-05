@@ -11,11 +11,13 @@ import { z } from 'zod'
 import { runScrub } from './agents/scrubber.functions'
 import { runClassifyCrisis } from './agents/guard.functions'
 import { classifyArchetype, drawAngles, generateLine } from './jokes/deck.server'
-import { resolveJokeIdentity, localDay } from './jokes/session.server'
+import { resolveJokeIdentity, resolveDay, ipFlipLimit, ipSubjectKey } from './jokes/session.server'
 import { ANGLE_LABEL, type JokeCard } from './jokes/deck'
 
 const Ctx = {
   anon_session_id: z.string().max(64).nullable().optional(),
+  // Accepted but DELIBERATELY IGNORED: the day comes from server-stored state
+  // only, so a client cannot roll its own timezone to farm extra flips.
   timezone: z.string().max(64).nullable().optional(),
 }
 
@@ -25,12 +27,15 @@ type FlipRow = {
   flips_used: number
   sets_flipped: number
   set_ids: string[]
+  grant_set_id?: string | null
+  grant_position?: number | null
+  grant_consumed?: boolean
 }
 
 async function readCounter(admin: any, subjectKey: string, day: string): Promise<FlipRow> {
   const { data } = await admin
     .from('joke_flips')
-    .select('subject_key, day, flips_used, sets_flipped, set_ids')
+    .select('subject_key, day, flips_used, sets_flipped, set_ids, grant_set_id, grant_position, grant_consumed')
     .eq('subject_key', subjectKey)
     .eq('day', day)
     .maybeSingle()
@@ -109,6 +114,7 @@ export const submitJokeEntry = createServerFn({ method: 'POST' })
 export type FlipResult =
   | { ok: true; card: JokeCard; tier: 'guest' | 'free' | 'paying'; flips_used: number; sets_flipped: number }
   | { ok: false; reason: 'flip_limit' | 'not_found'; scope: 'day' | 'set'; tier: 'guest' | 'free' | 'paying' }
+  | { ok: false; reason: 'rate_limited'; scope: 'network'; tier: 'guest' | 'free' | 'paying' }
 
 export const flipJokeCard = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) =>
@@ -117,7 +123,16 @@ export const flipJokeCard = createServerFn({ method: 'POST' })
   .handler(async ({ data }): Promise<FlipResult> => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const id = await resolveJokeIdentity(data.anon_session_id ?? null)
-    const day = localDay(data.timezone)
+    const day = await resolveDay(supabaseAdmin, id.userId)
+
+    // ── abuse layer, separate from the tier rules ──
+    const ipKey = ipSubjectKey()
+    if (ipKey) {
+      const ipRow = await readCounter(supabaseAdmin, ipKey, day)
+      if (ipRow.flips_used >= ipFlipLimit()) {
+        return { ok: false, reason: 'rate_limited', scope: 'network', tier: id.tier }
+      }
+    }
 
     const { data: set } = await supabaseAdmin
       .from('joke_sets')
@@ -140,7 +155,17 @@ export const flipJokeCard = createServerFn({ method: 'POST' })
     const counter = await readCounter(supabaseAdmin, id.subjectKey, day)
     const counted = counter.set_ids.includes(set.id as string)
 
-    if (id.tier === 'paying') {
+    // A guest who flipped and then signed in to finish a second flip gets that
+    // one flip and no more: the grant is tied to this exact pending action and
+    // is consumed here, whatever the tier rules would otherwise say.
+    const granted =
+      counter.grant_consumed === false &&
+      counter.grant_set_id === (set.id as string) &&
+      counter.grant_position === data.position
+
+    if (granted) {
+      // fall through to generation, counting the flip
+    } else if (id.tier === 'paying') {
       const { count: already } = await supabaseAdmin
         .from('joke_cards')
         .select('id', { count: 'exact', head: true })
@@ -160,9 +185,19 @@ export const flipJokeCard = createServerFn({ method: 'POST' })
         flips_used: counter.flips_used + 1,
         sets_flipped: counted ? counter.sets_flipped : counter.sets_flipped + 1,
         set_ids: nextSetIds,
+        grant_consumed: true,
+        grant_set_id: null,
+        grant_position: null,
       } as never,
       { onConflict: 'subject_key,day' },
     )
+    if (ipKey) {
+      const ipRow = await readCounter(supabaseAdmin, ipKey, day)
+      await supabaseAdmin.from('joke_flips').upsert(
+        { subject_key: ipKey, day, flips_used: ipRow.flips_used + 1, sets_flipped: 0, set_ids: [] } as never,
+        { onConflict: 'subject_key,day' },
+      )
+    }
 
     const out = await generateLine({
       angle,
@@ -242,14 +277,26 @@ const HoldSchema = z
 
 export const claimJokeSession = createServerFn({ method: 'POST' })
   .inputValidator((d: unknown) =>
-    z.object({ hold: HoldSchema, terms_version: z.string().max(32).optional(), ...Ctx }).parse(d),
+    z
+      .object({
+        hold: HoldSchema,
+        terms_version: z.string().max(32).optional(),
+        // the flip that raised the sign-in sheet, if any — granted exactly once
+        resume_flip: z
+          .object({ set_id: z.string().uuid(), position: z.number().int().min(0).max(2) })
+          .nullable()
+          .optional(),
+        ...Ctx,
+      })
+      .parse(d),
   )
+
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const id = await resolveJokeIdentity(data.anon_session_id ?? null)
     if (!id.userId) throw new Error('sign in first')
     const userId = id.userId
-    const day = localDay(data.timezone)
+    const day = await resolveDay(supabaseAdmin, userId)
     const anonKey = 'anon:' + (data.anon_session_id ?? 'unknown')
 
     // 1 · mint the pseudonym (only if this account has none yet)
@@ -313,6 +360,7 @@ export const claimJokeSession = createServerFn({ method: 'POST' })
       readCounter(supabaseAdmin, 'user:' + userId, day),
     ])
     const mergedSetIds = Array.from(new Set([...userRow.set_ids, ...anonRow.set_ids]))
+    const resume = data.resume_flip ?? null
     await supabaseAdmin.from('joke_flips').upsert(
       {
         subject_key: 'user:' + userId,
@@ -320,6 +368,10 @@ export const claimJokeSession = createServerFn({ method: 'POST' })
         flips_used: userRow.flips_used + anonRow.flips_used,
         sets_flipped: mergedSetIds.length,
         set_ids: mergedSetIds,
+        // one-time grant, tied to the pending flip only
+        grant_set_id: resume?.set_id ?? null,
+        grant_position: resume ? resume.position : null,
+        grant_consumed: !resume,
       } as never,
       { onConflict: 'subject_key,day' },
     )

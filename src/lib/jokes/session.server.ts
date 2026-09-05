@@ -9,6 +9,10 @@ import { getRequest } from '@tanstack/react-start/server'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '@/integrations/supabase/types'
 
+type SupabaseAdmin = {
+  from: (table: string) => any
+}
+
 export type JokeIdentity = {
   userId: string | null
   isAnonymousUser: boolean
@@ -87,18 +91,73 @@ export async function resolveJokeIdentity(anonSessionId: string | null): Promise
   }
 }
 
-/** Local calendar day for the caller. Falls back to UTC when tz is unusable. */
-export function localDay(timezone?: string | null): string {
-  const tz = (timezone ?? '').slice(0, 64)
-  if (tz) {
+/**
+ * The caller's calendar day, derived ONLY from server-stored state.
+ *
+ * A client-supplied timezone is never trusted: flipping it would roll the day
+ * over and farm extra flips. Signed-in visitors use the timezone stored on
+ * their alias row; if it is missing we resolve to UTC and store that on first
+ * use. Guests have no stored row, so they are always on UTC.
+ */
+export async function resolveDay(admin: SupabaseAdmin, userId: string | null): Promise<string> {
+  let tz = 'UTC'
+  if (userId) {
     try {
-      return new Intl.DateTimeFormat('en-CA', {
-        timeZone: tz,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).format(new Date())
-    } catch { /* fall through to UTC */ }
+      const { data } = await admin
+        .from('aliases')
+        .select('timezone')
+        .eq('user_id', userId)
+        .maybeSingle()
+      const stored = (data?.timezone as string | undefined)?.trim()
+      if (stored) {
+        tz = stored
+      } else if (data) {
+        // store the resolved value on first use so it cannot drift per request
+        await admin.from('aliases').update({ timezone: 'UTC' } as never).eq('user_id', userId)
+      }
+    } catch { /* UTC */ }
   }
-  return new Date().toISOString().slice(0, 10)
+  return dayIn(tz)
+}
+
+function dayIn(tz: string): string {
+  try {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date())
+  } catch {
+    return new Date().toISOString().slice(0, 10)
+  }
+}
+
+/**
+ * A coarse per-IP abuse layer, separate from the tier rules. The guest session
+ * id clears in one keystroke, so it cannot be the only throttle. Tunable with
+ * JOKE_IP_FLIPS_PER_DAY.
+ */
+export function ipFlipLimit(): number {
+  const raw = Number(process.env['JOKE_IP_FLIPS_PER_DAY'] ?? '20')
+  return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 20
+}
+
+/** Stable, non-reversible subject key for the caller's network address. */
+export function ipSubjectKey(): string | null {
+  try {
+    const req = getRequest()
+    const h = req?.headers
+    const raw =
+      h?.get('cf-connecting-ip') ||
+      h?.get('x-real-ip') ||
+      (h?.get('x-forwarded-for') ?? '').split(',')[0]?.trim() ||
+      ''
+    if (!raw) return null
+    let hash = 5381
+    for (let i = 0; i < raw.length; i++) hash = ((hash << 5) + hash + raw.charCodeAt(i)) | 0
+    return 'ip:' + (hash >>> 0).toString(36)
+  } catch {
+    return null
+  }
 }
