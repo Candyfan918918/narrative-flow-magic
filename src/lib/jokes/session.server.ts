@@ -75,13 +75,27 @@ export async function resolveJokeIdentity(anonSessionId: string | null): Promise
 
   try {
     const client = publishableClient(token)
+    let sub: string | undefined
+    let isAnon = false
     const { data, error } = await client.auth.getClaims(token)
     const claims = data?.claims as { sub?: string; is_anonymous?: boolean } | undefined
-    if (error || !claims?.sub) return guest
+    if (!error && claims?.sub) {
+      sub = claims.sub
+      isAnon = !!claims.is_anonymous
+    } else {
+      // Local JWT verification can fail (key rotation, asymmetric keys, clock
+      // skew). Fall back to asking Supabase Auth directly before giving up.
+      const { data: userData, error: userErr } = await client.auth.getUser(token)
+      if (userErr || !userData?.user) return guest
+      sub = userData.user.id
+      isAnon = userData.user.is_anonymous === true
+    }
+    if (!sub) return guest
     // A Supabase anonymous user is not a signed-in person for our tiers.
-    if (claims.is_anonymous) return guest
+    if (isAnon) return guest
 
-    const userId = claims.sub
+    const userId = sub
+
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const env = process.env['STRIPE_LIVE_API_KEY'] ? 'live' : 'sandbox'
     const { data: paying } = await supabaseAdmin.rpc('has_active_mirror', {
