@@ -53,7 +53,16 @@ function bearer(): string | null {
 
 /** Resolve who is calling, and what they are entitled to, server-side. */
 export async function resolveJokeIdentity(anonSessionId: string | null): Promise<JokeIdentity> {
-  const anon = (anonSessionId ?? '').slice(0, 64)
+  // The header set by the client middleware is the canonical carrier; the
+  // argument stays as a fallback. Either way it is untrusted, tier-free input.
+  let headerAnon = ''
+  try {
+    headerAnon = getRequest()?.headers?.get('x-shutap-anon') ?? ''
+  } catch {
+    headerAnon = ''
+  }
+  const anon = (headerAnon || anonSessionId || '').slice(0, 64)
+
   const guest: JokeIdentity = {
     userId: null,
     isAnonymousUser: false,
