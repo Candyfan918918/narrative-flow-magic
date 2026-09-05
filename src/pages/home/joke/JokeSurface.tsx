@@ -266,7 +266,7 @@ export function JokeSurface() {
     : ''
 
   const hint = text.trim().length === 0
-    ? (signedIn ? 'names get scrubbed before anything saves' : 'no account · names get scrubbed')
+    ? ''
     : text.trim().length < 30
       ? 'keep going — the specifics are what make it funny.'
       : 'that will do it.'
@@ -276,34 +276,93 @@ export function JokeSurface() {
       {/* ══ 1 · hero + the open box ══ */}
       <section id="joke" style={{ position: 'relative', overflow: 'hidden', background: '#fff', padding: 'clamp(92px,12vh,132px) clamp(16px,4vw,28px) clamp(24px,4vh,44px)' }}>
         <div style={{ position: 'absolute', inset: '-40% -20% auto', height: '80vh', background: 'radial-gradient(ellipse at 50% 35%,rgba(127,119,221,.13),transparent 64%)', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 820, margin: '0 auto', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(13px,2.2vh,20px)' }}>
-          <div className="eyebrow" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ maxWidth: 880, margin: '0 auto', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(13px,2.2vh,20px)' }}>
+          <div className="eyebrow" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '.24em' }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#c1216b' }} />
-            pseudonymous · roasts the situation, not you
+            pseudonymous · no advice · different perspectives
           </div>
-          <h1 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(38px,8.4vw,86px)', lineHeight: 1.04, letterSpacing: '-.05em', textAlign: 'center' }}>
-            shut<span style={{ color: '#e7548a' }}>ap</span>.<br />
-            <span style={{ fontFamily: NEWS, fontStyle: 'italic', letterSpacing: '-.02em', color: '#8e1c4c' }}>joke about it.</span>
+          <h1 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(38px,8.4vw,86px)', lineHeight: 1.02, letterSpacing: '-.05em', textAlign: 'center', margin: 0 }}>
+            <span style={{ position: 'relative', display: 'inline-block' }}>
+              shut<span style={{ color: '#e7548a' }}>ap</span>.
+              <span
+                aria-hidden
+                style={{
+                  position: 'absolute', top: '-.16em', right: '.06em',
+                  width: '.3em', height: '.3em', borderRadius: '50%',
+                  border: '1px solid rgba(231,84,138,.55)',
+                  display: 'grid', placeItems: 'center',
+                }}
+              >
+                <span style={{ width: '.055em', height: '.055em', borderRadius: '50%', background: '#c1216b' }} />
+              </span>
+            </span>
+            <br />
+            <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, letterSpacing: '-.02em', color: '#8e1c4c' }}>joke about it.</span>
           </h1>
-          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(18px,2.2vw,24px)', color: '#443c42', textAlign: 'center', maxWidth: '30ch' }}>
-            life's a bitch. so make fun of it.
+          <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(17px,2vw,22px)', lineHeight: 1.45, color: '#443c42', textAlign: 'center', maxWidth: '34ch', margin: 0 }}>
+            life's a bitch. so make fun of it — you've still got the better sense of humour.
           </p>
 
-          <div style={{ width: '100%', background: '#fff', border: '1.5px solid rgba(231,84,138,.35)', borderRadius: 22, padding: 'clamp(14px,2.4vw,20px)', boxShadow: '0 28px 60px -34px rgba(35,26,32,.3)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ width: '100%', position: 'relative', background: '#fff', border: '1px solid rgba(231,84,138,.28)', borderRadius: 26, padding: 'clamp(16px,2.4vw,22px)', boxShadow: '0 28px 60px -38px rgba(35,26,32,.28)', display: 'flex', flexDirection: 'column', gap: 10 }}>
             <textarea
-              rows={3}
+              rows={4}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="what did she actually do this time…"
-              style={{ width: '100%', resize: 'vertical', minHeight: 92, border: 'none', outline: 'none', background: 'transparent', fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.5, color: '#2b2429' }}
+              placeholder="yeah — tell me about it."
+              style={{ width: '100%', resize: 'vertical', minHeight: 116, border: 'none', outline: 'none', background: 'transparent', fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#2b2429' }}
             />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: SORA, fontSize: 12.5, color: '#8a7a84' }}>{hint}</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
               <button onClick={() => void onSubmit()} disabled={busy} className="pill pill-wine" style={{ height: 42, opacity: busy ? 0.7 : 1 }}>
-                {busy ? 'reading it…' : 'turn it into a set →'}
+                {busy ? 'reading it…' : 'turn it into a joke →'}
               </button>
             </div>
           </div>
+
+          {/* footnote row + hover-expand explainer */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontSize: 12.5, color: '#8a7a84' }}>
+              <span>{signedIn ? 'names scrubbed before anything saves' : 'no account · names scrubbed'}</span>
+              <span aria-hidden>·</span>
+              <span
+                onMouseEnter={() => setHowOpen(true)}
+                onMouseLeave={() => setHowOpen(false)}
+                style={{ display: 'inline-flex' }}
+              >
+                <button
+                  type="button"
+                  aria-expanded={howOpen}
+                  onClick={() => setHowOpen((v) => !v)}
+                  onFocus={() => setHowOpen(true)}
+                  onBlur={() => setHowOpen(false)}
+                  style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: SORA, fontSize: 12.5, color: '#6b4a5c', textDecoration: 'underline', textUnderlineOffset: 3 }}
+                >
+                  how it works
+                </button>
+              </span>
+            </div>
+            <div
+              onMouseEnter={() => setHowOpen(true)}
+              onMouseLeave={() => setHowOpen(false)}
+              style={{
+                maxWidth: 460,
+                overflow: 'hidden',
+                maxHeight: howOpen ? 220 : 0,
+                opacity: howOpen ? 1 : 0,
+                transform: howOpen ? 'none' : 'translateY(-4px)',
+                transition: 'max-height .38s cubic-bezier(.2,.8,.2,1), opacity .28s, transform .28s',
+              }}
+            >
+              <ol style={{ margin: 0, padding: '12px 18px', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7, background: 'rgba(127,119,221,.06)', border: '1px solid rgba(11,8,15,.07)', borderRadius: 18, fontFamily: NEWS, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.5, color: '#443c42', textAlign: 'left' }}>
+                <li><span style={{ color: '#8e1c4c' }}>i.</span> type what happened — names get scrubbed before anything saves.</li>
+                <li><span style={{ color: '#8e1c4c' }}>ii.</span> we read the situation and deal you three angles, face down.</li>
+                <li><span style={{ color: '#8e1c4c' }}>iii.</span> flip one. it roasts the situation, not you.</li>
+              </ol>
+            </div>
+          </div>
+
+          {hint ? (
+            <div style={{ fontFamily: SORA, fontSize: 12.5, color: '#8a7a84' }}>{hint}</div>
+          ) : null}
 
           {archetype && archetype !== 'general' && text.trim().length > 0 ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontFamily: SORA, fontSize: 13, color: '#6b4a5c' }}>
@@ -313,6 +372,7 @@ export function JokeSurface() {
               </button>
             </div>
           ) : null}
+
         </div>
       </section>
 
