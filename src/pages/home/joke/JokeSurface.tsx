@@ -1,69 +1,105 @@
-/* The joke-card surface: hero → open box → the set → set list → paywall.
- * Renders on `/` and on `/mirror`. Every rule (tier, flip allowance, card
- * text) is resolved server-side; this component only draws it. */
+/* The joke-card surface.
+ *
+ * The flow, in the order a person meets it:
+ *   spill → the companion OFFERS three cards → three cards → read them
+ *   → save / share → (guest) the alias gate → (free) the clean-cards upsell
+ *   → (member) clean exports and the offer to post it in a room.
+ *
+ * Three rules hold the shape, and every branch below obeys them:
+ *   · reading is free at every tier, guests included. Nothing gates a card.
+ *   · the companion offers the cards at a positive peak. There is no
+ *     standalone share button anywhere on this surface.
+ *   · crisis outranks all of it: no cards, no gate, no paywall.
+ *
+ * The tier, the card text and the export size are all resolved on the server.
+ * This component only draws what it is handed. */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { supabase } from '@/integrations/supabase/client'
 import {
   submitJokeEntry,
-  flipJokeCard,
+  dealJokeCards,
+  rerollJokeCard,
   claimJokeSession,
   listMyJokeCards,
   postJokeCardToRoom,
+  exportJokeCards,
 } from '@/lib/jokes.functions'
-import { ANGLE_LABEL, ARCHETYPE_LABEL, ROMAN, fitSize, type JokeCard, type JokeTier } from '@/lib/jokes/deck'
-import { anonSessionId, clearAnonSessionId, jokeTrack, downloadCardPng, cardImageUrl } from './jokeClient'
+import { ARCHETYPE_LABEL, angleAccent, exportSpec, type JokeCard, type JokeTier } from '@/lib/jokes/deck'
+import { PLAN_TO_PRICE, usd } from '@/lib/pricing'
+import {
+  anonSessionId,
+  clearAnonSessionId,
+  jokeTrack,
+  svgToPng,
+  saveBlob,
+  zipStored,
+} from './jokeClient'
+import { CardFace } from './CardFace'
 import { SignInSheet } from './SignInSheet'
+import { AliasCeremony, type CeremonyAlias } from './AliasCeremony'
+import { CardShareSheet } from './CardShareSheet'
+import { UpgradeSheet } from './UpgradeSheet'
+import { Button, CompanionLine, Eyebrow, SORA, NEWS, INK, MUTED, FAINT, ACCENT } from './ui'
 
-const SORA = "'Sora',system-ui,sans-serif"
-const NEWS = "'Newsreader',Georgia,serif"
-const VIOLET = '#7F77DD'
+/** What the reader asked for when the alias gate went up, resumed afterwards. */
+type Pending = { type: 'save' } | { type: 'share' } | { type: 'saveSet' } | { type: 'post' } | { type: 'checkout' }
 
-type Pending =
-  | { type: 'flip'; position: number }
-  | { type: 'share' }
-  | { type: 'download' }
-  | { type: 'post' }
-  | { type: 'keep' }
-  | { type: 'checkout' }
+type SetState = { id: string; situation: string; archetype: string }
 
-type SetState = {
-  id: string
-  archetype: string
-  angles: string[]
-  cards: (JokeCard | null)[]
-  loading: boolean[]
-}
+const PRICE = usd(PLAN_TO_PRICE.monthly.amount)
 
 export function JokeSurface() {
   const navigate = useNavigate()
   const submit = useServerFn(submitJokeEntry)
-  const flip = useServerFn(flipJokeCard)
+  const deal = useServerFn(dealJokeCards)
+  const reroll = useServerFn(rerollJokeCard)
   const claim = useServerFn(claimJokeSession)
   const listCards = useServerFn(listMyJokeCards)
   const postCard = useServerFn(postJokeCardToRoom)
+  const exportCards = useServerFn(exportJokeCards)
 
+  // ── composer ──
   const [text, setText] = useState('')
-  const [tier, setTier] = useState<JokeTier>('guest')
-  const [archetype, setArchetype] = useState<string>('')
-  const [crisis, setCrisis] = useState(false)
-  const [set, setSet] = useState<SetState | null>(null)
-  const [guestCard, setGuestCard] = useState<JokeCard | null>(null)
-  const [openCard, setOpenCard] = useState<JokeCard | null>(null)
-  const [postedAlias, setPostedAlias] = useState<string | null>(null)
-  const [list, setList] = useState<JokeCard[]>([])
-  const [flipsUsed, setFlipsUsed] = useState(0)
-  const [setsFlipped, setSetsFlipped] = useState(0)
-  const [refusal, setRefusal] = useState<string | null>(null)
-  const [toast, setToast] = useState<string | null>(null)
-  const [sheet, setSheet] = useState<{ open: boolean; trigger: string }>({ open: false, trigger: 'keep' })
   const [busy, setBusy] = useState(false)
   const [howOpen, setHowOpen] = useState(false)
+
+  // ── identity ──
+  const [tier, setTier] = useState<JokeTier>('guest')
+  const [alias, setAlias] = useState<CeremonyAlias | null>(null)
+  const [ceremonyOpen, setCeremonyOpen] = useState(false)
+
+  // ── the set ──
+  const [crisis, setCrisis] = useState(false)
+  const [set, setSet] = useState<SetState | null>(null)
+  const [cards, setCards] = useState<JokeCard[]>([])
+  const [offered, setOffered] = useState(false)
+  const [dealing, setDealing] = useState(false)
+  const [index, setIndex] = useState(0)
+  const [rerolling, setRerolling] = useState<number | null>(null)
+  const [refusal, setRefusal] = useState<string | null>(null)
+
+  // ── the after-save moment ──
+  const [shareOpen, setShareOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState<string | null>(null)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const [postedAlias, setPostedAlias] = useState<string | null>(null)
+
+  // ── the rest ──
+  const [list, setList] = useState<JokeCard[]>([])
+  const [gate, setGate] = useState<{ open: boolean; trigger: string }>({ open: false, trigger: 'save' })
+  const [toast, setToast] = useState<string | null>(null)
+  const [resumeAt, setResumeAt] = useState(0)
   const pending = useRef<Pending | null>(null)
-  const setRef = useRef<HTMLDivElement | null>(null)
+  const deckRef = useRef<HTMLDivElement | null>(null)
+  const touchX = useRef<number | null>(null)
 
   const signedIn = tier !== 'guest'
+  const spec = exportSpec(tier)
+  const card = cards[index] ?? null
+
   const ctx = useCallback(
     // No timezone is sent: the server derives the day from stored state only.
     () => ({ anon_session_id: anonSessionId() }),
@@ -72,7 +108,7 @@ export function JokeSurface() {
 
   const say = useCallback((m: string) => {
     setToast(m)
-    window.setTimeout(() => setToast(null), 2800)
+    window.setTimeout(() => setToast(null), 3200)
   }, [])
 
   const refresh = useCallback(async () => {
@@ -80,23 +116,47 @@ export function JokeSurface() {
       const res = await listCards({ data: {} })
       setTier(res.tier)
       setList(res.cards)
+      if (res.alias) setAlias(res.alias)
     } catch { /* stay guest */ }
   }, [listCards])
 
   useEffect(() => { void refresh() }, [refresh])
 
-  // Sign-in lands back on this page. Claim the guest session, then resume.
+  // ─────────────────────── the alias gate, resumed ───────────────────────
+
+  // Resuming runs from an EFFECT rather than from inside the claim callback:
+  // the claim writes the freshly persisted cards into state, and the action it
+  // resumes needs their new ids. Bumping this counter defers the action to the
+  // commit that carries them.
+  useEffect(() => {
+    if (!resumeAt) return
+    const p = pending.current
+    pending.current = null
+    if (!p) return
+    if (p.type === 'save') void doSave()
+    else if (p.type === 'saveSet') void doSaveSet()
+    else if (p.type === 'share') setShareOpen(true)
+    else if (p.type === 'post') void doPost()
+    else if (p.type === 'checkout') void navigate({ to: '/subscribe' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resumeAt])
+
+  /** Sign-in lands back on this page. Claim the guest session, then resume. */
   const claimAndResume = useCallback(async () => {
-    const held = guestCard && set
-      ? {
-          set_id: set.id,
-          position: held_position(set, guestCard),
-          angle: guestCard.angle,
-          text: guestCard.text,
-          used_fallback: guestCard.used_fallback,
-          judge_score: guestCard.judge_score,
-        }
-      : null
+    // Whatever they were reading as a guest rides along, so the gate costs
+    // them none of it.
+    const held = set
+      ? cards
+          .filter((c) => !c.id)
+          .map((c) => ({
+            set_id: set.id,
+            position: c.position,
+            angle: c.angle,
+            text: c.text,
+            used_fallback: c.used_fallback,
+            judge_score: c.judge_score,
+          }))
+      : []
     try {
       // The app also has a background anonymous auth session. Wait for an
       // actual email-authenticated user, not merely any access token.
@@ -107,37 +167,28 @@ export function JokeSurface() {
         if (!realSession) await new Promise((r) => setTimeout(r, 250))
       }
       if (!realSession) return
-      const p0 = pending.current
-      const res = await claim({
-
-        data: {
-          ...ctx(),
-          hold: held,
-          resume_flip: p0?.type === 'flip' && set ? { set_id: set.id, position: p0.position } : null,
-        },
-      })
+      const res = await claim({ data: { ...ctx(), hold: held } })
+      // The anonymous bootstrap session can still reach here; the server
+      // refuses it in kind rather than throwing, and there is nothing to claim.
       if (!res.ok) return
       setTier(res.tier)
       clearAnonSessionId()
-      if (res.claimed) {
-        jokeTrack('guest_card_claimed', res.tier)
-        setGuestCard(null)
-        setOpenCard(res.claimed)
-        setSet((s) => (s ? { ...s, cards: s.cards.map((c, i) => (i === res.claimed!.position ? res.claimed : c)) } : s))
+      if (res.alias) setAlias(res.alias)
+      if (res.claimed.length) {
+        jokeTrack('guest_cards_claimed', res.tier, { n: res.claimed.length })
+        setCards((prev) =>
+          prev.map((c) => res.claimed.find((k) => k.position === c.position) ?? c),
+        )
       }
-      jokeTrack('signin_completed', res.tier)
+      jokeTrack('signin_completed', res.tier, { alias_is_new: res.alias_is_new })
       await refresh()
-      say(res.alias ? `you're in. ${res.alias.emoji} ${res.alias.display_name}` : "you're in.")
-      const p = pending.current
-      pending.current = null
-      if (p?.type === 'flip') void doFlip(p.position, true)
-      else if (p?.type === 'share') void doShare()
-      else if (p?.type === 'download') void doDownload()
-      else if (p?.type === 'post') void doPost()
-      else if (p?.type === 'checkout') void navigate({ to: '/subscribe' })
+
+      // A brand-new alias gets its ceremony; a returning one goes straight
+      // back to whatever they were doing.
+      if (res.alias_is_new) setCeremonyOpen(true)
+      else setResumeAt((n) => n + 1)
     } catch { /* leave them signed in without a claim */ }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [claim, ctx, guestCard, set, refresh, say, navigate])
+  }, [claim, ctx, cards, set, refresh])
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
@@ -150,13 +201,21 @@ export function JokeSurface() {
     return () => sub.subscription.unsubscribe()
   }, [claimAndResume])
 
-  function raiseSheet(trigger: string, p: Pending) {
+  function raiseGate(trigger: string, p: Pending) {
     pending.current = p
-    setSheet({ open: true, trigger })
-    jokeTrack('signin_sheet_shown', tier, { trigger })
+    setGate({ open: true, trigger })
+    jokeTrack('alias_gate_shown', tier, { trigger })
   }
 
-  // ── entry ──
+  function closeCeremony() {
+    setCeremonyOpen(false)
+    jokeTrack('alias_ceremony_done', tier)
+    say(alias ? `you're in. ${alias.emoji} ${alias.display_name}` : "you're in.")
+    setResumeAt((n) => n + 1)
+  }
+
+  // ─────────────────────────── the spill ───────────────────────────
+
   async function onSubmit() {
     const raw = text.trim()
     if (raw.length < 12) { say('give me a few more words and i will find the funny in it.'); return }
@@ -166,18 +225,22 @@ export function JokeSurface() {
       const res = await submit({ data: { raw, ...ctx() } })
       jokeTrack('entry_submitted', tier, { chars: raw.length })
       if (res.crisis) {
-        setSet(null); setGuestCard(null); setArchetype(''); setCrisis(true)
+        // No cards, no gate, no paywall. Pain is never the thing being sold.
+        setSet(null); setCards([]); setOffered(false); setCrisis(true)
         jokeTrack('crisis_route_shown', tier)
         return
       }
       setCrisis(false)
-      setArchetype(res.archetype)
       setTier(res.tier)
-      setSet({ id: res.set_id, archetype: res.archetype, angles: res.angles, cards: [null, null, null], loading: [false, false, false] })
-      setGuestCard(null)
-      jokeTrack('set_created', res.tier, { archetype: res.archetype, angles: res.angles.join(',') })
+      setSet({ id: res.set_id, situation: res.clean_text, archetype: res.archetype })
+      setCards([])
+      setIndex(0)
+      setSaved(null)
+      setPostedAlias(null)
+      setOffered(true)
+      jokeTrack('cards_offered', res.tier, { archetype: res.archetype })
       requestAnimationFrame(() => {
-        const el = setRef.current
+        const el = deckRef.current
         if (el) window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - 72), behavior: 'smooth' })
       })
     } catch {
@@ -187,99 +250,145 @@ export function JokeSurface() {
     }
   }
 
-  // ── flip ──
-  const doFlip = useCallback(async (position: number, _granted = false) => {
-    const cur = set
-    if (!cur || cur.cards[position] || cur.loading[position]) return
+  // ─────────────────────── the three cards ───────────────────────
+
+  async function acceptOffer() {
+    if (!set || dealing) return
+    setDealing(true)
     setRefusal(null)
-    setSet({ ...cur, loading: cur.loading.map((l, i) => (i === position ? true : l)) })
     try {
-      const res = await flip({ data: { set_id: cur.id, position, ...ctx() } })
+      const res = await deal({ data: { set_id: set.id, ...ctx() } })
       if (!res.ok) {
-        setSet({ ...cur, loading: [false, false, false] })
-        jokeTrack('flip_refused', res.tier, { reason: res.reason, scope: res.scope, position })
-        if (res.reason === 'rate_limited') {
-          setRefusal('too many flips from this connection today. give it a bit.')
-          return
-        }
-        if (res.tier === 'guest') { raiseSheet('second_flip', { type: 'flip', position }); return }
-        setRefusal(
-          res.scope === 'set'
-            ? 'all three are open. that set is done.'
-            : res.tier === 'paying'
-              ? "three sets today. that's the lot — tomorrow the deck resets."
-              : "that's your flip for today. the mirror reads all three, any day you like.",
-        )
+        setDealing(false)
+        jokeTrack('deal_refused', res.tier, { reason: res.reason })
+        setRefusal(refusalCopy(res.reason))
         return
       }
       setTier(res.tier)
-      setFlipsUsed(res.flips_used)
-      setSetsFlipped(res.sets_flipped)
-      setSet((s) => (s ? { ...s, cards: s.cards.map((c, i) => (i === position ? res.card : c)), loading: [false, false, false] } : s))
-      jokeTrack('card_flipped', res.tier, {
-        angle: res.card.angle, position, used_fallback: res.card.used_fallback, judge_score: res.card.judge_score,
+      setCards(res.cards)
+      setIndex(0)
+      setOffered(false)
+      jokeTrack('cards_dealt', res.tier, {
+        fallbacks: res.cards.filter((c) => c.used_fallback).length,
       })
-      if (res.tier === 'guest') setGuestCard(res.card)
-      else void refresh()
-      setPostedAlias(null)
-      setOpenCard(res.card)
+      if (res.tier !== 'guest') void refresh()
     } catch {
-      setSet((s) => (s ? { ...s, loading: [false, false, false] } : s))
-      say('the deck jammed. try that flip again?')
+      say('the deck jammed. say the word and i will try again.')
+    } finally {
+      setDealing(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [set, flip, ctx, refresh, say])
-
-  // ── card actions ──
-  async function doShare() {
-    const card = openCard
-    if (!card) return
-    if (!card.id) { raiseSheet('share', { type: 'share' }); jokeTrack('share_blocked_signin', tier); return }
-    const url = window.location.origin + cardImageUrl(card.id)
-    try {
-      if (navigator.share) await navigator.share({ text: card.text, url })
-      else { await navigator.clipboard.writeText(`${card.text}\n${url}`); say('copied. paste it wherever.') }
-      jokeTrack('share_completed', tier, { angle: card.angle })
-    } catch { /* dismissed */ }
   }
 
-  async function doDownload() {
-    const card = openCard
-    if (!card) return
-    if (!card.id) { raiseSheet('download', { type: 'download' }); jokeTrack('download_blocked_signin', tier); return }
+  async function anotherOne() {
+    if (!set || rerolling !== null || !card) return
+    const position = card.position
+    setRerolling(position)
+    setRefusal(null)
     try {
-      await downloadCardPng(card.id)
-      jokeTrack('download_completed', tier, { angle: card.angle })
-    } catch { say('the image did not render. try once more?') }
+      const res = await reroll({ data: { set_id: set.id, position, ...ctx() } })
+      if (!res.ok) {
+        jokeTrack('reroll_refused', res.tier, { reason: res.reason })
+        setRefusal(refusalCopy(res.reason))
+        return
+      }
+      setTier(res.tier)
+      setCards((prev) => prev.map((c) => (c.position === position ? res.card : c)))
+      setSaved(null)
+      jokeTrack('card_rerolled', res.tier, { position })
+      if (res.tier !== 'guest') void refresh()
+    } catch {
+      say('that one would not land. try again?')
+    } finally {
+      setRerolling(null)
+    }
+  }
+
+  // ─────────────────────── save · share · post ───────────────────────
+
+  async function doSave() {
+    const target = cards[index]
+    if (!target) return
+    if (!signedIn || !target.id) { raiseGate('save', { type: 'save' }); return }
+    setSaving(true)
+    try {
+      const res = await exportCards({ data: { card_id: target.id, ...ctx() } })
+      const image = res.images[0]
+      if (!image) throw new Error('no image')
+      const png = await svgToPng(image.svg, res.width, res.height)
+      saveBlob(png, image.filename)
+      setSaved(`${res.width}×${res.height}`)
+      jokeTrack('save_completed', res.tier, { angle: target.angle, mark: res.mark })
+    } catch {
+      say('the image did not render. try once more?')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  /** Members save the whole set in one tap — three PNGs in one zip. */
+  async function doSaveSet() {
+    if (!set) return
+    if (!signedIn) { raiseGate('save', { type: 'saveSet' }); return }
+    setSaving(true)
+    try {
+      const res = await exportCards({ data: { set_id: set.id, ...ctx() } })
+      if (res.images.length < 2) { await doSave(); return }
+      const files = await Promise.all(
+        res.images.map(async (image) => ({
+          name: image.filename,
+          blob: await svgToPng(image.svg, res.width, res.height),
+        })),
+      )
+      saveBlob(await zipStored(files), `shutap-cards-${set.id.slice(0, 8)}.zip`)
+      setSaved(`${res.width}×${res.height} · all three`)
+      jokeTrack('save_set_completed', res.tier, { n: files.length })
+    } catch {
+      say('the set did not render. try once more?')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  function openShare() {
+    const target = cards[index]
+    if (!target) return
+    if (!signedIn || !target.id) { raiseGate('share', { type: 'share' }); return }
+    jokeTrack('share_sheet_shown', tier, { angle: target.angle })
+    setShareOpen(true)
   }
 
   async function doPost() {
-    const card = openCard
-    if (!card) return
-    if (!card.id) { raiseSheet('post', { type: 'post' }); jokeTrack('post_blocked_signin', tier); return }
+    const target = cards[index]
+    if (!target) return
+    if (!signedIn || !target.id) { raiseGate('post', { type: 'post' }); return }
     try {
-      const res = await postCard({ data: { card_id: card.id, ...ctx() } })
-      setPostedAlias(res.alias ?? 'you')
-      jokeTrack('card_posted_to_room', tier, { angle: card.angle })
+      const res = await postCard({ data: { card_id: target.id, ...ctx() } })
+      setPostedAlias(res.alias ?? alias?.display_name ?? 'you')
+      jokeTrack('card_posted_to_room', tier, { angle: target.angle })
       void refresh()
     } catch { say('could not open the room. try again?') }
   }
 
   function startCheckout() {
-    if (!signedIn) { raiseSheet('checkout', { type: 'checkout' }); return }
+    if (!signedIn) { raiseGate('checkout', { type: 'checkout' }); return }
     jokeTrack('checkout_started', tier, { lookup_key: 'mirror_monthly' })
+    setUpgradeOpen(false)
     void navigate({ to: '/subscribe' })
   }
 
+  // ─────────────────────────── derived copy ───────────────────────────
+
   const days = useMemo(() => new Set(list.map((c) => c.day).filter(Boolean)).size, [list])
 
-  const flipsLabel = set
-    ? tier === 'paying'
-      ? `${3 - set.cards.filter(Boolean).length} of 3 left in this set · ${Math.max(0, 3 - setsFlipped)} sets left today`
-      : flipsUsed >= 1
-        ? 'flipped for today · back tomorrow'
-        : 'one flip today — make it count'
-    : ''
+  const offerLine = useMemo(() => {
+    if (tier === 'paying') {
+      return "this is a laminated-chart situation and i've been waiting all week. three clean cards, coming up — say go."
+    }
+    if (tier === 'free') {
+      return "that one deserves cards. usual three — a take, a clapback, and one light roast of the thing itself?"
+    }
+    return "okay, that's the bit that's getting me. want the group-chat version? i'll make you 3 cards — a take, a clapback, and one light roast of the situation itself."
+  }, [tier])
 
   const hint = text.trim().length === 0
     ? ''
@@ -289,14 +398,14 @@ export function JokeSurface() {
 
   return (
     <>
-      {/* ══ 1 · hero + the open box ══ */}
+      {/* ══ 1 · hero + the composer ══ */}
       <section id="joke" style={{ position: 'relative', overflow: 'hidden', background: '#fff', padding: 'clamp(92px,12vh,132px) clamp(16px,4vw,28px) clamp(24px,4vh,44px)' }}>
         <div style={{ position: 'absolute', inset: '-40% -20% auto', height: '80vh', background: 'radial-gradient(ellipse at 50% 35%,rgba(127,119,221,.13),transparent 64%)', pointerEvents: 'none' }} />
         <div style={{ maxWidth: 880, margin: '0 auto', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(13px,2.2vh,20px)' }}>
-          <div className="eyebrow" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '.24em' }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#c1216b' }} />
+          <Eyebrow style={{ display: 'inline-flex', alignItems: 'center', gap: 8, letterSpacing: '.24em' }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: ACCENT }} />
             pseudonymous · no advice · different perspectives
-          </div>
+          </Eyebrow>
           <h1 style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(38px,8.4vw,86px)', lineHeight: 1.02, letterSpacing: '-.05em', textAlign: 'center', margin: 0 }}>
             <span style={{ position: 'relative', display: 'inline-block' }}>
               shut<span style={{ color: '#e7548a' }}>ap</span>.
@@ -309,17 +418,17 @@ export function JokeSurface() {
                   display: 'grid', placeItems: 'center',
                 }}
               >
-                <span style={{ width: '.055em', height: '.055em', borderRadius: '50%', background: '#c1216b' }} />
+                <span style={{ width: '.055em', height: '.055em', borderRadius: '50%', background: ACCENT }} />
               </span>
             </span>
             <br />
             <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, letterSpacing: '-.02em', color: '#8e1c4c' }}>joke about it.</span>
           </h1>
           <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(17px,2vw,22px)', lineHeight: 1.45, color: '#443c42', textAlign: 'center', maxWidth: '34ch', margin: 0 }}>
-            life's a bitch. so make fun of it — you've still got the better sense of humour.
+            life&apos;s a bitch. so make fun of it — you&apos;ve still got the better sense of humour.
           </p>
 
-          <div style={{ width: '100%', position: 'relative', background: '#fff', border: '1px solid rgba(231,84,138,.28)', borderRadius: 26, padding: 'clamp(16px,2.4vw,22px)', boxShadow: '0 28px 60px -38px rgba(35,26,32,.28)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ width: '100%', position: 'relative', background: '#fff', border: '2px solid rgba(231,84,138,.55)', borderRadius: 26, padding: 'clamp(16px,2.4vw,22px)', boxShadow: '0 28px 60px -38px rgba(35,26,32,.28)', display: 'flex', flexDirection: 'column', gap: 10 }}>
             <textarea
               rows={4}
               value={text}
@@ -328,9 +437,9 @@ export function JokeSurface() {
               style={{ width: '100%', resize: 'vertical', minHeight: 116, border: 'none', outline: 'none', background: 'transparent', fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#2b2429' }}
             />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
-              <button onClick={() => void onSubmit()} disabled={busy} className="pill pill-wine" style={{ height: 44, padding: '0 22px', border: 'none', borderRadius: 999, cursor: busy ? 'default' : 'pointer', fontFamily: SORA, fontWeight: 700, fontSize: 14.5, color: '#fff', background: 'linear-gradient(155deg,#a52a5f,#890041)', boxShadow: '0 14px 30px -18px rgba(137,0,65,.7)', opacity: busy ? 0.7 : 1 }}>
+              <Button onClick={() => void onSubmit()} disabled={busy}>
                 {busy ? 'reading it…' : 'turn it into a joke →'}
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -339,18 +448,14 @@ export function JokeSurface() {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: SORA, fontSize: 12.5, color: '#8a7a84' }}>
               <span>{signedIn ? 'names scrubbed before anything saves' : 'no account · names scrubbed'}</span>
               <span aria-hidden>·</span>
-              <span
-                onMouseEnter={() => setHowOpen(true)}
-                onMouseLeave={() => setHowOpen(false)}
-                style={{ display: 'inline-flex' }}
-              >
+              <span onMouseEnter={() => setHowOpen(true)} onMouseLeave={() => setHowOpen(false)} style={{ display: 'inline-flex' }}>
                 <button
                   type="button"
                   aria-expanded={howOpen}
                   onClick={() => setHowOpen((v) => !v)}
                   onFocus={() => setHowOpen(true)}
                   onBlur={() => setHowOpen(false)}
-                  style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: SORA, fontSize: 12.5, color: '#6b4a5c', textDecoration: 'underline', textUnderlineOffset: 3 }}
+                  style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: SORA, fontSize: 12.5, color: MUTED, textDecoration: 'underline', textUnderlineOffset: 3 }}
                 >
                   how it works
                 </button>
@@ -360,9 +465,8 @@ export function JokeSurface() {
               onMouseEnter={() => setHowOpen(true)}
               onMouseLeave={() => setHowOpen(false)}
               style={{
-                maxWidth: 460,
-                overflow: 'hidden',
-                maxHeight: howOpen ? 220 : 0,
+                maxWidth: 460, overflow: 'hidden',
+                maxHeight: howOpen ? 240 : 0,
                 opacity: howOpen ? 1 : 0,
                 transform: howOpen ? 'none' : 'translateY(-4px)',
                 transition: 'max-height .38s cubic-bezier(.2,.8,.2,1), opacity .28s, transform .28s',
@@ -370,110 +474,212 @@ export function JokeSurface() {
             >
               <ol style={{ margin: 0, padding: '12px 18px', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7, background: 'rgba(127,119,221,.06)', border: '1px solid rgba(11,8,15,.07)', borderRadius: 18, fontFamily: NEWS, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.5, color: '#443c42', textAlign: 'left' }}>
                 <li><span style={{ color: '#8e1c4c' }}>i.</span> type what happened — names get scrubbed before anything saves.</li>
-                <li><span style={{ color: '#8e1c4c' }}>ii.</span> we read the situation and deal you three angles, face down.</li>
-                <li><span style={{ color: '#8e1c4c' }}>iii.</span> flip one. it roasts the situation, not you.</li>
+                <li><span style={{ color: '#8e1c4c' }}>ii.</span> if it lands well, i offer you three cards: a take, a clapback, a roast.</li>
+                <li><span style={{ color: '#8e1c4c' }}>iii.</span> read all three free. an alias is only needed to save or share one.</li>
               </ol>
             </div>
           </div>
 
-          {hint ? (
-            <div style={{ fontFamily: SORA, fontSize: 12.5, color: '#8a7a84' }}>{hint}</div>
-          ) : null}
+          {hint ? <div style={{ fontFamily: SORA, fontSize: 12.5, color: '#8a7a84' }}>{hint}</div> : null}
 
-          {archetype && archetype !== 'general' && text.trim().length > 0 ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontFamily: SORA, fontSize: 13, color: '#6b4a5c' }}>
-              <span>✦ reading this as <strong style={{ color: '#8e1c4c', fontWeight: 600 }}>{ARCHETYPE_LABEL[archetype] ?? archetype}</strong></span>
-              <button onClick={() => setArchetype('general')} style={{ cursor: 'pointer', background: 'none', border: 'none', textDecoration: 'underline', fontFamily: SORA, fontSize: 13, color: '#8a7a84', padding: 0 }}>
-                not right?
-              </button>
+          {set && set.archetype !== 'general' ? (
+            <div style={{ fontFamily: SORA, fontSize: 13, color: MUTED }}>
+              ✦ reading this as <strong style={{ color: '#8e1c4c', fontWeight: 600 }}>{ARCHETYPE_LABEL[set.archetype] ?? set.archetype}</strong>
             </div>
           ) : null}
-
         </div>
       </section>
 
-      {/* ══ 2 · crisis — support register only ══ */}
+      {/* ══ 2 · crisis — support register only, and nothing else ══ */}
       {crisis ? (
         <section style={{ background: '#fff', padding: '0 clamp(16px,4vw,28px) clamp(40px,7vh,80px)' }}>
           <div style={{ maxWidth: 640, margin: '0 auto', background: '#fff', border: '1px solid rgba(137,0,65,.35)', borderRadius: 22, padding: '26px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 19, color: '#890041' }}>no jokes for this one.</div>
             <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.6, color: '#383136' }}>
-              what you just wrote is heavier than a card can hold, and i'm not going to make a punchline out of it. talking to a person helps more than i can right now.
+              what you just wrote is heavier than a card can hold, and i&apos;m not going to make a punchline out of it. talking to a person helps more than i can right now.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              <a className="pill pill-dark" href="#support">support lines →</a>
-              <a className="pill pill-ghost" href="#spill">say the long version instead</a>
+              <a href="#support" style={{ textDecoration: 'none' }}><Button variant="secondary" size="sm">support lines →</Button></a>
+              <a href="#spill" style={{ textDecoration: 'none' }}><Button variant="ghost" size="sm">say the long version instead</Button></a>
             </div>
           </div>
         </section>
       ) : null}
 
-      {/* ══ 3 · the set ══ */}
-      {set ? (
-        <section ref={setRef} style={{ background: 'linear-gradient(180deg,#fff,rgba(16,12,20,.04))', padding: 'clamp(16px,3vh,36px) clamp(16px,4vw,28px) clamp(36px,6vh,72px)' }}>
-          <div style={{ maxWidth: 1080, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'clamp(14px,2.6vh,24px)' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-              <div>
-                <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(22px,3.2vw,32px)', letterSpacing: '-.03em' }}>your set</div>
-                <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, color: '#6b4a5c' }}>three angles, drawn from seven. flip one and see what it does with it.</div>
-              </div>
-              <div className="eyebrow" style={{ letterSpacing: '.12em' }}>{flipsLabel}</div>
-            </div>
+      {/* ══ 3 · the offer, then the three cards ══ */}
+      {set && !crisis ? (
+        <section ref={deckRef} style={{ background: 'linear-gradient(180deg,#fff,rgba(16,12,20,.04))', padding: 'clamp(16px,3vh,36px) clamp(16px,4vw,28px) clamp(36px,6vh,72px)' }}>
+          <div style={{ maxWidth: 560, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 'clamp(10px,1.8vw,18px)', maxWidth: 760, width: '100%', margin: '0 auto' }}>
-              {set.angles.map((angle, i) => {
-                const card = set.cards[i]
-                const loading = set.loading[i]
-                const revealed = !!card || loading
-                return (
-                  <div
-                    key={angle + i}
-                    onClick={() => { if (card) { setPostedAlias(null); setOpenCard(card) } else void doFlip(i) }}
-                    style={{ position: 'relative', aspectRatio: '.68', perspective: 1200, cursor: 'pointer' }}
-                  >
-                    <div style={{ position: 'absolute', inset: 0, transformStyle: 'preserve-3d', transition: 'transform .72s cubic-bezier(.2,.8,.2,1)', transform: `rotateY(${revealed ? 180 : 0}deg)` }}>
-                      {/* face down */}
-                      <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', borderRadius: 22, overflow: 'hidden', background: 'radial-gradient(120% 90% at 50% 20%,rgba(127,119,221,.10),#fff 62%)', border: '1px solid rgba(11,8,15,.08)', boxShadow: '0 30px 60px -32px rgba(11,8,15,.22)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                        <div style={{ position: 'absolute', inset: 6, border: '.5px solid rgba(11,8,15,.08)', borderRadius: 16, pointerEvents: 'none' }} />
-                        <div style={{ position: 'absolute', top: 0, left: '12%', right: '12%', height: 1.5, background: `linear-gradient(90deg,transparent,${VIOLET},#c1216b,#5B8A5E,transparent)`, opacity: 0.4 }} />
-                        <span style={{ fontSize: 26 }}>👁️</span>
-                        <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, color: VIOLET }}>tap to flip</span>
-                      </div>
-                      {/* face up */}
-                      <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', borderRadius: 22, overflow: 'hidden', background: 'radial-gradient(125% 80% at 50% 0%,rgba(127,119,221,.08),#fff 58%)', border: '1px solid rgba(11,8,15,.08)', boxShadow: '0 30px 60px -32px rgba(11,8,15,.22)', padding: '16px 15px 13px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <div style={{ position: 'absolute', inset: 6, border: '.5px solid rgba(11,8,15,.08)', borderRadius: 16, pointerEvents: 'none' }} />
-                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
-                          <span className="eyebrow" style={{ color: VIOLET, fontSize: 9, letterSpacing: '.16em' }}>{ANGLE_LABEL[angle] ?? angle}</span>
-                          <span style={{ fontFamily: NEWS, fontSize: 17, color: '#8e1c4c' }}>{ROMAN[i]}</span>
-                        </div>
-                        <span style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: NEWS, fontStyle: 'italic', fontSize: `clamp(11px,3.3vw,${loading ? '19px' : fitSize(card?.text.length ?? 0)})`, lineHeight: 1.3, color: '#1b0f16', textAlign: 'center' }}>
-                          {loading ? 'shuffling…' : card?.text}
-                        </span>
-                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, borderTop: '.5px solid rgba(11,8,15,.08)', paddingTop: 9 }}>
-                          <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 11, letterSpacing: '-.02em', color: '#1b0f16' }}>shut<span style={{ color: '#e7548a' }}>ap</span></span>
-                          <span className="eyebrow" style={{ fontSize: 9, letterSpacing: '.22em', color: '#6b4a5c' }}>{loading ? 'forming' : 'open it'}</span>
-                        </div>
-                      </div>
-                    </div>
+            {offered ? (
+              <div style={{ background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: 22, padding: '20px 20px 18px', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 26px 54px -38px rgba(11,8,15,.3)' }}>
+                <CompanionLine>{offerLine}</CompanionLine>
+                <Button onClick={() => void acceptOffer()} disabled={dealing} full>
+                  {dealing ? 'dealing…' : 'make my 3 cards'}
+                </Button>
+                {tier === 'paying' ? (
+                  <div style={{ fontFamily: SORA, fontSize: 12.5, color: MUTED, textAlign: 'center' }}>
+                    clean · {spec.width}×{spec.height} · saved as a set
                   </div>
-                )
-              })}
-            </div>
+                ) : null}
+                <Button variant="ghost" size="sm" onClick={() => setOffered(false)} full>
+                  {tier === 'guest' ? 'not now' : 'later'}
+                </Button>
+                <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: FAINT, textAlign: 'center' }}>
+                  nobody sees the cards unless you post them.
+                </div>
+              </div>
+            ) : null}
+
+            {!offered && cards.length === 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
+                <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15.5, color: MUTED, textAlign: 'center' }}>
+                  the offer stands whenever you want it.
+                </div>
+                <Button variant="secondary" size="sm" onClick={() => setOffered(true)}>
+                  actually — make my 3 cards
+                </Button>
+              </div>
+            ) : null}
+
+            {cards.length === 3 ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 17, letterSpacing: '-.03em', color: INK }}>
+                    your 3 cards
+                  </div>
+                  <Eyebrow>{index + 1} / 3</Eyebrow>
+                </div>
+
+                {/* slot tabs — the same three for everyone */}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {cards.map((c, i) => (
+                    <button
+                      key={c.position}
+                      type="button"
+                      onClick={() => { setIndex(i); setSaved(null); setPostedAlias(null) }}
+                      style={{
+                        flex: 1, height: 34, borderRadius: 999, cursor: 'pointer',
+                        fontFamily: SORA, fontWeight: 700, fontSize: 12.5,
+                        border: i === index ? 'none' : '1px solid rgba(11,8,15,.12)',
+                        background: i === index ? angleAccent(c.angle) : '#fff',
+                        color: i === index ? '#fff' : MUTED,
+                        transition: 'background .2s, color .2s',
+                      }}
+                    >
+                      {c.angleLabel}
+                    </button>
+                  ))}
+                </div>
+
+                <div
+                  onTouchStart={(e) => { touchX.current = e.touches[0]?.clientX ?? null }}
+                  onTouchEnd={(e) => {
+                    const start = touchX.current
+                    const end = e.changedTouches[0]?.clientX ?? null
+                    touchX.current = null
+                    if (start === null || end === null || Math.abs(end - start) < 48) return
+                    setIndex((i) => Math.min(2, Math.max(0, i + (end < start ? 1 : -1))))
+                    setSaved(null)
+                    setPostedAlias(null)
+                  }}
+                >
+                  {card ? (
+                    <CardFace
+                      card={card}
+                      situation={set.situation}
+                      mark={tier !== 'paying'}
+                      loading={rerolling === card.position}
+                    />
+                  ) : null}
+                </div>
+
+                {/* the action row — reading is above it, and never gated */}
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <Button variant="secondary" size="sm" onClick={() => void anotherOne()} disabled={rerolling !== null}>
+                    ↻ {tier === 'guest' ? 'another take' : 'another one'}
+                  </Button>
+                  <Button
+                    variant={signedIn ? 'secondary' : 'locked'}
+                    size="sm"
+                    onClick={() => (spec.set && signedIn ? void doSaveSet() : void doSave())}
+                    disabled={saving}
+                    title={signedIn ? undefined : 'an alias first — 30 seconds, no real name'}
+                  >
+                    {signedIn ? '↓' : '🔒'} {spec.set && signedIn ? 'save all 3' : 'save'}
+                  </Button>
+                  <Button
+                    variant={signedIn ? 'secondary' : 'locked'}
+                    size="sm"
+                    onClick={openShare}
+                    title={signedIn ? undefined : 'an alias first — 30 seconds, no real name'}
+                  >
+                    {signedIn ? '↗' : '🔒'} share
+                  </Button>
+                </div>
+
+                <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 14, color: FAINT, textAlign: 'center' }}>
+                  {tier === 'guest'
+                    ? 'swipe them all you want. reading is free, forever.'
+                    : tier === 'paying'
+                      ? `clean · ${spec.width}×${spec.height} · no mark on any of them.`
+                      : `saves at ${spec.width}×${spec.height}, with the little shutap mark.`}
+                </div>
+
+                {/* the moment after the save — a win first, an offer second */}
+                {saved ? (
+                  <div style={{ background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: 22, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 13 }}>
+                    <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 14, color: '#1D9E75' }}>
+                      ✓ saved{tier === 'paying' ? ' clean' : ''} · {saved}
+                    </div>
+                    {tier === 'paying' ? (
+                      <>
+                        <CompanionLine>
+                          no mark, nothing of mine on it. post the roast in your room too? the owl who&apos;s been sitting in will lose it.
+                        </CompanionLine>
+                        {postedAlias ? (
+                          <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, color: MUTED }}>
+                            ◎ it&apos;s a room now — {postedAlias} is on it. no one owes you a reply.
+                          </div>
+                        ) : (
+                          <>
+                            <Button variant="secondary" onClick={() => void doPost()} full>post it in my room</Button>
+                            <Button variant="ghost" size="sm" onClick={() => setSaved(null)} full>done</Button>
+                            <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: FAINT, textAlign: 'center' }}>
+                              keeping it private is the default. it&apos;s just yours.
+                            </div>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <CompanionLine>
+                          it&apos;s yours. want it without my little mark on the corner — and four times bigger, for printing on something petty?
+                        </CompanionLine>
+                        <Button onClick={() => { jokeTrack('upgrade_shown', tier, { after: 'save' }); setUpgradeOpen(true) }} full>
+                          see clean cards
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => setSaved(null)} full>this one&apos;s fine</Button>
+                      </>
+                    )}
+                  </div>
+                ) : null}
+              </>
+            ) : null}
 
             {refusal ? (
-              <div style={{ maxWidth: 760, margin: '0 auto', width: '100%', background: '#fff', border: '1px dashed rgba(142,28,76,.32)', borderRadius: 18, padding: '16px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
-                <div>
-                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 16 }}>{refusal}</div>
-                  <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, color: '#6b4a5c' }}>all three flip when the mirror is reading.</div>
+              <div style={{ background: '#fff', border: '1px dashed rgba(142,28,76,.32)', borderRadius: 18, padding: '16px 20px' }}>
+                <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 15, color: INK }}>{refusal}</div>
+                <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 14.5, color: MUTED, marginTop: 4 }}>
+                  the cards you already have stay right here, and stay free.
                 </div>
-                <button className="pill pill-dark" onClick={startCheckout}>flip all three →</button>
               </div>
             ) : null}
           </div>
         </section>
       ) : null}
 
-      {/* ══ 4 · set list + the one paywall block ══ */}
+      {/* ══ 4 · the set list, and the one place the plan is mentioned unprompted ══ */}
       {signedIn && list.length > 0 ? (
         <section style={{ background: 'rgba(16,12,20,.04)', padding: '0 clamp(16px,4vw,28px) clamp(36px,6vh,72px)' }}>
           <div style={{ maxWidth: 1080, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -487,14 +693,13 @@ export function JokeSurface() {
               {list.slice(0, 30).map((c) => (
                 <div
                   key={c.id}
-                  onClick={() => { setPostedAlias(null); setOpenCard(c) }}
-                  style={{ cursor: 'pointer', background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: 22, padding: '18px 20px 14px', display: 'flex', flexDirection: 'column', gap: 10, minHeight: 160 }}
+                  style={{ background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: 22, padding: '18px 20px 14px', display: 'flex', flexDirection: 'column', gap: 10, minHeight: 160 }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                    <span className="eyebrow" style={{ fontSize: 9, letterSpacing: '.16em', color: VIOLET }}>{c.angleLabel}</span>
-                    {c.room_id ? <span className="eyebrow" style={{ fontSize: 9, color: '#8e1c4c' }}>🃏 in a room</span> : null}
+                    <Eyebrow style={{ fontSize: 9, letterSpacing: '.16em', color: angleAccent(c.angle) }}>{c.angleLabel}</Eyebrow>
+                    {c.room_id ? <Eyebrow style={{ fontSize: 9, color: '#8e1c4c' }}>🃏 in a room</Eyebrow> : null}
                   </div>
-                  <span style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: NEWS, fontStyle: 'italic', fontSize: fitSize(c.text.length), lineHeight: 1.3, color: '#1b0f16', textAlign: 'center' }}>
+                  <span style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: NEWS, fontStyle: 'italic', fontSize: 16, lineHeight: 1.32, color: '#1b0f16', textAlign: 'center' }}>
                     {c.text}
                   </span>
                 </div>
@@ -503,78 +708,57 @@ export function JokeSurface() {
 
             <div style={{ marginTop: 6, background: 'radial-gradient(120% 120% at 10% 0%,rgba(127,119,221,.06),#fff 65%)', border: '1px solid rgba(11,8,15,.08)', borderRadius: 22, padding: 'clamp(20px,3vw,30px)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 18 }}>
               <div style={{ maxWidth: '52ch' }}>
-                <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(20px,2.6vw,26px)', letterSpacing: '-.03em', color: '#0b080f' }}>
+                <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 'clamp(20px,2.6vw,26px)', letterSpacing: '-.03em', color: INK }}>
                   {tier === 'paying' ? 'the mirror is reading all of it.' : 'there is a pattern across these you cannot see yet.'}
                 </div>
                 <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#4a3040', marginTop: 6 }}>
                   {tier === 'paying'
                     ? `cross-read, districts, depth, trend and signal mix — now with 🃏 joke in the mix, across ${list.length} ${list.length === 1 ? 'card' : 'cards'}.`
-                    : list.length >= 2
-                      ? `you have kept ${list.length} cards over ${days} ${days === 1 ? 'day' : 'days'}. the mirror reads them at once — which behaviour keeps showing up, and how the jokes changed as you did.`
-                      : 'the mirror reads your whole set list at once — which behaviour keeps showing up, who it keeps being, and how the jokes changed as you did.'}
+                    : `the mirror reads your whole set list at once — which behaviour keeps showing up, and how the jokes changed as you did.`}
                 </p>
               </div>
-              <button
-                className="pill pill-wine"
-                style={{ height: 46, padding: '0 26px', fontSize: 15 }}
-                onClick={() => (tier === 'paying' ? document.getElementById('mirror')?.scrollIntoView({ behavior: 'smooth' }) : startCheckout())}
+              <Button
+                onClick={() => (tier === 'paying'
+                  ? document.getElementById('mirror')?.scrollIntoView({ behavior: 'smooth' })
+                  : (jokeTrack('upgrade_shown', tier, { after: 'set_list' }), setUpgradeOpen(true)))}
               >
-                {tier === 'paying' ? 'open the mirror ✦' : 'flip all three →'}
-              </button>
+                {tier === 'paying' ? 'open the mirror ✦' : 'see clean cards'}
+              </Button>
             </div>
           </div>
         </section>
       ) : null}
 
-      {/* ══ card overlay ══ */}
-      {openCard ? (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div onClick={() => setOpenCard(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(11,8,15,.55)', backdropFilter: 'blur(6px)' }} />
-          <div style={{ position: 'relative', width: 'min(420px,100%)', display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 24, background: 'radial-gradient(125% 80% at 50% 0%,rgba(127,119,221,.1),#fff 58%)', border: '1px solid rgba(11,8,15,.08)', boxShadow: '0 40px 80px -40px rgba(0,0,0,.6)', padding: '24px 22px 18px', display: 'flex', flexDirection: 'column', gap: 14, minHeight: 280 }}>
-              <div style={{ position: 'absolute', inset: 7, border: '.5px solid rgba(11,8,15,.08)', borderRadius: 17, pointerEvents: 'none' }} />
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <span style={{ width: 22, height: 22, borderRadius: 7, display: 'grid', placeItems: 'center', background: 'rgba(127,119,221,.13)', border: '.5px solid rgba(127,119,221,.33)', color: VIOLET, fontSize: 11 }}>✦</span>
-                <span className="eyebrow" style={{ color: VIOLET, letterSpacing: '.16em', fontSize: 9.5 }}>{openCard.angleLabel}</span>
-              </div>
-              <span style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', fontFamily: NEWS, fontStyle: 'italic', fontSize: 22, lineHeight: 1.32, color: '#1b0f16', textAlign: 'center' }}>
-                {openCard.text}
-              </span>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, borderTop: '.5px solid rgba(11,8,15,.08)', paddingTop: 12 }}>
-                <span style={{ fontFamily: SORA, fontWeight: 700, fontSize: 12, letterSpacing: '-.02em', color: '#1b0f16' }}>shut<span style={{ color: '#e7548a' }}>ap</span></span>
-              </div>
-            </div>
+      <SignInSheet open={gate.open} trigger={gate.trigger} onClose={() => setGate({ open: false, trigger: 'save' })} />
 
-            {!openCard.id ? (
-              <div style={{ textAlign: 'center', fontFamily: SORA, fontSize: 13, color: '#f0dbe6' }}>this one's not saved.</div>
-            ) : null}
-            {postedAlias ? (
-              <div style={{ textAlign: 'center', fontFamily: SORA, fontSize: 13, color: '#f7b8d4' }}>
-                ◎ it's a room now — {postedAlias} is on it. no one owes you a reply.
-              </div>
-            ) : null}
+      <AliasCeremony
+        open={ceremonyOpen}
+        alias={alias}
+        onAliasChange={setAlias}
+        onDone={closeCeremony}
+      />
 
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button className="pill" style={{ background: '#fff', color: '#0b080f', height: 42 }} onClick={() => void doShare()}>↗ share</button>
-              <button className="pill" style={{ background: '#fff', color: '#0b080f', height: 42 }} onClick={() => void doDownload()}>↓ download</button>
-              <button className="pill" style={{ background: '#fff', color: '#0b080f', height: 42 }} onClick={() => void doPost()}>◎ post to a room</button>
-              <button className="pill" style={{ background: 'rgba(255,255,255,.14)', color: '#fff', height: 42 }} onClick={() => setOpenCard(null)}>close</button>
-            </div>
-            {!openCard.id ? (
-              <div style={{ textAlign: 'center' }}>
-                <button className="pill pill-wine" style={{ height: 42 }} onClick={() => { jokeTrack('share_blocked_signin', tier, { via: 'keep' }); raiseSheet('keep', { type: 'keep' }) }}>
-                  wanna keep this one? →
-                </button>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
+      <CardShareSheet
+        open={shareOpen}
+        card={card}
+        tier={tier}
+        saving={saving}
+        onClose={() => setShareOpen(false)}
+        onSave={() => void doSave()}
+        onSaveSet={() => void doSaveSet()}
+        onNote={say}
+      />
 
-      <SignInSheet open={sheet.open} trigger={sheet.trigger} onClose={() => setSheet({ open: false, trigger: 'keep' })} />
+      <UpgradeSheet
+        open={upgradeOpen}
+        price={PRICE}
+        tier={tier}
+        onClose={() => setUpgradeOpen(false)}
+        onCheckout={startCheckout}
+      />
 
       {toast ? (
-        <div style={{ position: 'fixed', left: '50%', bottom: 24, transform: 'translateX(-50%)', zIndex: 95, background: '#1b0f16', color: '#fff', fontFamily: SORA, fontSize: 13, padding: '11px 18px', borderRadius: 999 }}>
+        <div style={{ position: 'fixed', left: '50%', bottom: 24, transform: 'translateX(-50%)', zIndex: 99, background: '#1b0f16', color: '#fff', fontFamily: SORA, fontSize: 13, padding: '11px 18px', borderRadius: 999, maxWidth: 'calc(100vw - 32px)', textAlign: 'center' }}>
           {toast}
         </div>
       ) : null}
@@ -582,7 +766,10 @@ export function JokeSurface() {
   )
 }
 
-function held_position(set: SetState, card: JokeCard): number {
-  const idx = set.cards.findIndex((c) => c && c.text === card.text)
-  return idx >= 0 ? idx : card.position
+/** Refusals are cost guards, not paywalls: they never point at checkout. */
+function refusalCopy(reason: 'daily_cards' | 'daily_sets' | 'rate_limited' | 'not_found'): string {
+  if (reason === 'rate_limited') return 'too many cards from this connection today. give it a bit.'
+  if (reason === 'daily_sets') return "that's the last situation i can write for today. the deck resets tomorrow."
+  if (reason === 'daily_cards') return "i'm out of jokes for today — genuinely, not as a sales pitch. tomorrow they're back."
+  return 'i lost track of that set. say it again and i will start over.'
 }

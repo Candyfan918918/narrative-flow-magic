@@ -52,30 +52,43 @@ const PILL_LABELS: Record<ShareChannelKey, string> = {
 
 const SHARE_GLYPH = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>'
 
-function pillBg(k: ShareChannelKey): string {
+/* The neutral pills (copy / save) are the only ones without a brand colour of
+   their own, so they are the only ones that have to know what they sit on. */
+type Surface = 'dark' | 'light'
+
+function pillBg(k: ShareChannelKey, surface: Surface = 'dark'): string {
+  if (k === 'copy' || k === 'download') {
+    return surface === 'light' ? '#fff' : 'rgba(255,255,255,.06)'
+  }
   if (k === 'share') return 'linear-gradient(135deg,#ff7ab0,#a52a5f)'
   if (k === 'sms') return '#25D366'
   if (k === 'whatsapp') return '#25D366'
   if (k === 'x') return '#0b080f'
   if (k === 'tiktok') return '#0b080f'
   if (k === 'instagram') return 'linear-gradient(135deg,#feda75 0%,#fa7e1e 25%,#d62976 55%,#962fbf 78%,#4f5bd5 100%)'
-  if (k === 'copy') return 'rgba(255,255,255,.06)'
   return 'rgba(255,255,255,.06)'
 }
 
-function pillColor(k: ShareChannelKey): string {
-  if (k === 'copy' || k === 'download') return '#f1e4ec'
+function pillColor(k: ShareChannelKey, surface: Surface = 'dark'): string {
+  if (k === 'copy' || k === 'download') return surface === 'light' ? '#0b080f' : '#f1e4ec'
   return '#fff'
 }
 
-function pillBorder(k: ShareChannelKey): string {
-  if (k === 'copy' || k === 'download') return '.5px solid rgba(255,255,255,.18)'
+function pillBorder(k: ShareChannelKey, surface: Surface = 'dark'): string {
+  if (k === 'copy' || k === 'download') {
+    return surface === 'light' ? '1.5px solid rgba(11,8,15,.14)' : '.5px solid rgba(255,255,255,.18)'
+  }
   return 'none'
 }
 
-function pillGlyph(k: ShareChannelKey): string {
-  if (k === 'share') return SHARE_GLYPH
-  return LOGOS[k as ChannelKey]
+/* The neutral pills' glyphs are drawn in white, which vanishes on a light
+   pill — recolour them to the ink the label uses. */
+function pillGlyph(k: ShareChannelKey, surface: Surface = 'dark'): string {
+  const glyph = k === 'share' ? SHARE_GLYPH : LOGOS[k as ChannelKey]
+  if ((k === 'copy' || k === 'download') && surface === 'light') {
+    return glyph.replace(/stroke="#fff"/g, 'stroke="#0b080f"').replace(/fill="#fff"/g, 'fill="#0b080f"')
+  }
+  return glyph
 }
 
 const DEFAULT_CHANNELS: ShareChannelKey[] = [
@@ -86,10 +99,13 @@ export function ShareChannels({
   onPick,
   channels = DEFAULT_CHANNELS,
   style,
+  surface = 'dark',
 }: {
   onPick: (k: ShareChannelKey) => void
   channels?: ShareChannelKey[]
   style?: CSSProperties
+  /** which ground the row sits on — only the neutral pills care */
+  surface?: Surface
 }) {
   return (
     <div
@@ -108,9 +124,9 @@ export function ShareChannels({
           style={{
             flex: '0 0 auto',
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: pillBg(k),
-            color: pillColor(k),
-            border: pillBorder(k),
+            background: pillBg(k, surface),
+            color: pillColor(k, surface),
+            border: pillBorder(k, surface),
             borderRadius: 999,
             padding: '10px 16px 10px 12px',
             cursor: 'pointer',
@@ -129,7 +145,7 @@ export function ShareChannels({
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 22, height: 22,
             }}
-            dangerouslySetInnerHTML={{ __html: pillGlyph(k) }}
+            dangerouslySetInnerHTML={{ __html: pillGlyph(k, surface) }}
           />
           <span>{PILL_LABELS[k]}</span>
         </button>

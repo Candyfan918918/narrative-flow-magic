@@ -1,18 +1,30 @@
-// Sign-in sheet — a bottom sheet over the current screen. Never a route
-// change, never a lost card. Email magic link only: no password, no social.
+// The alias gate — the only wall a guest hits on this surface.
+//
+// It stands in front of SAVING and SHARING, never in front of reading: all
+// three cards are readable before it, during it and after it. It asks for a
+// fake name, not for money, and it is a bottom sheet over the deck rather than
+// a route change, so nobody loses the cards they were reading.
 import { useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
+import { Button, Sheet, CompanionLine, SORA, NEWS, MUTED, ACCENT_SOFT, INK, FAINT } from './ui'
 
-const SORA = "'Sora',system-ui,sans-serif"
 const TERMS_VERSION = '2026-09-04'
 
-export const SHEET_LEAD: Record<string, string> = {
-  keep: "wanna keep this? grab a spot — pseudonymous, your real name never shows 🔒",
-  second_flip: "that's your one for today. a spot gets you tomorrow's, and keeps the ones you've flipped.",
-  share: 'sharing needs a spot — so the card has a name on it that is not yours.',
-  download: 'downloading needs a spot. takes ten seconds, no password.',
-  post: 'posting to a room needs a spot — rooms are pseudonymous, never your real name.',
-  checkout: 'grab a spot first, then all three flip.',
+/** Why the gate went up — the companion says the true reason, not a generic one. */
+const SHEET_LEAD: Record<string, string> = {
+  save: 'cards need a name. a fake one.',
+  share: 'cards need a name. a fake one.',
+  post: 'rooms need a name too — a fake one, same as the cards.',
+  keep: 'cards need a name. a fake one.',
+  checkout: 'an alias first, then the clean ones.',
+}
+
+const SHEET_BODY: Record<string, string> = {
+  save: "that's the whole point of this place. venting and being heard stay free forever. an alias is only so your cards belong to someone — 30 seconds, no real name, no email hunting.",
+  share: "that's the whole point of this place. venting and being heard stay free forever. an alias is only so your cards belong to someone — 30 seconds, no real name, no email hunting.",
+  post: 'nobody in a room ever sees who you are. the alias is the name they know you by, and it is not yours.',
+  keep: "that's the whole point of this place. venting and being heard stay free forever. an alias is only so your cards belong to someone — 30 seconds, no real name, no email hunting.",
+  checkout: 'the clean cards land in the same place your alias does. one link, then both.',
 }
 
 export function SignInSheet({
@@ -30,21 +42,21 @@ export function SignInSheet({
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
 
-  if (!open) return null
-
   async function send() {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) {
       setErr('that address did not look right. try again?')
       return
     }
     if (!ok18) {
-      setErr('need the 18+ box ticked before i can make you a spot.')
+      setErr('need the 18+ box ticked before i can make you an alias.')
       return
     }
     setErr(null)
     setBusy(true)
     try {
-      try { localStorage.setItem('shutap_terms', JSON.stringify({ version: TERMS_VERSION, at: new Date().toISOString() })) } catch { /* noop */ }
+      try {
+        localStorage.setItem('shutap_terms', JSON.stringify({ version: TERMS_VERSION, at: new Date().toISOString() }))
+      } catch { /* noop */ }
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: { emailRedirectTo: window.location.href, shouldCreateUser: true },
@@ -57,48 +69,61 @@ export function SignInSheet({
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 90, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(11,8,15,.5)', backdropFilter: 'blur(4px)' }} />
-      <div style={{ position: 'relative', width: 'min(460px,100%)', background: '#fff', borderRadius: '24px 24px 0 0', padding: '22px 20px 26px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ width: 44, height: 4, borderRadius: 99, background: 'rgba(11,8,15,.12)', margin: '0 auto 4px' }} />
-        <div style={{ fontFamily: "'Newsreader',Georgia,serif", fontStyle: 'italic', fontSize: 19, lineHeight: 1.45, color: '#2b2429' }}>
+    <Sheet open={open} onClose={onClose}>
+      <CompanionLine size={32}>
+        <strong style={{ fontStyle: 'normal', fontFamily: SORA, fontWeight: 700, fontSize: 18, color: INK }}>
           {SHEET_LEAD[trigger] ?? SHEET_LEAD.keep}
-        </div>
+        </strong>
+        <br />
+        {SHEET_BODY[trigger] ?? SHEET_BODY.keep}
+      </CompanionLine>
 
-        {!sent ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+      {!sent ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+          <input
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            placeholder="you@wherever.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') void send() }}
+            style={{
+              width: '100%', height: 48, borderRadius: 14, padding: '0 15px', fontSize: 16,
+              outline: 'none', background: '#fff', color: INK,
+              border: `2px solid ${ACCENT_SOFT}`,
+            }}
+          />
+          <label style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontFamily: SORA, fontSize: 13, color: MUTED, lineHeight: 1.5 }}>
             <input
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              placeholder="you@wherever.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{ width: '100%', height: 48, border: '1.5px solid rgba(231,84,138,.35)', borderRadius: 14, padding: '0 15px', fontSize: 16, outline: 'none', background: '#fff', color: '#0b080f' }}
+              type="checkbox"
+              checked={ok18}
+              onChange={(e) => setOk18(e.target.checked)}
+              style={{ marginTop: 3, width: 17, height: 17, accentColor: '#8e1c4c', flex: 'none' }}
             />
-            <label style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontFamily: SORA, fontSize: 13, color: '#6b4a5c', lineHeight: 1.5 }}>
-              <input type="checkbox" checked={ok18} onChange={(e) => setOk18(e.target.checked)} style={{ marginTop: 3, width: 17, height: 17, accentColor: '#8e1c4c', flex: 'none' }} />
-              <span>i'm 18 or over, and i accept the terms and privacy notice.</span>
-            </label>
-            {err ? <div style={{ fontFamily: "'Newsreader',Georgia,serif", fontStyle: 'italic', fontSize: 15, color: '#a8003f' }}>{err}</div> : null}
-            <button onClick={() => void send()} disabled={busy} className="pill pill-wine" style={{ height: 48, justifyContent: 'center', opacity: busy ? 0.7 : 1 }}>
-              {busy ? 'sending…' : 'send me a link'}
-            </button>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: SORA, fontSize: 13, color: '#8a7a84', padding: 6 }}>
-              not now
-            </button>
+            <span>i&apos;m 18 or over, and i accept the terms and privacy notice.</span>
+          </label>
+          {err ? (
+            <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, color: '#a8003f' }}>{err}</div>
+          ) : null}
+          <Button onClick={() => void send()} disabled={busy} full>
+            {busy ? 'sending…' : 'get my alias'}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={onClose} full>
+            keep reading them
+          </Button>
+          <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: FAINT, textAlign: 'center' }}>
+            reading the cards stays free either way.
           </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'center', padding: '8px 0 4px' }}>
-            <div style={{ fontFamily: "'Newsreader',Georgia,serif", fontStyle: 'italic', fontSize: 17, color: '#2b2429', textAlign: 'center' }}>
-              check your inbox — link's on its way from hello@shutap.com. open it on this device and your card is still right here.
-            </div>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: SORA, fontSize: 13, color: '#8a7a84', padding: 6 }}>
-              close
-            </button>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'center', padding: '8px 0 4px' }}>
+          <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, color: '#2b2429', textAlign: 'center', lineHeight: 1.5 }}>
+            check your inbox — link&apos;s on its way from hello@shutap.com. open it on this device and your three cards are still right here.
           </div>
-        )}
-      </div>
-    </div>
+          <Button variant="ghost" size="sm" onClick={onClose}>close</Button>
+        </div>
+      )}
+    </Sheet>
   )
 }

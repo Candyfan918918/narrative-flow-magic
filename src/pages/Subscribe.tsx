@@ -5,6 +5,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { getStripe, getStripeEnvironment } from '@/lib/stripe'
 import { createMirrorCheckout, createMirrorPortal } from '@/lib/payments.functions'
 import { getMyBillingStatus, type BillingStatus } from '@/lib/billing.functions'
+import { PLAN_TO_PRICE, usd, type PlanKey } from '@/lib/pricing'
 import { supabase } from '@/integrations/supabase/client'
 import { useNoIndex } from '@/components/NoIndex'
 import eyeMascot from '@/assets/eye-mascot.svg'
@@ -14,13 +15,8 @@ import stripeWordmark from '@/assets/stripe-wordmark.svg'
 // and on /subscribe/return is computed from these amounts — never hardcoded
 // in JSX. Amounts are the pre-tax list prices; Stripe adds location-based tax
 // inside the embedded checkout (automatic_tax is enabled server-side).
-const PLAN_TO_PRICE = {
-  monthly: { id: 'mirror_monthly', label: 'monthly', amount: 7.99, interval: 'month' as const },
-  annual: { id: 'mirror_annual', label: 'annual', amount: 49.99, interval: 'year' as const },
-}
-type PlanKey = keyof typeof PLAN_TO_PRICE
-
-const usd = (n: number) => `$${n.toFixed(2)}`
+// The amounts themselves live in @/lib/pricing so the upgrade sheet on the
+// joke surface quotes the same number this page charges.
 const MONTHLY_TIMES_TWELVE = PLAN_TO_PRICE.monthly.amount * 12
 const ANNUAL_PER_MONTH = PLAN_TO_PRICE.annual.amount / 12
 const ANNUAL_SAVINGS_PCT = Math.round((1 - PLAN_TO_PRICE.annual.amount / MONTHLY_TIMES_TWELVE) * 100)
