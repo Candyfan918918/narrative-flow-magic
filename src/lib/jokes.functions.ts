@@ -240,20 +240,33 @@ export const flipJokeCard = createServerFn({ method: 'POST' })
     if (id.userId) {
       const { data: card } = await supabaseAdmin
         .from('joke_cards')
-        .insert({
-          set_id: set.id,
-          user_id: id.userId,
-          angle,
-          card_text: out.text,
-          position: data.position,
-          used_fallback: out.used_fallback,
-          judge_score: out.judge_score,
-          is_seed: false,
-          corpus_eligible: false,
-        } as never)
+        .upsert(
+          {
+            set_id: set.id,
+            user_id: id.userId,
+            angle,
+            card_text: out.text,
+            position: data.position,
+            used_fallback: out.used_fallback,
+            judge_score: out.judge_score,
+            is_seed: false,
+            corpus_eligible: false,
+          } as never,
+          { onConflict: 'set_id,position', ignoreDuplicates: true },
+        )
         .select('id')
-        .single()
+        .maybeSingle()
       cardId = (card?.id as string) ?? null
+      if (!cardId) {
+        const { data: found } = await supabaseAdmin
+          .from('joke_cards')
+          .select('id')
+          .eq('set_id', set.id)
+          .eq('position', data.position)
+          .maybeSingle()
+        cardId = (found?.id as string) ?? null
+      }
+
       void ingestJokeSignal(id.userId, set.id as string, out.text).catch(() => {})
     }
 
