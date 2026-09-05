@@ -313,7 +313,7 @@ export function JokeSurface() {
               style={{ width: '100%', resize: 'vertical', minHeight: 116, border: 'none', outline: 'none', background: 'transparent', fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#2b2429' }}
             />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
-              <button onClick={() => void onSubmit()} disabled={busy} className="pill pill-wine" style={{ height: 42, opacity: busy ? 0.7 : 1 }}>
+              <button onClick={() => void onSubmit()} disabled={busy} className="pill pill-wine" style={{ height: 44, padding: '0 22px', border: 'none', borderRadius: 999, cursor: busy ? 'default' : 'pointer', fontFamily: SORA, fontWeight: 700, fontSize: 14.5, color: '#fff', background: 'linear-gradient(155deg,#a52a5f,#890041)', boxShadow: '0 14px 30px -18px rgba(137,0,65,.7)', opacity: busy ? 0.7 : 1 }}>
                 {busy ? 'reading it…' : 'turn it into a joke →'}
               </button>
             </div>
