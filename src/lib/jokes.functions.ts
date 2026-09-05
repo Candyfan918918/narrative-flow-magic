@@ -151,9 +151,40 @@ export const flipJokeCard = createServerFn({ method: 'POST' })
     const angle = angles[data.position]
     if (!angle) return { ok: false, reason: 'not_found', scope: 'set', tier: id.tier }
 
+    // double-tap / retry guard: a card already at this position is returned as-is
+    // and never charges a second flip (joke_cards_set_position_key).
+    if (id.userId) {
+      const { data: existing } = await supabaseAdmin
+        .from('joke_cards')
+        .select('id, angle, card_text, position, used_fallback, judge_score')
+        .eq('set_id', set.id)
+        .eq('position', data.position)
+        .maybeSingle()
+      if (existing) {
+        const prior = await readCounter(supabaseAdmin, id.subjectKey, day)
+        return {
+          ok: true,
+          tier: id.tier,
+          flips_used: prior.flips_used,
+          sets_flipped: prior.sets_flipped,
+          card: {
+            id: existing.id as string,
+            position: existing.position as number,
+            angle: existing.angle as string,
+            angleLabel: ANGLE_LABEL[existing.angle as string] ?? (existing.angle as string),
+            text: existing.card_text as string,
+            used_fallback: (existing.used_fallback as boolean) ?? false,
+            judge_score: (existing.judge_score as number | null) ?? null,
+            saved: true,
+          },
+        }
+      }
+    }
+
     // ── entitlement, resolved before any model call ──
     const counter = await readCounter(supabaseAdmin, id.subjectKey, day)
     const counted = counter.set_ids.includes(set.id as string)
+
 
     // A guest who flipped and then signed in to finish a second flip gets that
     // one flip and no more: the grant is tied to this exact pending action and
