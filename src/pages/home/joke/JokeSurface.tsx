@@ -26,7 +26,7 @@ import {
   postJokeCardToRoom,
   exportJokeCards,
 } from '@/lib/jokes.functions'
-import { ARCHETYPE_LABEL, angleAccent, exportSpec, type JokeCard, type JokeTier } from '@/lib/jokes/deck'
+import { ARCHETYPE_LABEL, SLOTS, angleAccent, exportSpec, type JokeCard, type JokeTier } from '@/lib/jokes/deck'
 import { PLAN_TO_PRICE, usd } from '@/lib/pricing'
 import {
   anonSessionId,
@@ -74,8 +74,10 @@ export function JokeSurface() {
   const [crisis, setCrisis] = useState(false)
   const [set, setSet] = useState<SetState | null>(null)
   const [cards, setCards] = useState<JokeCard[]>([])
-  const [offered, setOffered] = useState(false)
-  const [dealing, setDealing] = useState(false)
+  // 'reading' while the spill is scrubbed and read, 'dealing' while the three
+  // cards are written. One uninterrupted move from the composer to the deck.
+  const [phase, setPhase] = useState<'idle' | 'reading' | 'dealing'>('idle')
+  const [dealFailed, setDealFailed] = useState(false)
   const [index, setIndex] = useState(0)
   const [rerolling, setRerolling] = useState<number | null>(null)
   const [refusal, setRefusal] = useState<string | null>(null)
@@ -216,17 +218,23 @@ export function JokeSurface() {
 
   // ─────────────────────────── the spill ───────────────────────────
 
+  /** Saying it is the whole gesture: one send, and the cards are being written.
+   *  There is no second button between the spill and the deck. */
   async function onSubmit() {
     const raw = text.trim()
     if (raw.length < 12) { say('give me a few more words and i will find the funny in it.'); return }
+    if (phase !== 'idle') return
     setBusy(true)
     setRefusal(null)
+    setDealFailed(false)
+    setPhase('reading')
+    let opened: { id: string; tier: JokeTier } | null = null
     try {
       const res = await submit({ data: { raw, ...ctx() } })
       jokeTrack('entry_submitted', tier, { chars: raw.length })
       if (res.crisis) {
         // No cards, no gate, no paywall. Pain is never the thing being sold.
-        setSet(null); setCards([]); setOffered(false); setCrisis(true)
+        setSet(null); setCards([]); setCrisis(true)
         jokeTrack('crisis_route_shown', tier)
         return
       }
@@ -237,8 +245,7 @@ export function JokeSurface() {
       setIndex(0)
       setSaved(null)
       setPostedAlias(null)
-      setOffered(true)
-      jokeTrack('cards_offered', res.tier, { archetype: res.archetype })
+      opened = { id: res.set_id, tier: res.tier }
       requestAnimationFrame(() => {
         const el = deckRef.current
         if (el) window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - 72), behavior: 'smooth' })
@@ -247,19 +254,24 @@ export function JokeSurface() {
       say('that did not go through. try again?')
     } finally {
       setBusy(false)
+      if (!opened) setPhase('idle')
     }
+    // Outside the try so a failed deal reports as a failed deal, not as a
+    // spill that never landed — the set is open either way.
+    if (opened) await dealCards(opened.id)
   }
 
   // ─────────────────────── the three cards ───────────────────────
 
-  async function acceptOffer() {
-    if (!set || dealing) return
-    setDealing(true)
+  /** Writes all three. Takes the id rather than reading `set`, because the
+   *  deal follows the spill inside one turn, before that state has committed. */
+  async function dealCards(setId: string) {
+    setPhase('dealing')
     setRefusal(null)
+    setDealFailed(false)
     try {
-      const res = await deal({ data: { set_id: set.id, ...ctx() } })
+      const res = await deal({ data: { set_id: setId, ...ctx() } })
       if (!res.ok) {
-        setDealing(false)
         jokeTrack('deal_refused', res.tier, { reason: res.reason })
         setRefusal(refusalCopy(res.reason))
         return
@@ -267,15 +279,15 @@ export function JokeSurface() {
       setTier(res.tier)
       setCards(res.cards)
       setIndex(0)
-      setOffered(false)
       jokeTrack('cards_dealt', res.tier, {
         fallbacks: res.cards.filter((c) => c.used_fallback).length,
       })
       if (res.tier !== 'guest') void refresh()
     } catch {
-      say('the deck jammed. say the word and i will try again.')
+      setDealFailed(true)
+      say('the deck jammed on that one. one more go?')
     } finally {
-      setDealing(false)
+      setPhase('idle')
     }
   }
 
@@ -380,14 +392,14 @@ export function JokeSurface() {
 
   const days = useMemo(() => new Set(list.map((c) => c.day).filter(Boolean)).size, [list])
 
-  const offerLine = useMemo(() => {
+  const dealingLine = useMemo(() => {
     if (tier === 'paying') {
-      return "this is a laminated-chart situation and i've been waiting all week. three clean cards, coming up — say go."
+      return "i have been waiting all week for one like this. three clean cards, coming up."
     }
     if (tier === 'free') {
-      return "that one deserves cards. usual three — a take, a clapback, and one light roast of the thing itself?"
+      return 'that one deserves cards. the usual three, coming up.'
     }
-    return "okay, that's the bit that's getting me. want the group-chat version? i'll make you 3 cards — a take, a clapback, and one light roast of the situation itself."
+    return "okay, that's the bit that's getting me. writing you three — a take, a clapback, and one light roast of the situation itself."
   }, [tier])
 
   const hint = text.trim().length === 0
@@ -433,12 +445,24 @@ export function JokeSurface() {
               rows={4}
               value={text}
               onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => {
+                // Enter sends, shift+enter breaks the line. isComposing keeps
+                // an IME's own enter (picking a candidate) from sending.
+                if (e.key !== 'Enter' || e.shiftKey || e.nativeEvent.isComposing) return
+                e.preventDefault()
+                void onSubmit()
+              }}
+              enterKeyHint="send"
               placeholder="yeah — tell me about it."
-              style={{ width: '100%', resize: 'vertical', minHeight: 116, border: 'none', outline: 'none', background: 'transparent', fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#2b2429' }}
+              disabled={phase !== 'idle'}
+              style={{ width: '100%', resize: 'vertical', minHeight: 116, border: 'none', outline: 'none', background: 'transparent', fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#2b2429', opacity: phase === 'idle' ? 1 : 0.6 }}
             />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
-              <Button onClick={() => void onSubmit()} disabled={busy}>
-                {busy ? 'reading it…' : 'turn it into a joke →'}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+              <span style={{ fontFamily: SORA, fontSize: 12, color: FAINT }}>
+                enter sends · shift + enter for a new line
+              </span>
+              <Button onClick={() => void onSubmit()} disabled={phase !== 'idle'}>
+                {phase === 'reading' ? 'reading it…' : phase === 'dealing' ? 'writing your cards…' : 'turn it into a joke →'}
               </Button>
             </div>
           </div>
@@ -511,33 +535,26 @@ export function JokeSurface() {
         <section ref={deckRef} style={{ background: 'linear-gradient(180deg,#fff,rgba(16,12,20,.04))', padding: 'clamp(16px,3vh,36px) clamp(16px,4vw,28px) clamp(36px,6vh,72px)' }}>
           <div style={{ maxWidth: 560, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
 
-            {offered ? (
-              <div style={{ background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: 22, padding: '20px 20px 18px', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 26px 54px -38px rgba(11,8,15,.3)' }}>
-                <CompanionLine>{offerLine}</CompanionLine>
-                <Button onClick={() => void acceptOffer()} disabled={dealing} full>
-                  {dealing ? 'dealing…' : 'make my 3 cards'}
-                </Button>
-                {tier === 'paying' ? (
-                  <div style={{ fontFamily: SORA, fontSize: 12.5, color: MUTED, textAlign: 'center' }}>
-                    clean · {spec.width}×{spec.height} · saved as a set
-                  </div>
-                ) : null}
-                <Button variant="ghost" size="sm" onClick={() => setOffered(false)} full>
-                  {tier === 'guest' ? 'not now' : 'later'}
-                </Button>
+            {/* the wait, in the companion's voice — three cards take three
+                model calls, so the screen says what is happening */}
+            {phase === 'dealing' && cards.length === 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <CompanionLine>{dealingLine}</CompanionLine>
+                <DealingSkeleton />
                 <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: FAINT, textAlign: 'center' }}>
                   nobody sees the cards unless you post them.
                 </div>
               </div>
             ) : null}
 
-            {!offered && cards.length === 0 ? (
+            {/* the set is open, so a jam is retried as a deal, never as a respill */}
+            {dealFailed && phase === 'idle' && cards.length === 0 && set ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
                 <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15.5, color: MUTED, textAlign: 'center' }}>
-                  the offer stands whenever you want it.
+                  that one jammed on the way out. your words are still here.
                 </div>
-                <Button variant="secondary" size="sm" onClick={() => setOffered(true)}>
-                  actually — make my 3 cards
+                <Button variant="secondary" size="sm" onClick={() => void dealCards(set.id)}>
+                  ↻ try the cards again
                 </Button>
               </div>
             ) : null}
@@ -763,6 +780,53 @@ export function JokeSurface() {
         </div>
       ) : null}
     </>
+  )
+}
+
+/* Three card-shaped placeholders, in the deck's own proportions, so the wait
+   holds the space the cards are about to fill instead of collapsing the page
+   and shoving it back down when they land. */
+function DealingSkeleton() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {SLOTS.map((slot) => (
+          <div
+            key={slot.key}
+            style={{
+              flex: 1, height: 34, borderRadius: 999,
+              border: '1px solid rgba(11,8,15,.10)', background: '#fff',
+              display: 'grid', placeItems: 'center',
+              fontFamily: SORA, fontWeight: 700, fontSize: 12.5, color: FAINT,
+            }}
+          >
+            {slot.label}
+          </div>
+        ))}
+      </div>
+      <div
+        style={{
+          width: '100%', aspectRatio: '9/16', maxHeight: '62vh', borderRadius: 26,
+          background: 'radial-gradient(135% 78% at 50% 0%,#3a1022,#1a0a12 60%,#120710)',
+          border: '.5px solid rgba(255,255,255,.16)',
+          boxShadow: '0 22px 50px -24px rgba(0,0,0,.7)',
+          position: 'relative', overflow: 'hidden',
+        }}
+      >
+        <div className="shutap-deal-shimmer" style={{ position: 'absolute', inset: 0 }} />
+      </div>
+      <style>{`
+        .shutap-deal-shimmer{
+          background:linear-gradient(100deg,transparent 20%,rgba(231,84,138,.16) 50%,transparent 80%);
+          background-size:220% 100%;
+          animation:shutapDeal 1.5s ease-in-out infinite;
+        }
+        @keyframes shutapDeal{from{background-position:180% 0}to{background-position:-80% 0}}
+        @media (prefers-reduced-motion: reduce){
+          .shutap-deal-shimmer{animation:none;background:rgba(231,84,138,.10)}
+        }
+      `}</style>
+    </div>
   )
 }
 
