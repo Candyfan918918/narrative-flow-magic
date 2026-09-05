@@ -32,9 +32,7 @@ export function clearAnonSessionId(): void {
   try { localStorage.removeItem(ANON_KEY) } catch { /* noop */ }
 }
 
-export function browserTimezone(): string {
-  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || '' } catch { return '' }
-}
+
 
 /** Every joke event carries the tier. Situation text never rides along. */
 export function jokeTrack(name: string, tier: JokeTier, props: Record<string, unknown> = {}): void {
