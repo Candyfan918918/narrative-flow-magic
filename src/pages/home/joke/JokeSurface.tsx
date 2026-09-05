@@ -98,8 +98,17 @@ export function JokeSurface() {
         }
       : null
     try {
+      // SIGNED_IN can fire a beat before the token is readable for the
+      // outgoing call; without it the server sees a guest and refuses.
+      let token: string | null = null
+      for (let i = 0; i < 12 && !token; i++) {
+        token = (await supabase.auth.getSession()).data.session?.access_token ?? null
+        if (!token) await new Promise((r) => setTimeout(r, 250))
+      }
+      if (!token) return
       const p0 = pending.current
       const res = await claim({
+
         data: {
           ...ctx(),
           hold: held,
