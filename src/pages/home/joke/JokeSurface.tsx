@@ -59,6 +59,7 @@ export function JokeSurface() {
   const [toast, setToast] = useState<string | null>(null)
   const [sheet, setSheet] = useState<{ open: boolean; trigger: string }>({ open: false, trigger: 'keep' })
   const [busy, setBusy] = useState(false)
+  const [howOpen, setHowOpen] = useState(false)
   const pending = useRef<Pending | null>(null)
   const setRef = useRef<HTMLDivElement | null>(null)
 
