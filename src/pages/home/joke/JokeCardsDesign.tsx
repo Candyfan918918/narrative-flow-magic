@@ -252,16 +252,14 @@ export function JokeCardsDesign() {
           </div>
         </div>
 
-        {/* the entry, held still — the deck is its response */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: '#fff', border: '.5px solid rgba(11,8,15,.08)', borderRadius: 22, padding: 18, boxShadow: '0 12px 30px -24px rgba(80,10,45,.30)' }}>
+        {/* The entry box is the existing composer on the home page and is not
+            redesigned here. The deck is what appears under it, so this page
+            starts with the situation already said. */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <TrustLabel>what happened</TrustLabel>
-          <span style={{ fontFamily: INTER, fontSize: 15, lineHeight: 1.55, color: INK, textWrap: 'pretty' }}>
-            he said we should split everything 50/50, then laminated a chart with only my name on the rows. apparently i&apos;m “better at systems.”
+          <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.45, color: PROSE, textWrap: 'pretty', maxWidth: '64ch' }}>
+            {SITUATION}
           </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 6px 6px 14px', background: '#fff', border: '2px solid #e7548a', borderRadius: 14 }}>
-            <span style={{ flex: 1, minWidth: 0, fontFamily: INTER, fontSize: 13.5, lineHeight: 1.3, color: '#9e7a8c' }}>turn it into a joke</span>
-            <span aria-hidden style={{ flex: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 10, background: 'linear-gradient(92deg,#e7548a 0%,#890041 70%)', color: '#fff', fontFamily: INTER, fontWeight: 700, fontSize: 15, lineHeight: 1 }}>↵</span>
-          </div>
         </div>
 
         {/* the deck */}
