@@ -215,7 +215,7 @@ export function Sheet({
   if (!open) return null
   const dark = tone === 'dark'
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 90, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
       <div
         onClick={onClose}
         style={{ position: 'absolute', inset: 0, background: 'rgba(11,8,15,.55)', backdropFilter: 'blur(5px)' }}
