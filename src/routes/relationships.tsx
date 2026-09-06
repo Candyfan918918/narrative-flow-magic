@@ -6,26 +6,26 @@ import { breadcrumbScript } from "@/lib/seo/breadcrumbs";
 const PATH = "/relationships";
 const TITLE = "Relationships — vent about dating & breakups | Shutap";
 const DESCRIPTION =
-  "Real, pseudonymous stories about relationships — dating, partners, situationships, breakups — and what happened next. Someone has lived your thing.";
+  "Dating, partners, situationships, breakups — as material. type what happened and shutap writes you a set of joke cards about it.";
 const H1 = "relationships";
 const CAPSULE =
-  "Dating, partners, situationships, breakups, and the gray area in between. This is where people vent about what's happening in their relationships — pseudonymously, honestly — and come back to share what actually happened next. Whatever you're sitting with, someone here has lived a version of it.";
+  "Dating, partners, situationships, breakups, and the gray area in between. Type what happened and shutap writes you a set of joke cards — every card a different angle on the same mess, always at the situation and never at you.";
 const WHAT =
-  "Relationships is where the messy middle goes: the text you're overthinking, the fight that keeps repeating, the situationship with no name, the breakup you're not sure about. Spill it under a pseudonym, hear from people who've been exactly here, and — later — find out what they did next and how it turned out.";
+  "Relationships is where the messy middle goes: the text you're overthinking, the fight that keeps repeating, the situationship with no name, the breakup you're not sure about. Type it under a pseudonym and shutap turns it into a set you flip one card at a time. Keep the ones that land.";
 const INVITE =
-  "You don't have to have the words yet. Start with what's on your mind; the room takes it from there.";
+  "You don't have to have the words yet. Type whatever it is; shutap writes the set.";
 const FAQ = [
   {
     q: "Is it normal to feel this way about my relationship?",
-    a: "Almost certainly. The most common thing people discover on Shutap is that the exact situation they thought was theirs alone is one hundreds of others are living too. Reading real stories from people in the same spot is often the first relief.",
+    a: "Almost certainly. The situation you thought was uniquely yours is one plenty of people are living too. Shutap doesn\u2019t rule on it \u2014 it writes jokes about it, which is a faster way out of your own head.",
   },
   {
     q: "Can I post about my relationship pseudonymously?",
-    a: "You post under a consistent pseudonym, never your real name, and personal identifiers are removed before anything is stored. Your voice is yours; your identity stays protected.",
+    a: "You write under a consistent pseudonym, never your real name, and identifying details are stripped before anything is stored.",
   },
   {
     q: "What makes Shutap different from asking Reddit?",
-    a: "You come back. On Shutap, people return to share what actually happened after the moment passed — so over time you can see how situations like yours tend to resolve, not just what strangers think you should do.",
+    a: "Nobody here is going to tell you what to do. You type what happened and get a set of joke cards \u2014 the absurd detail, the pattern, the whole thing played back at an angle you hadn\u2019t tried.",
   },
 ];
 const PILLAR = "Relationships";
