@@ -20,7 +20,7 @@ const FAQ = [
     a: "Almost certainly. The most common thing people discover on Shutap is that the exact situation they thought was theirs alone is one hundreds of others are living too. Reading real stories from people in the same spot is often the first relief.",
   },
   {
-    q: "Can I post about my relationship anonymously?",
+    q: "Can I post about my relationship pseudonymously?",
     a: "You post under a consistent pseudonym, never your real name, and personal identifiers are removed before anything is stored. Your voice is yours; your identity stays protected.",
   },
   {

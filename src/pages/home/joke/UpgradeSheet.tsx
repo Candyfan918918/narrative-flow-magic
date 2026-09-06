@@ -90,7 +90,7 @@ export function UpgradeSheet({
         </div>
 
         <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 14.5, color: '#9e7a8c', textAlign: 'center' }}>
-          venting, being heard, and all three cards stay free. always.
+          typing your situation and reading your set stay free. always.
         </div>
       </div>
       <style>{`@keyframes shutapUpIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}`}</style>

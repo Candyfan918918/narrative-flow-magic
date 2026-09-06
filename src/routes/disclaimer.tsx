@@ -6,7 +6,7 @@ import { SITE_URL } from '@/lib/site'
 const URL = `${SITE_URL}/disclaimer`
 const TITLE = 'Medical / Legal Disclaimer — Shutap'
 const DESCRIPTION =
-  'Shutap is a peer-support and journaling community with an AI companion. It does not provide medical, mental-health, crisis, or legal services or advice.'
+  'Shutap writes jokes, not prescriptions. It does not provide medical, mental-health, crisis, or legal services or advice.'
 
 export const Route = createFileRoute('/disclaimer')({
   head: () => ({
@@ -35,11 +35,10 @@ function DisclaimerPage() {
     >
       <h3>Formal</h3>
       <p>
-        Shutap is a peer-support and journaling community with an AI companion. It does not provide
-        medical, psychological, mental-health, crisis, or legal services or advice, and no
-        professional relationship is created by using it. Content and AI responses are for support
-        and reflection only and are not a substitute for professional care. In an emergency,
-        contact 988 or 911 (US) or findahelpline.com.
+        Shutap is a pseudonymous entertainment service that generates AI-written humorous content
+        from user-submitted situations. It does not provide medical, psychological, mental-health,
+        crisis, or legal services or advice, and no professional relationship is created by using
+        it. In an emergency, contact 988 or 911 (US) or findahelpline.com. 18+.
       </p>
 
       <h3>In-voice</h3>
@@ -56,7 +55,7 @@ function DisclaimerPage() {
           lineHeight: 1.55,
         }}
       >
-        shutap is a supportive community, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
+        shutap writes jokes, not prescriptions. not therapy, not advice, not a diagnosis. if it&apos;s heavy, here&apos;s real help \u2192
       </div>
     </DocLayout>
   )

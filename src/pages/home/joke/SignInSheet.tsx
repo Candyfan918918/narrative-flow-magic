@@ -20,10 +20,10 @@ const SHEET_LEAD: Record<string, string> = {
 }
 
 const SHEET_BODY: Record<string, string> = {
-  save: "that's the whole point of this place. venting and being heard stay free forever. an alias is only so your cards belong to someone — 30 seconds, no real name, no email hunting.",
-  share: "that's the whole point of this place. venting and being heard stay free forever. an alias is only so your cards belong to someone — 30 seconds, no real name, no email hunting.",
+  save: "reading is free forever. an alias is only so your set belongs to someone — 30 seconds, no real name, no password.",
+  share: "reading is free forever. an alias is only so your set belongs to someone — 30 seconds, no real name, no password.",
   post: 'nobody in a room ever sees who you are. the alias is the name they know you by, and it is not yours.',
-  keep: "that's the whole point of this place. venting and being heard stay free forever. an alias is only so your cards belong to someone — 30 seconds, no real name, no email hunting.",
+  keep: "reading is free forever. an alias is only so your set belongs to someone — 30 seconds, no real name, no password.",
   checkout: 'the clean cards land in the same place your alias does. one link, then both.',
 }
 
@@ -107,10 +107,10 @@ export function SignInSheet({
             <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15, color: '#a8003f' }}>{err}</div>
           ) : null}
           <Button onClick={() => void send()} disabled={busy} full>
-            {busy ? 'sending…' : 'get my alias'}
+            {busy ? 'sending…' : 'send me the link'}
           </Button>
           <Button variant="ghost" size="sm" onClick={onClose} full>
-            keep reading them
+            not now — keep reading
           </Button>
           <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: FAINT, textAlign: 'center' }}>
             reading the cards stays free either way.
@@ -119,7 +119,7 @@ export function SignInSheet({
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'center', padding: '8px 0 4px' }}>
           <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, color: '#2b2429', textAlign: 'center', lineHeight: 1.5 }}>
-            check your inbox — link&apos;s on its way from hello@shutap.com. open it on this device and your three cards are still right here.
+            check your inbox — link&apos;s on its way from hello@shutap.com. open it on this device and your set is still right here.
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>close</Button>
         </div>

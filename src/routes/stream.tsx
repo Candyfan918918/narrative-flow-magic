@@ -5,8 +5,8 @@ import { SITE_URL } from '@/lib/site'
 export const Route = createFileRoute('/stream')({
   head: () => ({
     meta: [
-      { title: 'Stream — Shutap' },
-      { name: 'description', content: 'Live venting stream — see what people are carrying right now.' },
+      { title: 'rooms — Shutap' },
+      { name: 'description', content: 'rooms people opened from their own material — read what is going on right now.' },
     ],
     links: [{ rel: 'canonical', href: `${SITE_URL}/stream` }],
   }),

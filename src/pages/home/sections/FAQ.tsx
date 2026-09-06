@@ -19,7 +19,7 @@ export function FAQ() {
           </p>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <details style={{ borderTop: '.5px solid rgba(11,8,15,.08)', padding: '15px 0' }}>
-              <summary style={summaryStyle}>is this anonymous?<span style={plus}>+</span></summary>
+              <summary style={summaryStyle}>is this pseudonymous?<span style={plus}>+</span></summary>
               <p style={p}>pseudonymous. you get a persistent alias — something like 🦉 Quiet Indonesian Owl — generated the first time you sit down. your real name is never attached to anything, anywhere, including us.</p>
             </details>
             <details style={{ borderTop: '.5px solid rgba(11,8,15,.08)', padding: '15px 0' }}>
