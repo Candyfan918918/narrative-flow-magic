@@ -8,22 +8,29 @@
 
 export type SlotKey = 'the_take' | 'the_clapback' | 'the_roast'
 
-export const SLOTS: { key: SlotKey; label: string; brief: string; accent: string }[] = [
+/* `subtitle` is what the card BACK shows under the label, and it is permanent
+   rather than a tooltip: a guest makes their single most important choice on
+   their first visit, so they cannot be required to discover what "the take"
+   means. `brief` is for the model; `subtitle` is for the reader. */
+export const SLOTS: { key: SlotKey; label: string; subtitle: string; brief: string; accent: string }[] = [
   {
     key: 'the_take',
     label: 'the take',
+    subtitle: 'what actually happened here',
     brief: 'name what actually happened, drily, the way a friend would say it back to her',
     accent: '#e7548a',
   },
   {
     key: 'the_clapback',
     label: 'the clapback',
+    subtitle: "what you wish you'd said",
     brief: 'the line she wishes she had said in the moment — one sentence, in quotes',
     accent: '#c1216b',
   },
   {
     key: 'the_roast',
     label: 'the roast',
+    subtitle: 'the joke',
     brief: 'roast the object or the move itself — the chart, the sigh, the rule — never the person',
     accent: '#7F77DD',
   },
@@ -65,6 +72,47 @@ export function angleLabel(angle: string): string {
   return ANGLE_LABEL[angle] ?? angle
 }
 
+const SUBTITLES: Record<string, string> = Object.fromEntries(
+  SLOTS.map((s) => [s.key, s.subtitle]),
+)
+
+/** The permanent line under a back's label. Empty for the legacy angles,
+ *  which predate the labelled backs and are only ever read back revealed. */
+export function angleSubtitle(angle: string): string {
+  return SUBTITLES[angle] ?? ''
+}
+
+/* ─────────────────────── the shuffle ───────────────────────
+   Position is randomised per set. The label carries the identity, so position
+   doesn't need to — and randomising is what keeps `first_flip_slot` free of a
+   positional confound, which is the one number this deck exists to measure.
+
+   Seeded off the set id rather than Math.random so a re-render, a remount or
+   a second tab all deal the same set in the same order. */
+
+function hash(seed: string): number {
+  let h = 0x811c9dc5
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i)
+    h = Math.imul(h, 0x01000193) >>> 0
+  }
+  return h || 1
+}
+
+export function shuffleSlots<T>(items: readonly T[], seed: string): T[] {
+  const out = items.slice()
+  let state = hash(seed)
+  for (let i = out.length - 1; i > 0; i--) {
+    // xorshift32, so successive draws in one pass don't correlate
+    state ^= state << 13; state >>>= 0
+    state ^= state >>> 17
+    state ^= state << 5; state >>>= 0
+    const j = state % (i + 1)
+    ;[out[i], out[j]] = [out[j]!, out[i]!]
+  }
+  return out
+}
+
 export function angleAccent(angle: string): string {
   return ACCENTS[angle] ?? '#e7548a'
 }
@@ -90,6 +138,10 @@ export type JokeCard = {
   saved: boolean
   room_id?: string | null
   day?: string
+  /** The set list groups by these: a card is read back under the situation
+   *  it was written for, never as a loose line. */
+  set_id?: string | null
+  situation?: string
 }
 
 export type JokeTier = 'guest' | 'free' | 'paying'

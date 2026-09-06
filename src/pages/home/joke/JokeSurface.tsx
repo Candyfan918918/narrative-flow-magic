@@ -20,13 +20,18 @@ import { supabase } from '@/integrations/supabase/client'
 import {
   submitJokeEntry,
   dealJokeCards,
-  rerollJokeCard,
   claimJokeSession,
   listMyJokeCards,
   postJokeCardToRoom,
   exportJokeCards,
 } from '@/lib/jokes.functions'
-import { ARCHETYPE_LABEL, SLOTS, angleAccent, exportSpec, type JokeCard, type JokeTier } from '@/lib/jokes/deck'
+import {
+  ARCHETYPE_LABEL,
+  exportSpec,
+  type JokeCard,
+  type JokeTier,
+  type SlotKey,
+} from '@/lib/jokes/deck'
 import { PLAN_TO_PRICE, usd } from '@/lib/pricing'
 import {
   anonSessionId,
@@ -37,14 +42,27 @@ import {
   zipStored,
 } from './jokeClient'
 import { CardFace } from './CardFace'
+import { CardBack, CardBackStyles } from './CardBack'
+import { FlipCard } from './FlipCard'
+import { CardActions } from './CardActions'
+import { PaywallBlock, PAYWALL_ID } from './PaywallBlock'
+import { SetList, type SetGroup } from './SetList'
+import { useDeck } from './useDeck'
 import { SignInSheet } from './SignInSheet'
 import { AliasCeremony, type CeremonyAlias } from './AliasCeremony'
 import { CardShareSheet } from './CardShareSheet'
 import { UpgradeSheet } from './UpgradeSheet'
 import { Button, CompanionLine, Eyebrow, SORA, NEWS, INK, MUTED, FAINT, ACCENT } from './ui'
 
-/** What the reader asked for when the alias gate went up, resumed afterwards. */
-type Pending = { type: 'save' } | { type: 'share' } | { type: 'saveSet' } | { type: 'post' } | { type: 'checkout' }
+/** What the reader asked for when the alias gate went up, resumed afterwards.
+ *  The card rides along by position: the gate can be answered minutes later,
+ *  and by then the set has been re-read from the server with real ids. */
+type Pending =
+  | { type: 'save'; position: number }
+  | { type: 'share'; position: number }
+  | { type: 'post'; position: number }
+  | { type: 'saveSet' }
+  | { type: 'checkout' }
 
 type SetState = { id: string; situation: string; archetype: string }
 
@@ -54,7 +72,6 @@ export function JokeSurface() {
   const navigate = useNavigate()
   const submit = useServerFn(submitJokeEntry)
   const deal = useServerFn(dealJokeCards)
-  const reroll = useServerFn(rerollJokeCard)
   const claim = useServerFn(claimJokeSession)
   const listCards = useServerFn(listMyJokeCards)
   const postCard = useServerFn(postJokeCardToRoom)
@@ -78,9 +95,11 @@ export function JokeSurface() {
   // cards are written. One uninterrupted move from the composer to the deck.
   const [phase, setPhase] = useState<'idle' | 'reading' | 'dealing'>('idle')
   const [dealFailed, setDealFailed] = useState(false)
-  const [index, setIndex] = useState(0)
-  const [rerolling, setRerolling] = useState<number | null>(null)
   const [refusal, setRefusal] = useState<string | null>(null)
+  /** The card an action was last aimed at. The deck has no single "current"
+   *  card any more, so the share sheet and the after-save panel both need to
+   *  be told which one they are talking about. */
+  const [focus, setFocus] = useState<JokeCard | null>(null)
 
   // ── the after-save moment ──
   const [shareOpen, setShareOpen] = useState(false)
@@ -96,11 +115,18 @@ export function JokeSurface() {
   const [resumeAt, setResumeAt] = useState(0)
   const pending = useRef<Pending | null>(null)
   const deckRef = useRef<HTMLDivElement | null>(null)
-  const touchX = useRef<number | null>(null)
 
   const signedIn = tier !== 'guest'
   const spec = exportSpec(tier)
-  const card = cards[index] ?? null
+
+  /** Slot → the card written for it, once the deal lands. The backs are up
+   *  before this has anything in it. */
+  const bySlot = useMemo(() => {
+    const map = new Map<string, JokeCard>()
+    for (const c of cards) map.set(c.angle, c)
+    return map
+  }, [cards])
+  const written = useMemo(() => new Set(bySlot.keys()), [bySlot])
 
   const ctx = useCallback(
     // No timezone is sent: the server derives the day from stored state only.
@@ -112,6 +138,26 @@ export function JokeSurface() {
     setToast(m)
     window.setTimeout(() => setToast(null), 3200)
   }, [])
+
+  const deck = useDeck({
+    // Seeded off the set so the shuffle is stable for this situation and the
+    // position reported with first_flip_slot is the one they actually saw.
+    seed: set?.id ?? 'empty',
+    tier,
+    written,
+    failed: dealFailed,
+    onFirstFlip: (slot, position) => jokeTrack('first_flip_slot', tier, { slot, position }),
+    onReveal: (slot, position) => {
+      const c = bySlot.get(slot)
+      jokeTrack('card_revealed', tier, {
+        slot, position, used_fallback: c?.used_fallback ?? null,
+      })
+    },
+    onSpentTap: (slot) => {
+      jokeTrack('spent_card_tapped', tier, { slot })
+      document.getElementById(PAYWALL_ID)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    },
+  })
 
   const refresh = useCallback(async () => {
     try {
@@ -135,10 +181,10 @@ export function JokeSurface() {
     const p = pending.current
     pending.current = null
     if (!p) return
-    if (p.type === 'save') void doSave()
+    if (p.type === 'save') void doSave(at(p.position))
     else if (p.type === 'saveSet') void doSaveSet()
-    else if (p.type === 'share') setShareOpen(true)
-    else if (p.type === 'post') void doPost()
+    else if (p.type === 'share') { setFocus(at(p.position)); setShareOpen(true) }
+    else if (p.type === 'post') void doPost(at(p.position))
     else if (p.type === 'checkout') void navigate({ to: '/subscribe' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeAt])
@@ -242,7 +288,6 @@ export function JokeSurface() {
       setTier(res.tier)
       setSet({ id: res.set_id, situation: res.clean_text, archetype: res.archetype })
       setCards([])
-      setIndex(0)
       setSaved(null)
       setPostedAlias(null)
       opened = { id: res.set_id, tier: res.tier }
@@ -278,7 +323,6 @@ export function JokeSurface() {
       }
       setTier(res.tier)
       setCards(res.cards)
-      setIndex(0)
       jokeTrack('cards_dealt', res.tier, {
         fallbacks: res.cards.filter((c) => c.used_fallback).length,
       })
@@ -291,36 +335,17 @@ export function JokeSurface() {
     }
   }
 
-  async function anotherOne() {
-    if (!set || rerolling !== null || !card) return
-    const position = card.position
-    setRerolling(position)
-    setRefusal(null)
-    try {
-      const res = await reroll({ data: { set_id: set.id, position, ...ctx() } })
-      if (!res.ok) {
-        jokeTrack('reroll_refused', res.tier, { reason: res.reason })
-        setRefusal(refusalCopy(res.reason))
-        return
-      }
-      setTier(res.tier)
-      setCards((prev) => prev.map((c) => (c.position === position ? res.card : c)))
-      setSaved(null)
-      jokeTrack('card_rerolled', res.tier, { position })
-      if (res.tier !== 'guest') void refresh()
-    } catch {
-      say('that one would not land. try again?')
-    } finally {
-      setRerolling(null)
-    }
-  }
-
   // ─────────────────────── save · share · post ───────────────────────
 
-  async function doSave() {
-    const target = cards[index]
+  /** Resolve a pending action's card after the gate, when ids finally exist. */
+  function at(position: number): JokeCard | null {
+    return cards.find((c) => c.position === position) ?? null
+  }
+
+  async function doSave(target: JokeCard | null) {
     if (!target) return
-    if (!signedIn || !target.id) { raiseGate('save', { type: 'save' }); return }
+    if (!signedIn || !target.id) { raiseGate('save', { type: 'save', position: target.position }); return }
+    setFocus(target)
     setSaving(true)
     try {
       const res = await exportCards({ data: { card_id: target.id, ...ctx() } })
@@ -329,7 +354,7 @@ export function JokeSurface() {
       const png = await svgToPng(image.svg, res.width, res.height)
       saveBlob(png, image.filename)
       setSaved(`${res.width}×${res.height}`)
-      jokeTrack('save_completed', res.tier, { angle: target.angle, mark: res.mark })
+      jokeTrack('card_downloaded', res.tier, { slot: target.angle, mark: res.mark })
     } catch {
       say('the image did not render. try once more?')
     } finally {
@@ -344,7 +369,7 @@ export function JokeSurface() {
     setSaving(true)
     try {
       const res = await exportCards({ data: { set_id: set.id, ...ctx() } })
-      if (res.images.length < 2) { await doSave(); return }
+      if (res.images.length < 2) { await doSave(cards[0] ?? null); return }
       const files = await Promise.all(
         res.images.map(async (image) => ({
           name: image.filename,
@@ -361,22 +386,24 @@ export function JokeSurface() {
     }
   }
 
-  function openShare() {
-    const target = cards[index]
+  function openShare(target: JokeCard | null) {
     if (!target) return
-    if (!signedIn || !target.id) { raiseGate('share', { type: 'share' }); return }
-    jokeTrack('share_sheet_shown', tier, { angle: target.angle })
+    // Never hidden, never disabled, never asterisked — a guest gets the sheet
+    // at the moment they reach for it, and keeps the card either way.
+    if (!signedIn || !target.id) { raiseGate('share', { type: 'share', position: target.position }); return }
+    jokeTrack('card_shared', tier, { slot: target.angle })
+    setFocus(target)
     setShareOpen(true)
   }
 
-  async function doPost() {
-    const target = cards[index]
+  async function doPost(target: JokeCard | null) {
     if (!target) return
-    if (!signedIn || !target.id) { raiseGate('post', { type: 'post' }); return }
+    if (!signedIn || !target.id) { raiseGate('post', { type: 'post', position: target.position }); return }
+    setFocus(target)
     try {
       const res = await postCard({ data: { card_id: target.id, ...ctx() } })
       setPostedAlias(res.alias ?? alias?.display_name ?? 'you')
-      jokeTrack('card_posted_to_room', tier, { angle: target.angle })
+      jokeTrack('card_posted_to_room', tier, { slot: target.angle })
       void refresh()
     } catch { say('could not open the room. try again?') }
   }
@@ -391,6 +418,30 @@ export function JokeSurface() {
   // ─────────────────────────── derived copy ───────────────────────────
 
   const days = useMemo(() => new Set(list.map((c) => c.day).filter(Boolean)).size, [list])
+
+  /** The set list, newest first, each situation with the cards under it.
+   *  The open set shows only what has actually been turned over — the two
+   *  still face-down are not in the list, because as far as the reader is
+   *  concerned they have not been written. Older sets come back from the
+   *  server as stored, since the deal writes all three at once (see the
+   *  note in dealCards). */
+  const groups = useMemo<SetGroup[]>(() => {
+    const out: SetGroup[] = []
+    const seen = new Map<string, SetGroup>()
+    const revealed = new Set(deck.revealedSlots.map((s) => s.key))
+    for (const c of list) {
+      const key = c.set_id ?? c.day ?? 'unknown'
+      if (set && c.set_id === set.id && !revealed.has(c.angle as SlotKey)) continue
+      let g = seen.get(key)
+      if (!g) {
+        g = { id: key, situation: c.situation ?? '', cards: [] }
+        seen.set(key, g)
+        out.push(g)
+      }
+      g.cards.push(c)
+    }
+    return out.filter((g) => g.cards.length > 0)
+  }, [list, set, deck.revealedSlots])
 
   const dealingLine = useMemo(() => {
     if (tier === 'paying') {
@@ -533,17 +584,15 @@ export function JokeSurface() {
       {/* ══ 3 · the offer, then the three cards ══ */}
       {set && !crisis ? (
         <section ref={deckRef} style={{ background: 'linear-gradient(180deg,#fff,rgba(16,12,20,.04))', padding: 'clamp(16px,3vh,36px) clamp(16px,4vw,28px) clamp(36px,6vh,72px)' }}>
-          <div style={{ maxWidth: 560, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <CardBackStyles />
+          <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
 
-            {/* the wait, in the companion's voice — three cards take three
-                model calls, so the screen says what is happening */}
+            {/* The deck is the response to what they just typed, so there is no
+                header between the composer and it — only the companion, once,
+                while the writer works. */}
             {phase === 'dealing' && cards.length === 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ maxWidth: 560 }}>
                 <CompanionLine>{dealingLine}</CompanionLine>
-                <DealingSkeleton />
-                <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: FAINT, textAlign: 'center' }}>
-                  nobody sees the cards unless you post them.
-                </div>
               </div>
             ) : null}
 
@@ -559,92 +608,87 @@ export function JokeSurface() {
               </div>
             ) : null}
 
-            {cards.length === 3 ? (
-              <>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                  <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 17, letterSpacing: '-.03em', color: INK }}>
-                    your 3 cards
-                  </div>
-                  <Eyebrow>{index + 1} / 3</Eyebrow>
-                </div>
+            {/* ── the deck ──
+                Backs go up as soon as the set opens, before a word is written:
+                a back is label and subtitle only, so it needs nothing from the
+                writer. Turn one over early and it waits on its mid-flip edge.
+                Stacked on mobile, three across on desktop — a carousel would
+                hide two of the three labelled choices, which is the one thing
+                the labelled back exists to prevent. */}
+            {!dealFailed ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 18, alignItems: 'start' }}>
+                {deck.order.map((slot) => {
+                  const dealt = bySlot.get(slot.key) ?? null
+                  const phaseOf = deck.phaseOf(slot.key)
+                  const revealed = phaseOf === 'edge' || phaseOf === 'in'
+                  return (
+                    <div key={slot.key} style={{ display: 'flex', flexDirection: 'column', gap: 11, maxWidth: 340, width: '100%', margin: '0 auto' }}>
+                      <FlipCard
+                        phase={phaseOf === 'hold' ? 'out' : phaseOf}
+                        onTap={() => deck.tap(slot.key)}
+                        label={slot.label}
+                        hint={revealed && dealt ? dealt.text : slot.subtitle}
+                        spent={deck.isSpent(slot.key)}
+                        describedBy={PAYWALL_ID}
+                      >
+                        {revealed && dealt ? (
+                          <div aria-live="polite">
+                            <CardFace
+                              card={dealt}
+                              situation={set.situation}
+                              mark={tier !== 'paying'}
+                              loading={false}
+                            />
+                          </div>
+                        ) : (
+                          <CardBack
+                            label={slot.label}
+                            subtitle={slot.subtitle}
+                            situation={set.situation}
+                            holding={phaseOf === 'hold'}
+                          />
+                        )}
+                      </FlipCard>
 
-                {/* slot tabs — the same three for everyone */}
-                <div style={{ display: 'flex', gap: 8 }}>
-                  {cards.map((c, i) => (
-                    <button
-                      key={c.position}
-                      type="button"
-                      onClick={() => { setIndex(i); setSaved(null); setPostedAlias(null) }}
-                      style={{
-                        flex: 1, height: 34, borderRadius: 999, cursor: 'pointer',
-                        fontFamily: SORA, fontWeight: 700, fontSize: 12.5,
-                        border: i === index ? 'none' : '1px solid rgba(11,8,15,.12)',
-                        background: i === index ? angleAccent(c.angle) : '#fff',
-                        color: i === index ? '#fff' : MUTED,
-                        transition: 'background .2s, color .2s',
-                      }}
-                    >
-                      {c.angleLabel}
-                    </button>
-                  ))}
-                </div>
+                      {revealed && dealt ? (
+                        <CardActions
+                          label={slot.label}
+                          canPost={signedIn}
+                          onPost={() => void doPost(dealt)}
+                          onShare={() => openShare(dealt)}
+                          onDownload={() => void doSave(dealt)}
+                        />
+                      ) : null}
+                    </div>
+                  )
+                })}
+              </div>
+            ) : null}
 
-                <div
-                  onTouchStart={(e) => { touchX.current = e.touches[0]?.clientX ?? null }}
-                  onTouchEnd={(e) => {
-                    const start = touchX.current
-                    const end = e.changedTouches[0]?.clientX ?? null
-                    touchX.current = null
-                    if (start === null || end === null || Math.abs(end - start) < 48) return
-                    setIndex((i) => Math.min(2, Math.max(0, i + (end < start ? 1 : -1))))
-                    setSaved(null)
-                    setPostedAlias(null)
-                  }}
-                >
-                  {card ? (
-                    <CardFace
-                      card={card}
-                      situation={set.situation}
-                      mark={tier !== 'paying'}
-                      loading={rerolling === card.position}
-                    />
-                  ) : null}
-                </div>
+            {/* ── the one offer, in the one place ──
+                Below the deck, after the revealed card. The unflipped cards are
+                untouched; this is what a tap on one of them points at. */}
+            {deck.revealedSlots.length > 0 && tier !== 'paying' ? (
+              <PaywallBlock
+                pulsing={deck.pulsing}
+                line="you turned one over. members turn over all three, on every situation — and their cards carry no mark."
+                cta="turn over all three"
+                onCta={() => { jokeTrack('upgrade_shown', tier, { after: 'deck' }); setUpgradeOpen(true) }}
+              />
+            ) : null}
 
-                {/* the action row — reading is above it, and never gated */}
-                <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <Button variant="secondary" size="sm" onClick={() => void anotherOne()} disabled={rerolling !== null}>
-                    ↻ {tier === 'guest' ? 'another take' : 'another one'}
-                  </Button>
-                  <Button
-                    variant={signedIn ? 'secondary' : 'locked'}
-                    size="sm"
-                    onClick={() => (spec.set && signedIn ? void doSaveSet() : void doSave())}
-                    disabled={saving}
-                    title={signedIn ? undefined : 'an alias first — 30 seconds, no real name'}
-                  >
-                    {signedIn ? '↓' : '🔒'} {spec.set && signedIn ? 'save all 3' : 'save'}
-                  </Button>
-                  <Button
-                    variant={signedIn ? 'secondary' : 'locked'}
-                    size="sm"
-                    onClick={openShare}
-                    title={signedIn ? undefined : 'an alias first — 30 seconds, no real name'}
-                  >
-                    {signedIn ? '↗' : '🔒'} share
-                  </Button>
-                </div>
+            {deck.revealedSlots.length > 0 ? (
+              <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 14, color: FAINT }}>
+                {tier === 'guest'
+                  ? 'reading is free, forever. an alias is only needed to keep one.'
+                  : tier === 'paying'
+                    ? `clean · ${spec.width}×${spec.height} · no mark on any of them.`
+                    : `saves at ${spec.width}×${spec.height}, with the little shutap mark.`}
+              </div>
+            ) : null}
 
-                <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 14, color: FAINT, textAlign: 'center' }}>
-                  {tier === 'guest'
-                    ? 'swipe them all you want. reading is free, forever.'
-                    : tier === 'paying'
-                      ? `clean · ${spec.width}×${spec.height} · no mark on any of them.`
-                      : `saves at ${spec.width}×${spec.height}, with the little shutap mark.`}
-                </div>
-
-                {/* the moment after the save — a win first, an offer second */}
-                {saved ? (
+            {/* the moment after the save — a win first, an offer second */}
+            {saved ? (
                   <div style={{ background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: 22, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 13 }}>
                     <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 14, color: '#1D9E75' }}>
                       ✓ saved{tier === 'paying' ? ' clean' : ''} · {saved}
@@ -660,7 +704,7 @@ export function JokeSurface() {
                           </div>
                         ) : (
                           <>
-                            <Button variant="secondary" onClick={() => void doPost()} full>post it in my room</Button>
+                            <Button variant="secondary" onClick={() => void doPost(focus)} full>post it in my room</Button>
                             <Button variant="ghost" size="sm" onClick={() => setSaved(null)} full>done</Button>
                             <div style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 13.5, color: FAINT, textAlign: 'center' }}>
                               keeping it private is the default. it&apos;s just yours.
@@ -679,9 +723,7 @@ export function JokeSurface() {
                         <Button variant="ghost" size="sm" onClick={() => setSaved(null)} full>this one&apos;s fine</Button>
                       </>
                     )}
-                  </div>
-                ) : null}
-              </>
+              </div>
             ) : null}
 
             {refusal ? (
@@ -706,22 +748,7 @@ export function JokeSurface() {
                 🃏 {list.length} kept · {days <= 1 ? 'day one' : `${days} days of it`}
               </span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 14 }}>
-              {list.slice(0, 30).map((c) => (
-                <div
-                  key={c.id}
-                  style={{ background: '#fff', border: '1px solid rgba(11,8,15,.08)', borderRadius: 22, padding: '18px 20px 14px', display: 'flex', flexDirection: 'column', gap: 10, minHeight: 160 }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                    <Eyebrow style={{ fontSize: 9, letterSpacing: '.16em', color: angleAccent(c.angle) }}>{c.angleLabel}</Eyebrow>
-                    {c.room_id ? <Eyebrow style={{ fontSize: 9, color: '#8e1c4c' }}>🃏 in a room</Eyebrow> : null}
-                  </div>
-                  <span style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: NEWS, fontStyle: 'italic', fontSize: 16, lineHeight: 1.32, color: '#1b0f16', textAlign: 'center' }}>
-                    {c.text}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <SetList groups={groups} />
 
             <div style={{ marginTop: 6, background: 'radial-gradient(120% 120% at 10% 0%,rgba(127,119,221,.06),#fff 65%)', border: '1px solid rgba(11,8,15,.08)', borderRadius: 22, padding: 'clamp(20px,3vw,30px)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 18 }}>
               <div style={{ maxWidth: '52ch' }}>
@@ -757,11 +784,11 @@ export function JokeSurface() {
 
       <CardShareSheet
         open={shareOpen}
-        card={card}
+        card={focus}
         tier={tier}
         saving={saving}
         onClose={() => setShareOpen(false)}
-        onSave={() => void doSave()}
+        onSave={() => void doSave(focus)}
         onSaveSet={() => void doSaveSet()}
         onNote={say}
       />
@@ -780,53 +807,6 @@ export function JokeSurface() {
         </div>
       ) : null}
     </>
-  )
-}
-
-/* Three card-shaped placeholders, in the deck's own proportions, so the wait
-   holds the space the cards are about to fill instead of collapsing the page
-   and shoving it back down when they land. */
-function DealingSkeleton() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ display: 'flex', gap: 8 }}>
-        {SLOTS.map((slot) => (
-          <div
-            key={slot.key}
-            style={{
-              flex: 1, height: 34, borderRadius: 999,
-              border: '1px solid rgba(11,8,15,.10)', background: '#fff',
-              display: 'grid', placeItems: 'center',
-              fontFamily: SORA, fontWeight: 700, fontSize: 12.5, color: FAINT,
-            }}
-          >
-            {slot.label}
-          </div>
-        ))}
-      </div>
-      <div
-        style={{
-          width: '100%', aspectRatio: '9/16', maxHeight: '62vh', borderRadius: 26,
-          background: 'radial-gradient(135% 78% at 50% 0%,#3a1022,#1a0a12 60%,#120710)',
-          border: '.5px solid rgba(255,255,255,.16)',
-          boxShadow: '0 22px 50px -24px rgba(0,0,0,.7)',
-          position: 'relative', overflow: 'hidden',
-        }}
-      >
-        <div className="shutap-deal-shimmer" style={{ position: 'absolute', inset: 0 }} />
-      </div>
-      <style>{`
-        .shutap-deal-shimmer{
-          background:linear-gradient(100deg,transparent 20%,rgba(231,84,138,.16) 50%,transparent 80%);
-          background-size:220% 100%;
-          animation:shutapDeal 1.5s ease-in-out infinite;
-        }
-        @keyframes shutapDeal{from{background-position:180% 0}to{background-position:-80% 0}}
-        @media (prefers-reduced-motion: reduce){
-          .shutap-deal-shimmer{animation:none;background:rgba(231,84,138,.10)}
-        }
-      `}</style>
-    </div>
   )
 }
 
