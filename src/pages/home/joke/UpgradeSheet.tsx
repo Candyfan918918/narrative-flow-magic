@@ -5,7 +5,8 @@
 // appears while a set is still being read, and it never appears at all for a
 // crisis. Declining it costs nothing: all three cards stay free, forever.
 import type { JokeTier } from '@/lib/jokes/deck'
-import { Button, Eyes, SORA, NEWS } from './ui'
+import { EyeMark, ShutapWordmark } from '@/components/brand/EyeMark'
+import { Button, SORA, NEWS } from './ui'
 
 const LINES = [
   'exports with no shutap mark',
@@ -37,7 +38,10 @@ export function UpgradeSheet({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px clamp(18px,5vw,36px)' }}>
-        <Eyes size={32} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <EyeMark style={{ width: 32, height: 22 }} />
+          <ShutapWordmark ink="#f7e8f0" style={{ fontSize: 26, letterSpacing: '-.04em' }} />
+        </div>
         <button
           type="button"
           onClick={onClose}

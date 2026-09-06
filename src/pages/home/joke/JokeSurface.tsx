@@ -185,7 +185,7 @@ export function JokeSurface() {
     else if (p.type === 'saveSet') void doSaveSet()
     else if (p.type === 'share') { setFocus(at(p.position)); setShareOpen(true) }
     else if (p.type === 'post') void doPost(at(p.position))
-    else if (p.type === 'checkout') void navigate({ to: '/subscribe' })
+    else if (p.type === 'checkout') void navigate({ to: '/subscribe', search: { plan: 'monthly' } as never })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeAt])
 
@@ -409,10 +409,16 @@ export function JokeSurface() {
   }
 
   function startCheckout() {
-    if (!signedIn) { raiseGate('checkout', { type: 'checkout' }); return }
+    if (!signedIn) {
+      // The upgrade sheet is a full-screen overlay; close it first so the
+      // alias/sign-in sheet is actually visible on top of the deck.
+      setUpgradeOpen(false)
+      raiseGate('checkout', { type: 'checkout' })
+      return
+    }
     jokeTrack('checkout_started', tier, { lookup_key: 'mirror_monthly' })
     setUpgradeOpen(false)
-    void navigate({ to: '/subscribe' })
+    void navigate({ to: '/subscribe', search: { plan: 'monthly' } as never })
   }
 
   // ─────────────────────────── derived copy ───────────────────────────
