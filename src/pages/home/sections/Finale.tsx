@@ -15,12 +15,12 @@ export function Finale() {
         <div style={{ borderTop: '.5px solid rgba(11,8,15,.1)', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
             <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: '16px', letterSpacing: '-.04em', color: '#0b080f' }}>
-              shut<span style={{ color: '#a52a5f' }}>ap</span> <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, fontSize: '13px', color: '#6f666c', letterSpacing: 0 }}>— a room for what you're carrying.</span>
+              shut<span style={{ color: '#a52a5f' }}>ap</span> <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, fontSize: '13px', color: '#6f666c', letterSpacing: 0 }}>— joke about it.</span>
             </span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 18px', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '14px' }}>
               <a href="/stream" data-link="/stream" data-hover="">rooms</a>
               <a href="/halls" data-link="/halls" data-hover="">halls</a>
-              <a href="/vent/family" data-link="/vent/family" data-hover="">topics</a>
+              <a href="/vent/family" data-link="/vent/family" data-hover="">what people bring</a>
             </div>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px 16px', justifyContent: 'center', fontFamily: "'Sora',sans-serif", fontSize: '12px' }}>
@@ -43,10 +43,10 @@ export function Finale() {
             <a href="mailto:hello@shutap.com" data-hover="" style={foot}>Contact</a>
           </div>
           <div style={{ textAlign: 'center', fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontSize: '12px', color: '#6f666c', lineHeight: 1.7 }}>
-            18+ · pseudonymous · your real name never shows · your story, your rules 🤍<br />
-            shutap is a supportive community, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
+            18+ · pseudonymous · your real name never shows · jokes at the situation, never at you 🤍<br />
+            shutap writes jokes, not prescriptions. not therapy, not advice, not a diagnosis. in an emergency, call or text 988 (US).
           </div>
-          <div style={{ textAlign: 'center', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: '10px', letterSpacing: '.18em', textTransform: 'uppercase', color: '#443c42' }}>you don't have to shut up here</div>
+          <div style={{ textAlign: 'center', fontFamily: "'Sora',sans-serif", fontWeight: 700, fontSize: '10px', letterSpacing: '.18em', textTransform: 'uppercase', color: '#443c42' }}>you already have the material.</div>
         </div>
       </div>
     </section>
