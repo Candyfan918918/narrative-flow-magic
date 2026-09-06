@@ -110,7 +110,7 @@ function LivedIntelligencePage() {
           families, and work — and then live with the results. That
           accumulated, first-hand knowledge of situation, decision, and outcome
           is lived intelligence. It isn't advice or theory. It's what actually
-          happened to real people who were where you are now.
+          happened — and on Shutap, it's the material a set is written from.
         </Section>
 
         <Section title="How it differs from artificial intelligence">
@@ -122,20 +122,20 @@ function LivedIntelligencePage() {
         </Section>
 
         <Section title="Why it compounds">
-          One story is an anecdote. Thousands of stories, each followed over
-          time to a confirmed outcome, become something no opinion thread can
-          match: a longitudinal record of how situations like yours tend to
-          resolve. Most platforms are built to discard this — the moment
-          passes and the outcome is never captured. Shutap is built to keep
-          it, so it grows more valuable the longer it runs.
+          One situation is an anecdote. Hundreds of them, kept under one
+          pseudonym, become something a single post never is: a record of what
+          keeps happening to you — the same person, the same week of the month,
+          the same move. Most apps throw this away the second you close the
+          tab. Shutap keeps it, which is why the jokes get sharper the longer
+          you use it.
         </Section>
 
         <Section title="How Shutap captures it">
-          On Shutap, people vent pseudonymously about what's really going on —
-          and, unlike anywhere else, come back to share what happened next.
-          Their identities are protected before anything is stored. Over time,
-          those confirmed outcomes form the experience graph: lived
-          intelligence, made useful for the next person facing the same thing.
+          On Shutap, you type what actually happened — pseudonymously, with
+          identifying details stripped before storage — and shutap writes it
+          into a set of joke cards. Your lived intelligence is the material.
+          Over time, the sets stack up into the Mirror: a record of what keeps
+          coming back, read to you in your own numbers.
         </Section>
 
         <p style={{ marginTop: 56, fontSize: 15 }}>
@@ -149,7 +149,7 @@ function LivedIntelligencePage() {
               paddingBottom: 2,
             }}
           >
-            Shutap. Speak Up.
+            SHUTAP. Joke about it.
           </a>
         </p>
       </article>

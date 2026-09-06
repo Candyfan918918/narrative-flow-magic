@@ -7,26 +7,26 @@ import { breadcrumbScript } from "@/lib/seo/breadcrumbs";
 const PATH = "/marriage";
 const TITLE = "Marriage — real stories about married life | Shutap";
 const DESCRIPTION =
-  "Pseudonymous stories about marriage — resentment, repair, roommate energy, staying, leaving — and what actually happened next. You're not the only one.";
+  "Marriage, as material: resentment, repair, roommate energy, staying, leaving. type what happened and shutap writes you a set of joke cards.";
 const H1 = "marriage";
 const CAPSULE =
-  "The long-haul stuff: roommate energy, resentment, repair, the question of leaving or staying. This is where people vent about their marriages — pseudonymously, honestly — and come back to share what actually happened next. If you're carrying something heavy, someone here has carried it too.";
+  "The long-haul stuff: roommate energy, resentment, repair, the question of leaving or staying. Type what happened and shutap writes you a set of joke cards about the situation \u2014 never about you.";
 const WHAT =
-  "Marriage is where the quiet, complicated things live: the distance that crept in, the same argument on a loop, the part of you that wonders. Spill it under a pseudonym, hear from people who've been in it for years, and see, over time, what actually helped and what didn't.";
+  "Marriage is where the quiet, complicated things live: the distance that crept in, the same argument on a loop, the part of you that wonders. Type it under a pseudonym and shutap writes the set. You flip the cards one at a time and keep the ones that land.";
 const INVITE =
-  "No performance, no highlight reel. Just what it's actually like — and what happened next.";
+  "No performance, no highlight reel. Just what it's actually like \u2014 and a set written about it.";
 const FAQ = [
   {
     q: "Is it normal to feel lonely or distant in my marriage?",
-    a: "It's one of the most common things people bring to Shutap. Distance, resentment, and roommate energy show up again and again — and reading how others named it and moved through it is often where people start.",
+    a: "It\u2019s one of the most common things people type in here. Distance, resentment and roommate energy show up again and again \u2014 and they make unusually good material.",
   },
   {
-    q: "Can I vent about my marriage without my spouse or anyone knowing?",
-    a: "Yes. You post under a pseudonym, never your real name, and identifying details are removed before storage. Nothing ties a story back to you.",
+    q: "Can I write about my marriage without my spouse or anyone knowing?",
+    a: "Yes. You write under a pseudonym, never your real name, and identifying details are removed before storage. Nothing ties a set back to you.",
   },
   {
     q: "How is this different from marriage advice online?",
-    a: "Shutap isn't advice — it's lived experience with outcomes. People come back to record what actually happened, so you see how situations like yours tended to resolve for real people, not what an article thinks should happen.",
+    a: "Shutap doesn\u2019t give advice at all. It writes jokes about the situation. If you want instructions, this is the wrong website.",
   },
 ];
 const PILLAR = "Marriage";
