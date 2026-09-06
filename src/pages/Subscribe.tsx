@@ -118,7 +118,7 @@ export function SubscribePage() {
       try { sessionStorage.setItem('shutap_returnTo', `/subscribe?plan=${planKey}`) } catch { /* noop */ }
       navigate('/welcome', { replace: true })
     }
-  }, [authed, navigate])
+  }, [authed, planKey, navigate])
 
   // Duplicate-subscription guard: if the user already has an active row,
   // stop rendering checkout and offer the portal instead.
