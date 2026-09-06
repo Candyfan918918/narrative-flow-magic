@@ -9,7 +9,7 @@ export interface WelcomeEnterStepProps {
   displayName: string
 }
 
-const PENDING_KEYS = ['shutap_pending_intent', 'shutap_pending_save', 'shutap_pending_comment'] as const
+const PENDING_KEYS = ['shutap_pending_intent', 'shutap_pending_save', 'shutap_pending_comment', 'shutap_returnTo'] as const
 
 function hasPendingAction() {
   try {
