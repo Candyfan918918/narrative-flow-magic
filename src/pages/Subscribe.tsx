@@ -319,7 +319,7 @@ export function SubscribePage() {
 
             {/* fine print */}
             <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 12.5, lineHeight: 1.6, color: SOFT_MUTED, marginTop: 22, ...fadeUp(0.22) }}>
-              founders' pricing — locked in while you stay subscribed. cancel anytime from your profile; it takes effect at the end of the period. venting, scan &amp; being heard stay free, always. by subscribing you agree to the{' '}
+              founders' pricing — locked in while you stay subscribed. cancel anytime from your profile; it takes effect at the end of the period. typing your situation, scan &amp; reading your set stay free, always. by subscribing you agree to the{' '}
               <a href="/terms" style={{ color: MUTED, textDecoration: 'underline' }}>terms</a>,{' '}
               <a href="/privacy" style={{ color: MUTED, textDecoration: 'underline' }}>privacy policy</a>,{' '}
               <a href="/disclaimer" style={{ color: MUTED, textDecoration: 'underline' }}>disclaimer</a> and{' '}

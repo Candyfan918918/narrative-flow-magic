@@ -5,22 +5,23 @@ const SORA = "'Sora',system-ui,sans-serif"
 
 export const HOME_FAQ: Array<{ q: string; a: string }> = [
   {
-    q: 'is this anonymous?',
-    a: "pseudonymous. you get a persistent alias — something like 🦉 Quiet Indonesian Owl — and your real name, email, and identity stay permanently outside. that persistence is what lets someone remember your last spill and sit with your next one.",
+    q: 'what is shutap?',
+    a: "you type what happened — the comment at dinner, the text at 11pm, the meeting you weren't invited to — and shutap writes you a set of joke cards. every card is a different angle on the same mess. you flip them one at a time and keep the ones that land.",
   },
   {
-    q: 'what happens when i vent?',
-    a: 'you open a room. one at a time, the companion helps you find the words. when it feels ready, the room goes into the stream, other people who\u2019ve lived your exact thing show up, relate, and — if you asked for it — tell you what actually happened next.',
+    q: 'is this pseudonymous?',
+    a: 'you get a name. something like Feral Norwegian Heron. it sticks, and it is not yours. names, addresses, workplaces and anything else identifying get stripped before a word is stored.',
   },
   {
-    q: 'what does the companion do?',
-    a: 'the companion is an AI that listens, helps you spill without freezing, scrubs names and details before anything is seen, and reflects patterns back to you over time. it is not a therapist and not a friend — it is the thing in the room with you at 3am.',
+    q: 'is this therapy or advice?',
+    a: "no. shutap writes jokes, not prescriptions. it doesn't diagnose you, prescribe anything, or tell you what to do. if something is genuinely heavy, it stops joking and points you at real help.",
   },
   {
-    q: 'what happens after i share?',
-    a: "the room opens. people sit in — some just to be with you, some to say \u201comg same,\u201d some to share how theirs went. over the next days the companion checks in: what happened next? that\u2019s your mirror starting to form.",
+    q: 'what can i bring here?',
+    a: "family, partners, exes, roommates, managers, landlords, the friend who's been doing the thing for nine years, the stranger who felt like commenting. big things and extremely small ones. if it's still in your head at midnight, it's material.",
   },
 ]
+
 
 export function HomeFAQ({ onOpenSpill, onOpenScan }: { onOpenSpill: () => void; onOpenScan: () => void }) {
   return (
@@ -33,12 +34,13 @@ export function HomeFAQ({ onOpenSpill, onOpenScan }: { onOpenSpill: () => void; 
           questions, <em style={{ fontFamily: NEWS, fontStyle: 'italic', color: '#c1216b', fontWeight: 400 }}>answered.</em>
         </h2>
         <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, color: '#100c14', lineHeight: 1.65, margin: '0 0 10px', maxWidth: '52ch' }}>
-          a pseudonymous place to vent about relationships, marriage, family, and work — and see what actually happened next for people who lived your exact thing.
+          you have the material. shutap does the writing part — jokes about the situation, never about you. pseudonymous, 18+.
         </p>
         <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 15.5, color: '#443c42', lineHeight: 1.65, margin: '0 0 24px', maxWidth: '52ch' }}>
-          <span onClick={onOpenSpill} style={{ color: '#c1216b', cursor: 'pointer' }}>spill it</span> — one question at a time, the companion helps you find the words. or{' '}
-          <span onClick={onOpenScan} style={{ color: '#c1216b', cursor: 'pointer' }}>scan it</span> — sixty seconds of questions, a private read saved just for you.
+          <span onClick={onOpenSpill} style={{ color: '#c1216b', cursor: 'pointer' }}>say the thing</span> — write it out under a pseudonym. or{' '}
+          <span onClick={onOpenScan} style={{ color: '#c1216b', cursor: 'pointer' }}>scan it</span> — answer a few questions nobody thinks to ask and the story gets sharper.
         </p>
+
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {HOME_FAQ.map((f, i) => (

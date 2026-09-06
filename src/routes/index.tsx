@@ -6,11 +6,11 @@ import { SITE_URL } from '@/lib/site'
 import { countOpenRooms } from '@/lib/rooms-count.functions'
 import { listNewestRooms } from '@/lib/newest-rooms.functions'
 
-const HOME_TITLE = "Shutap — joke about it. vent about family, marriage, work"
+const HOME_TITLE = "Shutap — joke about it. your life, as a comedy set."
 const HOME_DESCRIPTION =
-  "life's a bitch, so make fun of it. type what happened, draw three angles, flip one and see what it does with it. pseudonymous — your real name never shows."
+  "type whatever just happened to you — family, work, exes, strangers. shutap writes it into a set of joke cards, every angle on the same mess. pseudonymous."
 const HOME_OG_DESCRIPTION =
-  "life's a bitch, so make fun of it. type what happened, draw three angles, flip one. pseudonymous — your real name never shows."
+  "type the thing that's living in your head. shutap turns it into a set. pseudonymous."
 
 const HOME_URL = `${SITE_URL}/`
 
@@ -29,33 +29,18 @@ export const Route = createFileRoute('/')({
     meta: [
       { title: HOME_TITLE },
       { name: "description", content: HOME_DESCRIPTION },
-      { property: "og:title", content: "Shutap. Speak Up." },
+      { property: "og:title", content: "SHUTAP. Joke about it." },
       { property: "og:description", content: HOME_OG_DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:url", content: HOME_URL },
       ...ogImageMeta(),
+      { name: "twitter:title", content: "SHUTAP. Joke about it." },
+      { name: "twitter:description", content: "life's a bitch. so make fun of it." },
     ],
     links: [
       { rel: "canonical", href: HOME_URL },
     ],
     scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "@id": `${SITE_URL}/#website`,
-          name: "Shutap",
-          alternateName: "Shutap. Speak Up.",
-          url: HOME_URL,
-          inLanguage: "en",
-          description:
-            "life's a bitch, so make fun of it. type what happened, draw three angles, flip one and see what it does with it. pseudonymous — your real name never shows.",
-          // Ties this WebSite node to the Organization node emitted in
-          // __root.tsx so crawlers read one entity, not two.
-          publisher: { "@id": `${SITE_URL}/#organization` },
-        }),
-      },
       {
         type: "application/ld+json",
         children: JSON.stringify({
@@ -70,6 +55,7 @@ export const Route = createFileRoute('/')({
       },
     ],
   }),
+
   component: HomeRouteComponent,
 })
 

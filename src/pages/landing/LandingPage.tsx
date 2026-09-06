@@ -433,7 +433,7 @@ export function LandingNativePage() {
               <span onClick={openScan} onPointerEnter={preloadWelcome} className="prose-link">scan it</span> — sixty seconds of questions, a private read saved just for you.
             </p>
             <FaqRow q="is this anonymous?" a="pseudonymous. you get a persistent alias — something like 🦉 Quiet Indonesian Owl — generated the first time you sit down. your real name is never attached to anything, anywhere, including us." />
-            <FaqRow q="what happens when i vent?" a="you open a room. people who've lived your exact situation respond, relate, and share what actually happened next for them. your story, your rules — you stay in control of what's shown." />
+            <FaqRow q="what happens when i vent?" a="shutap writes you a set of joke cards about it — every card a different angle on the same situation. you keep the ones that land, and nothing is published unless you post it." />
             <FaqRow q="what does the companion do?" a="it helps you put words to it. asks one question at a time, reflects back what it heard, and helps you decide whether you want the room to hear it — or whether you just needed to say it to yourself first." />
             <FaqRow q="what happens after I share?" a="your story opens a room. people can sit in it, relate to it, react to it. when the room goes quiet for 72 hours — it rests. if it's carried enough resonance, it finds its way into the hall of fame." last />
           </div>
@@ -441,8 +441,8 @@ export function LandingNativePage() {
 
         {/* FOOTER */}
         <footer style={{ padding: '28px 22px 90px', color: '#6f666c', fontSize: 12, textAlign: 'center', fontFamily: NEWSREADER, fontStyle: 'italic', lineHeight: 1.6 }}>
-          <div>shutap — a room for what you're carrying</div>
-          <div style={{ marginTop: 3 }}>18+ · pseudonymous · your real name never shows · your story, your rules 🤍</div>
+          <div>shutap — joke about it.</div>
+          <div style={{ marginTop: 3 }}>18+ · pseudonymous · your real name never shows · jokes at the situation, never at you 🤍</div>
           <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: '7px 16px', justifyContent: 'center', fontStyle: 'normal' }}>
             <a href="/relationships" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>relationships</a>
             <a href="/marriage" style={{ fontFamily: "'Sora',sans-serif", fontSize: 12, color: '#443c42', textDecoration: 'none' }}>marriage</a>
@@ -458,9 +458,9 @@ export function LandingNativePage() {
           </div>
 
           <div style={{ marginTop: 9, fontSize: 11.5, color: '#b09aa6', maxWidth: '42ch', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.5 }}>
-            shutap is a supportive community, not your therapist — not a medical or legal service. in an emergency, call or text 988 (US).
+            shutap writes jokes, not prescriptions. not therapy, not advice, not a diagnosis. in an emergency, call or text 988 (US).
           </div>
-          <div style={{ marginTop: 12, fontFamily: SORA, fontStyle: 'normal', fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#443c42' }}>you don't have to shut up here</div>
+          <div style={{ marginTop: 12, fontFamily: SORA, fontStyle: 'normal', fontWeight: 700, fontSize: 10, letterSpacing: '.18em', textTransform: 'uppercase', color: '#443c42' }}>you already have the material.</div>
         </footer>
       </main>
 

@@ -4,9 +4,9 @@ import { DocLayout } from '@/components/site/DocLayout'
 import { SITE_URL } from '@/lib/site'
 
 const URL = `${SITE_URL}/guidelines`
-const TITLE = 'Community Guidelines — Shutap'
+const TITLE = 'house rules — Shutap'
 const DESCRIPTION =
-  'How to keep shutap a safe place to be honest: protect privacy, aim any sharpness at situations not people, and never post anything that harms someone.'
+  'the joke goes at the situation, not at a person. what\u2019s allowed here and what gets removed.'
 
 export const Route = createFileRoute('/guidelines')({
   head: () => ({

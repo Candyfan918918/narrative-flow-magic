@@ -19,12 +19,12 @@ export function FAQ() {
           </p>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <details style={{ borderTop: '.5px solid rgba(11,8,15,.08)', padding: '15px 0' }}>
-              <summary style={summaryStyle}>is this anonymous?<span style={plus}>+</span></summary>
+              <summary style={summaryStyle}>is this pseudonymous?<span style={plus}>+</span></summary>
               <p style={p}>pseudonymous. you get a persistent alias — something like 🦉 Quiet Indonesian Owl — generated the first time you sit down. your real name is never attached to anything, anywhere, including us.</p>
             </details>
             <details style={{ borderTop: '.5px solid rgba(11,8,15,.08)', padding: '15px 0' }}>
               <summary style={summaryStyle}>what happens when i vent?<span style={plus}>+</span></summary>
-              <p style={p}>you open a room. people who've lived your exact situation respond, relate, and share what actually happened next for them. your story, your rules — you stay in control of what's shown.</p>
+              <p style={p}>shutap writes you a set of joke cards about it — every card a different angle on the same situation. you keep the ones that land, and nothing is published unless you post it.</p>
             </details>
             <details style={{ borderTop: '.5px solid rgba(11,8,15,.08)', padding: '15px 0' }}>
               <summary style={summaryStyle}>what does the companion do?<span style={plus}>+</span></summary>

@@ -7,26 +7,26 @@ import { breadcrumbScript } from "@/lib/seo/breadcrumbs";
 const PATH = "/career";
 const TITLE = "Career & work — real stories about work life | Shutap";
 const DESCRIPTION =
-  "Pseudonymous stories about work — bosses, burnout, money, the job you're supposed to be grateful for — and what happened next. You're not alone in it.";
+  "Work, as material: managers, burnout, money, the job you're supposed to be grateful for. type what happened and shutap writes you a set.";
 const H1 = "career";
 const CAPSULE =
-  "Work, money, bosses, burnout, the job everyone says you should be grateful for. This is where people vent about work — pseudonymously, honestly — and come back to share what actually happened next. Whatever's grinding you down, someone here has felt it.";
+  "Work, money, managers, burnout, the job everyone says you should be grateful for. Type what happened and shutap writes you a set of joke cards about the situation \u2014 never about you.";
 const WHAT =
-  "Career is where the things you can't say on Slack go: the burnout you're hiding, the boss who's the problem, the money stress, the quiet urge to quit. Spill it under a pseudonym, hear from people in the same grind, and see what they actually did next.";
+  "Career is where the things you can't say on Slack go: the burnout you're hiding, the manager who is the problem, the money stress, the quiet urge to quit. Type it under a pseudonym and shutap writes the set.";
 const INVITE =
-  "No LinkedIn voice. Just what work is really doing to you — and what happened after.";
+  "No LinkedIn voice. Just what work is really doing to you \u2014 and a set written about it.";
 const FAQ = [
   {
     q: "Is it normal to feel burned out or stuck at work?",
-    a: "Extremely. Burnout, resentment, and feeling trapped in a good job are among the most common things people bring to Shutap. Reading others in the same place is often the first step out of the fog.",
+    a: "Extremely. Burnout, resentment and feeling trapped in a good job are among the most common things typed in here.",
   },
   {
-    q: "Can I vent about my job or boss without it getting back to me?",
-    a: "Yes. You post under a pseudonym, never your real name, and identifying details are stripped before storage — so you can be honest about work safely.",
+    q: "Can I write about my job or manager without it getting back to me?",
+    a: "Yes. You write under a pseudonym, never your real name, and identifying details are stripped before storage.",
   },
   {
     q: "How is this more useful than career advice?",
-    a: "It's real outcomes, not tips. People return to share what actually happened after they set a boundary, pushed back, or left — so you see how situations like yours tend to play out.",
+    a: "It isn\u2019t advice and doesn\u2019t try to be. You get a set of joke cards about the situation \u2014 which is what makes the meeting survivable, not a five-step framework.",
   },
 ];
 const PILLAR = "Career";

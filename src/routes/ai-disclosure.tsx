@@ -88,7 +88,7 @@ function AiDisclosurePage() {
             color: '#f3c6da',
           }}
         >
-          you&rsquo;re talking to shutap&rsquo;s ai companion — not a human, and not a therapist.
+          your cards are written by ai — not a human, and not a therapist.
           it&rsquo;s here to listen, reflect, and keep you company. it can get things wrong, and it
           can&rsquo;t give medical, mental-health, or legal advice. if things feel heavy,
           we&rsquo;ll point you to real help. 🤍

@@ -30,7 +30,7 @@ export const ONBOARDING_FRAMES: OnbFrame[] = [
     big: 'safe enough to be honest.',
     rows: [
       ['🛡', 'i scrub out names & details before anything is seen.'],
-      ['🆓', 'venting, being heard, and crisis help are always free.'],
+      ['🆓', 'typing your situation, reading your set, and crisis help are always free.'],
       ['👋', "that\u2019s it — the room\u2019s open. say the thing."],
     ],
   },

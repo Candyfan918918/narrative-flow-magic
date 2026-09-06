@@ -16,7 +16,7 @@ export const VENT_TOPICS: VentTopic[] = [
     label: 'family',
     h1: 'somewhere to vent about family.',
     intro:
-      "family is the group chat you can't leave. parents, siblings, in-laws, the guilt that shows up before the words do — sit with people who've lived your exact thing.",
+      "family is the one you can't leave. parents, siblings, in-laws, the guilt that shows up before the words do — type it and get a set written about it.",
     topicQuestion: {
       q: 'i can\u2019t say this in front of my family — is that ok here?',
       a: "yes. shutap is pseudonymous — no one at the family dinner can find your room. spill what you actually think; the room stays outside your real life.",
@@ -49,7 +49,7 @@ export const VENT_TOPICS: VentTopic[] = [
     label: 'friendship',
     h1: 'somewhere to vent about friendship.',
     intro:
-      'the fade-out, the group chat drama, the friend who never says sorry. it counts. sit in a room with people who\u2019ve been there.',
+      'the fade-out, the drama, the friend who never says sorry. it counts. type it and shutap writes the set.',
     topicQuestion: {
       q: "is it dramatic to vent about friends?",
       a: "no. friend grief is real grief. the rooms here take it seriously without making you defend that it hurts.",
@@ -63,7 +63,7 @@ export const VENT_TOPICS: VentTopic[] = [
       'the tantrum you handled badly. the day you didn\u2019t like being a parent. the thing you can\u2019t say to the other parents at pickup.',
     topicQuestion: {
       q: 'will i get judged for saying the thing?',
-      a: 'the room is people who\u2019ve lived it — not the school group chat. you can be honest without a public log.',
+      a: 'you write under a pseudonym, identifying details are stripped, and nothing is published unless you post it.',
     },
   },
   {
@@ -74,7 +74,7 @@ export const VENT_TOPICS: VentTopic[] = [
       'debt, the paycheck that doesn\u2019t clear, the friend who kept borrowing. name the thing.',
     topicQuestion: {
       q: 'is it ok to vent about money without asking for advice?',
-      a: 'yes. every room chooses between \u201cbeing heard\u201d and \u201copen to advice.\u201d you say what you want.',
+      a: 'yes. rooms are optional \u2014 a card only leaves your set if you post it.',
     },
   },
   {

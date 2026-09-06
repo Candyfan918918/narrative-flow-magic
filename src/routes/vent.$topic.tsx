@@ -117,10 +117,10 @@ function TopicNotFound() {
 
 function FAQ_ITEMS(t: VentTopic): Array<{ q: string; a: string }> {
   return [
-    { q: 'is shutap anonymous?', a: 'pseudonymous. you get a persistent alias like 🦉 Quiet Indonesian Owl. your real name, email, and identity stay permanently outside.' },
+    { q: 'is shutap pseudonymous?', a: 'yes. you get a persistent alias like 🦉 Quiet Indonesian Owl. your real name, email, and identity stay permanently outside.' },
     t.topicQuestion,
-    { q: 'is this therapy?', a: 'no. shutap is a peer-support and journaling community with an AI companion. it is not a medical, mental-health, or crisis service. in an emergency, call or text 988 (US) or visit findahelpline.com.' },
-    { q: 'does it cost anything?', a: 'venting, being heard, and rooms are free. the full mirror — your patterns read as cards — requires a subscription.' },
+    { q: 'is this therapy?', a: 'no. shutap writes jokes, not prescriptions. it is an entertainment service, not a medical, mental-health, or crisis service. in an emergency, call or text 988 (US) or visit findahelpline.com.' },
+    { q: 'does it cost anything?', a: 'typing your situation and reading your set are free. the full mirror — your patterns read as cards — requires a subscription.' },
     { q: 'what happens after i spill?', a: 'a room opens. people who\u2019ve lived your exact thing sit in. over the next days the companion checks in — what happened next? that is your mirror starting to form.' },
   ]
 }

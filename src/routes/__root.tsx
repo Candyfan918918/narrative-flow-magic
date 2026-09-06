@@ -83,31 +83,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Shutap — vent about relationships, marriage, family & work" },
+      { title: "Shutap — joke about it. your life, as a comedy set." },
       {
         name: "description",
         content:
-          "life's a bitch, so make fun of it. type what happened, draw three angles, flip one and see what it does with it. pseudonymous — your real name never shows.",
+          "type whatever just happened to you — family, work, exes, strangers. shutap writes it into a set of joke cards, every angle on the same mess. pseudonymous.",
       },
       { name: "author", content: "Shutap" },
       { property: "og:site_name", content: "Shutap" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://shutap.com" },
-      {
-        property: "og:title",
-        content: "Shutap — vent about relationships, marriage, family & work",
-      },
+      { property: "og:title", content: "SHUTAP. Joke about it." },
       {
         property: "og:description",
         content:
-          "life's a bitch, so make fun of it. type what happened, draw three angles, flip one and see what it does with it. pseudonymous — your real name never shows.",
+          "type the thing that's living in your head. shutap turns it into a set. pseudonymous.",
       },
       ...ogImageMeta(),
-      { name: "twitter:title", content: "Shutap. Speak Up." },
+      { name: "twitter:title", content: "SHUTAP. Joke about it." },
       {
         name: "twitter:description",
-        content:
-          "life's a bitch, so make fun of it. type what happened, draw three angles, flip one and see what it does with it. pseudonymous — your real name never shows.",
+        content: "life's a bitch. so make fun of it.",
       },
     ],
     links: [
@@ -123,20 +119,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "Organization",
-          "@id": "https://shutap.com/#organization",
+          "@type": "WebApplication",
+          "@id": "https://shutap.com/#app",
           name: "Shutap",
-          alternateName: "Shutap. Speak Up.",
-          description:
-            "life's a bitch, so make fun of it. type what happened, draw three angles, flip one and see what it does with it. pseudonymous — your real name never shows.",
-          slogan: "Shutap. Speak Up.",
+          alternateName: "SHUTAP. Joke about it.",
+          applicationCategory: "EntertainmentApplication",
+          operatingSystem: "Web",
           url: "https://shutap.com",
-          logo: "https://shutap.com/og/shutap-og.png",
           image: "https://shutap.com/og/shutap-og.png",
+          description:
+            "Shutap turns a personal story — a family comment that landed wrong, a partner who took someone else's side, a manager who made it weird, a friend who keeps doing the thing — into a set of joke cards, each taking a different comedic angle on the same situation, the way a comedian works one bad night into a routine. Pseudonymous. Identifying details are stripped before storage. Shutap makes jokes about situations, never about the person telling the story, and it does not give advice.",
+          offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "USD",
+            description:
+              "Free to use. The Mirror subscription is $7.99/month or $49.99/year.",
+          },
         }),
       },
     ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,

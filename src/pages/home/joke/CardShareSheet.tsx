@@ -96,7 +96,7 @@ export function CardShareSheet({
       </Button>
       {tier === 'paying' ? (
         <Button onClick={onSaveSet} disabled={saving} variant="secondary" full>
-          ↓ save all 3, clean
+          ↓ save the set, clean
         </Button>
       ) : null}
       <div style={{ fontFamily: SORA, fontSize: 12.5, color: MUTED, textAlign: 'center' }}>
