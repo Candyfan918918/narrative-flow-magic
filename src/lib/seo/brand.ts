@@ -28,7 +28,7 @@ export const PILLARS = [
   {
     slug: "family",
     title: "Family",
-    blurb: "parents, siblings, in-laws, the family group chat, the guilt.",
+    blurb: "parents, siblings, in-laws, the dinner comment, the guilt.",
   },
   {
     slug: "career",

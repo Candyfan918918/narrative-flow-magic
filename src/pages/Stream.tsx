@@ -268,7 +268,7 @@ export function StreamPage() {
                 <span>omg same 🫂</span><span style={{ color: '#a52a5f' }}>✦</span>
                 <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#f7b8d4' }}>i hear you</span><span style={{ color: '#a52a5f' }}>✦</span>
                 <span>you've got this 💪</span><span style={{ color: '#a52a5f' }}>✦</span>
-                <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#f7b8d4' }}>pseudonymous. a safe space.</span><span style={{ color: '#a52a5f' }}>✦</span>
+                <span style={{ fontFamily: "'Newsreader',serif", fontStyle: 'italic', fontWeight: 400, color: '#f7b8d4' }}>pseudonymous. jokes, not prescriptions.</span><span style={{ color: '#a52a5f' }}>✦</span>
               </div>
             ))}
           </div>

@@ -1,12 +1,14 @@
 // Shared footer for info/legal pages. Link order matches DocLayout's doc-nav.
 const INFO_LINKS: { href: string; label: string }[] = [
-  { href: '/terms', label: 'Terms of Service' },
-  { href: '/privacy', label: 'Privacy Policy' },
-  { href: '/guidelines', label: 'Community Guidelines' },
-  { href: '/safety', label: 'Crisis & Safety' },
-  { href: '/contact', label: 'Contact' },
-  { href: '/ai-disclosure', label: 'AI Disclosure' },
-  { href: '/disclaimer', label: 'Medical / Legal Disclaimer' },
+  { href: '/terms', label: 'terms' },
+  { href: '/privacy', label: 'privacy' },
+  { href: '/guidelines', label: 'house rules' },
+  { href: '/safety', label: "if it's heavy" },
+  { href: '/about', label: 'what shutap is' },
+  { href: '/how-it-works', label: 'how it works' },
+  { href: '/contact', label: 'contact' },
+  { href: '/ai-disclosure', label: 'ai disclosure' },
+  { href: '/disclaimer', label: 'disclaimer' },
 ]
 
 export function SiteFooter() {
@@ -56,7 +58,7 @@ export function SiteFooter() {
             color: '#443c42',
           }}
         >
-          18+ · pseudonymous · not a medical or legal service
+          shutap writes jokes, not prescriptions. 18+ · pseudonymous · not therapy, not advice.
         </div>
       </div>
       <style>{`

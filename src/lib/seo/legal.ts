@@ -4,4 +4,4 @@ export const LEGAL_VERSION = {
 } as const;
 
 export const LEGAL_DISCLAIMER =
-  "Shutap is a peer-support and journaling community with an AI companion. It does not provide medical, psychological, mental-health, crisis, or legal services or advice, and no professional relationship is created by using it. Content and AI responses are for support and reflection only and are not a substitute for professional care. In an emergency, contact 988 or 911 (US) or findahelpline.com.";
+  "Shutap is a pseudonymous entertainment service that generates AI-written humorous content from user-submitted situations. It does not provide medical, psychological, mental-health, crisis, or legal services or advice. In an emergency, contact 988 or 911 (US) or findahelpline.com. 18+.";

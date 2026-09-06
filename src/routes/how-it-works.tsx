@@ -5,31 +5,35 @@ import { SITE_URL } from "@/lib/site";
 import { breadcrumbScript } from "@/lib/seo/breadcrumbs";
 
 const PATH = "/how-it-works";
-const TITLE = "How Shutap works — real people, AI-guided | Shutap";
+const TITLE = "How Shutap works — you type it, shutap writes the set";
 const DESCRIPTION =
-  "How stories on Shutap are written (real people, not AI-written), how outcomes get confirmed, and how sensitive topics are routed to real help.";
+  "how a set gets written: you type what happened, identifying details are stripped, and shutap writes joke cards at the situation — never at you.";
 const CAPSULE =
-  "Stories on Shutap are written by real people about their real lives. AI agents help you find the words and reflect what you share — they never write your story or pose as a person. Later, you come back to confirm what actually happened, which is what makes Shutap's record different from opinion.";
+  "every comedian you like does this on purpose: take the worst thing that happened and work it into a routine. you already have the material. shutap does the writing part.";
 const SECTIONS = [
   {
-    heading: "you spill",
-    body: "Start with whatever's on your mind. An AI companion listens and reflects it back, helping you get it out — guided by AI, written by you.",
+    heading: "you type what happened",
+    body: "One open box. No category to pick, no bar to clear. If it's still in your head at midnight, it's material.",
   },
   {
-    heading: "your privacy is protected first",
-    body: "Before anything is stored, a scrubber removes personal identifiers — names, addresses, locations, phone numbers, emails. Only the de-identified version is kept, and you post under a pseudonym.",
+    heading: "identifying details come out first",
+    body: "Before anything is stored, names, addresses, workplaces, phone numbers and emails are stripped. Only the scrubbed version is kept, and you write under a pseudonym.",
   },
   {
-    heading: "you come back",
-    body: "Days and weeks later, Shutap asks what happened next. Your confirmed outcome turns a one-time vent into something useful for the next person facing the same thing.",
+    heading: "shutap writes the set",
+    body: "Each card takes a different comedic angle on the same situation — the absurd detail, the pattern, the whole thing played back as a nature documentary. They arrive face down. You flip them one at a time.",
   },
   {
-    heading: "sensitive moments route to real help",
-    body: "If something serious comes up, the companion stops and points you to real human support — it doesn't treat a crisis as content.",
+    heading: "you keep the ones that land",
+    body: "Keep a card, save it as an image, send it to the group chat, or post it to a room. The ones that don't land, you leave face down.",
   },
   {
-    heading: "why confirmed outcomes matter",
-    body: "Opinions are everywhere. Outcomes are rare. By capturing what actually happened, Shutap builds a picture of how real situations resolve — the difference from an advice thread.",
+    heading: "the joke goes at the situation",
+    body: "Never at you. Shutap doesn't make fun of your pain, doesn't diagnose you, and doesn't tell you what to do. If something is genuinely heavy, it stops joking and points you at real help.",
+  },
+  {
+    heading: "and then it starts noticing",
+    body: "Flip enough cards and the same person, the same week of the month, the same move keeps showing up. That's the Mirror — the paid part that reads your own record back to you.",
   },
 ];
 const OTHERS = [

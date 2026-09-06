@@ -352,7 +352,7 @@ export function JokeSurface() {
         })),
       )
       saveBlob(await zipStored(files), `shutap-cards-${set.id.slice(0, 8)}.zip`)
-      setSaved(`${res.width}×${res.height} · all three`)
+      setSaved(`${res.width}×${res.height} · the whole set`)
       jokeTrack('save_set_completed', res.tier, { n: files.length })
     } catch {
       say('the set did not render. try once more?')
@@ -394,12 +394,12 @@ export function JokeSurface() {
 
   const dealingLine = useMemo(() => {
     if (tier === 'paying') {
-      return "i have been waiting all week for one like this. three clean cards, coming up."
+      return "i have been waiting all week for one like this. writing your set now."
     }
     if (tier === 'free') {
-      return 'that one deserves cards. the usual three, coming up.'
+      return 'that one deserves a set. writing it now.'
     }
-    return "okay, that's the bit that's getting me. writing you three — a take, a clapback, and one light roast of the situation itself."
+    return "okay, that's the bit that's getting me. writing you a set — a take, a clapback, and one light roast of the situation itself."
   }, [tier])
 
   const hint = text.trim().length === 0
@@ -437,8 +437,13 @@ export function JokeSurface() {
             <span style={{ fontFamily: NEWS, fontStyle: 'italic', fontWeight: 400, letterSpacing: '-.02em', color: '#8e1c4c' }}>joke about it.</span>
           </h1>
           <p style={{ fontFamily: NEWS, fontStyle: 'italic', fontSize: 'clamp(17px,2vw,22px)', lineHeight: 1.45, color: '#443c42', textAlign: 'center', maxWidth: '34ch', margin: 0 }}>
-            life&apos;s a bitch. so make fun of it — you&apos;ve still got the better sense of humour.
+            life&apos;s a bitch. so make fun of it.
           </p>
+          <p style={{ fontFamily: SORA, fontSize: 13.5, color: FAINT, textAlign: 'center', margin: 0 }}>
+            type the thing that&apos;s living in your head. shutap writes the set.
+          </p>
+
+
 
           <div style={{ width: '100%', position: 'relative', background: '#fff', border: '2px solid rgba(231,84,138,.55)', borderRadius: 26, padding: 'clamp(16px,2.4vw,22px)', boxShadow: '0 28px 60px -38px rgba(35,26,32,.28)', display: 'flex', flexDirection: 'column', gap: 10 }}>
             <textarea
@@ -453,7 +458,7 @@ export function JokeSurface() {
                 void onSubmit()
               }}
               enterKeyHint="send"
-              placeholder="yeah — tell me about it."
+              placeholder="whatever it is. the comment, the meeting, the text at 11pm, the thing they did again."
               disabled={phase !== 'idle'}
               style={{ width: '100%', resize: 'vertical', minHeight: 116, border: 'none', outline: 'none', background: 'transparent', fontFamily: NEWS, fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: '#2b2429', opacity: phase === 'idle' ? 1 : 0.6 }}
             />
@@ -462,7 +467,7 @@ export function JokeSurface() {
                 enter sends · shift + enter for a new line
               </span>
               <Button onClick={() => void onSubmit()} disabled={phase !== 'idle'}>
-                {phase === 'reading' ? 'reading it…' : phase === 'dealing' ? 'writing your cards…' : 'turn it into a joke →'}
+                {phase === 'reading' ? 'reading it…' : phase === 'dealing' ? 'writing your set…' : 'write my set'}
               </Button>
             </div>
           </div>
@@ -498,8 +503,8 @@ export function JokeSurface() {
             >
               <ol style={{ margin: 0, padding: '12px 18px', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7, background: 'rgba(127,119,221,.06)', border: '1px solid rgba(11,8,15,.07)', borderRadius: 18, fontFamily: NEWS, fontStyle: 'italic', fontSize: 14.5, lineHeight: 1.5, color: '#443c42', textAlign: 'left' }}>
                 <li><span style={{ color: '#8e1c4c' }}>i.</span> type what happened — names get scrubbed before anything saves.</li>
-                <li><span style={{ color: '#8e1c4c' }}>ii.</span> if it lands well, i offer you three cards: a take, a clapback, a roast.</li>
-                <li><span style={{ color: '#8e1c4c' }}>iii.</span> read all three free. an alias is only needed to save or share one.</li>
+                <li><span style={{ color: '#8e1c4c' }}>ii.</span> if it lands well, i write you a set: a take, a clapback, a roast.</li>
+                <li><span style={{ color: '#8e1c4c' }}>iii.</span> reading the set is free. an alias is only needed to save or share one.</li>
               </ol>
             </div>
           </div>
@@ -563,9 +568,13 @@ export function JokeSurface() {
               <>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                   <div style={{ fontFamily: SORA, fontWeight: 700, fontSize: 17, letterSpacing: '-.03em', color: INK }}>
-                    your 3 cards
+                    your set
                   </div>
-                  <Eyebrow>{index + 1} / 3</Eyebrow>
+                  <div aria-hidden style={{ display: 'inline-flex', gap: 5, alignItems: 'center' }}>
+                    {cards.map((c, i) => (
+                      <span key={c.position} style={{ width: 6, height: 6, borderRadius: '50%', background: i === index ? '#8e1c4c' : 'rgba(11,8,15,.18)' }} />
+                    ))}
+                  </div>
                 </div>
 
                 {/* slot tabs — the same three for everyone */}
@@ -623,7 +632,7 @@ export function JokeSurface() {
                     disabled={saving}
                     title={signedIn ? undefined : 'an alias first — 30 seconds, no real name'}
                   >
-                    {signedIn ? '↓' : '🔒'} {spec.set && signedIn ? 'save all 3' : 'save'}
+                    {signedIn ? '↓' : '🔒'} {spec.set && signedIn ? 'save the set' : 'save'}
                   </Button>
                   <Button
                     variant={signedIn ? 'secondary' : 'locked'}
@@ -832,7 +841,7 @@ function DealingSkeleton() {
 
 /** Refusals are cost guards, not paywalls: they never point at checkout. */
 function refusalCopy(reason: 'daily_cards' | 'daily_sets' | 'rate_limited' | 'not_found'): string {
-  if (reason === 'rate_limited') return 'too many cards from this connection today. give it a bit.'
+  if (reason === 'rate_limited') return "easy — you've been flipping fast. back in a minute."
   if (reason === 'daily_sets') return "that's the last situation i can write for today. the deck resets tomorrow."
   if (reason === 'daily_cards') return "i'm out of jokes for today — genuinely, not as a sales pitch. tomorrow they're back."
   return 'i lost track of that set. say it again and i will start over.'
