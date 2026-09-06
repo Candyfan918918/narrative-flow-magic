@@ -718,7 +718,7 @@ export const listMyJokeCards = createServerFn({ method: 'POST' })
     const [{ data }, { data: alias }] = await Promise.all([
       supabaseAdmin
         .from('joke_cards')
-        .select('id, angle, card_text, position, used_fallback, judge_score, room_id, created_at')
+        .select('id, set_id, angle, card_text, position, used_fallback, judge_score, room_id, created_at')
         .eq('user_id', id.userId)
         .order('created_at', { ascending: false })
         .limit(200),
@@ -728,6 +728,15 @@ export const listMyJokeCards = createServerFn({ method: 'POST' })
         .eq('user_id', id.userId)
         .maybeSingle(),
     ])
+    // The set list reads each card back under the situation it was written
+    // for, so every card carries its set's line.
+    const setIds = Array.from(new Set((data ?? []).map((r: any) => r.set_id as string)))
+    const { data: sets } = setIds.length
+      ? await supabaseAdmin.from('joke_sets').select('id, clean_text').in('id', setIds)
+      : { data: [] as { id: string; clean_text: string }[] }
+    const situations = new Map<string, string>(
+      (sets ?? []).map((s: any) => [s.id as string, (s.clean_text as string) ?? '']),
+    )
     const cards: JokeCard[] = (data ?? []).map((r: any) => ({
       ...toCard({
         id: r.id as string,
@@ -739,6 +748,8 @@ export const listMyJokeCards = createServerFn({ method: 'POST' })
         day: String(r.created_at).slice(0, 10),
       }),
       room_id: (r.room_id as string | null) ?? null,
+      set_id: (r.set_id as string | null) ?? null,
+      situation: situations.get(r.set_id as string) ?? '',
     }))
     return {
       tier: id.tier,
