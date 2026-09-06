@@ -104,11 +104,18 @@ export function SubscribePage() {
   const openPortalFn = useServerFn(createMirrorPortal)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session))
+    // A background ANONYMOUS session is not a real account: treat it as
+    // signed out so checkout prompts sign-in instead of failing server-side.
+    supabase.auth.getSession().then(({ data }) => {
+      const user = data.session?.user as { is_anonymous?: boolean } | undefined
+      setAuthed(Boolean(data.session) && !user?.is_anonymous)
+    })
   }, [])
 
   useEffect(() => {
     if (authed === false) {
+      // Come back to the plan they were quoted, not the homepage.
+      try { sessionStorage.setItem('shutap_returnTo', `/subscribe?plan=${planKey}`) } catch { /* noop */ }
       navigate('/welcome', { replace: true })
     }
   }, [authed, navigate])
